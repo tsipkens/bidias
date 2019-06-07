@@ -1,5 +1,9 @@
 
 
+% ii = 1;
+
+for ii=1:10
+
 %% Initial guess for iterative schemes
 b_init = b;
 b_init(b_init<(1e-5*max(b_init))) = 0;
@@ -20,7 +24,7 @@ options = optimoptions('lsqlin',...
 tic;
 x_LS = lsqlin(A,b,...
     [],[],[],[],sparse(length(x0),1),[],[],options);
-t.LS = toc;
+t.LS(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
@@ -36,7 +40,7 @@ t.Tk0 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk0 = norm(x0-x_Tk0);
+chi.Tk0(ii) = norm(x0-x_Tk0);
 
 
 %% Tikhonov (1st) implementation
@@ -48,7 +52,7 @@ t.Tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk1 = norm(x0-x_Tk1);
+chi.Tk1(ii) = norm(x0-x_Tk1);
 
 
 %% Tikhonov (2nd) implementation
@@ -60,7 +64,7 @@ t.Tk2 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk2 = norm(x0-x_Tk2);
+chi.Tk2(ii) = norm(x0-x_Tk2);
 
 
 %% Exponential, rotated
@@ -89,7 +93,7 @@ chi.expRot = norm(x0-x_expRot);
 disp('Performing MART...');
 tic;
 x_MART = mart(A,b,x_init,300);
-t.MART = toc;
+t.MART(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
@@ -117,11 +121,11 @@ disp('Performing Twomey-Markowski-Buckley...');
 tic;
 x_TwoMH = twomey_markowski(A,b,Lb,n_x(1),...
     x_init,35,'Buckley',1/Sf_TwoMH);
-t.TwoMH = toc;
+t.TwoMH(ii) = toc;
 
 x_rs_Two_MH = reshape(x_TwoMH,n_x);
 
 chi.TwoMH = norm(x0-x_TwoMH);
 
 
-
+end

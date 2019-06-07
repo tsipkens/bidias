@@ -157,10 +157,10 @@ x_plot = x_Tk1;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d(log10(x_plot));
-% caxis([0,1*(1+1/256)]);
-% caxis([0,1*(1+1/256)]);
-colorbar;
+grid_x.plot2d(x_plot);
+caxis([0,1*(1+1/256)]);
+% caxis([0,0.85*(1+1/256)]);
+% caxis([0,1.25*(1+1/256)]);
 
 figure(11);
 marg_dim = 1;
@@ -278,11 +278,12 @@ figure(40);
 t_names = fieldnames(t);
 t_vals = zeros(length(t_names),1);
 for ii=1:length(t_names)
-    t_vals(ii) = t.(t_names{ii});
+    t_vals(ii) = mean(t.(t_names{ii}),2);
 end
 
-bar(log10(t_vals));
+bar(t_vals);
 set(gca,'xticklabel',t_names);
+set(gca,'yscale','log');
 
 
 %% Plot marginal distributions
