@@ -296,7 +296,7 @@ x_MART_m = grid_x.marginalize(x_MART);
 x_Two_m = grid_x.marginalize(x_Two);
 x_TwoMH_m = grid_x.marginalize(x_TwoMH);
 
-dim = 1;
+dim = 2;
 figure(31);
 semilogx(grid_t.edges{dim},x_t_m{dim},'k');
 hold on;
