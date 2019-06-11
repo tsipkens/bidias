@@ -22,4 +22,5 @@ common inputs:
 5. prop - a struct that contains the properties of the particle mass analyzer
   (a sample script to generate this quantity is include as prop_CPMA.m), and
 
+6. varargin (optional) - name-value pairs to specify either the equivalent
   resolution, inner electrode angular speed, or voltage.
