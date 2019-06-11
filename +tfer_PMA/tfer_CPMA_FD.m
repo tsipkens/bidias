@@ -24,12 +24,12 @@ function [Lambda,prop,n] = tfer_CPMA_FD(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 
 if ~exist('prop','var') % if particle mass analyzer properties not specified
-    prop = kernel.prop_CPMA; % will use default in this function
+    prop = tfer.prop_CPMA; % will use default in this function
 elseif isempty(prop)
-    prop = kernel.prop_CPMA;
+    prop = tfer.prop_CPMA;
 end
 
-kernel.get_setpoint; % get setpoint
+tfer.get_setpoint; % get setpoint
 
 
 %-- Discretize the space -------------------------------------------------%
@@ -118,7 +118,7 @@ for ii=ind % loop over mass (not m_star)
     
     %-- Primary loop for finite difference ---------------------------%
     for jj = 2:nz
-        n_vec = max(kernel.tridiag([0,a],b,c,RHS(n_vec)),0);
+        n_vec = max(tfer.tridiag([0,a],b,c,RHS(n_vec)),0);
             % solve system using Thoman algorithm
             
         if nargout==3; n_mat(jj,:) = n_vec; end

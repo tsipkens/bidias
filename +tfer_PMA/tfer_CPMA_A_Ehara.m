@@ -1,7 +1,7 @@
 
-function [Lambda,G0] = tfer_CPMA_E(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_E Evaluates the transfer function for a CPMA in Case E.
-% Author:       Timothy Sipkens, 2019-03-21
+function [Lambda] = tfer_CPMA_A_Ehara(m_star,m,d,z,prop,varargin)
+% TFER_CPMA_A_EHARA Evaluates the transfer function for a CPMA in Case A as per Ehara et al.
+% Author:       Timothy Sipkens, 2018-12-27
 % 
 %-------------------------------------------------------------------------%
 % Inputs:
@@ -9,18 +9,18 @@ function [Lambda,G0] = tfer_CPMA_E(m_star,m,d,z,prop,varargin)
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
-%   prop        Properties of the particle parameters
+%   prop        Device properties (e.g. classifier length)
 %   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
 %                   ('Rm',double) - Resolution
 %                   ('omega1',double) - Angular speed of inner electrode
 %                   ('V',double) - Setpoint voltage
 %
 % Outputs:
-%   Lambda      CPMA transfer function
-%   G0          Function mapping final to initiral radial position
+%   Lambda      Transfer function
+%   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
-kernel_CPMA.get_setpoint; % get setpoint
+tfer.get_setpoint; % get setpoint
 
 %-- Estimate equilibrium radius ------------------------------------------%
 if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc
@@ -34,14 +34,12 @@ end
 lam = 2.*tau.*(sp.alpha^2-sp.beta^2./(rs.^4)).*prop.L./prop.v_bar;
 
 
-%-- Evaluate G0 and transfer function ------------------------------------%
-G0 = @(r) 1./(sp.omega1.*sqrt(m)).*...
-    sqrt((m.*sp.omega1^2.*r.^2-C0).*exp(-lam)+C0);
+%-- Evaluate transfer function -------------------------------------------%
+rho_s = (rs-prop.rc)/prop.del;
+Lambda = ((1-rho_s)+(1+rho_s).*exp(-lam))./2.*and(1<rho_s,rho_s<coth(lam./2))+...
+    exp(-lam).*and(-1<rho_s,rho_s<1)+...
+    ((1+rho_s)+(1-rho_s).*exp(-lam))./2.*and(-coth(lam./2)<rho_s,rho_s<-1);
 
-ra = min(prop.r2,max(prop.r1,G0(prop.r1)));
-rb = min(prop.r2,max(prop.r1,G0(prop.r2)));
-
-Lambda = (1/(2*prop.del)).*(rb-ra);
 
 end
 

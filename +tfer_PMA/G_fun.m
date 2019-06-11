@@ -1,18 +1,36 @@
 
-function G = G_fun(min_fun,rL,rs,r1,r2,condit)
+function G = G_fun(min_fun,rL,rs,r1,r2,alpha,beta)
+% G_FUN Function used in root-finding procedure to specify search interval.
+% 
+%-------------------------------------------------------------------------%
+% Inputs:
+%   min_fun     Function to minimize, depends on case letter (Sipkens et al.)
+%   rL          Particle exit radius
+%   rs          Equilibirum radius
+%   r1          Radius of inner electrode
+%   r2          Radius of outer electrode
+%   alpha       First parameter from azimuthal velocity distribution
+%   beta        Second parameter from azimuthal velocity distribution
+%
+% Outputs:
+%   G           The value of G0 following root-finding procedure
+%-------------------------------------------------------------------------%
 
-if nargin<6
-    condit = ones(size(rs));
-end
+
+condit = (alpha^2) < (beta^2./(rs.^4)); % determines where on is relative to rs
 
 ns = length(rs); % number of equilirbrium radii to consider (one per particle mass considered)
 nL = length(rL); % number of final radial positions to consider (usually only one)
 offset = 1e-9; % offset of rs in which rL is considered equal to rs
+                    % (.e. no change in radial position of particle)
 
 G = zeros(nL,ns); % pre-allocate output variable
-for jj=1:nL
-    for ii=1:ns
-        if rL(jj)<r1
+
+%-- Determine interval in which to search and fo root-finding ------------%
+for jj=1:nL % loop throught all specified particle exit radii
+    for ii=1:ns % loop to consider multiple equilbirium radii (multiple m)
+        
+        if rL(jj) <r1
         % particles cannot exist here, return r1
             G(jj,ii) = r1;
             
@@ -48,6 +66,7 @@ for jj=1:nL
                     
                 end
             end
+            
             
         elseif rL(jj)<rs(ii) % should be equivalent to else
         % if rL < rs, then r0 < rL

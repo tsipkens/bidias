@@ -1,8 +1,7 @@
 function x = tridiag(a,b,c,y)
-% TRIDIAG           Solve a tridiagonal matrix.
-% Orig. Author:     Olfert laboratory
-% Author:           Timothy Sipkens, 2019-01-19
-% Note:             This is an implementation of the Thomas algorithm.
+% TRIDIAG Solve a tridiagonal matrix using the Thomas algorithm.
+% Adapted from: Olfert laboratory
+% Author: Timothy Sipkens, 2019-01-19
 %
 %-------------------------------------------------------------------------%
 %  Solve the  N x N  tridiagonal system for x:

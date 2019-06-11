@@ -20,11 +20,11 @@ function [Lambda] = tfer_CPMA_tri(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 
 
-kernel.get_setpoint; % get setpoint
+tfer.get_setpoint; % get setpoint
 
 if ~isfield(sp,'m_max') % if m_max was not specified
     n_B = -0.6436;
-    B_star = kernel.mp2zp(m_star,1,prop.T,prop.p); % involves invoking mass-mobility relation
+    B_star = tfer.mp2zp(m_star,1,prop.T,prop.p); % involves invoking mass-mobility relation
     
     omega = sp.omega1.*...
         ((prop.r_hat^2-prop.omega_hat)/(prop.r_hat^2-1)+...

@@ -1,6 +1,6 @@
 
 function [Lambda,G0] = tfer_CPMA_E_diff(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_E_DIFF Evaluates the transfer function for a CPMA in Case E.
+% TFER_CPMA_E_DIFF Evaluates the transfer function for a CPMA in Case E (w/ diffusion).
 % Author:       Timothy Sipkens, 2018-12-27
 % 
 %-------------------------------------------------------------------------%
@@ -9,39 +9,43 @@ function [Lambda,G0] = tfer_CPMA_E_diff(m_star,m,d,z,prop,varargin)
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
-%   prop        Properties of the particle parameters
+%   prop        Device properties (e.g. classifier length)
 %   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
 %                   ('Rm',double) - Resolution
 %                   ('omega1',double) - Angular speed of inner electrode
 %                   ('V',double) - Setpoint voltage
 %
 % Outputs:
-%   Lambda      CPMA transfer function
-%   G0          Function mapping final to initiral radial position
+%   Lambda      Transfer function
+%   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
+%-- Evaluate mechanical mobility for diffusion calc. ---------------------%
 if ~exist('d','var')
     B = kernel.mp2zp(m,z,prop.T,prop.p);
+        % if mobility is not specified, use mass-mobility relation to estimate
 else
     B = kernel.dm2zp(d,z,prop.T,prop.p);
 end
 
 D = prop.D(B).*z;
-sig = sqrt(2.*prop.L.*D./prop.v_bar);
+    % diffusion coefficient is previously defined function multiplied by 
+    % integer charge state
+sig = sqrt(2.*prop.L.*D./prop.v_bar); % diffusive spreading parameter
 
 [~,G0] = kernel.tfer_CPMA_E(m_star,m,d,z,prop,varargin{:});
+    % get G0 function for this case
 
-rho_fun = @(G,r) (G-r)./(sqrt(2).*sig);
-K_fun = @(G,r) ...
+rho_fun = @(G,r) (G-r)./(sqrt(2).*sig); % reuccring quantity
+kap_fun = @(G,r) ...
     (G-r).*erf(rho_fun(G,r))+...
-    sig.*sqrt(2/pi).*exp(-rho_fun(G,r).^2);
+    sig.*sqrt(2/pi).*exp(-rho_fun(G,r).^2); % define function for kappa
 
-K22 = K_fun(G0(prop.r2),prop.r2);
-K21 = K_fun(G0(prop.r2),prop.r1);
-K12 = K_fun(G0(prop.r1),prop.r2);
-K11 = K_fun(G0(prop.r1),prop.r1);
+%-- Evaluate the transfer function and its terms -------------------------%
+K22 = kap_fun(G0(prop.r2),prop.r2);
+K21 = kap_fun(G0(prop.r2),prop.r1);
+K12 = kap_fun(G0(prop.r1),prop.r2);
+K11 = kap_fun(G0(prop.r1),prop.r1);
 Lambda = max(-1/(4*prop.del).*(K22-K12-K21+K11),0);
 
-
 end
-

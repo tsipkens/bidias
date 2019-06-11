@@ -1,19 +1,45 @@
 
-%-- Set up mobility calculations -----------------------------------------%
+% GET_SETPOINT Evaluates setpoint parameters, including C0, alpha, and beta.
+% Author: Timothy A. Sipkens, 2019-05-01
+% Note: As a script, this code uses variables currently in the workspace. 
+%  This script is also used to parse some of the inputs to the various 
+%  transfer functions, including the existence of the integer charge state 
+%  and particle mobility. 
+%
+%-------------------------------------------------------------------------%
+% Requied variables:
+%   m_star      Mass corresponding to the measurement set point of the APM
+%   d           Particle mobility diameter, can be vector [nm]
+%   m           Particle mass, can be vector of same length as d
+%   z           Integer charge state, scalar
+%   prop        Properties of particle mass analyzer
+%   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
+%                   ('Rm',double) - Resolution
+%                   ('omega1',double) - Angular speed of inner electrode
+%                   ('V',double) - Setpoint voltage
+%
+% Smaple outputs:
+%   C0          Summary parameter for the electrostatic force
+%   tau         Product of mechanical mobility and particle mass
+%   sp          Struct containing mutliple setpoint parameters (V, alpha, etc.)
+%-------------------------------------------------------------------------%
+
+
+%-- Set up mobility calculations and parse inputs ------------------------%
 if ~exist('z','var') % if integer charge is not specified, use z = 1
     z = 1;
 end
 e = 1.60218e-19; % electron charge [C]
-q = z.*e;
+q = z.*e; % particle charge
 
-if ~exist('d','var')
+if ~exist('d','var') % evaluate mechanical mobility
     warning('Invoking mass-mobility relation to determine Zp.');
-    B = kernel_CPMA.mp2zp(m,z,prop.T,prop.p);
+    B = tfer.mp2zp(m,z,prop.T,prop.p);
 else
-    B = kernel_CPMA.dm2zp(d,z,prop.T,prop.p);
+    B = tfer.dm2zp(d,z,prop.T,prop.p);
 end
 tau = B.*m;
-D = prop.D(B).*z;
+D = prop.D(B).*z; % diffusion as a function of mechanical mobiltiy and charge state
 
 
 %-- Parse inputs for setpoint --------------------------------------------%
@@ -54,7 +80,7 @@ elseif isfield(sp,'Rm') % if resolution is specified
     %-- Use definition of Rm to derive angular speed at centerline -------%
     %-- See Reavell et al. (2011) for resolution definition --%
     n_B = -0.6436;
-    B_star = kernel_CPMA.mp2zp(m_star,1,prop.T,prop.p); % involves invoking mass-mobility relation
+    B_star = tfer.mp2zp(m_star,1,prop.T,prop.p); % involves invoking mass-mobility relation
     sp.m_max = m_star*(1/sp.Rm+1);
     omega = sqrt(prop.Q/(m_star*B_star*2*pi*prop.rc^2*prop.L*...
         ((sp.m_max/m_star)^(n_B+1)-(sp.m_max/m_star)^n_B)));
@@ -72,6 +98,7 @@ elseif isfield(sp,'Rm') % if resolution is specified
     
 else
     error('Invalid setpoint parameter specified.');
+    
 end
 
 

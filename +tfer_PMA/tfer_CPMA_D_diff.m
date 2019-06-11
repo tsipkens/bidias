@@ -1,6 +1,6 @@
 
-function [Lambda,G0] = tfer_CPMA_C_diff(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_C_DIFF Evaluates the transfer function for a CPMA in Case C (w/ diffusion).
+function [Lambda,G0] = tfer_CPMA_D_diff(m_star,m,d,z,prop,varargin)
+% TFER_CPMA_D_DIFF Evaluates the transfer function for a CPMA in Case D (w/ diffusion).
 % Author:       Timothy Sipkens, 2018-12-27
 % 
 %-------------------------------------------------------------------------%
@@ -20,12 +20,13 @@ function [Lambda,G0] = tfer_CPMA_C_diff(m_star,m,d,z,prop,varargin)
 %   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
+
 %-- Evaluate mechanical mobility for diffusion calc. ---------------------%
 if ~exist('d','var')
-    B = kernel.mp2zp(m,z,prop.T,prop.p);
+    B = tfer.mp2zp(m,z,prop.T,prop.p);
         % if mobility is not specified, use mass-mobility relation to estimate
 else
-    B = kernel.dm2zp(d,z,prop.T,prop.p);
+    B = tfer.dm2zp(d,z,prop.T,prop.p);
 end
 
 D = prop.D(B).*z;
@@ -33,7 +34,7 @@ D = prop.D(B).*z;
     % integer charge state
 sig = sqrt(2.*prop.L.*D./prop.v_bar); % diffusive spreading parameter
 
-[~,G0] = kernel.tfer_CPMA_C(m_star,m,d,z,prop,varargin{:});
+[~,G0] = tfer.tfer_CPMA_D(m_star,m,d,z,prop,varargin{:});
     % get G0 function for this case
 
 rho_fun = @(G,r) (G-r)./(sqrt(2).*sig); % reuccring quantity
@@ -42,10 +43,10 @@ kap_fun = @(G,r) ...
     sig.*sqrt(2/pi).*exp(-rho_fun(G,r).^2); % define function for kappa
 
 %-- Evaluate the transfer function and its terms -------------------------%
-K22 = kap_fun(G0(prop.r2),prop.r2);
-K21 = kap_fun(G0(prop.r2),prop.r1);
-K12 = kap_fun(G0(prop.r1),prop.r2);
-K11 = kap_fun(G0(prop.r1),prop.r1);
+K22 = kap_fun(real(G0(prop.r2)),prop.r2);
+K21 = kap_fun(real(G0(prop.r2)),prop.r1);
+K12 = kap_fun(real(G0(prop.r1)),prop.r2);
+K11 = kap_fun(real(G0(prop.r1)),prop.r1);
 Lambda = max(-1/(4*prop.del).*(K22-K12-K21+K11),0);
 
 end

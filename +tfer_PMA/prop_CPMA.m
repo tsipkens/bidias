@@ -1,6 +1,15 @@
 function [prop] = prop_CPMA(opt)
-%PROP_CPMA Summary of this function goes here
-%   Detailed explanation goes here
+% PROP_CPMA Generates the prop struct used to summarize CPMA parameters.
+% 
+%-------------------------------------------------------------------------%
+% Input:
+%   opt         Options string specifying parameter set
+%                   (Optional, default 'Olfert')
+%
+% Output:
+%   prop        Properties struct for use in evaluating transfer function
+%-------------------------------------------------------------------------%
+
 
 if ~exist('opt','var') % if properties set is not specified
     opt = 'Buckley';
@@ -44,8 +53,8 @@ prop.v_bar = prop.Q/prop.A; % average flow velocity
 
 %-- For diffusion --------------------------------------------------------%
 kB = 1.3806488e-23; % Boltzmann's constant
-% prop.D = kB*prop.T*2.1761e+12; % diffusion coefficient
 prop.D = @(B) kB.*prop.T.*B; % diffusion coefficient
+
 
 end
 

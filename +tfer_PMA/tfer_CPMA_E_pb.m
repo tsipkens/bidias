@@ -1,6 +1,6 @@
 
-function [Lambda,G0] = tfer_CPMA_B_pb(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_B_PB Evaluates the transfer function for a CPMA in Case B.
+function [Lambda,G0] = tfer_CPMA_E_pb(m_star,m,d,z,prop,varargin)
+% TFER_CPMA_E_PB Evaluates the transfer function for a CPMA in Case E (w/ parabolic flow).
 % Author:       Timothy Sipkens, 2019-03-21
 % 
 %-------------------------------------------------------------------------%
@@ -9,27 +9,19 @@ function [Lambda,G0] = tfer_CPMA_B_pb(m_star,m,d,z,prop,varargin)
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
-%   prop        Properties of the particle parameters
+%   prop        Device properties (e.g. classifier length)
 %   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
 %                   ('Rm',double) - Resolution
 %                   ('omega1',double) - Angular speed of inner electrode
 %                   ('V',double) - Setpoint voltage
 %
 % Outputs:
-%   Lambda      CPMA transfer function
-%   G0          Function mapping final to initiral radial position
+%   Lambda      Transfer function
+%   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
-kernel_CPMA.get_setpoint; % get setpoint
 
-%-- Taylor series expansion constants ------------------------------------%
-C3 = tau.*(sp.alpha^2*prop.rc+2*sp.alpha*sp.beta/prop.rc+sp.beta^2/(prop.rc^3)-C0./(m.*prop.rc));
-C4 = tau.*(sp.alpha^2-2*sp.alpha*sp.beta/(prop.rc^2)-3*sp.beta^2/(prop.rc^4)+C0./(m.*(prop.rc^2)));
-
-A1 = -3*prop.v_bar./(4.*C4.^3.*prop.del^2);
-A2 = 2.*(C3.^2-C4.^2.*prop.del^2);
-A3 = @(r,ii) C4(ii).^2.*(r-prop.rc).^2-2.*C3(ii).*C4(ii).*(r-prop.rc);
-
+tfer.get_setpoint; % get setpoint
 
 %-- Estimate equilibrium radius ------------------------------------------%
 if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc
@@ -39,15 +31,21 @@ else
 end
 
 
-%-- Set up F function for minimization -----------------------------------%
-F = @(r,ii) A1(ii).*(A2(ii).*log(abs(C4(ii).*(r-prop.rc)+C3(ii)))+A3(r,ii));
-min_fun = @(rL,r0,ii) F(rL,ii)-F(r0,ii)-prop.L;
+%-- Estimate recurring quantities ----------------------------------------%
+A1 = -3.*prop.v_bar./(4.*tau.*sp.omega1.^4.*prop.del^2);
+A2 = sp.omega1.^2.*(prop.rc^2-prop.del^2)+C0./m;
+A3 = 4*prop.rc.*sp.omega1.*sqrt(C0./m);
+A4 = @(r,ii) sp.omega1.^2.*(r.^2-4*prop.rc.*r);
 
-condit = (sp.alpha^2) < (sp.beta^2./(rs.^4));
+
+%-- Set up F function for minimization -----------------------------------%
+F = @(r,ii) A1(ii).*(A2(ii).*log(C0./m(ii)-(sp.omega1.*r).^2)+...
+    A3(ii).*atanh(sqrt(m(ii)./C0).*sp.omega1.*r)+A4(r,ii));
+min_fun = @(rL,r0,ii) F(rL,ii)-F(r0,ii)-prop.L;
 
 
 %-- Evaluate G0 and transfer function ------------------------------------%
-G0 = @(r) kernel_CPMA.G_fun(min_fun,r,rs,prop.r1,prop.r2,condit);
+G0 = @(r) tfer.G_fun(min_fun,r,rs,prop.r1,prop.r2,sp.alpha,sp.beta);
 
 ra = min(prop.r2,max(prop.r1,G0(prop.r1)));
 rb = min(prop.r2,max(prop.r1,G0(prop.r2)));

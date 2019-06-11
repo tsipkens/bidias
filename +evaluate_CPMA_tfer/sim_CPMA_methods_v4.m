@@ -2,50 +2,36 @@
 
 clear;
 close all;
-% n_case = 21;
-% figure(2);
-% load('cm_inferno.mat');
-% n3 = floor(240/n_case);
-% cm_b = flipud(cm(22:n3:256,:));
-% set(gca,'ColorOrder',cm_b,'NextPlot','replacechildren');
-% m_star_vec = logspace(log10(0.001e-18),log10(10e-18),n_case);
-% m_star_vec = 10e-18;
-m_star_vec = 0.01e-18;
 
-Rm = 10;
+Rm = 10; % equivalent resolution of transfer functions (Reavell et al.)
 
-n_rpt = 1;%50;
+m_star = 1e-18; % mass in kg (1 fg = 1e-18 kg)
+m = linspace(0.8,1.2,601).*m_star; % vector of mass
 
-for ii_m_star = 1:1:length(m_star_vec)
+z = 1; % integer charge state
 
-% use m_star = 0.01 to see diffusion, 0.1 to limit diffusion
-m_star = m_star_vec(ii_m_star); % mass in kg (1 fg = 1e-18 kg)
-% m = logspace(log10(0.1),log10(10),601).*m_star;
-m = linspace(0.8,1.2,601).*m_star;
-% d = 28e-9.*ones(size(m));
-% rho_eff = 6.*m./(pi*d.^3);
-rho_eff = 900;%6.*m./(pi*d.^3);
-d = (6.*m./(rho_eff.*pi)).^(1/3); % specify mobility diameter
+rho_eff = 900; % effective density
+d = (6.*m./(rho_eff.*pi)).^(1/3);
+    % specify mobility diameter vector with constant effective density
 
+prop = kernel.prop_CPMA('Olfert'); % get properties of the CPMA
+% prop.omega_hat = 1; % NOTE: Uncomment for APM condition
 
-z = 1;
+n_rpt = 1; % 50;
 
-prop = kernel.prop_CPMA('Olfert');
-% prop.omega_hat = 1;
-D_mod_vec = 1;
-prop.D = @(B) prop.D(B)*D_mod_vec(1);
-
-nr = 2000;
-dr = (prop.r2-prop.r1)/nr;
-r_vec = (prop.r1+dr/2):dr:(prop.r2-dr/2);
 
 for tt=1:n_rpt
+
+%%
+%-------------------------------------------------------------------------%
+%-- Finite difference solutions ------------------------------------------%
 tic;
-[tfer_FD,~,F] = kernel.tfer_CPMA_FD(m_star,...
+[tfer_FD,~,n] = kernel.tfer_CPMA_FD(m_star,...
     m,d,1,prop,'Rm',Rm);
 t(1,tt) = toc;
-end
 
+
+%%
 %-------------------------------------------------------------------------%
 %-- Transfer functions for different cases -------------------------------%
 %-- Setup for centriputal force ------------------------------------------%
@@ -60,34 +46,32 @@ sig = sqrt(2.*prop.L.*D./prop.v_bar);
 D0 = D.*prop.L/(prop.del^2*prop.v_bar); % dimensionless diffusion coeff.
 
 
-
+%%
 %-- Particle tracking approaches -----------------------------------------%
-for tt=1:n_rpt
-
 %-- Plug flow ------------------------------------------------------------%
 %-- Method A ------------------------------%
 tic;
-[tfer_A,G0_A] = kernel.tfer_CPMA_A(m_star,m,d,1,prop,'Rm',Rm);
+[tfer_A,G0_A] = kernel.tfer_CPMA_A(m_star,m,d,z,prop,'Rm',Rm);
 t(2,tt) = toc;
 
 %-- Method A, Ehara et al. ----------------%
-tfer_A_Ehara = kernel.tfer_CPMA_A_Ehara(m_star,m,d,1,prop,'Rm',Rm);
+tfer_A_Ehara = kernel.tfer_CPMA_A_Ehara(m_star,m,d,z,prop,'Rm',Rm);
 
 %-- Method B ------------------------------%
 tic;
-[tfer_B,G0_B] = kernel.tfer_CPMA_B(m_star,m,d,1,prop,'Rm',Rm);
+[tfer_B,G0_B] = kernel.tfer_CPMA_B(m_star,m,d,z,prop,'Rm',Rm);
 t(3,tt) = toc;
 
 [tfer_B2] = kernel.tfer_CPMA_B(m_star,m,d,2,prop,'Rm',Rm);
 
 %-- Method C ------------------------------%
 tic;
-[tfer_C,G0_C] = kernel.tfer_CPMA_C(m_star,m,d,1,prop,'Rm',Rm);
+[tfer_C,G0_C] = kernel.tfer_CPMA_C(m_star,m,d,z,prop,'Rm',Rm);
 t(4,tt) = toc;
 
 %-- Method D ------------------------------%
 tic;
-[tfer_D,G0_D] = kernel.tfer_CPMA_D(m_star,m,d,1,prop,'Rm',Rm);
+[tfer_D,G0_D] = kernel.tfer_CPMA_D(m_star,m,d,z,prop,'Rm',Rm);
 t(5,tt) = toc;
 
 %-- Method E ------------------------------%
@@ -150,6 +134,11 @@ if prop.omega_hat==1
     t(15,tt) = toc;
 end
 
+%-- Method F --------------------------------%
+tic;
+tfer_F_diff = kernel.tfer_CPMA_F_diff(m_star,m,d,z,prop,'Rm',Rm);
+t(16,tt) = toc;
+
 
 %-- Triangle approx. -----------------------%
 tic;
@@ -159,72 +148,34 @@ t(18,tt) = toc;
 end
 
 
-
 %%
+m_plot = m./m_star;
 
 figure(2);
-plot(m,tfer_A);
-% hold on;
-% plot(m,tfer_A_Ehara);
-% plot(m,tfer_A_pb);
-% plot(m,tfer_A_diff);
+plot(m_plot,tfer_A);
 hold on;
-plot(m,tfer_B);
-% hold on;
-plot(m,tfer_B_diff);
-% plot(m./m_star(1),tfer_B_diff);
-% hold on;
-% plot(m,tfer_B_pb);
-% plot(m,tfer_B_pb_alt);
-% plot(m,tfer_C);
-% plot(m,tfer_C_diff);
-% hold on;
-% plot(m,tfer_D_diff);
-% plot(m,tfer_D);
-% hold on;
-% plot(m,tfer_E,'r');
-% hold on;
-% plot(m,tfer_E_diff,'r');
-% plot(m,tfer_E_pb);
-% plot(m,tfer_F);
-plot(m,tfer_tri);
-% hold on;
-plot(m,min(tfer_FD,1),'k');
-% plot(m./m_star(1),min(tfer_FD,1));
+% plot(m_plot,tfer_A_Ehara);
+% plot(m_plot,tfer_A_diff);
+% plot(m_plot,tfer_A_pb);
+plot(m_plot,tfer_B);
+plot(m_plot,tfer_B_diff);
+% plot(m_plot,tfer_B_pb);
+% plot(m_plot,tfer_C);
+% plot(m_plot,tfer_C_diff);
+% plot(m_plot,tfer_D);
+% plot(m_plot,tfer_D_diff);
+% plot(m_plot,tfer_E,'r');
+% plot(m_plot,tfer_E_diff,'r');
+% plot(m_plot,tfer_E_pb);
+% plot(m_plot,tfer_F);
+plot(m_plot,tfer_F_diff);
+% plot(m_plot,tfer_tri);
+plot(m_plot,min(tfer_FD,1),'k');
 hold off;
 
-% xlim([0.85,1.15]);
-% xlim([0.85,1.15].*m_star(1));
 ylim([0,1.2]);
-% ylim([0,0.8]);
+xlim(1+[-1.5/Rm,1.5/Rm]);
 
-
-end
-
-%{
-figure(3);
-plot(m,tfer_A-min(tfer_FD,1));
-hold on;
-plot(m,tfer_B-min(tfer_FD,1));
-plot(m,tfer_C-min(tfer_FD,1));
-plot(m,tfer_D-min(tfer_FD,1));
-if prop.omega_hat==1; plot(m,tfer_E-min(tfer_FD,1)); end
-plot(m,tfer_F-min(tfer_FD,1));
-plot(m,0.*tfer_FD);
-hold off;
-xlim([0.85,1.15].*m_star(1));
-%}
-
-%{
-figure(3);
-plot(m,tfer_A_pb-min(tfer_FD,1));
-hold on;
-plot(m,tfer_B_pb-min(tfer_FD,1));
-if prop.omega_hat==1; plot(m,tfer_E_pb-min(tfer_FD,1)); end
-plot(m,0.*tfer_FD);
-hold off;
-xlim([0.85,1.15].*m_star(1));
-%}
 
 %-{
 figure(3);
@@ -239,9 +190,6 @@ plot(m,0.*tfer_FD);
 hold off;
 xlim([0.85,1.15].*m_star(1));
 %}
-
-
-% bar(log10(mean(t,2))+5);
 
 
 %%
