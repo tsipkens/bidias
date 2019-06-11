@@ -5,7 +5,7 @@ this paper.
 
 ## Functions to evaluate transfer functions
 
-Most notable, there are various functions evaluating the transfer
+This program includes various functions evaluating the transfer
 function for the various cases presented in the associated work. They share a
 common inputs:
 
@@ -24,3 +24,8 @@ common inputs:
 
 6. varargin (optional) - name-value pairs to specify either the equivalent
   resolution, inner electrode angular speed, or voltage.
+
+## Main script
+
+This script is included to demonstrate evaluation of the transfer function over
+multiple cases. 
