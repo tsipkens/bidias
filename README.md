@@ -1,4 +1,4 @@
-# Program: CPMA and APM transfer function evaluation
+# Transfer Function README
 
 The attached functions and script are intended to reproduce the results of
 this paper.
@@ -28,4 +28,4 @@ common inputs:
 ## Main script
 
 This script is included to demonstrate evaluation of the transfer function over
-multiple cases. 
+multiple cases.
