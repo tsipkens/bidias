@@ -1,14 +1,14 @@
-## README: Transfer Function
+## README: Particle mass analyzer transfer function evaluation
 
 The attached functions and script are intended to reproduce the results of
 this paper. Information on each file is given as header information in
 each file, and only a brief overview is provided here.
 
-### Functions to evaluate transfer functions (`tfer_\*.m`)
+### Functions to evaluate transfer functions (`tfer_*.m`)
 
 The core of this program is a set of functions evaluating the transfer
 function for the various cases presented in the associated work, that is 
-the functions featuring the names `tfer_\*.m`. The file names feature case 
+the functions featuring the names `tfer_*.m`. The file names feature case 
 letters, corresponding to different assumptions about the particle 
 migration velocity and flow conditions discussed in the associated work, 
 as well as `diff` and `pb` suffixes for those transfer function that 
