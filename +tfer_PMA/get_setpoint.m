@@ -1,5 +1,5 @@
 
-% GET_SETPOINT Evaluates setpoint parameters, including C0, alpha, and beta.
+% GET_SETPOINT Script to evaluate setpoint parameters, including C0, alpha, and beta.
 % Author: Timothy A. Sipkens, 2019-05-01
 % Note: As a script, this code uses variables currently in the workspace. 
 %  This script is also used to parse some of the inputs to the various 
