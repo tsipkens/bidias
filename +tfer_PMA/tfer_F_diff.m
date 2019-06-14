@@ -33,7 +33,7 @@ D = prop.D(B).*z;
     % integer charge state
 sig = sqrt(2.*prop.L.*D./prop.v_bar); % diffusive spreading parameter
 
-[~,G0] = tfer_PMA.tfer_CPMA_F(m_star,m,d,z,prop,varargin{:});
+[~,G0] = tfer_PMA.tfer_F(m_star,m,d,z,prop,varargin{:});
     % get G0 function for this case
 
 rho_fun = @(G,r) (G-r)./(sqrt(2).*sig); % reuccring quantity
