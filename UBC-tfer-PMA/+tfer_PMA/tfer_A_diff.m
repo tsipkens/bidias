@@ -1,7 +1,7 @@
 
-function [Lambda,G0] = tfer_CPMA_C_diff(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_C_DIFF Evaluates the transfer function for a CPMA in Case C (w/ diffusion).
-% Author:       Timothy Sipkens, 2018-12-27
+function [Lambda,G0] = tfer_A_diff(m_star,m,d,z,prop,varargin)
+% TFER_A_DIFF Evaluates the transfer function for a PMA in Case A (w/ diffusion).
+% Author: Timothy Sipkens, 2018-12-27
 % 
 %-------------------------------------------------------------------------%
 % Inputs:
@@ -22,10 +22,10 @@ function [Lambda,G0] = tfer_CPMA_C_diff(m_star,m,d,z,prop,varargin)
 
 %-- Evaluate mechanical mobility for diffusion calc. ---------------------%
 if ~exist('d','var')
-    B = tfer.mp2zp(m,z,prop.T,prop.p);
+    B = tfer_PMA.mp2zp(m,z,prop.T,prop.p);
         % if mobility is not specified, use mass-mobility relation to estimate
 else
-    B = tfer.dm2zp(d,z,prop.T,prop.p);
+    B = tfer_PMA.dm2zp(d,z,prop.T,prop.p);
 end
 
 D = prop.D(B).*z;
@@ -33,7 +33,7 @@ D = prop.D(B).*z;
     % integer charge state
 sig = sqrt(2.*prop.L.*D./prop.v_bar); % diffusive spreading parameter
 
-[~,G0] = tfer.tfer_CPMA_C(m_star,m,d,z,prop,varargin{:});
+[~,G0] = tfer_PMA.tfer_A(m_star,m,d,z,prop,varargin{:});
     % get G0 function for this case
 
 rho_fun = @(G,r) (G-r)./(sqrt(2).*sig); % reuccring quantity

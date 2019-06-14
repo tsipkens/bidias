@@ -1,7 +1,7 @@
 
-function [Lambda,G0] = tfer_CPMA_A(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_A Evaluates the transfer function for a CPMA in Case A.
-% Author:       Timothy Sipkens, 2018-12-27
+function [Lambda,G0] = tfer_A(m_star,m,d,z,prop,varargin)
+% TFER_A Evaluates the transfer function for a PMA in Case A.
+% Author: Timothy Sipkens, 2018-12-27
 % 
 %-------------------------------------------------------------------------%
 % Inputs:
@@ -20,7 +20,7 @@ function [Lambda,G0] = tfer_CPMA_A(m_star,m,d,z,prop,varargin)
 %   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
-tfer.get_setpoint; % get setpoint
+tfer_PMA.get_setpoint; % get setpoint
 
 %-- Estimate equilibrium radius ------------------------------------------%
 if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc

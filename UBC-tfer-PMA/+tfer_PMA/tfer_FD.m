@@ -1,6 +1,6 @@
 
-function [Lambda,prop,n] = tfer_CPMA_FD(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_FD Evaluates the transfer function using finite differences.
+function [Lambda,prop,n] = tfer_FD(m_star,m,d,z,prop,varargin)
+% TFER_FD Evaluates the transfer function of a PMA using finite differences.
 % Author: Timothy Sipkens, 2018-12-27
 % Based on: Buckley et al., J. Aerosol Sci. (2008) and Olfert group
 % 
@@ -24,12 +24,12 @@ function [Lambda,prop,n] = tfer_CPMA_FD(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 
 if ~exist('prop','var') % if particle mass analyzer properties not specified
-    prop = tfer.prop_CPMA; % will use default in this function
+    prop = tfer_PMA.prop_CPMA; % will use default in this function
 elseif isempty(prop)
-    prop = tfer.prop_CPMA;
+    prop = tfer_PMA.prop_CPMA;
 end
 
-tfer.get_setpoint; % get setpoint
+tfer_PMA.get_setpoint; % get setpoint
 
 
 %-- Discretize the space -------------------------------------------------%
@@ -110,7 +110,7 @@ for ii=ind % loop over mass (not m_star)
     
     %-- Initialize variables -------------------------%
     n_vec = ones(size(r_vec)); % number concentration at current axial position
-    n_vec0 = n_vec; % initial number concentration (used for tfer. func. eval.)
+    n_vec0 = n_vec; % initial number concentration (used for tfer_PMA. func. eval.)
     if nargout==3 % initilize variables used for visualizing number concentrations
         n_mat = zeros(nz,length(r_vec));
         n_mat(1,:) = n_vec;
@@ -118,7 +118,7 @@ for ii=ind % loop over mass (not m_star)
     
     %-- Primary loop for finite difference ---------------------------%
     for jj = 2:nz
-        n_vec = max(tfer.tridiag([0,a],b,c,RHS(n_vec)),0);
+        n_vec = max(tfer_PMA.tridiag([0,a],b,c,RHS(n_vec)),0);
             % solve system using Thoman algorithm
             
         if nargout==3; n_mat(jj,:) = n_vec; end
@@ -134,7 +134,7 @@ for ii=ind % loop over mass (not m_star)
         % evaluate transfer fucntion
         
     if Lambda(ii) < 0.0005; Lambda(ii) = 0; end
-        % truncate small tfer. func. values
+        % truncate small tfer_PMA. func. values
     
 end
 
