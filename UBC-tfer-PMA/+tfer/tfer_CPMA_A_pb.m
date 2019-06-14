@@ -1,6 +1,6 @@
 
 function [Lambda,G0] = tfer_CPMA_A_pb(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_A_PB Evaluates the transfer function for a CPMA in Case A.
+% TFER_CPMA_A_PB Evaluates the transfer function for a CPMA in Case A (w/ parabolic flow).
 % Author:       Timothy Sipkens, 2018-12-27
 % 
 %-------------------------------------------------------------------------%
@@ -9,19 +9,19 @@ function [Lambda,G0] = tfer_CPMA_A_pb(m_star,m,d,z,prop,varargin)
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
-%   prop        Properties of the particle parameters
+%   prop        Device properties (e.g. classifier length)
 %   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
 %                   ('Rm',double) - Resolution
 %                   ('omega1',double) - Angular speed of inner electrode
 %                   ('V',double) - Setpoint voltage
 %
 % Outputs:
-%   Lambda      CPMA transfer function
-%   G0          Function mapping final to initiral radial position
+%   Lambda      Transfer function
+%   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
 
-kernel.get_setpoint; % get setpoint
+tfer.get_setpoint; % get setpoint
 
 %-- Estimate equilibrium radius ------------------------------------------%
 if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc
@@ -43,11 +43,9 @@ A3 = @(r,ii) (r.^2)./2+(rs(ii)-2*prop.rc).*r;
 F = @(r,ii) A1(ii).*(A2(ii).*log(r-rs(ii))+A3(r,ii));
 min_fun = @(rL,r0,ii) F(rL,ii)-F(r0,ii)-prop.L;
 
-condit = (sp.alpha^2) < (sp.beta^2./(rs.^4));
-
 
 %-- Evaluate G0 and transfer function ------------------------------------%
-G0 = @(r) kernel.G_fun(min_fun,r,rs,prop.r1,prop.r2,condit);
+G0 = @(r) tfer.G_fun(min_fun,r,rs,prop.r1,prop.r2,sp.alpha,sp.beta);
 
 ra = min(prop.r2,max(prop.r1,G0(prop.r1)));
 rb = min(prop.r2,max(prop.r1,G0(prop.r2)));

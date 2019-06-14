@@ -27,9 +27,9 @@ d = (m./mass_mob_pref).^(1/mass_mob_exp);
     
 %-- Use mobility diameter to get particle electro and mechanical mobl. ---%
 if nargin<3
-    [Zp,B] = kernel.dm2zp(d,z);
+    [Zp,B] = tfer.dm2zp(d,z);
 else
-    [Zp,B] = kernel.dm2zp(d,z,T,P);
+    [Zp,B] = tfer.dm2zp(d,z,T,P);
 end
 
 end

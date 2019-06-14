@@ -1,6 +1,6 @@
 
 function [Lambda] = tfer_CPMA_A_Ehara(m_star,m,d,z,prop,varargin)
-% TFER_CPMA_A Evaluates the transfer function for a CPMA in Case A.
+% TFER_CPMA_A_EHARA Evaluates the transfer function for a CPMA in Case A as per Ehara et al.
 % Author:       Timothy Sipkens, 2018-12-27
 % 
 %-------------------------------------------------------------------------%
@@ -9,18 +9,18 @@ function [Lambda] = tfer_CPMA_A_Ehara(m_star,m,d,z,prop,varargin)
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
-%   prop        Properties of the particle parameters
+%   prop        Device properties (e.g. classifier length)
 %   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
 %                   ('Rm',double) - Resolution
 %                   ('omega1',double) - Angular speed of inner electrode
 %                   ('V',double) - Setpoint voltage
 %
 % Outputs:
-%   Lambda      CPMA transfer function
-%   G0          Function mapping final to initiral radial position
+%   Lambda      Transfer function
+%   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
-kernel.get_setpoint; % get setpoint
+tfer.get_setpoint; % get setpoint
 
 %-- Estimate equilibrium radius ------------------------------------------%
 if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc
