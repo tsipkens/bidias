@@ -46,55 +46,55 @@ D0 = D.*prop.L/(prop.del^2*prop.v_bar); % dimensionless diffusion coeff.
 %-- Plug flow ------------------------------------------------------------%
 %-- Method A ------------------------------%
 tic;
-[tfer_A,G0_A] = tfer_PMA.tfer_CPMA_A(m_star,m,d,z,prop,'Rm',Rm);
+[tfer_A,G0_A] = tfer_PMA.tfer_A(m_star,m,d,z,prop,'Rm',Rm);
 t(2) = toc;
 
 %-- Method A, Ehara et al. ----------------%
-tfer_A_Ehara = tfer_PMA.tfer_CPMA_A_Ehara(m_star,m,d,z,prop,'Rm',Rm);
+tfer_A_Ehara = tfer_PMA.tfer_A_Ehara(m_star,m,d,z,prop,'Rm',Rm);
 
 %-- Method B ------------------------------%
 tic;
-[tfer_B,G0_B] = tfer_PMA.tfer_CPMA_B(m_star,m,d,z,prop,'Rm',Rm);
+[tfer_B,G0_B] = tfer_PMA.tfer_B(m_star,m,d,z,prop,'Rm',Rm);
 t(3) = toc;
 
 %-- Method C ------------------------------%
 tic;
-[tfer_C,G0_C] = tfer_PMA.tfer_CPMA_C(m_star,m,d,z,prop,'Rm',Rm);
+[tfer_C,G0_C] = tfer_PMA.tfer_C(m_star,m,d,z,prop,'Rm',Rm);
 t(4) = toc;
 
 %-- Method D ------------------------------%
 tic;
-[tfer_D,G0_D] = tfer_PMA.tfer_CPMA_D(m_star,m,d,z,prop,'Rm',Rm);
+[tfer_D,G0_D] = tfer_PMA.tfer_D(m_star,m,d,z,prop,'Rm',Rm);
 t(5) = toc;
 
 %-- Method E ------------------------------%
 if prop.omega_hat==1
     tic;
-    [tfer_E,G0_E] = tfer_PMA.tfer_CPMA_E(m_star,m,d,z,prop,'Rm',Rm);
+    [tfer_E,G0_E] = tfer_PMA.tfer_E(m_star,m,d,z,prop,'Rm',Rm);
     t(6) = toc;
 end
 
 %-- Method F ------------------------------%
 tic;
-[tfer_F,G0_F] = tfer_PMA.tfer_CPMA_F(m_star,m,d,z,prop,'Rm',Rm);
+[tfer_F,G0_F] = tfer_PMA.tfer_F(m_star,m,d,z,prop,'Rm',Rm);
 t(7) = toc;
 
 
 %-- Parabolic flow -------------------------------------------------------%
 %-- Method A ------------------------------%
 tic;
-[tfer_A_pb,G0_A_pb] = tfer_PMA.tfer_CPMA_A_pb(m_star,m,d,z,prop,'Rm',Rm);
+[tfer_A_pb,G0_A_pb] = tfer_PMA.tfer_A_pb(m_star,m,d,z,prop,'Rm',Rm);
 t(8) = toc;
 
 %-- Method B ------------------------------%
 tic;
-[tfer_B_pb,G0_B_pb] = tfer_PMA.tfer_CPMA_B_pb(m_star,m,d,z,prop,'Rm',Rm);
+[tfer_B_pb,G0_B_pb] = tfer_PMA.tfer_B_pb(m_star,m,d,z,prop,'Rm',Rm);
 t(9) = toc;
 
 %-- Method E ------------------------------%
 if prop.omega_hat==1
     tic;
-    [tfer_E_pb,G0_E_pb] = tfer_PMA.tfer_CPMA_E_pb(m_star,m,d,z,prop,'Rm',Rm);
+    [tfer_E_pb,G0_E_pb] = tfer_PMA.tfer_E_pb(m_star,m,d,z,prop,'Rm',Rm);
     t(10) = toc;
 end
 
@@ -102,40 +102,40 @@ end
 %-- Diffusive transfer functions -----------------------------------------%
 %-- Method A ------------------------------%
 tic;
-tfer_A_diff = tfer_PMA.tfer_CPMA_A_diff(m_star,m,d,z,prop,'Rm',Rm);
+tfer_A_diff = tfer_PMA.tfer_A_diff(m_star,m,d,z,prop,'Rm',Rm);
 t(11) = toc;
 
 %-- Method B -------------------------------%
 tic;
-tfer_B_diff = tfer_PMA.tfer_CPMA_B_diff(m_star,m,d,z,prop,'Rm',Rm);
+tfer_B_diff = tfer_PMA.tfer_B_diff(m_star,m,d,z,prop,'Rm',Rm);
 t(12) = toc;
 
 %-- Method C -----------------------------%
 tic;
-tfer_C_diff = tfer_PMA.tfer_CPMA_C_diff(m_star,m,d,z,prop,'Rm',Rm);
+tfer_C_diff = tfer_PMA.tfer_C_diff(m_star,m,d,z,prop,'Rm',Rm);
 t(13) = toc;
 
 %-- Method D --------------------------------%
 tic;
-tfer_D_diff = tfer_PMA.tfer_CPMA_D_diff(m_star,m,d,z,prop,'Rm',Rm);
+tfer_D_diff = tfer_PMA.tfer_D_diff(m_star,m,d,z,prop,'Rm',Rm);
 t(14) = toc;
 
 %-- Method E --------------------------------%
 if prop.omega_hat==1
     tic;
-    tfer_E_diff = tfer_PMA.tfer_CPMA_E_diff(m_star,m,d,z,prop,'Rm',Rm);
+    tfer_E_diff = tfer_PMA.tfer_E_diff(m_star,m,d,z,prop,'Rm',Rm);
     t(15) = toc;
 end
 
 %-- Method F --------------------------------%
 tic;
-tfer_F_diff = tfer_PMA.tfer_CPMA_F_diff(m_star,m,d,z,prop,'Rm',Rm);
+tfer_F_diff = tfer_PMA.tfer_F_diff(m_star,m,d,z,prop,'Rm',Rm);
 t(16) = toc;
 
 
 %-- Triangle approx. -----------------------%
 tic;
-tfer_tri = tfer_PMA.tfer_CPMA_tri(m_star,m,d,z,prop,'Rm',Rm);
+tfer_tri = tfer_PMA.tfer_tri(m_star,m,d,z,prop,'Rm',Rm);
 t(18) = toc;
 
 
