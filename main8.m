@@ -3,7 +3,6 @@ clear;
 clc;
 close all;
 
-addpath('UBC-tfer-PMA'); % include CPMA transfer function evaluations
 
 %-- Load colour schemes --------------------------------------------------%
 load('cm_inferno.mat');
@@ -155,7 +154,7 @@ run_inversions_A;
 
 
 %%
-x_plot = x_Tk1;
+x_plot = x_LS;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
