@@ -1,4 +1,0 @@
-[submodule "+tfer-PMA"]
-	path = +tfer-PMA
-	url = https://github.com/tsipkens/UBC-tfer-PMA
-	branch = master
