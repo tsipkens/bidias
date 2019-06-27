@@ -3,7 +3,6 @@ clear;
 clc;
 close all;
 
-addpath('UBC-tfer-PMA'); % include CPMA transfer function evaluations
 
 %-- Load colour schemes --------------------------------------------------%
 load('cm_inferno.mat');
