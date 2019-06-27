@@ -5,15 +5,11 @@ close all;
 
 
 %-- Load colour schemes --------------------------------------------------%
-load('cmaps/cm_inferno.mat');
+addpath('cmap');
+load('inferno.mat');
 cm = cm(40:end,:);
 cm_inferno = cm;
-load('cmaps/cm_magma.mat');
-cm = cm(40:end,:);
-cm_magma = cm;
-load('cmaps/cm_plasma.mat');
-cm_plasma = cm;
-load('cmaps/cm_viridis.mat');
+load('viridis.mat');
 
 
 %%
