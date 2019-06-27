@@ -5,22 +5,23 @@ close all;
 
 
 %-- Load colour schemes --------------------------------------------------%
-load('cm_inferno.mat');
+load('cmaps/cm_inferno.mat');
 cm = cm(40:end,:);
 cm_inferno = cm;
-load('cm_magma.mat');
+load('cmaps/cm_magma.mat');
 cm = cm(40:end,:);
 cm_magma = cm;
-load('cm_plasma.mat');
+load('cmaps/cm_plasma.mat');
 cm_plasma = cm;
-load('cm_viridis.mat');
+load('cmaps/cm_viridis.mat');
 
 
 %%
-%-- Generate phantom (t) -------------------------------------------------%
-%-- High resolution version of the distribution to be projected to coarse 
-%-- grid to generate x.
-main_phantom;
+%-- Generate phantom (x_t) -----------------------------------------------%
+%   High resolution version of the distribution to be projected to coarse 
+%   grid to generate x.
+
+phantom_param;
 
 span_t = [10^-1.5,10^1.5;10,10^3];
     % Hogan lab: -1 -> 1.5
@@ -158,37 +159,11 @@ x_plot = x_Tk1;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d(x_plot);
+grid_x.plot2d_marg(x_plot,grid_t,x_t);
 caxis([0,1*(1+1/256)]);
-% caxis([0,0.85*(1+1/256)]);
-% caxis([0,1.25*(1+1/256)]);
-
-figure(11);
-marg_dim = 1;
-plot(log10(grid_t.edges{marg_dim}),x_t_m{marg_dim},'k');
-hold on;
-x_plot_m = grid_x.marginalize(x_plot);
-% plot(log10(grid_x.edges{marg_dim}),x_plot_m{marg_dim},'.-');
-stairs(log10(grid_x.nodes{marg_dim}),...
-    [x_plot_m{marg_dim};0]);
-% stairs(log10(grid_x.nodes{marg_dim}),...
-%     [x_temp{marg_dim};0]);
-hold off;
-
-figure(12);
-marg_dim = 2;
-plot(log10(grid_t.edges{marg_dim}),x_t_m{marg_dim},'k');
-hold on;
-x_plot_m = grid_x.marginalize(x_plot);
-% plot(log10(grid_x.edges{marg_dim}),x_plot_m{marg_dim});
-stairs(log10(grid_x.nodes{marg_dim}),...
-    [x_plot_m{marg_dim},0]);
-% stairs(log10(grid_x.nodes{marg_dim}),...
-%     [x_temp{marg_dim},0]);
-hold off;
 
 figure(13);
-load('cm_viridis.mat');
+load('cmaps/cm_viridis.mat');
 n1 = ceil(grid_x.ne(1)./20);
 n2 = floor(grid_x.ne(1)/n1);
 n3 = floor(240/n2);

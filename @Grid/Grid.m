@@ -127,24 +127,6 @@ classdef Grid
         end
         
         
-        function [h,x] = plot2d(obj,x)
-        % PLOT2D Plots x on the grid, with output depending on discretization scheme.
-        % Author:   Timothy Sipkens, 2018-11-21
-            
-            x = reshape(x,obj.ne);
-
-            if strcmp('linear',obj.discrete)
-                h = imagesc(obj.edges{2},obj.edges{1},x);
-                % set(h, 'EdgeColor', 'none');
-                set(gca,'YDir','normal');
-            elseif strcmp('logarithmic',obj.discrete)
-                h = imagesc(log10(obj.edges{2}),log10(obj.edges{1}),x);
-                % set(h, 'EdgeColor', 'none');
-                set(gca,'YDir','normal');
-            end
-        end
-        
-        
         function x = project(obj,edges,x)
         % PROJECT Project x onto current grid.
         % Uses simple linear interpolation for this purpose.
@@ -240,6 +222,12 @@ classdef Grid
             B = (t2{1}(ind1,ind1_old).*t2{2}(ind2,ind2_old))';
             
         end
+        
+        
+        %-- Data visualization -------------------------------------------%
+        [h,x] = plot2d(obj,x); % plots x on the grid
+        h = plot2d_marg(obj,x,obj_t,x_t) % plot x on the grid, with marginal distr.
+        %-----------------------------------------------------------------%
         
     end
     
