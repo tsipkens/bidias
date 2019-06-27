@@ -23,7 +23,7 @@ always first.
 
 ### Included Colormaps
 
-#### Sequantial
+##### Sequantial
 
 From mpl colormaps:
 1. *viridis*
@@ -40,14 +40,14 @@ From cmocean:
 10. *matter*
 11. *tempo*
 
-#### Divergent colormaps
+##### Divergent colormaps
 
 From cmocean:
 1. *balance*
 2. *delta*
 3. *curl*
 
-#### Rainbow, uniform colormaps
+##### Rainbow, uniform colormaps
 
 From cmocean:
 1. *phase*
