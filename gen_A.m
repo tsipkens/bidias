@@ -62,6 +62,7 @@ end
 
 
 %-- Combine to calculate kernel ------------------------------------------%
+disp(' ');
 disp('Compiling kernel...');
 K = zeros(N_b,N_i);
 for kk=1:n_z

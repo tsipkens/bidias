@@ -21,24 +21,18 @@ load('cmaps/cm_viridis.mat');
 %   High resolution version of the distribution to be projected to coarse 
 %   grid to generate x.
 
-phantom_param;
+phantom_param; % generate phantom parameters
 
-span_t = [10^-1.5,10^1.5;10,10^3];
+span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
     % Hogan lab: -1 -> 1.5
 
 [x_t,grid_t,mg] = gen_phantom(phantom,span_t);
 nmax = max(x_t);
-x_t_m = grid_t.marginalize(x_t);
 
-figure(1); % plot phantom
+figure(1);
 colormap(gcf,[cm;1,1,1]);
-grid_t.plot2d(x_t);
-hold on;
-plot(log10(grid_t.edges{2}),mg(grid_t.edges{2},1)./log(10));
-% plot(log10(grid_t.edges{2}),mg(grid_t.edges{2},2)./log(10));
-xlim(log10(grid_t.span(2,:)));
-ylim(log10(grid_t.span(1,:)));
-hold off;
+grid_t.plot2d_marg(x_t);
+caxis([0,1*(1+1/256)]);
 
 
 %-- Generate A matrix and b vector ---------------------------------------%
@@ -60,10 +54,7 @@ ne_x = [50,64]; % number of elements per dimension in x
 grid_x = Grid([grid_t.span],...
     ne_x,'logarithmic');
 x0 = grid_x.project(grid_t.edges,x_t); % project into basis for x
-x0 = x0(:);
 
-r_x = grid_x.nodes;
-edges_x = grid_x.edges;
 n_x = grid_x.ne;
 
 disp('Transform to discretization in x...');
@@ -73,28 +64,10 @@ A = sparse(A);
 disp('Complete.');
 disp(' ');
 
-%{
-figure(2); % plot projected phantom, that is x
-colormap(gcf,cm);
-grid_x.plot2d(x0);
-caxis([0,nmax]);
-
-figure(3);
-marg_dim = 1;
-plot(log10(grid_t.edges{marg_dim}),x_t_m{marg_dim},'k');
-hold on;
-x0_m = grid_x.marginalize(x0);
-plot(log10(grid_x.edges{marg_dim}),x0_m{marg_dim},'-o');
-hold off;
-
-figure(4);
-marg_dim = 2;
-plot(log10(grid_t.edges{marg_dim}),x_t_m{marg_dim},'k');
-hold on;
-x0_m = grid_x.marginalize(x0);
-plot(log10(grid_x.edges{marg_dim}),x0_m{marg_dim},'-o');
-hold off;
-%}
+figure(2);
+colormap(gcf,[cm;1,1,1]);
+grid_x.plot2d_marg(x0,grid_t,x_t);
+caxis([0,1*(1+1/256)]);
 
 
 %%
@@ -116,10 +89,9 @@ epsilon = Sigma.*randn(size(b0));
 b = sparse(b0+epsilon); % add noise
 b = max(b,0); % remove negative values
 
-figure(5); % plot data, that is b
+figure(5);
 colormap(gcf,cm_inferno);
-grid_b.plot2d(b);
-
+grid_b.plot2d_marg(b);
 
 figure(20);
 n2 = floor(grid_b.ne(1));
@@ -128,7 +100,6 @@ cm_b = cm_inferno(10:n3:end,:);
 set(gca,'ColorOrder',cm_b,'NextPlot','replacechildren');
 b_plot_rs = reshape(b,grid_b.ne);
 semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
-
 
 % figure(21);
 % set(gca,'ColorOrder',cm_b,'NextPlot','replacechildren');
@@ -139,12 +110,6 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 % set(gca,'XScale','log');
 % set(gca,'YScale','log');
 % view([4,20]);
-
-
-marg_dim = 2;
-figure(6);
-b_m = grid_b.marginalize(b);
-plot(log10(grid_b.edges{marg_dim}),b_m{marg_dim},'o-k');
 
 
 %%
@@ -173,9 +138,8 @@ set(gca,'ColorOrder',cm_b,'NextPlot','replacechildren');
 x_plot_rs = reshape(x_plot,grid_x.ne);
 semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
 
-% x_temp = x_plot_m;
-
 figure(10);
+
 
 %% Statistical approach: uncertainty analysis
 %{
@@ -265,6 +229,7 @@ set(gca,'yscale','log');
 
 %% Plot marginal distributions
 
+x_t_m = grid_t.marginalize(x_t);
 x_LS_m = grid_x.marginalize(x_LS);
 x_Tk0_m = grid_x.marginalize(x_Tk0);
 x_Tk1_m = grid_x.marginalize(x_Tk1);
