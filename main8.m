@@ -149,8 +149,9 @@ plot(log10(grid_b.edges{marg_dim}),b_m{marg_dim},'o-k');
 
 %%
 %-- Perform inversions ---------------------------------------------------%
-run_inversions_A;
+% run_inversions_A;
 % run_inversions_B;
+run_inversions_C;
 
 
 
