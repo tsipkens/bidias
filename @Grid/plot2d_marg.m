@@ -15,7 +15,7 @@ subplot(4,4,[1,3]);
 marg_dim = 2;
 stairs(obj.nodes{marg_dim},...
     [x_m{marg_dim},0],'k');
-xlim(obj.edges{2}([1,end]));
+xlim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
 set(gca,'XScale','log');
 
 if nargin>2
@@ -32,7 +32,7 @@ subplot(4,4,[8,16]);
 marg_dim = 1;
 stairs([0;x_m{marg_dim}],...
     obj.nodes{marg_dim},'k');
-ylim(obj.edges{1}([1,end]));
+ylim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
 set(gca,'YScale','log');
 
 if nargin>2

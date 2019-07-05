@@ -125,7 +125,7 @@ grid_x.plot2d_marg(x_plot,grid_t,x_t);
 caxis([0,1*(1+1/256)]);
 
 figure(13);
-load('cmaps/cm_viridis.mat');
+load('cmap/viridis.mat');
 n1 = ceil(grid_x.ne(1)./20);
 n2 = floor(grid_x.ne(1)/n1);
 n3 = floor(240/n2);
