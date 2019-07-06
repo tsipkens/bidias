@@ -17,7 +17,7 @@ if ~exist('n','var'); n = []; end
 if ~exist('opt_interp','var'); opt_interp = []; end
 
 if isempty(n); n = p; end
-if isempty(opt_interp); opt_interp = 'hsv'; end
+if isempty(opt_interp); opt_interp = 'rgb'; end
 
 
 %-- Modify the colormap, if n is specified -------------------------------%

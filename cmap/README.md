@@ -55,6 +55,11 @@ From cmocean:
 2. *delta*
 3. *curl*
 
+From colorbrewer2:
+4. *PuOr*
+5. *RdBu*
+6. *PrGn*
+
 ##### Rainbow, uniform colormaps
 
 N/A
