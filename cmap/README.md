@@ -1,6 +1,6 @@
 ## Colormaps information
 
-These `.mat` files contain the colormaps from two primary sources:
+These `.mat` files contain the colormaps from three primary sources:
 
 1. Kristen M. Thyng, Chad A. Greene, Robert D. Hetland, Heather M. Zimmerle,
 and Steven F. DiMarco. True colors of oceanography: Guidelines for effective
@@ -10,6 +10,9 @@ https://matplotlib.org/cmocean/).
 
 2. The matplotlib (mpl) colormaps designed by Stéfan van der Walt and
 Nathaniel Smith (more information is available at https://bids.github.io/colormap/).
+
+3. colorbrewer2 colormaps by Cynthia Brewer and Mark Harrower (more information
+  available at http://colorbrewer2.org/).
 
 When loaded directly, the colormaps will appear as the variable `cm` in the
 workspace. Otherwise `load_cmap` can be used to load the colormap specified
@@ -40,6 +43,11 @@ From cmocean:
 10. *matter*
 11. *tempo*
 
+From colorbrewer2:
+12. *YlGnBu*
+13. *BuPu*
+14. *RdPu*
+
 ##### Divergent colormaps
 
 From cmocean:
@@ -49,5 +57,4 @@ From cmocean:
 
 ##### Rainbow, uniform colormaps
 
-From cmocean:
-1. *phase*
+N/A
