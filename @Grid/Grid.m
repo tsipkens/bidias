@@ -246,10 +246,11 @@ classdef Grid
     end
     
     
-    methods(Static)        
+    methods(Static)    
+        %== EFF_IND ======================================================%
+        %   Returns the effective index between two grids, that is the 
+        %   index including fraction.
         function ind = eff_ind(edges,r)
-            % EFF_IND   Returns the effective index between two grids, that
-            %           is the index including fraction.
             
             dim = length(edges); % will be number of dimensions
             

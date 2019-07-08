@@ -18,7 +18,8 @@ classdef Phantom
             'k',[],... % mass-mobility pre-exponential factor
             'sm',[],... % standard deviation of mass
             'opt_m','logn',... % form of probability distribution ('logn' or 'norm')
-            'mg_fun',[]... % center of the mass distribution (function handle)
+            'mg',[],... % center of the mass distribution
+            'mg_fun',[]... % ridge of the mass-mobility distribution (function handle)
             );
         
         grid = []; % grid phantom is evaluated on (high dimension)
@@ -54,13 +55,45 @@ classdef Phantom
                     obj.param(2).opt_m = 'logn';
                     
                 case {'soot-surrogate'}
-                    
+                    obj.param.Dm = 2.3;
+                    obj.param.dg = 125;
+                    obj.param.sg = 1.6;
+                    obj.param.k = 9400;
+                    obj.param.rho = 6*obj.param.k/...
+                        pi*obj.param.dg^(obj.param.Dm-3);
+                    obj.param.sm = 1.5;
+                    obj.param.opt_m = 'logn';
                     
                 case {'Buckley','Hogan'}
-                    
-                    
+                    obj.param(1).rho = 10000;
+                    obj.param(1).Dm = 3;
+                    obj.param(1).dg = 200;
+                    obj.param(1).sg = 1.5;
+                    obj.param(1).k = (obj.param(1).rho*pi/6).*...
+                        obj.param(1).dg^(3-obj.param(1).Dm);
+                    obj.param(1).sm = 0.15;
+                    obj.param(1).opt_m = 'norm';
+
+                    obj.param(2).rho = 1000;
+                    obj.param(2).Dm = 3;
+                    obj.param(2).dg = 300;
+                    obj.param(2).sg = 2.2;
+                    obj.param(2).k = (obj.param(2).rho*pi/6).*...
+                        obj.param(2).dg^(3-obj.param(2).Dm);
+                    obj.param(2).sm = 0.15;
+                    obj.param(2).opt_m = 'norm';
+
                 case {'narrow'}
-                    
+                    obj.param.rho = 1000;
+                    obj.param.Dm = 3;
+                    obj.param.dg = 125;
+                    obj.param.sg = 1.5;
+                    obj.param.k = (obj.param.rho*pi/6).*...
+                        obj.param.dg^(3-obj.param.Dm);
+                    obj.param.sm = 1.05;
+                    obj.param.mg = 1e-9*obj.param.k*...
+                        obj.param.dg^obj.param.Dm;
+                    obj.param.opt_m = 'logn';
                     
                 otherwise % for custom phantom
                     if ~exist('param','var'); error('Specify phantom.'); end
@@ -73,7 +106,7 @@ classdef Phantom
             obj.n_modes = length(obj.param);
             
             %-- Evaluate phantom -----------------------------------------%
-            [obj.x,obj.grid,obj.param.mg] = obj.gen_phantom(span);
+            [obj.x,obj.grid] = obj.gen_phantom(span);
 
         end
         %=================================================================%
@@ -89,12 +122,12 @@ classdef Phantom
                 n_t,'logarithmic'); % generate grid of which to represent phantom
             
             %-- Evaluate phantom mass-mobility distribution ---------------%
-            m0 = grid_t.elements(:,1);
-            d0 = grid_t.elements(:,2);
+            m0 = grid.elements(:,1);
+            d0 = grid.elements(:,2);
             
             rho = @(d,k,Dm) 6*k./(pi*d.^(3-Dm));
             
-            mg = @(d0,ll) log(1e-9.*rho(d0,obj.param(ll).k,obj.paramparam(ll).Dm).*...
+            mg = @(d0,ll) log(1e-9.*rho(d0,obj.param(ll).k,obj.param(ll).Dm).*...
                 pi/6.*(d0.^3)); % geometric mean mass in fg
             
             x = zeros(length(m0),1);
@@ -117,8 +150,12 @@ classdef Phantom
         %=================================================================%
         
         
-        %-- Data visualization -------------------------------------------%
-        [h,x] = plot_phantom(obj,x); % plots x on the grid
+        %== PLOT_PHANTOM =================================================%
+        %   Plots the phantom mass-mobiltiy distribution phantom.
+        %   Author:     Timothy Sipkens, 2019-07-08
+        function [h] = plot(obj)
+            h = obj.grid.plot2d_marg(obj.x);
+        end
         %-----------------------------------------------------------------%
         
     end
