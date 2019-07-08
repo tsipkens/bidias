@@ -19,12 +19,12 @@ cm = load_cmap('YlGnBu',256,'hsv');
 %   High resolution version of the distribution to be projected to coarse 
 %   grid to generate x.
 
-phantom_param; % generate phantom parameters
-
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
     % Hogan lab: -1 -> 1.5
 
-[x_t,grid_t,mg] = gen_phantom(phantom,span_t);
+phantom = Phantom('demonstration',span_t);
+x_t = phantom.x;
+grid_t = phantom.grid;
 nmax = max(x_t);
 
 figure(1);

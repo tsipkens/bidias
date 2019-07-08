@@ -106,7 +106,7 @@ figure(10);
 %% Plots for effective density
 
 [y,rho_vec,dNdlogrho] = ...
-    massmob2rhomob(x_expRot,grid_x);
+    tools.massmob2rhomob(x_expRot,grid_x);
 
 figure(30);
 semilogx(rho_vec,dNdlogrho);
