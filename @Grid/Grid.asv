@@ -35,9 +35,9 @@ classdef Grid
     
     %-- Grid methods -----------------------------------------------------%
     methods
-        %== GRID =========================================================%
-        %   Class constructor.
+        
         function obj = Grid(span_edges,ne,discrete)
+        % GIRD  Class constructor
         %-----------------------------------------------------------------%
         % Inputs: 
         %   span_edges  Either (i) a span over which discretization occurs 
@@ -72,14 +72,12 @@ classdef Grid
             
             obj = obj.mesh; % generates grid points
         end
-        %=================================================================%
         
         
-        %== MESH =========================================================%
-        %   Responsible for generating a mesh represented by a series of 
-        %   nodes.
-        %   Author:	Timothy Sipkens, 2019-02-03
         function obj = mesh(obj)
+        % MESH      Responsible for generating a mesh represented by a series of nodes.
+        % Author:   Timothy Sipkens, 2019-02-03
+        %
         %-----------------------------------------------------------------%
         %   Currently setup to do simple linear or logarithmic spaced 
         %   quadrilateral mesh.
@@ -88,6 +86,7 @@ classdef Grid
         %   a matrix, with a row for each node and a column for each 
         %   dimension.
         %-----------------------------------------------------------------%
+            
             
             obj.Ne = prod(obj.ne);
             
@@ -127,13 +126,11 @@ classdef Grid
             end
 
         end
-        %=================================================================%
         
         
-        %== PROJECT =========================================================%
-        %   Project x onto current grid. Uses simple linear interpolation 
-        %   for this purpose.
         function x = project(obj,edges,x)
+        % PROJECT   Project x onto current grid.
+        %           Uses simple linear interpolation for this purpose.
             
             n1 = length(edges{1});
             n2 = length(edges{2});
@@ -147,12 +144,10 @@ classdef Grid
             x = x(:);
             
         end
-        %=================================================================%
         
         
-        %== DR ===========================================================%
-        %   Calculates the differential area of the elements in the grid.
         function [dr,dr1,dr2] = dr(obj)
+        % DR    Calculates the differential area of the elements in the grid.
             
             dr_0 = cell(obj.dim,1);
             for ii=1:obj.dim
@@ -167,13 +162,11 @@ classdef Grid
             dr = dr2(:).*dr1(:);
             
         end
-        %=================================================================%
         
         
-        %== GRAD =========================================================%
-        %   Calculates the gradient in x. Uses simple first order 
-        %   differences.
         function out = grad(obj,x)
+        % GRAD  Calculates the gradient in x.
+        %       Uses simple first order differences.
             
             [~,dr1,dr2] = obj.dr;
             
@@ -184,13 +177,11 @@ classdef Grid
             out = [grad1(:),grad2(:)];
             
         end
-        %=================================================================%
         
         
-        %== MARGINALIZE ==================================================%
-        %   Marginalized for distribution in each dimension.
-        %   Uses Euler's method to integrate over domain.
         function [marg,tot] = marginalize(obj,x)
+        % MARGINALIZE   Marginalized for distribution in each dimension.
+        %               Uses Euler's method to integrate over domain.
             
             [dr,dr1,dr2] = obj.dr;
             
@@ -202,13 +193,11 @@ classdef Grid
             marg{2} = sum(dr1.*x,1); % integrate over mass
             
         end
-        %=================================================================%
         
         
-        %== REBASE =======================================================%
-        %   Function to evaluate uniform basis functions. Outputs matrix 
-        %   to be multiplied by original A from kernel.
         function B = rebase(obj,obj_old)
+        % REBASE_MATRIX Function to evaluate uniform basis functions.
+        %               Outp
             
             for ii=1:obj.dim
                 dr_inv = 1./(obj_old.nodes{ii}(2:end)-obj_old.nodes{ii}(1:(end-1)));
@@ -235,7 +224,6 @@ classdef Grid
             B = (t2{1}(ind1,ind1_old).*t2{2}(ind2,ind2_old))';
             
         end
-        %=================================================================%
         
         
         %-- Data visualization -------------------------------------------%

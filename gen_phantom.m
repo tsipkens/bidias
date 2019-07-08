@@ -1,20 +1,18 @@
 
-function [x,grid,mg] = gen_phantom(param,span)
+function [x_t,grid_t,mg] = gen_phantom(param,span)
 % GEN_PHANTOM Generates a mass-mobiltiy distribution phantom.
 % Author:   Timothy Sipkens, 2018-12-04
 
-dd = 540;
-mm = 550;
-n = [mm,dd];
-grid = Grid(span,...
-    n,'logarithmic');
+n_t = [540,550]; % resolution of phantom distribution
+grid_t = Grid(span,... 
+    n_t,'logarithmic'); % generate grid of which to represent phantom
 
-[x,mg] = p_fun(grid,param);
+[x_t,mg] = p_fun(grid_t,param);
 
 end
 
 
-function [p,mg] = p_fun(grid,param)
+function [p,mg] = p_fun(grid_t,param)
 
 %-- Parse inputs ---------------------------------------------------------%
 for ll=1:length(param) % loop over different modes
@@ -26,8 +24,9 @@ for ll=1:length(param) % loop over different modes
 end
 
 
-m0 = grid.elements(:,1);
-d0 = grid.elements(:,2);
+%-- Evaluate phantom mass-mobility distribution --------------------------%
+m0 = grid_t.elements(:,1);
+d0 = grid_t.elements(:,2);
 
 rho = @(d,k,Dm) 6*k./(pi*d.^(3-Dm));
 

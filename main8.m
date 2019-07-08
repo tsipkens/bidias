@@ -6,10 +6,12 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath('cmap');
-load('inferno.mat');
-cm = cm(40:end,:);
+% load('inferno.mat');
+load('matter.mat');
+% cm = cm(40:end,:);
 cm_inferno = cm;
-load('viridis.mat');
+% load('viridis.mat');
+cm = load_cmap('YlGnBu',256,'hsv');
 
 
 %%
@@ -32,8 +34,8 @@ caxis([0,1*(1+1/256)]);
 
 
 %-- Generate A matrix and b vector ---------------------------------------%
-n_b = [14,50];%[12,50]; %[17,35];
-span_b = grid_t.span;%[bas_x.edges{1}(1),bas_x.edges{1}(end);bas_x.edges{2}(1),bas_x.edges{2}(end)];
+n_b = [14,50]; %[12,50]; %[17,35];
+span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % should be uniform basis
 
@@ -43,19 +45,17 @@ A_t = gen_A(grid_b,grid_t); % generate A matrix based on grid for x_t and b
 
 %%
 %--  Generate x vector on coarser grid -----------------------------------%
-ne_x = [50,64]; % number of elements per dimension in x
+n_x = [50,64]; % number of elements per dimension in x
     % [20,32]; % used for plotting projections of basis functions
     % [40,64]; % used in evaluating previous versions of regularization
 
 grid_x = Grid([grid_t.span],...
-    ne_x,'logarithmic');
+    n_x,'logarithmic');
 x0 = grid_x.project(grid_t.edges,x_t); % project into basis for x
 
-n_x = grid_x.ne;
-
 disp('Transform to discretization in x...');
-K0 = grid_x.phi(grid_t); % transform based on chosen basis functions in x
-A = A_t*K0; % equivalent to integration
+B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
+A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
 disp('Complete.');
 disp(' ');
@@ -117,7 +117,7 @@ run_inversions_C;
 
 
 %%
-x_plot = x_Tk1;
+x_plot = x_Tk0;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
@@ -125,12 +125,12 @@ grid_x.plot2d_marg(x_plot,grid_t,x_t);
 caxis([0,1*(1+1/256)]);
 
 figure(13);
-load('cmap/viridis.mat');
+% load('viridis.mat');
 n1 = ceil(grid_x.ne(1)./20);
 n2 = floor(grid_x.ne(1)/n1);
 n3 = floor(240/n2);
-cm_b = cm(10:n3:250,:);
-set(gca,'ColorOrder',cm_b,'NextPlot','replacechildren');
+cm_x = cm(10:n3:250,:);
+set(gca,'ColorOrder',cm_x,'NextPlot','replacechildren');
 x_plot_rs = reshape(x_plot,grid_x.ne);
 semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
 
