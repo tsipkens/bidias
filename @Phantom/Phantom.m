@@ -35,7 +35,7 @@ classdef Phantom
             
         	%-- Parse inputs ---------------------------------------------% 
             switch name
-                case {'demonstration'}
+                case {'demonstration','1'}
                     obj.param(1).rho = 12000; % density of gold-ish
                     obj.param(1).Dm = 3;
                     obj.param(1).dg = 50;
@@ -54,7 +54,7 @@ classdef Phantom
                     obj.param(2).sm = 1.3;
                     obj.param(2).opt_m = 'logn';
                     
-                case {'soot-surrogate'}
+                case {'soot-surrogate','2'}
                     obj.param.Dm = 2.3;
                     obj.param.dg = 125;
                     obj.param.sg = 1.6;
@@ -64,7 +64,7 @@ classdef Phantom
                     obj.param.sm = 1.5;
                     obj.param.opt_m = 'logn';
                     
-                case {'Buckley','Hogan'}
+                case {'Buckley','Hogan','3'}
                     obj.param(1).rho = 10000;
                     obj.param(1).Dm = 3;
                     obj.param(1).dg = 200;
@@ -83,7 +83,7 @@ classdef Phantom
                     obj.param(2).sm = 0.15;
                     obj.param(2).opt_m = 'norm';
 
-                case {'narrow'}
+                case {'narrow','4'}
                     obj.param.rho = 1000;
                     obj.param.Dm = 3;
                     obj.param.dg = 125;
@@ -145,7 +145,7 @@ classdef Phantom
             end
             
             x = x./obj.n_modes;
-            x = x.*(d0.*m0); % convert to [lnm,lnd]T space
+            x = x.*(d0.*m0).*log(10).^2; % convert to [logm,logd]T space
         end
         %=================================================================%
         
@@ -156,7 +156,7 @@ classdef Phantom
         function [h] = plot(obj)
             h = obj.grid.plot2d_marg(obj.x);
         end
-        %-----------------------------------------------------------------%
+        %=================================================================%
         
     end
     

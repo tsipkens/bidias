@@ -75,7 +75,7 @@ end
 disp('Completed kernel evaluation.');   
 disp(' ');
 
-dr_log = grid_i.dr; % area of integral elements in [lnm,lnd] space
+dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 

@@ -6,12 +6,12 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath('cmap');
-% load('inferno.mat');
-load('matter.mat');
-% cm = cm(40:end,:);
-cm_inferno = cm;
-% load('viridis.mat');
-cm = load_cmap('YlGnBu',256,'hsv');
+load('inferno.mat');
+cm = cm(40:end,:);
+% load('matter.mat');
+cm_b = cm;
+load('viridis.mat');
+% cm = load_cmap('YlGnBu',256,'hsv');
 
 
 %%
@@ -28,11 +28,12 @@ grid_t = phantom.grid;
 nmax = max(x_t);
 
 figure(1);
+phantom.plot;
 colormap(gcf,[cm;1,1,1]);
-grid_t.plot2d_marg(x_t);
-caxis([0,1*(1+1/256)]);
+caxis([0,5*(1+1/256)]);
 
 
+%%
 %-- Generate A matrix and b vector ---------------------------------------%
 n_b = [14,50]; %[12,50]; %[17,35];
 span_b = grid_t.span;
@@ -86,26 +87,19 @@ b = sparse(b0+epsilon); % add noise
 b = max(b,0); % remove negative values
 
 figure(5);
-colormap(gcf,cm_inferno);
+colormap(gcf,cm_b);
 grid_b.plot2d_marg(b);
 
 figure(20);
 n2 = floor(grid_b.ne(1));
-n3 = floor(length(cm_inferno(:,1))/n2);
-cm_b = cm_inferno(10:n3:end,:);
-set(gca,'ColorOrder',cm_b,'NextPlot','replacechildren');
+n3 = floor(length(cm_b(:,1))/n2);
+cm_b_mod = cm_b(10:n3:end,:);
+set(gca,'ColorOrder',cm_b_mod,'NextPlot','replacechildren');
 b_plot_rs = reshape(b,grid_b.ne);
 semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
-
-% figure(21);
-% set(gca,'ColorOrder',cm_b,'NextPlot','replacechildren');
-% plot3(grid_b.edges{2},...
-%     ones(grid_b.ne(2),1)*(grid_b.edges{1}),...
-%     b_plot_rs.*Ntot);
-% set(gcf,'Renderer','zbuffer');
-% set(gca,'XScale','log');
-% set(gca,'YScale','log');
-% view([4,20]);
+hold on;
+semilogx(grid_b.edges{2},sum(b_plot_rs).*Ntot,'k');
+hold off;
 
 
 %%
@@ -117,7 +111,7 @@ run_inversions_C;
 
 
 %%
-x_plot = x_Tk0;
+x_plot = x_Tk1;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
@@ -226,6 +220,7 @@ set(gca,'yscale','log');
 %% Plot marginal distributions
 
 x_t_m = grid_t.marginalize(x_t);
+x0_m = grid_x.marginalize(x0);
 x_LS_m = grid_x.marginalize(x_LS);
 x_Tk0_m = grid_x.marginalize(x_Tk0);
 x_Tk1_m = grid_x.marginalize(x_Tk1);
@@ -235,18 +230,36 @@ x_Two_m = grid_x.marginalize(x_Two);
 x_TwoMH_m = grid_x.marginalize(x_TwoMH);
 
 dim = 2;
+
 figure(31);
+subplot(3,1,2:3);
 semilogx(grid_t.edges{dim},x_t_m{dim},'k');
 hold on;
 % semilogx(grid_x.edges{dim},x_LS_m{dim});
-semilogx(grid_x.edges{dim},x_Tk0_m{dim});
+% semilogx(grid_x.edges{dim},x_Tk0_m{dim});
 semilogx(grid_x.edges{dim},x_Tk1_m{dim});
 semilogx(grid_x.edges{dim},x_init_m{dim});
 semilogx(grid_x.edges{dim},x_MART_m{dim});
 semilogx(grid_x.edges{dim},x_Two_m{dim});
 semilogx(grid_x.edges{dim},x_TwoMH_m{dim});
 hold off;
+xlim([min(grid_x.edges{dim}),max(grid_x.edges{dim})]);
 % ylim([0,1.4]);
+
+subplot(3,1,1);
+semilogx(grid_t.edges{dim},0.*x_t_m{dim},'k');
+hold on;
+% semilogx(grid_x.edges{dim},x_LS_m{dim}-x0_m{dim});
+% semilogx(grid_x.edges{dim},x_Tk0_m{dim}-x0_m{dim});
+semilogx(grid_x.edges{dim},x_Tk1_m{dim}-x0_m{dim});
+semilogx(grid_x.edges{dim},x_init_m{dim}-x0_m{dim});
+semilogx(grid_x.edges{dim},x_MART_m{dim}-x0_m{dim});
+semilogx(grid_x.edges{dim},x_Two_m{dim}-x0_m{dim});
+semilogx(grid_x.edges{dim},x_TwoMH_m{dim}-x0_m{dim});
+hold off;
+xlim([min(grid_x.edges{dim}),max(grid_x.edges{dim})]);
+ylimits = ylim;
+ylim(sign(ylimits).*ceil(abs(ylimits)*20)/20);
 
 
 %% Plot conditional distributions

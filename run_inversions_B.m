@@ -31,7 +31,7 @@ chi.LSQ = norm(x0-x_LS);
 disp('Performing Tikhonov (0th) regularization...');
 % lambda_Tk0 = 1e5;
 tic;
-[x_Tk0,lambda_Tk0,out_Tk0] = tikhonov_optimized(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,0,sparse(length(x0),1));
+[x_Tk0,lambda_Tk0,out_Tk0] = invert.tikhonov_optimized(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,0,sparse(length(x0),1));
 t.Tk0 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -43,7 +43,7 @@ chi.Tk0 = norm(x0-x_Tk0);
 disp('Performing Tikhonov (1st) regularization...');
 % lambda_Tk1 = 8e1;
 tic;
-[x_Tk1,lambda_Tk1,out_Tk1] = tikhonov_optimized(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,1,sparse(length(x0),1));
+[x_Tk1,lambda_Tk1,out_Tk1] = invert.tikhonov_optimized(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,1,sparse(length(x0),1));
 t.Tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -55,7 +55,7 @@ chi.Tk1 = norm(x0-x_Tk1);
 disp('Performing Tikhonov (2nd) regularization...');
 % lambda_Tk1 = 1e2;
 tic;
-[x_Tk2,lambda_Tk2,out_Tk2] = tikhonov_optimized(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,2,sparse(length(x0),1));
+[x_Tk2,lambda_Tk2,out_Tk2] = invert.tikhonov_optimized(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,2,sparse(length(x0),1));
 t.Tk2 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -75,7 +75,7 @@ lambda_expRot = 5;
 
 disp('Performing rotated exponential distance regularization...');
 tic;
-[x_expRot,L] = exponential_distance(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
+[x_expRot,L] = invert.exponential_distance(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
     lambda_expRot,Lex,x0);
 t.expRot = toc;
 disp('Inversion complete.');
@@ -89,7 +89,7 @@ chi.expRot = norm(x0-x_expRot);
 disp('Performing MART...');
 tic;
 % x_MART = mart(Lb*A,Lb*b,x_init,300);
-[x_MART,iter_MART,out_MART] = mart_optimized(A,b,x_init,1:300,x0);
+[x_MART,iter_MART,out_MART] = invert.mart_optimized(A,b,x_init,1:300,x0);
 t.MART = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -103,7 +103,7 @@ chi.MART = norm(x0-x_MART);
 disp('Performing Twomey...');
 tic;
 % x_Two = twomey(A,b,x_init,500);
-[x_Two,iter_Two,out_Two] = twomey_optimized(A,b,x_init,1:500,x0);
+[x_Two,iter_Two,out_Two] = invert.twomey_optimized(A,b,x_init,1:500,x0);
 t.Two = toc;
 
 disp('Completed Twomey.');
@@ -117,7 +117,7 @@ chi.Two = norm(x0-x_Two);
 disp('Performing Twomey-Markowski-Buckley...');
 tic;
 % x_TwoMH = twomey_markowski(A,b,Lb,n_x(1),x_init,35,'Buckley',0.5);
-[x_TwoMH,Sf_TwoMH,out_TwoMH] = twomey_markowski_optimized(A,b,Lb,n_x(1),...
+[x_TwoMH,Sf_TwoMH,out_TwoMH] = invert.twomey_markowski_optimized(A,b,Lb,n_x(1),...
     x_init,35,[1,1e3],x0,'Buckley');
 t.TwoMH = toc;
 

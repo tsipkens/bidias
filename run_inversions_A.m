@@ -1,8 +1,5 @@
 
 
-% ii = 1;
-
-for ii=1:10
 
 %% Initial guess for iterative schemes
 b_init = b;
@@ -35,7 +32,7 @@ chi.LSQ = norm(x0-x_LS);
 disp('Performing Tikhonov (0th) regularization...');
 % lambda_Tk0 = 1;
 tic;
-x_Tk0 = tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0,sparse(length(x0),1));
+x_Tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0,sparse(length(x0),1));
 t.Tk0 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -47,7 +44,7 @@ chi.Tk0(ii) = norm(x0-x_Tk0);
 disp('Performing Tikhonov (1st) regularization...');
 % lambda_Tk1 = 1e1;
 tic;
-x_Tk1 = tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1,sparse(length(x0),1));
+x_Tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1,sparse(length(x0),1));
 t.Tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -59,7 +56,7 @@ chi.Tk1(ii) = norm(x0-x_Tk1);
 disp('Performing Tikhonov (2nd) regularization...');
 % lambda_Tk2 = 8e1;
 tic;
-x_Tk2 = tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2,sparse(length(x0),1));
+x_Tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2,sparse(length(x0),1));
 t.Tk2 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -79,7 +76,7 @@ lambda_expRot = 5;
 
 disp('Performing rotated exponential distance regularization...');
 tic;
-[x_expRot,L] = exponential_distance(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
+[x_expRot,L] = invert.exponential_distance(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
     lambda_expRot,Lex,x0);
 t.expRot = toc;
 disp('Inversion complete.');
@@ -92,7 +89,7 @@ chi.expRot = norm(x0-x_expRot);
 
 disp('Performing MART...');
 tic;
-x_MART = mart(A,b,x_init,300);
+x_MART = invert.mart(A,b,x_init,300);
 t.MART(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -105,7 +102,7 @@ chi.MART = norm(x0-x_MART);
 %-- Perform Twomey algorithm ----------------------------%
 disp('Performing Twomey...');
 tic;
-x_Two = twomey(A,b,x_init,500);
+x_Two = invert.twomey(A,b,x_init,500);
 t.Two = toc;
 
 disp('Completed Twomey.');
@@ -119,7 +116,7 @@ chi.Two = norm(x0-x_Two);
 disp('Performing Twomey-Markowski-Buckley...');
 
 tic;
-x_TwoMH = twomey_markowski(A,b,Lb,n_x(1),...
+x_TwoMH = invert.twomey_markowski(A,b,Lb,n_x(1),...
     x_init,35,'Buckley',1/Sf_TwoMH);
 t.TwoMH(ii) = toc;
 
@@ -128,4 +125,3 @@ x_rs_Two_MH = reshape(x_TwoMH,n_x);
 chi.TwoMH = norm(x0-x_TwoMH);
 
 
-end

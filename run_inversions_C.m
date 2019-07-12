@@ -14,7 +14,7 @@ chi.init = norm(x0-x_init);
 disp('Performing Tikhonov (0th) regularization...');
 lambda_Tk0 = 0.1105;
 tic;
-[x_Tk0,D_Tk0,L_Tk0] = tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0,sparse(x0));
+[x_Tk0,D_Tk0,L_Tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0,sparse(x0));
 t.Tk0 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -26,7 +26,7 @@ chi.Tk0 = norm(x0-x_Tk0);
 disp('Performing Tikhonov (1st) regularization...');
 lambda_Tk1 = 5.3044;
 tic;
-[x_Tk1,D_Tk1,L_Tk1] = tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1,sparse(x0));
+[x_Tk1,D_Tk1,L_Tk1] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1,sparse(x0));
 t.Tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -38,7 +38,7 @@ chi.Tk1 = norm(x0-x_Tk1);
 disp('Performing Tikhonov (2nd) regularization...');
 lambda_Tk2 = 6.0619;
 tic;
-[x_Tk2,D_Tk2,L_Tk2] = tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2,sparse(x0));
+[x_Tk2,D_Tk2,L_Tk2] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2,sparse(x0));
 t.Tk2 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -55,7 +55,7 @@ lambda_exp = 10;
 
 disp('Performing rotated exponential distance regularization...');
 tic;
-[x_exp,L] = exponential_distance(Lb*A,Lb*b,...
+[x_exp,L] = invert.exponential_distance(Lb*A,Lb*b,...
     grid_x.elements(:,2),grid_x.elements(:,1),...
     lambda_exp,Lex,x0);
 t.exp = toc;
@@ -77,7 +77,7 @@ lambda_expRot = 10;
 
 disp('Performing rotated exponential distance regularization...');
 tic;
-[x_expRot,L] = exponential_distance(Lb*A,Lb*b,...
+[x_expRot,L] = invert.exponential_distance(Lb*A,Lb*b,...
     grid_x.elements(:,2),grid_x.elements(:,1),...
     lambda_expRot,Lex,x0);
 t.expRot = toc;
@@ -99,7 +99,7 @@ lambda_expRot2 = 10;
 
 disp('Performing rotated exponential distance regularization...');
 tic;
-[x_expRot2,L] = exponential_distance(Lb*A,Lb*b,...
+[x_expRot2,L] = invert.exponential_distance(Lb*A,Lb*b,...
     grid_x.elements(:,2),grid_x.elements(:,1),...
     lambda_expRot2,Lex,x0);
 t.expRot2 = toc;

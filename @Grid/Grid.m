@@ -79,7 +79,6 @@ classdef Grid
         %   Responsible for generating a mesh represented by a series of 
         %   nodes.
         %   Author:	Timothy Sipkens, 2019-02-03
-        function obj = mesh(obj)
         %-----------------------------------------------------------------%
         %   Currently setup to do simple linear or logarithmic spaced 
         %   quadrilateral mesh.
@@ -88,6 +87,7 @@ classdef Grid
         %   a matrix, with a row for each node and a column for each 
         %   dimension.
         %-----------------------------------------------------------------%
+        function obj = mesh(obj)
             
             obj.Ne = prod(obj.ne);
             
@@ -97,18 +97,17 @@ classdef Grid
                     if strcmp('linear',obj.discrete)
                         obj.edges{ii} = linspace(obj.span(ii,1),obj.span(ii,2),obj.ne(ii));
                     elseif strcmp('logarithmic',obj.discrete)
-                        obj.edges{ii} = logspace(log10(obj.span(ii,1)),log10(obj.span(ii,2)),obj.ne(ii));
+                        obj.edges{ii} = logspace(...
+                            log10(obj.span(ii,1)),log10(obj.span(ii,2)),obj.ne(ii));
                     end
                 end
                 obj.Ne = prod(obj.ne);
             end
             
-            
             %-- Generate elements ----------------------------------------%
             [grid{1},grid{2}] = ndgrid(obj.edges{1},obj.edges{2});
             obj.elements(:,1) = grid{1}(:); % vectorize output
             obj.elements(:,2) = grid{2}(:);
-            
             
             %-- Generate nodes -------------------------------------------%
             obj.nodes = cell(obj.dim,1);
@@ -131,16 +130,17 @@ classdef Grid
         
         
         %== PROJECT =========================================================%
-        %   Project x onto current grid. Uses simple linear interpolation 
-        %   for this purpose.
-        function x = project(obj,edges,x)
+        %   Project x onto current grid. Uses simple linear
+        %   interpolation for this purpose.
+        %   'edges_old' corresponds to edges of the original grid.
+        function x = project(obj,edges_old,x)
             
-            n1 = length(edges{1});
-            n2 = length(edges{2});
+            n1 = length(edges_old{1});
+            n2 = length(edges_old{2});
             x = reshape(x,[n1,n2]);
             
             [edges1,edges2] = ndgrid(obj.edges{1},obj.edges{2});
-            [edges_old1,edges_old2] = ndgrid(edges{1},edges{2});
+            [edges_old1,edges_old2] = ndgrid(edges_old{1},edges_old{2});
             F = griddedInterpolant(edges_old1,edges_old2,x,'linear','linear');
             
             x = F(edges1,edges2);
@@ -157,9 +157,11 @@ classdef Grid
             dr_0 = cell(obj.dim,1);
             for ii=1:obj.dim
                 if strcmp(obj.discrete,'logarithmic')
-                    dr_0{ii} = log(obj.nodes{ii}(2:end))-log(obj.nodes{ii}(1:(end-1)));
+                    dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
+                        log10(obj.nodes{ii}(1:(end-1)));
                 elseif strcmp(obj.discrete,'linear')
-                    dr_0{ii} = obj.nodes{ii}(2:end)-obj.nodes{ii}(1:(end-1));
+                    dr_0{ii} = obj.nodes{ii}(2:end)-...
+                        obj.nodes{ii}(1:(end-1));
                 end
             end
             
@@ -238,10 +240,11 @@ classdef Grid
         %=================================================================%
         
         
-        %-- Data visualization -------------------------------------------%
+        %== Data visualization ===========================================%
         [h,x] = plot2d(obj,x); % plots x on the grid
-        h = plot2d_marg(obj,x,obj_t,x_t) % plot x on the grid, with marginal distr.
-        %-----------------------------------------------------------------%
+        h = plot2d_marg(obj,x,obj_t,x_t)
+            % plot x on the grid, with marginal distributions
+        %=================================================================%
         
     end
     
