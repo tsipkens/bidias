@@ -12,8 +12,8 @@ function textbar(pct,opt_backspace)
 
 %--- Initialization ------------------------------------------------------%
 %-- Parameters ----%
-n_dot = 50;
-n_str = 77;
+n_dot = 40;
+n_str = n_dot+17;
 
 %-- Parse input ----%
 if ~exist('pct','var')

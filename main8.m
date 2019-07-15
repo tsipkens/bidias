@@ -26,11 +26,12 @@ phantom = Phantom('demonstration',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
+cmax = 5;
 
 figure(1);
 phantom.plot;
 colormap(gcf,[cm;1,1,1]);
-caxis([0,5*(1+1/256)]);
+caxis([0,cmax*(1+1/256)]);
 
 
 %%
@@ -64,7 +65,7 @@ disp(' ');
 figure(2);
 colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x0,grid_t,x_t);
-caxis([0,1*(1+1/256)]);
+caxis([0,cmax*(1+1/256)]);
 
 
 %%
@@ -116,7 +117,7 @@ x_plot = x_Tk1;
 figure(10);
 colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x_plot,grid_t,x_t);
-caxis([0,1*(1+1/256)]);
+caxis([0,cmax*(1+1/256)]);
 
 figure(13);
 n1 = ceil(grid_x.ne(1)./20);

@@ -92,6 +92,7 @@ classdef Grid
             obj.Ne = prod(obj.ne);
             
             %-- If required, generate edge discretization vectors --------%
+            % obj.edges = cell(1,obj.dim);
             if isempty(obj.edges)
                 for ii=1:obj.dim
                     if strcmp('linear',obj.discrete)
@@ -110,7 +111,6 @@ classdef Grid
             obj.elements(:,2) = grid{2}(:);
             
             %-- Generate nodes -------------------------------------------%
-            obj.nodes = cell(obj.dim,1);
             for ii=1:obj.dim
                 if strcmp(obj.discrete,'logarithmic')
                     r_m = exp((log(obj.edges{ii}(2:end))+log(obj.edges{ii}(1:(end-1))))./2); % mean of edges
@@ -209,7 +209,7 @@ classdef Grid
         
         %== REBASE =======================================================%
         %   Function to evaluate uniform basis functions. Outputs matrix 
-        %   to be multiplied by original A from kernel.
+        %   to be multiplied by original A, that is to transform the kernel.
         function B = rebase(obj,obj_old)
             
             for ii=1:obj.dim
@@ -310,7 +310,7 @@ classdef Grid
         %== FIT_MASS_MOB =================================================%
         %   Fits the mass-mobility relation to the returned distribution.
         %   Author:     Timothy Sipkens, 2019-07-15
-        function [Dm,k] = fit_mass_mob(obj,x,v0,slope,opt_plot)
+        function [Dm,k,rho_100] = fit_mass_mob(obj,x,v0,slope,opt_plot)
             
             if ~exist('slope','var'); slope = []; end
             if ~exist('opt_plot','var'); opt_plot = []; end
@@ -323,10 +323,13 @@ classdef Grid
             
             y1 = fminsearch(B_fun,y0);
             Dm = y1(2);
-            k = log10(y1(1));
+            k = 10.^(y1(1)-Dm*v0(1));
+            
+            rho_100 = 6/pi*k*(100^(Dm-3))*1e9;
+                % expected effective density at dm = 100 nm
+                % 1e9 converts from fg/nm^3 to kg/m^3
             
             if opt_plot; obj.plot_line_overlay([v0(1),y1(1)],y1(2),'w'); end
-            
             
         end
         %=================================================================%
@@ -346,8 +349,8 @@ classdef Grid
             
             if ~exist('cspec','var'); cspec = []; end
             
-            rmin = min(obj.edges{1});
-            rmax = max(obj.edges{1});
+            rmin = log10(min([obj.edges{:}]));
+            rmax = log10(max([obj.edges{:}]));
             
             hold on;
             plot([rmin,rmax],...

@@ -108,7 +108,10 @@ figure(40);
 colormap(gcf,cm);
 grid_x.plot2d_marg(x_plot);
 [Dm,k,rho_100] = grid_x.fit_mass_mob(x_plot,[2.1,-0.1]);
+obj.plot_line_overlay([v0(1),y1(1)],Dm,'w');
 
+rho0 = 2000; % density of base material
+d0e = log10(6*pi/(k*rho0))./(3-Dm);
 
 %% Plots for effective density
 
@@ -118,13 +121,5 @@ grid_x.plot2d_marg(x_plot);
 figure(31);
 colormap(gcf,cm);
 grid_rho.plot2d_marg(y);
-
-if 1
-    [m,b] = grid_rho.fit_mass_mob(y,[2,2.8],-0.6);
-else
-    grid_rho.plot_line_overlay([0,log10(6*k/pi)+9],Dm-3,'w');
-
-    rho = 2000; % density of base material
-    dpe = 10.^((log10(6*k/(pi*rho))+9)/(3-Dm));
-end
+grid_rho.plot_line_overlay([],Dm-3,'w');
 

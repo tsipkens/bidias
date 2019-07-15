@@ -100,7 +100,6 @@ classdef Phantom
                     grid = varargin{2};
                     
                     
-                    
                 otherwise % for custom phantom
                     if ~exist('param','var'); error('Specify phantom.'); end
                     if isempty(varargin); error('Specify phantom.'); end
@@ -148,7 +147,7 @@ classdef Phantom
                 pi/6.*(d0.^3)); % geometric mean mass in fg
             
             x = zeros(length(m0),1);
-            for ll=1:obj.n_modes % loop over different modes
+            for ll=1:length(param) % loop over different modes
                 if strcmp(param(ll).opt_m,'norm')
                     p_m = normpdf(m0,...
                         exp(mg(d0,ll)),param(ll).sm.*exp(mg(d0,ll)));
@@ -161,7 +160,7 @@ classdef Phantom
                 x = x+p_temp;
             end
             
-            x = x./obj.n_modes;
+            x = x./length(param);
             x = x.*(d0.*m0).*log(10).^2; % convert to [logm,logd]T space
         end
         %=================================================================%

@@ -12,9 +12,9 @@ function [prop] = prop_CPMA(opt)
 
 
 if ~exist('opt','var') % if properties set is not specified
-    opt = 'Buckley';
+    opt = 'Olfert';
 elseif isempty(opt)
-    opt = 'Buckley';
+    opt = 'Olfert';
 end
 
 if strcmp(opt,'Olfert')

@@ -1,7 +1,9 @@
-function [y,rho_n,dNdlogrho] = ...
-    massmob2rhomob(x,grid_x,n_rho)
-%MASSMOB2RHOMOB Converts a mass-mobility distribution to a effective density-mobility distribution.
-%   ...
+
+% MASS2RHO  Converts a mass-mobility distribution to a effective density-mobility distribution.
+% Author:   Timothy Sipkens, 2019-05-17
+%=========================================================================%
+
+function [y,grid_rho] = mass2rho(x,grid_x,n_rho)
 
 %-- Parse inputs -----------------------------------%
 if ~exist('n_rho','var') % if number of points in rho_n not specified
@@ -10,8 +12,11 @@ elseif isempty(n_rho)
     n_rho = 100;
 end
 
-
-rho_n = logspace(log10(100),log10(10000),n_rho);
+rho_min = 100;
+rho_max = 10000;
+rho_n = logspace(log10(rho_min),log10(rho_max),n_rho);
+grid_rho = Grid([rho_min,rho_max;grid_x.span(2,:)],...
+    [n_rho,length(grid_x.edges{2})],'logarithmic'); % should be uniform basis
 
 x_rs = reshape(x,grid_x.ne);
 
@@ -37,8 +42,7 @@ for ii=1:n_d % loop over mobility diameter
 end
 
 y = y';
-
-dNdlogrho = sum(y,2);
+y = y(:);
 
 end
 

@@ -42,8 +42,8 @@ if nargin>2
     hold off;
 end
 
-
-h = subplot(4,4,[5,15]);
+subplot(4,4,[5,15]);
+if nargout>0; h = gca; end
 
 end
 

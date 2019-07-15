@@ -1,10 +1,6 @@
 
 % GEN_A     Generate A matrix describing kernel/transfer functions
 % Author:   Timothy Sipkens, 2018-11-27
-% Note:
-%   Cell arrays are used for Omega_mat and Lambda_mat in order to allow for
-%   the use of sparse matrices, which is necessary to store information on
-%   higher resolutions grids (such as those used for phantoms).
 %=========================================================================%
 
 function A = gen_A(grid_b,grid_i,varargin)
@@ -84,6 +80,7 @@ disp(' ');
 disp('Compiling kernel...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
+    
     [~,i1] = max(m_star==grid_b.edges{1},[],2); % index corresponding to CPMA setpoint
     [~,i2] = max(d_star==grid_b.edges{2},[],2); % index correspondng to DMA setpoint
     
