@@ -47,7 +47,7 @@ Omega_mat = Omega_mat(:,jj,:); % extend for 2D evaluation
 %-- Evaluate CPMA transfer function --------------------------------------%
 prop_CPMA = kernel.prop_CPMA('Olfert');
 disp('Evaluating CPMA contribution:');
-textbar(0); % initiate textbar
+tools.textbar(0); % initiate textbar
 Lambda_mat = zeros(n_b(1),N_i,n_z); % pre-allocate for speed
 for kk=1:n_z
     for ii=1:n_b(1)
@@ -56,7 +56,7 @@ for kk=1:n_z
             d.*1e-9,z_vec(kk),prop_CPMA)';
                 % CPMA transfer function
         
-        textbar((n_b(1)*(kk-1)+ii)/(n_z*n_b(1)));
+        tools.textbar((n_b(1)*(kk-1)+ii)/(n_z*n_b(1)));
     end
 end
 

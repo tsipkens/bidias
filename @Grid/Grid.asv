@@ -310,11 +310,10 @@ classdef Grid
         %== FIT_MASS_MOB =================================================%
         %   Fits the mass-mobility relation to the returned distribution.
         %   Author:     Timothy Sipkens, 2019-07-15
-        function [Dm,k] = fit_mass_mob(obj,x,v0,slope,opt_plot)
+        function [Dm,k] = fit_mass_mob(obj,x,v0,slope,opt_plot,color_)
             
             if ~exist('slope','var'); slope = []; end
             if ~exist('opt_plot','var'); opt_plot = []; end
-            
             if isempty(slope); slope = 3; end
             if isempty(opt_plot); opt_plot = 1; end
             
@@ -325,7 +324,7 @@ classdef Grid
             Dm = y1(2);
             k = log10(y1(1));
             
-            if opt_plot; obj.plot_line_overlay([v0(1),y1(1)],y1(2),'w'); end
+            if opt_plot; obj.plot_line_overlay([v0(1),y1(1)],y1(2)); end
             
             
         end
@@ -342,9 +341,7 @@ classdef Grid
         %== PLOT_LINE_OVERLAY ============================================%
         %   Plots a line on top of the current grid
         %   Author:	Timothy Sipkens, 2019-07-15
-        function [] = plot_line_overlay(obj,r0,slope,cspec)
-            
-            if ~exist('cspec','var'); cspec = []; end
+        function [] = plot_line_overlay(obj,r0,slope)
             
             rmin = min(obj.edges{1});
             rmax = max(obj.edges{1});
@@ -352,7 +349,7 @@ classdef Grid
             hold on;
             plot([rmin,rmax],...
                 [r0(2)+slope*(rmin-r0(1)),...
-                r0(2)+slope*(rmax-r0(1))],cspec)
+                r0(2)+slope*(rmax-r0(1))])
             hold off;
             
         end

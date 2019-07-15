@@ -8,10 +8,10 @@ phi0(1) = rho*pi/6*phi0(3)^(3-phi0(2)); % k
 phi0(4) = 1.6; % sg
 phi0(5) = 1.522; % sm
 phi0(6) = 1;
-phi0(6) = max(x_Tk1)/max(fun(phi0,grid_x)); % scale parameter
+phi0(6) = max(x_expRot)/max(fun(phi0,grid_x)); % scale parameter
 
 d = 0;
-phi1 = fminsearch(@(phi) norm(fun(phi,grid_x)-x_Tk1)^2, phi0);
+phi1 = fminsearch(@(phi) norm(fun(phi,grid_x)-x_expRot)^2, phi0);
 rho_fit = 6*phi1(1)/pi*phi1(3)^(phi1(2)-3);
 mg_fit  = phi1(1)*phi1(3)^phi1(2);
 x_fit = fun(phi1,grid_x);
@@ -23,7 +23,7 @@ phi1(3) = 125;
 
 figure(1);
 colormap(gcf,cm);
-grid_x.plot2d(x_fit);
+grid_x.plot2d_marg(x_fit);
 
 
 function x_fit = fun(phi0,grid_x)

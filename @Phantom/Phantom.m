@@ -31,7 +31,7 @@ classdef Phantom
     methods
         %== PHANTOM ======================================================%
         %   Intialize phantom object.
-        function obj = Phantom(name,span,param)
+        function obj = Phantom(name,span,varargin)
             
         	%-- Parse inputs ---------------------------------------------% 
             switch name
@@ -95,57 +95,25 @@ classdef Phantom
                         obj.param.dg^obj.param.Dm;
                     obj.param.opt_m = 'logn';
                     
+                case 'fit' % fits a distribution to data in param
+                    x = varargin{1};
+                    grid = varargin{2};
+                    
+                    
+                    
                 otherwise % for custom phantom
                     if ~exist('param','var'); error('Specify phantom.'); end
-                    if isempty(param); error('Specify phantom.'); end
+                    if isempty(varargin); error('Specify phantom.'); end
                     
-                    for ii=1:length(param.fields)
+                    for ii=1:length(varargin.fields)
                         
                     end
             end
             obj.n_modes = length(obj.param);
             
             %-- Evaluate phantom -----------------------------------------%
-            [obj.x,obj.grid] = obj.gen_phantom(span);
+            [obj.x,obj.grid] = obj.gen_phantom(obj.param,span);
 
-        end
-        %=================================================================%
-            
-        
-        %== GEN_PHANTOM ==================================================%
-        %   Generates a mass-mobiltiy distribution phantom.
-        %   Author:     Timothy Sipkens, 2018-12-04
-        function [x,grid,mg] = gen_phantom(obj,span)
-            
-            n_t = [540,550]; % resolution of phantom distribution
-            grid = Grid(span,... 
-                n_t,'logarithmic'); % generate grid of which to represent phantom
-            
-            %-- Evaluate phantom mass-mobility distribution ---------------%
-            m0 = grid.elements(:,1);
-            d0 = grid.elements(:,2);
-            
-            rho = @(d,k,Dm) 6*k./(pi*d.^(3-Dm));
-            
-            mg = @(d0,ll) log(1e-9.*rho(d0,obj.param(ll).k,obj.param(ll).Dm).*...
-                pi/6.*(d0.^3)); % geometric mean mass in fg
-            
-            x = zeros(length(m0),1);
-            for ll=1:obj.n_modes % loop over different modes
-                if strcmp(obj.param(ll).opt_m,'norm')
-                    p_m = normpdf(m0,...
-                        exp(mg(d0,ll)),obj.param(ll).sm.*exp(mg(d0,ll)));
-                else
-                    p_m = lognpdf(m0,mg(d0,ll),log(obj.param(ll).sm));
-                end
-                
-                p_temp = lognpdf(d0,log(obj.param(ll).dg),log(obj.param(ll).sg)).*...
-                    p_m;
-                x = x+p_temp;
-            end
-            
-            x = x./obj.n_modes;
-            x = x.*(d0.*m0).*log(10).^2; % convert to [logm,logd]T space
         end
         %=================================================================%
         
@@ -158,6 +126,45 @@ classdef Phantom
         end
         %=================================================================%
         
+    end
+    
+    methods(Static)
+        %== GEN_PHANTOM ==================================================%
+        %   Generates a mass-mobiltiy distribution phantom.
+        %   Author:     Timothy Sipkens, 2018-12-04
+        function [x,grid,mg] = gen_phantom(param,span)
+            
+            n_t = [540,550]; % resolution of phantom distribution
+            grid = Grid(span,... 
+                n_t,'logarithmic'); % generate grid of which to represent phantom
+            
+            %-- Evaluate phantom mass-mobility distribution ---------------%
+            m0 = grid.elements(:,1);
+            d0 = grid.elements(:,2);
+            
+            rho = @(d,k,Dm) 6*k./(pi*d.^(3-Dm));
+            
+            mg = @(d0,ll) log(1e-9.*rho(d0,param(ll).k,param(ll).Dm).*...
+                pi/6.*(d0.^3)); % geometric mean mass in fg
+            
+            x = zeros(length(m0),1);
+            for ll=1:obj.n_modes % loop over different modes
+                if strcmp(param(ll).opt_m,'norm')
+                    p_m = normpdf(m0,...
+                        exp(mg(d0,ll)),param(ll).sm.*exp(mg(d0,ll)));
+                else
+                    p_m = lognpdf(m0,mg(d0,ll),log(param(ll).sm));
+                end
+                
+                p_temp = lognpdf(d0,log(param(ll).dg),log(param(ll).sg)).*...
+                    p_m;
+                x = x+p_temp;
+            end
+            
+            x = x./obj.n_modes;
+            x = x.*(d0.*m0).*log(10).^2; % convert to [logm,logd]T space
+        end
+        %=================================================================%
     end
     
 end
