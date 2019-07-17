@@ -10,7 +10,6 @@ cm = load_cmap('YlGnBu',255);
 cm_alt = cm;
 load('inferno.mat');
 cm = cm(40:end,:);
-% load('matter.mat');
 cm_b = cm;
 load('viridis.mat');
 
@@ -21,7 +20,6 @@ load('viridis.mat');
 %   grid to generate x.
 
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
-    % Hogan lab: -1 -> 1.5
 
 phantom = Phantom('demonstration',span_t);
 x_t = phantom.x;
