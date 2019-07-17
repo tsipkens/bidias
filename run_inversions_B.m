@@ -1,4 +1,7 @@
 
+% RUN_INVERSIONS_B  Run inversions to find optimal regularization parameters
+% Author:           Timothy Sipkens, 2019-07-17
+%=========================================================================%
 
 %% Initial guess for iterative schemes
 b_init = b;

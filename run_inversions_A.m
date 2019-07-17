@@ -1,4 +1,7 @@
 
+% RUN_INVERSIONS_A  Single inversion of each technique using predefined parameters.
+% Author:           Timothy Sipkens, 2019-07-17
+%=========================================================================%
 
 
 %% Initial guess for iterative schemes
@@ -30,7 +33,6 @@ chi.LSQ = norm(x0-x_LS);
 
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
-% lambda_Tk0 = 1;
 tic;
 x_Tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0,sparse(length(x0),1));
 t.Tk0 = toc;
@@ -42,7 +44,6 @@ chi.Tk0(ii) = norm(x0-x_Tk0);
 
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
-% lambda_Tk1 = 1e1;
 tic;
 x_Tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1,sparse(length(x0),1));
 t.Tk1 = toc;

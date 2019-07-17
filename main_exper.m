@@ -14,11 +14,10 @@ cm = cm(40:end,:);
 % load('matter.mat');
 cm_b = cm;
 load('viridis.mat');
-% cm = load_cmap('YlGnBu',256,'hsv');
 
 
 %%
-
+%-- Load experimental data -----------------------------------------------%
 load('..\Data\Soot Data FlareNet 18\20180601_E.mat');
 % load('..\Data\Soot-Salt Data M9 Flame\data_flameM9_soot+salt_v1.mat');
 % load('..\Data\Soot-Salt Data UA May 2019\20190509_SMPS\20190509g_SMPS.mat');
@@ -48,7 +47,8 @@ semilogx(grid_b.edges{2},b_plot_rs.*b_max);
 % hold off;
 
 
-%%  Generate A and grid_x
+%%
+%-- Generate A and grid_x ------------------------------------------------%
 
 ne_x = [50,64]; % number of elements per dimension in x
     % [20,32]; % used for plotting projections of basis functions
@@ -68,7 +68,8 @@ disp('Evaluate kernel...');
 A = gen_A(grid_b,grid_x); % generate A matrix based on grid for x and b
 
 
-%% Exponential, rotated
+%% 
+%-- Perfrom exponential, rotated regularization --------------------------%
 
 s1 = 1.0;
 s2 = 0.1;
@@ -88,7 +89,8 @@ disp(' ');
 x_plot = x_expRot;
 
 
-%% Estimate mass-mobility relation
+%%
+%-- Estimate mass-mobility relation --------------------------------------%
 
 figure(40);
 colormap(gcf,cm);

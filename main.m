@@ -13,7 +13,6 @@ cm = cm(40:end,:);
 % load('matter.mat');
 cm_b = cm;
 load('viridis.mat');
-% cm = load_cmap('YlGnBu',256,'hsv');
 
 
 %%
@@ -112,7 +111,6 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 run_inversions_C;
 
 
-
 %%
 x_plot = x_Tk1;
 
@@ -133,65 +131,6 @@ semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
 figure(10);
 
 
-%% Statistical approach: uncertainty analysis
-%{
-t0 = Lb*A;
-S_li_inv = t0'*t0;
-s_li = sqrt(1./diag(S_li_inv));
-
-figure(50);
-colormap(gcf,cm_magma);
-% grid_x.plot2d(s_li./max(x0));
-% caxis([0,6]);
-grid_x.plot2d(log10(s_li./max(x0)));
-caxis([-2,log10(6)]);
-colorbar;
-
-
-[~,ind_lambda] = min(out_Tk0.chi);
-[~,~,L_Tk0] = tikhonov(Lb*A,Lb*b,n_x(1),out_Tk0.lambda(ind_lambda),1);
-
-S_Tk0_inv = t0'*t0+L_Tk0'*L_Tk0;
-s_Tk0 = sqrt(1./diag(S_Tk0_inv));
-
-figure(51);
-colormap(gcf,cm_magma);
-% grid_x.plot2d(s_Tk0./max(x0));
-% caxis([0,6]);
-grid_x.plot2d(log10(s_Tk0./max(x0)));
-caxis([-2,log10(6)]);
-colorbar;
-
-[~,ind_lambda] = min(out_Tk1.chi);
-[~,~,L_Tk1] = tikhonov(Lb*A,Lb*b,n_x(1),out_Tk1.lambda(ind_lambda),1);
-
-S_Tk1_inv = t0'*t0+L_Tk1'*L_Tk1;
-s_Tk1 = sqrt(1./diag(S_Tk1_inv));
-
-figure(52);
-colormap(gcf,cm_magma);
-% grid_x.plot2d(s_Tk1./max(x_Tk1));
-% caxis([0,0.2]);
-grid_x.plot2d(log10(s_Tk1./max(x0)));
-caxis([-2,log10(6)]);
-colorbar;
-
-
-[~,ind_lambda] = min(out_Tk2.chi);
-[~,~,L_Tk2] = tikhonov(Lb*A,Lb*b,n_x(1),out_Tk2.lambda(ind_lambda),1);
-
-S_Tk2_inv = t0'*t0+L_Tk2'*L_Tk2;
-s_Tk2 = sqrt(1./diag(S_Tk2_inv));
-
-figure(53);
-colormap(gcf,cm_magma);
-% grid_x.plot2d(s_Tk2./max(x_Tk2));
-% caxis([0,0.2]);
-grid_x.plot2d(log10(s_Tk2./max(x0)));
-caxis([-2,log10(6)]);
-colorbar;
-%}
-
 %% Bar plot of results
 
 figure(30);
@@ -204,6 +143,7 @@ end
 bar(chi_vals);
 ylim([0,4]);
 set(gca,'xticklabel',chi_names);
+
 
 %% Bar plot of times
 
