@@ -4,8 +4,11 @@ clc;
 close all;
 
 
+%%
 %-- Load colour schemes --------------------------------------------------%
 addpath('cmap');
+cm = load_cmap('YlGnBu',255);
+cm_alt = cm;
 load('inferno.mat');
 cm = cm(40:end,:);
 % load('matter.mat');
@@ -82,24 +85,7 @@ disp('Performing rotated exponential distance regularization...');
 disp('Inversion complete.');
 disp(' ');
 
-%%
 x_plot = x_expRot;
-
-figure(10);
-colormap(gcf,cm);
-grid_x.plot2d_marg(x_plot);
-
-figure(13);
-n1 = ceil(grid_x.ne(1)./20);
-n2 = floor(grid_x.ne(1)/n1);
-n3 = floor(240/n2);
-cm_x = cm(10:n3:250,:);
-set(gca,'ColorOrder',cm_x,'NextPlot','replacechildren');
-x_plot_rs = reshape(x_plot,grid_x.ne);
-semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
-
-figure(10);
-
 
 
 %% Estimate mass-mobility relation
@@ -108,23 +94,27 @@ figure(40);
 colormap(gcf,cm);
 grid_x.plot2d_marg(x_plot);
 [Dm,k,rho_100] = grid_x.fit_mass_mob(x_plot,[2.1,-0.1]);
+xlabel('log_{10}(d)');
+ylabel('log_{10}(m)');
 
 
-%% Plots for effective density
-
+%-- Plots for effective density ------------------------------------------%
 [y,grid_rho] = ...
     tools.mass2rho(x_expRot,grid_x);
 
 figure(31);
-colormap(gcf,cm);
+colormap(gcf,cm_alt);
 grid_rho.plot2d_marg(y);
+xlabel('log_{10}(d)');
+ylabel('log_{10}(\rho_{eff})');
 
-if 1
+if 0
     [m,b] = grid_rho.fit_mass_mob(y,[2,2.8],-0.6);
 else
     grid_rho.plot_line_overlay([0,log10(6*k/pi)+9],Dm-3,'w');
-
     rho = 2000; % density of base material
     dpe = 10.^((log10(6*k/(pi*rho))+9)/(3-Dm));
 end
+
+
 

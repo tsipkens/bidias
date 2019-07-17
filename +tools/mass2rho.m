@@ -6,11 +6,8 @@
 function [y,grid_rho] = mass2rho(x,grid_x,n_rho)
 
 %-- Parse inputs -----------------------------------%
-if ~exist('n_rho','var') % if number of points in rho_n not specified
-    n_rho = 100;
-elseif isempty(n_rho)
-    n_rho = 100;
-end
+if ~exist('n_rho','var'); n_rho = []; end
+if isempty(n_rho); n_rho = 600; end
 
 rho_min = 100;
 rho_max = 10000;
