@@ -42,7 +42,7 @@ span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % should be uniform basis
 
-A_t = gen_A(grid_b,grid_t); % generate A matrix based on grid for x_t and b
+A_t = kernel.gen_A(grid_b,grid_t); % generate A matrix based on grid for x_t and b
 % load('A_t_v10.mat'); % v10, v11
 
 

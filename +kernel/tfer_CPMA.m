@@ -1,8 +1,9 @@
 
-function [Lambda,prop] = tfer_CPMA(m_star,m,d,z,prop,opt,varargin)
 % TFER_CPMA     Bridging function used to evaluate CPMA transfer function.
 % Author:       Timothy Sipkens, 2018-12-27
-%
+%=========================================================================%
+
+function [Lambda,prop] = tfer_CPMA(m_star,m,d,z,prop,opt,varargin)
 %--------------------------------------------------------------------------%
 % Inputs:
 %   m_star      Mass corresponding to the measurement set point of the APM

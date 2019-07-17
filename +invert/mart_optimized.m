@@ -1,17 +1,21 @@
+
+% MART_OPTIMIZED  Finds optimal number of iterations for MART solver.
+% Author:         Timothy Sipkens, 2019-02-13
+%=========================================================================%
+
 function [x,iter,out] = mart_optimized(A,b,x0,iter_vec,x_ex)
-% MART_OPTIMIZED Finds optimal number of iterations for MART solver.
-%
 %-------------------------------------------------------------------------%
 % Inputs:
-%   A       Model matrix
-%   b       Data
-%   x0      Initial guess
-%   span    Span of considered MART iterations, 1x2 int
+%   A           Model matrix
+%   b           Data
+%   x0          Initial guess
+%   iter_vec    Vector fo iteration counts
+%   x_ex        Exact solution
 %
 % Output:
-%   x       MART estimate
-%   iter    Optimized number of iterations
-%   out     Struct containing other information
+%   x           MART estimate
+%   iter        Optimized number of iterations
+%   out         Struct containing other information
 %-------------------------------------------------------------------------%
 
 disp(' ');
@@ -29,10 +33,6 @@ for ii=2:length(iter_vec)
     out.chi(ii) = norm(out.x(:,ii)-x_ex);
     textbar(ii/length(iter_vec));
 end
-
-[~,ind_min] = min(out.chi);
-iter = iter_vec(ind_min);
-x = out.x(:,ind_min);
 
 iter = length(iter_vec);
 x = out.x(:,end);

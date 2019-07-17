@@ -49,13 +49,11 @@ semilogx(grid_b.edges{2},b_plot_rs.*b_max);
 
 %%
 %-- Generate A and grid_x ------------------------------------------------%
-
 ne_x = [50,64]; % number of elements per dimension in x
     % [20,32]; % used for plotting projections of basis functions
     % [40,64]; % used in evaluating previous versions of regularization
 
 span = [10^-2,50;10,10^3];
-    % Hogan lab: -1 -> 1.5
 grid_x = Grid(span,...
     ne_x,'logarithmic');
 
@@ -64,17 +62,15 @@ edges_x = grid_x.edges;
 n_x = grid_x.ne;
 
 disp('Evaluate kernel...');
-% load('A_3.mat');
-A = gen_A(grid_b,grid_x); % generate A matrix based on grid for x and b
+A = kernel.gen_A(grid_b,grid_x); % generate A matrix based on grid for x and b
 
 
 %% 
 %-- Perfrom exponential, rotated regularization --------------------------%
-
 s1 = 1.0;
 s2 = 0.1;
 dtot = @(d1,d2) sqrt(exp(d1).^2+exp(d2).^2);
-theta = -atan2(1,2.5);%-45/180*pi;%-atan2(3,1);
+theta = -atan2(1,2.5);
 Lex = diag([1/s1,1/s2])*...
     [cos(theta),-sin(theta);sin(theta),cos(theta)];
 lambda_expRot = 1e-3; % 5e-4
@@ -91,7 +87,6 @@ x_plot = x_expRot;
 
 %%
 %-- Estimate mass-mobility relation --------------------------------------%
-
 figure(40);
 colormap(gcf,cm);
 grid_x.plot2d_marg(x_plot);
@@ -110,13 +105,10 @@ grid_rho.plot2d_marg(y);
 xlabel('log_{10}(d)');
 ylabel('log_{10}(\rho_{eff})');
 
-if 0
-    [m,b] = grid_rho.fit_mass_mob(y,[2,2.8],-0.6);
-else
-    grid_rho.plot_line_overlay([0,log10(6*k/pi)+9],Dm-3,'w');
-    rho = 2000; % density of base material
-    dpe = 10.^((log10(6*k/(pi*rho))+9)/(3-Dm));
-end
+% [m,b] = grid_rho.fit_mass_mob(y,[2,2.8],-0.6);
+grid_rho.plot_line_overlay([0,log10(6*k/pi)+9],Dm-3,'w');
+rho = 2000; % density of base material
+dpe = 10.^((log10(6*k/(pi*rho))+9)/(3-Dm));
 
 
 

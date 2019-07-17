@@ -335,10 +335,80 @@ classdef Grid
         %=================================================================%
         
         
-        %== Data visualization ===========================================%
-        [h,x] = plot2d(obj,x); % plots x on the grid
-        h = plot2d_marg(obj,x,obj_t,x_t)
-            % plot x on the grid, with marginal distributions
+        %== PLOT2D =======================================================%
+        %   Plots x on the grid.
+        %   Author: Timothy Sipkens, 2018-11-21
+        function [h,x] = plot2d(obj,x)
+            
+            x = reshape(x,obj.ne);
+            
+            if strcmp('linear',obj.discrete)
+                imagesc(obj.edges{2},obj.edges{1},x);
+                set(gca,'YDir','normal');
+                
+                xlim(obj.span(2,:));
+                ylim(obj.span(1,:));
+                
+            elseif strcmp('logarithmic',obj.discrete)
+                imagesc(log10(obj.edges{2}),log10(obj.edges{1}),x);
+                set(gca,'YDir','normal');
+                
+                xlim(log10(obj.span(2,:)));
+                ylim(log10(obj.span(1,:)));
+            end
+
+            if nargout>0; h = gca; end
+            
+        end
+        %=================================================================%
+        
+        
+        %== PLOT2D_MARG ==================================================%
+        %   Plots x on the grid, with marginalized distributions.
+        %   Author: Timothy Sipkens, 2018-11-21
+        function h = plot2d_marg(obj,x,obj_t,x_t)
+
+            subplot(4,4,[5,15]);
+            obj.plot2d(x);
+
+            x_m = obj.marginalize(x);
+
+
+            subplot(4,4,[1,3]);
+            marg_dim = 2;
+            stairs(obj.nodes{marg_dim},...
+                [x_m{marg_dim},0],'k');
+            xlim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
+            set(gca,'XScale','log');
+
+            if nargin>2
+                x_m_t = obj_t.marginalize(x_t);
+
+                hold on;
+                plot(obj_t.nodes{marg_dim},...
+                    [x_m_t{marg_dim},0],'color',[0.6,0.6,0.6]);
+                hold off;
+            end
+
+
+            subplot(4,4,[8,16]);
+            marg_dim = 1;
+            stairs([0;x_m{marg_dim}],...
+                obj.nodes{marg_dim},'k');
+            ylim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
+            set(gca,'YScale','log');
+
+            if nargin>2
+                hold on;
+                plot([0;x_m_t{marg_dim}],...
+                    obj_t.nodes{marg_dim},'color',[0.6,0.6,0.6]);
+                hold off;
+            end
+
+            subplot(4,4,[5,15]);
+            if nargout>0; h = gca; end
+
+        end
         %=================================================================%
         
         
@@ -384,6 +454,7 @@ classdef Grid
                 ind(:,ii) = ind_temp;
             end
         end
+        %=================================================================%
     end
 end
 
