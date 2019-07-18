@@ -37,6 +37,7 @@ classdef Grid
     methods
         %== GRID =========================================================%
         %   Class constructor.
+        function obj = Grid(span_edges,ne,discrete)
         %-----------------------------------------------------------------%
         % Inputs: 
         %   span_edges  Either (i) a span over which discretization occurs 
@@ -47,7 +48,6 @@ classdef Grid
         %               marginalization and/or discretization
         %               Possible values: 'linear' or 'logarithmic' (default)
         %-----------------------------------------------------------------%
-        function obj = Grid(span_edges,ne,discrete)
         
             if isa(span_edges,'cell') % consider case where edges are given
                 obj.edges = span_edges;
@@ -76,9 +76,9 @@ classdef Grid
         
         
         %== MESH =========================================================%
-        %   Responsible for generating a mesh represented by a series of 
-        %   nodes.
+        %   Responsible for generating a mesh represented by a series of nodes.
         %   Author:	Timothy Sipkens, 2019-02-03
+        function obj = mesh(obj)
         %-----------------------------------------------------------------%
         %   Currently setup to do simple linear or logarithmic spaced 
         %   quadrilateral mesh.
@@ -87,8 +87,7 @@ classdef Grid
         %   a matrix, with a row for each node and a column for each 
         %   dimension.
         %-----------------------------------------------------------------%
-        function obj = mesh(obj)
-            
+        
             obj.Ne = prod(obj.ne);
             
             %-- If required, generate edge discretization vectors --------%
@@ -131,16 +130,16 @@ classdef Grid
         
         %== PROJECT =========================================================%
         %   Project x onto current grid. Uses simple linear
-        %   interpolation for this purpose.
-        %   'edges_old' corresponds to edges of the original grid.
-        function x = project(obj,edges_old,x)
+        %   interpolation for this purpose. The parameter 'edges_old' 
+        %   corresponds to edges of the original grid.
+        function x = project(obj,edges_orig,x)
             
-            n1 = length(edges_old{1});
-            n2 = length(edges_old{2});
+            n1 = length(edges_orig{1});
+            n2 = length(edges_orig{2});
             x = reshape(x,[n1,n2]);
             
             [edges1,edges2] = ndgrid(obj.edges{1},obj.edges{2});
-            [edges_old1,edges_old2] = ndgrid(edges_old{1},edges_old{2});
+            [edges_old1,edges_old2] = ndgrid(edges_orig{1},edges_orig{2});
             F = griddedInterpolant(edges_old1,edges_old2,x,'linear','linear');
             
             x = F(edges1,edges2);
@@ -244,6 +243,7 @@ classdef Grid
         %   Prefrom a ray sum for a given ray and the current grid. 
         %   Based on:	Code from Samuel Grauer
         %   Author:     Timothy Sipkens, 2019-07-14
+        function A = ray_sum(obj,v0,slope,opt_bar)
         %-----------------------------------------------------------------%
         % Inputs:
         %   v0      A single point on the time
@@ -252,7 +252,6 @@ classdef Grid
         % Outputs:
         %   A       Ray-sum matrix
         %-----------------------------------------------------------------%
-        function A = ray_sum(obj,v0,slope,opt_bar)
             
             %-- Preallocate arrays ---------------------------------------%
             m = size(slope,1);
@@ -309,7 +308,7 @@ classdef Grid
         
         %== FIT_MASS_MOB =================================================%
         %   Fits the mass-mobility relation to the returned distribution.
-        %   Author:     Timothy Sipkens, 2019-07-15
+        %   Author: Timothy Sipkens, 2019-07-15
         function [Dm,k,rho_100] = fit_mass_mob(obj,x,v0,slope,opt_plot)
             
             if ~exist('slope','var'); slope = []; end
@@ -408,6 +407,50 @@ classdef Grid
             subplot(4,4,[5,15]);
             if nargout>0; h = gca; end
 
+        end
+        %=================================================================%
+        
+        
+        %== PLOT_MARG ====================================================%
+        %   Plot marginal distributions
+        %   Author:	Timothy Sipkens, 2019-07-17
+        function [] = plot_marginal(obj,x,dim,x0)
+        %-----------------------------------------------------------------%
+        %   x	Can be a cell array containing multiple x vectors
+        %-----------------------------------------------------------------%
+            
+            if ~iscell(x); x = {x}; end
+                % if input is not cell, covert it to one
+            
+            if ~exist('dim','var'); dim = []; end
+            if ~exist('x0','var'); x0 = x{1}; end
+            
+            if isempty(dim); dim = 1; end
+            if ~isempty(x0); x0_m = obj.marginalize(x0); end
+            
+            for ii=1:length(x) % plot other provided x
+                
+                x_m = obj.marginalize(x{ii});
+                
+                subplot(3,1,1);
+                if ~isempty(findall(gca,'type','line')); hold on; end
+                semilogx(obj.edges{dim},x_m{dim}-x0_m{dim});
+                hold off;
+                
+                subplot(3,1,2:3);
+                if ~isempty(findall(gca,'type','line')); hold on; end
+                semilogx(obj.edges{dim},x_m{dim});
+                hold off;
+                
+            end
+            
+            %-- Set axes limits ------------------------------------------%
+            subplot(3,1,2:3);
+            xlim([min(obj.edges{dim}),max(obj.edges{dim})]);
+            
+            subplot(3,1,1);
+            xlim([min(obj.edges{dim}),max(obj.edges{dim})]);
+            
         end
         %=================================================================%
         

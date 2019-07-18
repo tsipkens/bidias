@@ -159,47 +159,13 @@ set(gca,'yscale','log');
 
 %% Plot marginal distributions
 
-x_t_m = grid_t.marginalize(x_t);
-x0_m = grid_x.marginalize(x0);
-x_LS_m = grid_x.marginalize(x_LS);
-x_Tk0_m = grid_x.marginalize(x_Tk0);
-x_Tk1_m = grid_x.marginalize(x_Tk1);
-x_init_m = grid_x.marginalize(x_init);
-x_MART_m = grid_x.marginalize(x_MART);
-x_Two_m = grid_x.marginalize(x_Two);
-x_TwoMH_m = grid_x.marginalize(x_TwoMH);
-
+figure(31);
+clf;
 dim = 2;
 
-figure(31);
-subplot(3,1,2:3);
-semilogx(grid_t.edges{dim},x_t_m{dim},'k');
-hold on;
-% semilogx(grid_x.edges{dim},x_LS_m{dim});
-% semilogx(grid_x.edges{dim},x_Tk0_m{dim});
-semilogx(grid_x.edges{dim},x_Tk1_m{dim});
-semilogx(grid_x.edges{dim},x_init_m{dim});
-semilogx(grid_x.edges{dim},x_MART_m{dim});
-semilogx(grid_x.edges{dim},x_Two_m{dim});
-semilogx(grid_x.edges{dim},x_TwoMH_m{dim});
-hold off;
-xlim([min(grid_x.edges{dim}),max(grid_x.edges{dim})]);
-% ylim([0,1.4]);
-
-subplot(3,1,1);
-semilogx(grid_t.edges{dim},0.*x_t_m{dim},'k');
-hold on;
-% semilogx(grid_x.edges{dim},x_LS_m{dim}-x0_m{dim});
-% semilogx(grid_x.edges{dim},x_Tk0_m{dim}-x0_m{dim});
-semilogx(grid_x.edges{dim},x_Tk1_m{dim}-x0_m{dim});
-semilogx(grid_x.edges{dim},x_init_m{dim}-x0_m{dim});
-semilogx(grid_x.edges{dim},x_MART_m{dim}-x0_m{dim});
-semilogx(grid_x.edges{dim},x_Two_m{dim}-x0_m{dim});
-semilogx(grid_x.edges{dim},x_TwoMH_m{dim}-x0_m{dim});
-hold off;
-xlim([min(grid_x.edges{dim}),max(grid_x.edges{dim})]);
-ylimits = ylim;
-ylim(sign(ylimits).*ceil(abs(ylimits)*20)/20);
+grid_t.plot_marginal(x_t,dim);
+grid_x.plot_marginal(...
+    {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
 
 
 %% Plot conditional distributions
@@ -228,15 +194,6 @@ ylim([0,1500]);
 xlim([50,500]);
 %}
 
-%{
-plot3(1.*ones(length(grid_x.edges{2}),1),log10(grid_x.edges{2}),x_LS_rs(ind_plot,:))
-hold on;
-plot3(2.*ones(length(grid_x.edges{2}),1),log10(grid_x.edges{2}),x_Tk1_rs(ind_plot,:))
-plot3(3.*ones(length(grid_x.edges{2}),1),log10(grid_x.edges{2}),x_TwoMH_rs(ind_plot,:))
-plot3(4.*ones(length(grid_x.edges{2}),1),log10(grid_x.edges{2}),x_MART_rs(ind_plot,:))
-% plot3(5.*ones(length(grid_x.edges{2}),1),log10(grid_x.edges{2}),x_expRot_rs(ind_plot,:))
-hold off;
-xlim([0,5]);
-zlim([0,1000]);
-%}
+
+
 
