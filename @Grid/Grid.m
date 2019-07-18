@@ -419,6 +419,7 @@ classdef Grid
         %   x	Can be a cell array containing multiple x vectors
         %-----------------------------------------------------------------%
             
+            %-- Parse inputs ---------------------------------------------% 
             if ~iscell(x); x = {x}; end
                 % if input is not cell, covert it to one
             
@@ -428,21 +429,26 @@ classdef Grid
             if isempty(dim); dim = 1; end
             if ~isempty(x0); x0_m = obj.marginalize(x0); end
             
+            
+            %-- Plot entries in x ----------------------------------------%
             for ii=1:length(x) % plot other provided x
-                
                 x_m = obj.marginalize(x{ii});
                 
+                %-- Plot difference --%
                 subplot(3,1,1);
                 if ~isempty(findall(gca,'type','line')); hold on; end
+                    % if not the first line in the plot, hold on
                 semilogx(obj.edges{dim},x_m{dim}-x0_m{dim});
                 hold off;
                 
+                %-- Plot marginal distribution --%
                 subplot(3,1,2:3);
                 if ~isempty(findall(gca,'type','line')); hold on; end
+                    % if not the first line in the plot, hold on
                 semilogx(obj.edges{dim},x_m{dim});
                 hold off;
-                
             end
+            
             
             %-- Set axes limits ------------------------------------------%
             subplot(3,1,2:3);
@@ -450,7 +456,6 @@ classdef Grid
             
             subplot(3,1,1);
             xlim([min(obj.edges{dim}),max(obj.edges{dim})]);
-            
         end
         %=================================================================%
         

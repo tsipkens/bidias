@@ -102,14 +102,13 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 % hold off;
 
 
-%%
-%-- Perform inversions ---------------------------------------------------%
+%% Perform inversions
 % run_inversions_A;
 % run_inversions_B;
 run_inversions_C;
 
 
-%%
+%% Plot solution
 x_plot = x_Tk1;
 
 figure(10);
@@ -130,7 +129,6 @@ figure(10);
 
 
 %% Bar plot of results
-
 figure(30);
 chi_names = fieldnames(chi);
 chi_vals = zeros(length(chi_names),1);
@@ -144,7 +142,6 @@ set(gca,'xticklabel',chi_names);
 
 
 %% Bar plot of times
-
 figure(40);
 t_names = fieldnames(t);
 t_vals = zeros(length(t_names),1);
@@ -158,7 +155,6 @@ set(gca,'yscale','log');
 
 
 %% Plot marginal distributions
-
 figure(31);
 clf;
 dim = 2;
