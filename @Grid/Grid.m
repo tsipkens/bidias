@@ -335,7 +335,7 @@ classdef Grid
         
         
         %== PLOT2D =======================================================%
-        %   Plots x on the grid.
+        %   Plots x as a 2D function on the grid.
         %   Author: Timothy Sipkens, 2018-11-21
         function [h,x] = plot2d(obj,x)
             
@@ -363,7 +363,7 @@ classdef Grid
         
         
         %== PLOT2D_MARG ==================================================%
-        %   Plots x on the grid, with marginalized distributions.
+        %   Plots x as a 2D function on the grid, with marginalized distributions.
         %   Author: Timothy Sipkens, 2018-11-21
         function h = plot2d_marg(obj,x,obj_t,x_t)
 

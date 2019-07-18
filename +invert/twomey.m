@@ -1,8 +1,9 @@
 
-function [x] = twomey(A,b,x0,iter,Lb,SIGMA)
-% TWOMEY Performs inversion using the iterative Twomey approach.
-% Author:   Timothy Sipkens, 2018-11-21
-%
+% TWOMEY   Performs inversion using the iterative Twomey approach.
+% Author:  Timothy Sipkens, 2018-11-21
+%=========================================================================%
+
+function [x] = twomey(A,b,x0,iter,Lb,SIGMA,bool_textbar)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
@@ -18,16 +19,23 @@ function [x] = twomey(A,b,x0,iter,Lb,SIGMA)
 
 
 %-- Parse inputs ---------------------------------------------------------%
+if ~exist('bool_textbar','var'); bool_textbar = []; end
+if isempty(bool_textbar); bool_textbar = 0; end
+
 if or(~exist('SIGMA','var'),~exist('Lb','var')) % controls exit conditions
-    opt_SIGMA = 0;
+    bool_SIGMA = 0;
 elseif or(isempty(SIGMA),isempty(Lb))
-    opt_SIGMA = 0;
+    bool_SIGMA = 0;
 else
-    opt_SIGMA = 1;
+    bool_SIGMA = 1;
 end
 
-b0 = b;
-A0 = A;
+
+%-- Start evaluation -----------------------------------------------------%
+if bool_SIGMA
+    b0 = b;
+    A0 = A;
+end
 
 s = 1./max(A,[],2); % factor to scale data and model matrix
 s_min = max(max(A,[],2))*1e-10;
@@ -35,8 +43,10 @@ s(max(A,[],2)<s_min) = 0;
 A = bsxfun(@times,s,A); % scale model matrix
 b = max(b.*s,0); % remove any negative data, scale data
 
-% fprintf('Twomey progress: ');
-% textbar(0); % outputs progresss
+if bool_textbar
+    disp('Twomey progress:');
+    tools.textbar(0); % outputs progresss
+end
 
 x = x0;
 factor = 1; % factor, allows one to decrease step size in Twomey
@@ -54,18 +64,10 @@ for kk=1:iter % perform multiple Twomey passes
         end
     end
     
-%     y = A*x;
-%     nz = and(y~=0,b~=0); % boolean of non-zero values
-%     X = b(nz)./y(nz);
-%     C = 1+A(nz,:)'*(X-1);
-%     x = C.*x;
-    
-%     if mod(kk,1)==0
-%     	textbar(kk/iter); % outputs progresss
-%     end
+    if bool_textbar; tools.textbar(kk/iter); end % outputs progresss
     
     %-- Exit conditions if SIGMA is specific (e.g. Twomey-Markowski) ----%
-    if opt_SIGMA
+    if bool_SIGMA
         if calcMeanSqErr(Lb*A0,x,Lb*b0)<SIGMA % average square error for cases where b~= 0
             disp(['TWOMEY: SIGMA dropped below value specified after ',num2str(kk),...
                 ' iteration(s). Exiting Twomey loop.']);

@@ -129,7 +129,7 @@ classdef Phantom
     
     methods(Static)
         %== GEN_PHANTOM ==================================================%
-        %   Generates a mass-mobiltiy distribution phantom.
+        %   Generates a mass-mobiltiy distribution phantom from a set of parameters.
         %   Author:     Timothy Sipkens, 2018-12-04
         function [x,grid,mg] = gen_phantom(param,span)
             

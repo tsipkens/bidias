@@ -117,6 +117,7 @@ colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x_plot,grid_t,x_t);
 caxis([0,cmax*(1+1/256)]);
 
+%{
 figure(13);
 n1 = ceil(grid_x.ne(1)./20);
 n2 = floor(grid_x.ne(1)/n1);
@@ -127,6 +128,7 @@ x_plot_rs = reshape(x_plot,grid_x.ne);
 semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
 
 figure(10);
+%}
 
 
 %%
@@ -164,10 +166,13 @@ clf;
 dim = 2;
 
 grid_t.plot_marginal(x_t,dim);
+% grid_x.plot_marginal(...
+%     {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
 grid_x.plot_marginal(...
-    {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
+    {x_Tk1},dim,x0);
 
 
+%{
 %%
 %-- Plot conditional distributions ---------------------------------------%
 figure(31);
@@ -177,6 +182,6 @@ ind_plot = 25;
 
 grid_x.plot_conditional(...
     {x0,x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,ind_plot,x0);
-
+%}
 
 

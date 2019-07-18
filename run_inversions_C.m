@@ -46,4 +46,15 @@ disp(' ');
 chi.Tk2 = norm(x0-x_Tk2);
 
 
+%% Twomey
+%-- Perform Twomey algorithm ----------------------------%
+disp('Performing Twomey...');
+tic;
+x_Two = invert.twomey(A,b,x_init,500,[],[],1);
+t.Two = toc;
+
+disp('Completed Twomey.');
+disp(' ');
+
+chi.Two = norm(x0-x_Two);
 

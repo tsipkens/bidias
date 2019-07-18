@@ -99,7 +99,6 @@ chi.MART = norm(x0-x_MART);
 
 
 %% Twomey
-
 %-- Perform Twomey algorithm ----------------------------%
 disp('Performing Twomey...');
 tic;
@@ -113,11 +112,10 @@ chi.Two = norm(x0-x_Two);
 
 
 %% Twomey-Markowski-Buckley
-
 disp('Performing Twomey-Markowski-Buckley...');
 
 tic;
-x_TwoMH = invert.twomey_markowski(A,b,Lb,n_x(1),...
+x_TwoMH = invert.twomark(A,b,Lb,n_x(1),...
     x_init,35,'Buckley',1/Sf_TwoMH);
 t.TwoMH(ii) = toc;
 

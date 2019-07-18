@@ -1,6 +1,8 @@
-function [x,lambda,out] = tikhonov_optimized(A,b,n,span,x_ex,order,x0,solver)
-%TIKHONOV_OPTIMIZED     Finds optimal lambda for Tikhonov solver using known distribution, x.
-%
+
+% OPTIMIZE_TIKHONOV  Finds optimal lambda for Tikhonov solver using known distribution, x.
+%=========================================================================%
+
+function [x,lambda,out] = optimize_tikhonov(A,b,n,span,x_ex,order,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix

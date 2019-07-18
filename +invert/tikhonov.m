@@ -1,8 +1,9 @@
 
-function [x,D,Lx] = tikhonov(A,b,n,lambda,order,x0,solver)
-% TIKHONOV  Performs inversion using various order Tikhonov regularization in two-dimensions.
+% TIKHONOV  Performs inversion using various order Tikhonov regularization in 2D.
 % Author:   Timothy Sipkens, 2018-11-21
-%
+%=========================================================================%
+
+function [x,D,Lx] = tikhonov(A,b,n,lambda,order,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -28,7 +29,7 @@ if ~exist('solver','var'); solver = []; end
 
 if isempty(order); order = 1; end % if order not specified
 if isempty(x0); x0 = sparse(x_length,1); end % if initial guess is not specified
-if isempty(solver); solver = 'lsqnonneg'; end % if computation method not specified
+if isempty(solver); solver = 'interior-point'; end % if computation method not specified
 %-------------------------------------------------------------------------%
 
 
@@ -51,16 +52,12 @@ end
 
 %-- Choose and execute solver --------------------------------------------%
 switch solver
-    case 'lsqnonneg'
-        x = lsqnonneg([A;Lx],[b;sparse(x_length,1)]);
-        D = [];
-        
     case 'interior-point' % constrained, iterative linear least squares
         options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
         x = lsqlin([A;Lx],[b;sparse(x_length,1)],...
             [],[],[],[],x0,[],[],options);
         D = []; % not specified when using this method
-
+        
     case 'trust-region-reflective'
         D = ([A;Lx]'*[A;Lx])\[A;Lx]'; % invert combined matrices to get first guess
         x0 = D*[b;Lx*zeros(x_length,1)];
@@ -68,7 +65,7 @@ switch solver
         options = optimoptions('lsqlin','Algorithm','trust-region-reflective');
         x = lsqlin([A;Lx],[b;sparse(x_length,1)],...
             [],[],[],[],x0,[],max(x0,0),options);
-
+        
     case 'algebraic' % matrix multiplication least squares (not non-negative constrained)
         D = ([A;Lx]'*[A;Lx])\[A;Lx]'; % invert combined matrices
         x = D*[b;Lx*sparse(x_length,1)];
@@ -80,10 +77,12 @@ switch solver
 end
 
 end
+%=========================================================================%
 
 
+%== GENLX1 ===============================================================%
+%   Generates Tikhonov matrix for 1st order Tikhonov regularization.
 function Lx = genLx1(n,x_length)
-% GENLX1 Generates Tikhonov matrix for 1st order Tikhonov regularization.
 %-------------------------------------------------------------------------%
 % Inputs:
 %   n           Length of first dimension of solution
@@ -114,11 +113,12 @@ end
 Lx = sparse(Lx);
  
 end
+%=========================================================================%
 
 
+%== GENLX2 ===============================================================%
+%   Generates Tikhonov matrix for 2nd order Tikhonov regularization.
 function Lx = genLx2(n,x_length)
-% GENLX2 Generates Tikhonov matrix for 2nd order Tikhonov regularization.
-%-------------------------------------------------------------------------%
 % Inputs:
 %   n           Length of first dimension of solution
 %   x_length    Length of x vector
@@ -156,5 +156,5 @@ end
 Lx = sparse(Lx);
 
 end
-
+%=========================================================================%
 
