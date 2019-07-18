@@ -8,8 +8,6 @@ classdef Phantom
     
     %-- Phantom properties -----------------------------------------------%
     properties
-        n_modes = []; % number of modes
-        
         param@struct = struct(...
             'rho',[],... % effective density at mean diameter [kg/m3]
             'Dm',[],... % mass-mobility exponent
@@ -22,8 +20,10 @@ classdef Phantom
             'mg_fun',[]... % ridge of the mass-mobility distribution (function handle)
             );
         
-        grid = []; % grid phantom is evaluated on (high dimension)
+        n_modes = []; % number of modes
         x = []; % evaluated phantom
+        grid = []; % grid phantom is represented on
+                   % generally a high resolution mesh
     end
     
     
@@ -98,26 +98,24 @@ classdef Phantom
                 case 'fit' % fits a distribution to data in param
                     x = varargin{1};
                     grid = varargin{2};
-                    
+                    error('Under construction...');
                     
                 otherwise % for custom phantom
-                    if ~exist('param','var'); error('Specify phantom.'); end
+                    if ~exist('varargin','var'); error('Specify phantom.'); end
                     if isempty(varargin); error('Specify phantom.'); end
-                    
-                    for ii=1:length(varargin.fields)
-                        
-                    end
+                    obj.param = varargin;
             end
-            obj.n_modes = length(obj.param);
+            
+            obj.n_modes = length(obj.param); % get number of modes
             
             %-- Evaluate phantom -----------------------------------------%
-            [obj.x,obj.grid] = obj.gen_phantom(obj.param,span);
+            [obj.x,obj.grid] = obj.eval_phantom(obj.param,span);
 
         end
         %=================================================================%
         
         
-        %== PLOT_PHANTOM =================================================%
+        %== PLOT =========================================================%
         %   Plots the phantom mass-mobiltiy distribution phantom.
         %   Author:     Timothy Sipkens, 2019-07-08
         function [h] = plot(obj)
@@ -128,10 +126,10 @@ classdef Phantom
     end
     
     methods(Static)
-        %== GEN_PHANTOM ==================================================%
+        %== EVAL_PHANTOM =================================================%
         %   Generates a mass-mobiltiy distribution phantom from a set of parameters.
         %   Author:     Timothy Sipkens, 2018-12-04
-        function [x,grid,mg] = gen_phantom(param,span)
+        function [x,grid,mg] = eval_phantom(param,span)
             
             n_t = [540,550]; % resolution of phantom distribution
             grid = Grid(span,... 

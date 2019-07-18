@@ -1,10 +1,12 @@
 
-% GEN_A     Generate A matrix describing kernel/transfer functions
-% Author:   Timothy Sipkens, 2018-11-27
-% Note:
-%   Cell arrays are used for Omega_mat and Lambda_mat in order to allow for
-%   the use of sparse matrices, which is necessary to store information on
-%   higher resolutions grids (such as those used for phantoms).
+% GEN_A    Generate A matrix describing kernel/transfer functions
+% Author:  Timothy Sipkens, 2018-11-27
+%-------------------------------------------------------------------------%
+% Notes:
+%   Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%   allow for the use of sparse matrices, which is necessary to 
+%   store information on higher resolutions grids
+%   (such as those used for phantoms).
 %=========================================================================%
 
 function A = gen_A(grid_b,grid_i,varargin)
@@ -12,7 +14,7 @@ function A = gen_A(grid_b,grid_i,varargin)
 % Inputs:
 %   grid_b      Grid on which the data exists
 %   grid_i      Grid on which to perform integration
-%   varargin    Name-value pairs used in evaluating the CPMA tfer. func.
+%   varargin    Name-value pairs used in evaluating the CPMA tfer. fun.
 %-------------------------------------------------------------------------%
 
 addpath('UBC-tfer-PMA'); % add particle mass analyzer tfer. fun. package

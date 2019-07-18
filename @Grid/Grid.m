@@ -20,14 +20,14 @@ classdef Grid
         span = []; % span of values in each dimension
         
         elements = []; % contains position element centers
-        edges = []; % vector containing edge points of element centers
         nodes = []; % contains position of nodes surrounding elements
+        edges = []; % vector containing edge points of element centers
         
         ne = []; % number of elements in each dimenion
-        Ne = []; % total number of elements
+        Ne = []; % total number of elements, i.e. prod(ne)
         
         nn = []; % number of nodes in each dimension
-        Nn = []; % total number of nodes
+        Nn = []; % total number of nodes, i.e. prod(nn)
     end
     
     
@@ -148,6 +148,7 @@ classdef Grid
                 if strcmp(obj.discrete,'logarithmic')
                     dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
                         log10(obj.nodes{ii}(1:(end-1)));
+                
                 elseif strcmp(obj.discrete,'linear')
                     dr_0{ii} = obj.nodes{ii}(2:end)-...
                         obj.nodes{ii}(1:(end-1));
@@ -183,7 +184,7 @@ classdef Grid
         %   Uses Euler's method to integrate over domain.
         function [marg,tot] = marginalize(obj,x)
             
-            [dr,dr1,dr2] = obj.dr;
+            [dr,dr1,dr2] = obj.dr; % generate differential area of elements
             
             tot = sum(x.*dr); % integrated total
             
