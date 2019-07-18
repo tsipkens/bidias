@@ -71,7 +71,7 @@ caxis([0,cmax*(1+1/256)]);
 b0 = A_t*x_t; % forward evaluate kernel
 
 
-%-- Corrupt b with noise -------------------------------------------------%
+%-- Corrupt data with noise ----------------------------------------------%
 b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
 Ntot = 1e5;

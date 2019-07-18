@@ -1,15 +1,13 @@
 
-% GRID      Responsible for discretizing space as a grid and related operations.
-% Author:   Timothy Sipkens, 2019-02-03
-%
-% Notes:
+% GRID     Responsible for discretizing space as a grid and related operations.
+% Author:  Timothy Sipkens, 2019-02-03
+%-------------------------------------------------------------------------%
 %   The grid class is currently used when a simple discretization of
-%   space of two-dimensional space is required. 
+%   two-dimensional space is required. It then takes either the span 
+%   of spcae to be covered or pre-defined edge vectors to form a grid.
 %   
-%   See constructor method for list of variables required for creation.
-%   
-%   This class currently only generates rectangular meshes with
-%   uniform or logarithmic spacing or specified edge vectors.
+%   See constructor method for list of other variables required 
+%   for creation.
 %=========================================================================%
 
 %-- Class definition -----------------------------------------------------%
@@ -18,7 +16,7 @@ classdef Grid
     %-- Grid properties --------------------------------------------------%
     properties
         discrete = 'logarithmic'; % discretization to be applied to the edges
-        dim = []; % number of dimensions for mesh
+        dim = 2; % number of dimensions for mesh
         span = []; % span of values in each dimension
         
         elements = []; % contains position element centers
@@ -55,14 +53,11 @@ classdef Grid
                     length(span_edges{2})];
                 obj.span = [min(span_edges{1}),max(span_edges{1});...
                     min(span_edges{2}),max(span_edges{2})];
-                obj.dim = 2;
-                
-            else % consider case where span is given
+            else % otherwise, consider case where span is given
                 obj.span = span_edges;
                 obj.ne = ne;
-                obj.dim = 2;
-                
             end
+            obj.Ne = prod(obj.ne);
             
             if exist('discrete','var') % if discretization scheme is specified
                 if ~isempty(discrete)
@@ -87,13 +82,10 @@ classdef Grid
         %   a matrix, with a row for each node and a column for each 
         %   dimension.
         %-----------------------------------------------------------------%
-        
-            obj.Ne = prod(obj.ne);
             
             %-- If required, generate edge discretization vectors --------%
-            % obj.edges = cell(1,obj.dim);
             if isempty(obj.edges)
-                for ii=1:obj.dim
+                for ii=1:obj.dim % loop through both dimensions
                     if strcmp('linear',obj.discrete)
                         obj.edges{ii} = linspace(obj.span(ii,1),obj.span(ii,2),obj.ne(ii));
                     elseif strcmp('logarithmic',obj.discrete)
@@ -115,12 +107,10 @@ classdef Grid
                     r_m = exp((log(obj.edges{ii}(2:end))+log(obj.edges{ii}(1:(end-1))))./2); % mean of edges
                     obj.nodes{ii} = [exp(2*log(obj.edges{ii}(1))-log(r_m(1))),...
                         r_m, exp(2*log(obj.edges{ii}(end))-log(r_m(end)))];
-                    
                 elseif strcmp(obj.discrete,'linear')
                     r_m = (obj.edges{ii}(2:end)+obj.edges{ii}(1:(end-1)))./2; % mean of edges
                     obj.nodes{ii} = [2*obj.edges{ii}(1)-r_m(1),...
                         r_m, 2*obj.edges{ii}(end)-r_m(end)];
-                    
                 end
             end
 
@@ -366,44 +356,44 @@ classdef Grid
         %   Plots x as a 2D function on the grid, with marginalized distributions.
         %   Author: Timothy Sipkens, 2018-11-21
         function h = plot2d_marg(obj,x,obj_t,x_t)
-
+        
             subplot(4,4,[5,15]);
             obj.plot2d(x);
-
+            
             x_m = obj.marginalize(x);
-
-
+            
+            %-- Plot marginal distribution (dim 2) -----------------------%
             subplot(4,4,[1,3]);
             marg_dim = 2;
             stairs(obj.nodes{marg_dim},...
                 [x_m{marg_dim},0],'k');
             xlim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
             set(gca,'XScale','log');
-
-            if nargin>2
+            
+            if nargin>2 % also plot marginal of the true distribution
                 x_m_t = obj_t.marginalize(x_t);
-
+                
                 hold on;
                 plot(obj_t.nodes{marg_dim},...
                     [x_m_t{marg_dim},0],'color',[0.6,0.6,0.6]);
                 hold off;
             end
-
-
+            
+            %-- Plot marginal distribution (dim 1) -----------------------%
             subplot(4,4,[8,16]);
             marg_dim = 1;
             stairs([0;x_m{marg_dim}],...
                 obj.nodes{marg_dim},'k');
             ylim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
             set(gca,'YScale','log');
-
-            if nargin>2
+            
+            if nargin>2 % also plot marginal of the true distribution
                 hold on;
                 plot([0;x_m_t{marg_dim}],...
                     obj_t.nodes{marg_dim},'color',[0.6,0.6,0.6]);
                 hold off;
             end
-
+            
             subplot(4,4,[5,15]);
             if nargout>0; h = gca; end
 
