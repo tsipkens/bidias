@@ -21,23 +21,12 @@ function [Omega,Zp_tilde] = tfer_DMA(d_star,d,z,prop,opts)
 
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('opts','var')
-    opts = []; % initialize options struct
-end
+if ~exist('opts','var'); opts = []; end % initialize options struct
+if ~exist('prop','var'); prop = []; end
 
-if ~isfield(opts,'diffu')
-    opts.diffusion = true;
-end
-
-if ~isfield(opts,'solver')
-    opts.solver = 'fullydeveloped';
-end
-
-if ~exist('prop','var')
-    prop = kernel.prop_DMA(opts.solver);
-elseif isempty(prop)
-    prop = kernel.prop_DMA(opts.solver);
-end
+if ~isfield(opts,'solver'); opts.solver = 'fullydeveloped'; end
+if ~isfield(opts,'diffu'); opts.diffusion = true; end
+if isempty(prop); prop = kernel.prop_DMA(opts.solver); end
 
 
 %-- Physical constants ---------------------------------------------------%

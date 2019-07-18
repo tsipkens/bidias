@@ -18,7 +18,6 @@ load('viridis.mat');
 %-- Generate phantom (x_t) -----------------------------------------------%
 %   High resolution version of the distribution to be projected to coarse 
 %   grid to generate x.
-
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
 
 phantom = Phantom('demonstration',span_t);
@@ -102,13 +101,15 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 % hold off;
 
 
-%% Perform inversions
+%% 
+%-- Perform inversions ---------------------------------------------------%
 % run_inversions_A;
 % run_inversions_B;
 run_inversions_C;
 
 
-%% Plot solution
+%%
+%-- Plot solution --------------------------------------------------------%
 x_plot = x_Tk1;
 
 figure(10);
@@ -128,7 +129,8 @@ semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
 figure(10);
 
 
-%% Bar plot of results
+%%
+%-- Bar plot of results --------------------------------------------------%
 figure(30);
 chi_names = fieldnames(chi);
 chi_vals = zeros(length(chi_names),1);
@@ -141,7 +143,8 @@ ylim([0,4]);
 set(gca,'xticklabel',chi_names);
 
 
-%% Bar plot of times
+%%
+%-- Bar plot of times ----------------------------------------------------%
 figure(40);
 t_names = fieldnames(t);
 t_vals = zeros(length(t_names),1);
@@ -154,7 +157,8 @@ set(gca,'xticklabel',t_names);
 set(gca,'yscale','log');
 
 
-%% Plot marginal distributions
+%%
+%-- Plot marginal distributions ------------------------------------------%
 figure(31);
 clf;
 dim = 2;
@@ -164,32 +168,15 @@ grid_x.plot_marginal(...
     {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
 
 
-%% Plot conditional distributions
-
-figure(21);
+%%
+%-- Plot conditional distributions ---------------------------------------%
+figure(31);
+clf;
+dim = 2;
 ind_plot = 25;
-x_expRot_rs = reshape(x_expRot,grid_x.ne);
-x_plot_rs = reshape(x_Tk1,grid_x.ne);
-x_TwoMH_rs = reshape(x_TwoMH,grid_x.ne);
-x_Two_rs = reshape(x_Two,grid_x.ne);
-x_MART_rs = reshape(x_MART,grid_x.ne);
-x_Tk0_rs = reshape(x_Tk0,grid_x.ne);
-x_LS_rs = reshape(x_LS,grid_x.ne);
 
-%-{
-semilogx(grid_x.edges{2},x_LS_rs(ind_plot,:));
-hold on;
-semilogx(grid_x.edges{2},x_plot_rs(ind_plot,:));
-semilogx(grid_x.edges{2},x_TwoMH_rs(ind_plot,:));
-semilogx(grid_x.edges{2},x_Two_rs(ind_plot,:));
-semilogx(grid_x.edges{2},x_MART_rs(ind_plot,:));
-% semilogx(grid_x.edges{2},x_Tk0_rs(ind_plot,:));
-% semilogx(grid_x.edges{2},x_expRot_rs(ind_plot,:));
-hold off;
-ylim([0,1500]);
-xlim([50,500]);
-%}
-
+grid_x.plot_conditional(...
+    {x0,x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,ind_plot,x0);
 
 
 

@@ -22,23 +22,13 @@ function [x,D,Lx] = tikhonov(A,b,n,lambda,order,x0,solver)
 x_length = length(A(1,:));
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('order','var') % if order not specified
-    order = 1;
-elseif isempty(order)
-    order = 1;
-end
+if ~exist('order','var'); order = []; end
+if ~exist('x0','var'); x0 = []; end
+if ~exist('solver','var'); solver = []; end
 
-if ~exist('x0','var') % if initial guess is not specified
-    x0 = sparse(x_length,1);
-elseif isempty(x0)
-    x0 = sparse(x_length,1);
-end
-
-if ~exist('solver','var') % if computation method not specified
-    solver = 'interior-point';
-elseif isempty(solver)
-    solver = 'interior-point';
-end
+if isempty(order); order = 1; end % if order not specified
+if isempty(x0); x0 = sparse(x_length,1); end % if initial guess is not specified
+if isempty(solver); solver = 'lsqnonneg'; end % if computation method not specified
 %-------------------------------------------------------------------------%
 
 
@@ -61,6 +51,10 @@ end
 
 %-- Choose and execute solver --------------------------------------------%
 switch solver
+    case 'lsqnonneg'
+        x = lsqnonneg([A;Lx],[b;sparse(x_length,1)]);
+        D = [];
+        
     case 'interior-point' % constrained, iterative linear least squares
         options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
         x = lsqlin([A;Lx],[b;sparse(x_length,1)],...

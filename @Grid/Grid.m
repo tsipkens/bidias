@@ -411,7 +411,7 @@ classdef Grid
         %=================================================================%
         
         
-        %== PLOT_MARG ====================================================%
+        %== PLOT_MARGINAL ================================================%
         %   Plot marginal distributions
         %   Author:	Timothy Sipkens, 2019-07-17
         function [] = plot_marginal(obj,x,dim,x0)
@@ -424,10 +424,12 @@ classdef Grid
                 % if input is not cell, covert it to one
             
             if ~exist('dim','var'); dim = []; end
-            if ~exist('x0','var'); x0 = x{1}; end
+            if ~exist('x0','var'); x0 = []; end
             
             if isempty(dim); dim = 1; end
-            if ~isempty(x0); x0_m = obj.marginalize(x0); end
+            if isempty(x0); x0 = x{1}; end
+            
+            x0_m = obj.marginalize(x0); % reference case
             
             
             %-- Plot entries in x ----------------------------------------%
@@ -446,6 +448,63 @@ classdef Grid
                 if ~isempty(findall(gca,'type','line')); hold on; end
                     % if not the first line in the plot, hold on
                 semilogx(obj.edges{dim},x_m{dim});
+                hold off;
+            end
+            
+            
+            %-- Set axes limits ------------------------------------------%
+            subplot(3,1,2:3);
+            xlim([min(obj.edges{dim}),max(obj.edges{dim})]);
+            
+            subplot(3,1,1);
+            xlim([min(obj.edges{dim}),max(obj.edges{dim})]);
+        end
+        %=================================================================%
+        
+        
+        %== PLOT_CONDITIONAL =============================================%
+        %   Plot conditional distributions
+        %   Author:	Timothy Sipkens, 2019-07-17
+        function [] = plot_conditional(obj,x,dim,ind,x0)
+        %-----------------------------------------------------------------%
+        %   x	Can be a cell array containing multiple x vectors
+        %-----------------------------------------------------------------%
+            
+            %-- Parse inputs ---------------------------------------------% 
+            if ~iscell(x); x = {x}; end
+                % if input is not cell, covert it to one
+            
+            if ~exist('dim','var'); dim = []; end
+            if ~exist('ind','var'); ind = []; end
+            if ~exist('x0','var'); x0 = []; end
+            
+            if isempty(dim); dim = 1; end
+            if isempty(ind); ind = round(obj.ne(dim)/2); end
+            if isempty(x0); x0 = x{1}; end
+            
+            x0 = reshape(x0,obj.ne); % reference case
+            if dim==1; x0_c = x0(:,ind); end
+            if dim==2; x0_c = x0(ind,:); end
+            
+            
+            %-- Plot entries in x ----------------------------------------%
+            for ii=1:length(x) % plot other provided x
+                x_c = reshape(x{ii},obj.ne);
+                if dim==1; x_c = x_c(:,ind); end
+                if dim==2; x_c = x_c(ind,:); end
+                
+                %-- Plot difference --%
+                subplot(3,1,1);
+                if ~isempty(findall(gca,'type','line')); hold on; end
+                    % if not the first line in the plot, hold on
+                semilogx(obj.edges{dim},x_c-x0_c);
+                hold off;
+                
+                %-- Plot marginal distribution --%
+                subplot(3,1,2:3);
+                if ~isempty(findall(gca,'type','line')); hold on; end
+                    % if not the first line in the plot, hold on
+                semilogx(obj.edges{dim},x_c);
                 hold off;
             end
             
