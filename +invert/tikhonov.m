@@ -24,11 +24,11 @@ x_length = length(A(1,:));
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
-if ~exist('x0','var'); x0 = []; end
+if ~exist('x0','var'); x0 = []; end % if initial guess is not specified
 if ~exist('solver','var'); solver = []; end
 
 if isempty(order); order = 1; end % if order not specified
-if isempty(x0); x0 = sparse(x_length,1); end % if initial guess is not specified
+% if isempty(x0); x0 = sparse(x_length,1); end % if initial guess is not specified
 if isempty(solver); solver = 'interior-point'; end % if computation method not specified
 %-------------------------------------------------------------------------%
 

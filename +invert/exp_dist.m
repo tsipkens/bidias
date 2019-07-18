@@ -28,9 +28,7 @@ if ~exist('Lex','var'); Lex = []; end
 if isempty(solver); Lex = speye(2); end
      % if coordinate transform is not specified
 
-if ~exist('x0','var'); x0 = []; end
-if isempty(x0); x0 = sparse(x_length,1); end
-     % if no initial x is given
+if ~exist('x0','var'); x0 = []; end % if no initial x is given
 %--------------------------------------------------------------%
 
 
@@ -62,7 +60,7 @@ Lx = sparse(Lx);
 
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
-    [A;Lx],[b;sparse(x_length,1)],x0,solver);
+    [A;Lx],[b;sparse(x_length,1)],solver,x0);
 
 end
 

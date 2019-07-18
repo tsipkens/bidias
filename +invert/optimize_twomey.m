@@ -24,12 +24,12 @@ disp(' ');
 out.iter_vec = iter_vec;
 out.x(:,1) = mart(A,b,x0,iter_vec(1));
 out.chi(1) = norm(out.x(:,1)-x_ex);
-textbar(1/length(iter_vec));
+tools.textbar(1/length(iter_vec));
 
 for ii=2:length(iter_vec)
     out.x(:,ii) = twomey(A,b,out.x(:,ii-1),1);
     out.chi(ii) = norm(out.x(:,ii)-x_ex);
-    textbar(ii/length(iter_vec));
+    tools.textbar(ii/length(iter_vec));
 end
 
 [~,ind_min] = min(out.chi);

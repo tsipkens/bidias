@@ -10,7 +10,7 @@ function [x,D] = lsq(A,b,solver,x0)
 % Inputs:
 %   A       Model matrix
 %   b       Data
-%   x0      Initial guess for solver    (Optional, default is zeros)
+%   x0      Initial guess for solver    (Optional, default is empty)
 %   solver  Solver                      (Optional, default is interior-point)
 %
 % Outputs:
@@ -20,31 +20,34 @@ function [x,D] = lsq(A,b,solver,x0)
 
 
 %-- Parse inputs ---------------------------------------------------------%
-x_length = length(A(1,:));
-
-if ~exist('x0','var'); x0 = []; end
+if ~exist('x0','var'); x0 = []; end % use empty if not specified
 if ~exist('solver','var'); solver = []; end
 
-if isempty(x0); x0 = sparse(x_length,1); end % if initial guess is not specified
 if isempty(solver); solver = 'interior-point'; end % if computation method not specified
 %-------------------------------------------------------------------------%
 
 
 %-- Perform least-squares ------------------------------------------------%
+x_length = length(A(1,:));
+x_lb = sparse(x_length,1); % enforce non-negativity
+if ~isempty(x0)
+    x0 = max(x0,x_lb); % modify to accommodate bound
+end
+
 switch solver
     case 'interior-point' % constrained, iterative linear least squares
         options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
         x = lsqlin(A,b,...
-            [],[],[],[],x0,[],[],options);
+            [],[],[],[],x_lb,[],x0,options);
         D = []; % not specified when using this method
 
     case 'trust-region-reflective'
         D = (A'*A)\A'; % invert combined matrices to get first guess
-        x0 = D*b; % Note: previously, [b;Lx*zeros(x_length,1)]
+        x_lb = D*b; % Note: previously, [b;Lx*zeros(x_length,1)]
         
         options = optimoptions('lsqlin','Algorithm','trust-region-reflective');
         x = lsqlin(A,b,...
-            [],[],[],[],x0,[],max(x0,0),options);
+            [],[],[],[],x_lb,[],x0,options);
 
     case 'algebraic' % matrix multiplication least squares (not non-negative constrained)
         D = (A'*A)\A'; % invert combined matrices
@@ -55,6 +58,7 @@ switch solver
         x = D*b;
 end
 %-------------------------------------------------------------------------%
+
 
 end
 

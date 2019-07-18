@@ -19,12 +19,12 @@ x_init_m = grid_x.marginalize(x_init);
 %% Least squares
 disp('Performing LS inversion...');
 tic;
-x_LS = invert.lsq(A,b,[],'interior-point');
+x_LSQ = invert.lsq(A,b,'interior-point');
 t.LSQ = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.LSQ = norm(x0-x_LS);
+chi.LSQ = norm(x0-x_LSQ);
 
 
 %% Tikhonov (0th) implementation

@@ -40,7 +40,7 @@ out.chi = zeros(length(out.Sf),1);
 
 disp(' ');
 disp('Optimizing Twomey-Markowski smoothing:');
-textbar(0);
+tools.textbar(0);
 disp(' ');
 for ii=1:length(out.Sf)
     out.x(:,ii) = x_fun(out.Sf(ii));
@@ -49,7 +49,7 @@ for ii=1:length(out.Sf)
     
     disp(' ');
     disp('Optimizing Twomey-Markowski smoothing:');
-    textbar(ii/length(out.Sf));
+    tools.textbar(ii/length(out.Sf));
     disp(' ');
 end
 

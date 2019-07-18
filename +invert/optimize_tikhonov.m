@@ -24,17 +24,10 @@ function [x,lambda,out] = optimize_tikhonov(A,b,n,span,x_ex,order,x0,solver)
 x_length = length(A(1,:));
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('order','var')
-    order = 1;
-elseif isempty(order)
-    order = 1;
-end
+if ~exist('order','var'); order = []; end
+if isempty(order); order = 1; end
 
-if ~exist('x0','var')
-    x0 = sparse(x_length,1);
-elseif isempty(order)
-    x0 = sparse(x_length,1);
-end
+if ~exist('x0','var'); x0 = []; end
 
 if ~exist('solver','var')
     x_fun = @(lambda) tikhonov(A,b,n,lambda,order,x0);
@@ -51,13 +44,13 @@ out.x = zeros(length(x_ex),length(out.lambda));
 out.chi = zeros(length(out.lambda),1);
 
 disp('Optimizing Tikhonov regularization:');
-textbar(0);
+tools.textbar(0);
 for ii=1:length(out.lambda)
     out.x(:,ii) = x_fun(out.lambda(ii));
     out.chi(ii) = norm(out.x(:,ii)-x_ex);
     out.Axb(ii) = norm(A*out.x(:,ii)-b);
     
-    textbar(ii/length(out.lambda));
+    tools.textbar(ii/length(out.lambda));
 end
 
 [~,ind_min] = min(out.chi);
