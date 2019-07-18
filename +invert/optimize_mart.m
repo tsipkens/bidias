@@ -29,7 +29,7 @@ out.chi(1) = norm(out.x(:,1)-x_ex);
 tools.textbar(1/length(iter_vec));
 
 for ii=2:length(iter_vec)
-    out.x(:,ii) = mart(A,b,out.x(:,ii-1),iter_vec(ii)-iter_vec(ii-1));
+    out.x(:,ii) = invert.mart(A,b,out.x(:,ii-1),iter_vec(ii)-iter_vec(ii-1));
     out.chi(ii) = norm(out.x(:,ii)-x_ex);
     tools.textbar(ii/length(iter_vec));
 end

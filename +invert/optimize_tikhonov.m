@@ -30,11 +30,11 @@ if isempty(order); order = 1; end
 if ~exist('x0','var'); x0 = []; end
 
 if ~exist('solver','var')
-    x_fun = @(lambda) tikhonov(A,b,n,lambda,order,x0);
+    x_fun = @(lambda) invert.tikhonov(A,b,n,lambda,order,x0);
 elseif isempty(solver)
-    x_fun = @(lambda) tikhonov(A,b,n,lambda,order,x0);
+    x_fun = @(lambda) invert.tikhonov(A,b,n,lambda,order,x0);
 else
-    x_fun = @(lambda) tikhonov(A,b,n,lambda,order,x0,solver);
+    x_fun = @(lambda) invert.tikhonov(A,b,n,lambda,order,x0,solver);
 end
 %-------------------------------------------------------------------------%
 
