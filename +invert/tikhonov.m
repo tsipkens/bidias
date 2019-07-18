@@ -51,30 +51,8 @@ end
 
 
 %-- Choose and execute solver --------------------------------------------%
-switch solver
-    case 'interior-point' % constrained, iterative linear least squares
-        options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
-        x = lsqlin([A;Lx],[b;sparse(x_length,1)],...
-            [],[],[],[],x0,[],[],options);
-        D = []; % not specified when using this method
-        
-    case 'trust-region-reflective'
-        D = ([A;Lx]'*[A;Lx])\[A;Lx]'; % invert combined matrices to get first guess
-        x0 = D*[b;Lx*zeros(x_length,1)];
-        
-        options = optimoptions('lsqlin','Algorithm','trust-region-reflective');
-        x = lsqlin([A;Lx],[b;sparse(x_length,1)],...
-            [],[],[],[],x0,[],max(x0,0),options);
-        
-    case 'algebraic' % matrix multiplication least squares (not non-negative constrained)
-        D = ([A;Lx]'*[A;Lx])\[A;Lx]'; % invert combined matrices
-        x = D*[b;Lx*sparse(x_length,1)];
-        
-    case 'algebraic-inv' % alternate algebraic least squares (less stable than previous option)
-        D = inv([A;Lx]'*[A;Lx])*[A;Lx]'; % invert combined matrices
-        x = D*[b;sparse(x_length,1)];
-        
-end
+[x,D] = invert.lsq(...
+    [A;Lx],[b;sparse(x_length,1)],solver,x0);
 
 end
 %=========================================================================%

@@ -1,8 +1,7 @@
 
-% RUN_INVERSIONS_A  Single inversion of each technique using predefined parameters.
-% Author:           Timothy Sipkens, 2019-07-17
+% RUN_INVERSIONS_A  Single inversion of each technique using externally defined parameters.
+% Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
-
 
 %% Initial guess for iterative schemes
 b_init = b;
@@ -19,12 +18,9 @@ x_init_m = grid_x.marginalize(x_init);
 
 %% Least squares
 disp('Performing LS inversion...');
-options = optimoptions('lsqlin',...
-    'Algorithm','interior-point','Display','none');
 tic;
-x_LS = lsqlin(A,b,...
-    [],[],[],[],sparse(length(x0),1),[],[],options);
-t.LS(ii) = toc;
+x_LS = invert.lsq(A,b,[],'interior-point');
+t.LSQ = toc;
 disp('Inversion complete.');
 disp(' ');
 
@@ -65,6 +61,41 @@ disp(' ');
 chi.Tk2(ii) = norm(x0-x_Tk2);
 
 
+%% MART, Maximum entropy regularized solution
+
+disp('Performing MART...');
+tic;
+x_MART = invert.mart(A,b,x_init,300);
+t.MART(ii) = toc;
+disp('Inversion complete.');
+disp(' ');
+
+chi.MART = norm(x0-x_MART);
+
+
+%% Twomey
+disp('Performing Twomey...');
+tic;
+x_Two = invert.twomey(A,b,x_init,500);
+t.Two = toc;
+disp('Completed Twomey.');
+disp(' ');
+
+chi.Two = norm(x0-x_Two);
+
+
+%% Twomey-Markowski-Buckley
+disp('Performing Twomey-Markowski...');
+tic;
+x_TwoMH = invert.twomark(A,b,Lb,n_x(1),...
+    x_init,35,'Buckley',1/Sf_TwoMH);
+t.TwoMH = toc;
+disp('Completed Twomey-Markowski.');
+
+chi.TwoMH = norm(x0-x_TwoMH);
+
+
+
 %% Exponential, rotated
 %{
 s1 = 1.0;
@@ -86,41 +117,5 @@ disp(' ');
 chi.expRot = norm(x0-x_expRot);
 %}
 
-%% MART, Maximum entropy regularized solution
-
-disp('Performing MART...');
-tic;
-x_MART = invert.mart(A,b,x_init,300);
-t.MART(ii) = toc;
-disp('Inversion complete.');
-disp(' ');
-
-chi.MART = norm(x0-x_MART);
-
-
-%% Twomey
-%-- Perform Twomey algorithm ----------------------------%
-disp('Performing Twomey...');
-tic;
-x_Two = invert.twomey(A,b,x_init,500);
-t.Two = toc;
-
-disp('Completed Twomey.');
-disp(' ');
-
-chi.Two = norm(x0-x_Two);
-
-
-%% Twomey-Markowski-Buckley
-disp('Performing Twomey-Markowski-Buckley...');
-
-tic;
-x_TwoMH = invert.twomark(A,b,Lb,n_x(1),...
-    x_init,35,'Buckley',1/Sf_TwoMH);
-t.TwoMH(ii) = toc;
-
-x_rs_Two_MH = reshape(x_TwoMH,n_x);
-
-chi.TwoMH = norm(x0-x_TwoMH);
 
 

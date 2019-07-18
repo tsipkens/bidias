@@ -39,8 +39,8 @@ span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % should be uniform basis
 
-A_t = kernel.gen_A(grid_b,grid_t); % generate A matrix based on grid for x_t and b
-% load('A_t_v10.mat'); % v10, v11
+A_t = kernel.gen_A(grid_b,grid_t);
+    % generate A matrix based on grid for x_t and b
 
 
 %%
@@ -96,9 +96,6 @@ cm_b_mod = cm_b(10:n3:end,:);
 set(gca,'ColorOrder',cm_b_mod,'NextPlot','replacechildren');
 b_plot_rs = reshape(b,grid_b.ne);
 semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
-% hold on;
-% semilogx(grid_b.edges{2},sum(b_plot_rs).*Ntot,'k');
-% hold off;
 
 
 %% 

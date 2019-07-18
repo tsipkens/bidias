@@ -1,4 +1,7 @@
 
+% RUN_INVERSIONS_C  Shorter implementation with customizable regularization parameters.
+% Author:           Timothy Sipkens, 2019-05-28
+%=========================================================================%
 
 %% Initial guess for iterative schemes
 x_init = interp2(grid_b.edges{2}',grid_b.edges{1}',...
@@ -12,7 +15,7 @@ chi.init = norm(x0-x_init);
 
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
-lambda_Tk0 = 0.1105;
+lambda_Tk0 = 2.0837;
 tic;
 [x_Tk0,D_Tk0,L_Tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0,sparse(x0));
 t.Tk0 = toc;
