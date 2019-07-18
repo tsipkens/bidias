@@ -6,20 +6,16 @@
 function [x] = twomey(A,b,x0,iter,SIGMA_fun,SIGMA,bool_textbar)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   A             Model matrix
-%   b             Data
-%   Lb            Cholesky factorization of inverse covariance matrix 
-%   x0            Initial guess
-%   iter          Max. number of iterations
-%   SIGMA_fun     Function of x to be evaluated to determine convergence
-%                 (Optional, default: ignore)
-%   SIGMA         Value to which SIGMA_fun is compared to determine convergence
-%                 (Optional, default: ignore)
-%   bool_textbar  Boolean to determine whether or not to show textbar
-%                 (Optional, default: 0)
+%   A           Model matrix
+%   b           Data
+%   Lb          Cholesky factorization of inverse covariance matrix 
+%   x0          Initial guess
+%   iter        Max. number of iterations
+
 %
 % Outputs:
-%   x             Twomey estimate
+%   x           Estimate
+%   SIGMA_vec   Mean square error, vector over iterations
 %-------------------------------------------------------------------------%
 
 
@@ -50,7 +46,6 @@ end
 
 x = x0;
 factor = 1; % factor, allows one to decrease step size in Twomey
-
 
 %-- Perform Twomey iterations --------------------------------------------%
 for kk=1:iter % perform multiple Twomey passes

@@ -20,11 +20,11 @@ function [x,iter,out] = optimize_mart(A,b,x0,iter_vec,x_ex)
 
 disp(' ');
 disp('Optimizing MART:');
-textbar(0);
+tools.textbar(0);
 disp(' ');
 
 out.iter_vec = iter_vec;
-out.x(:,1) = mart(A,b,x0,iter_vec(1));
+out.x(:,1) = invert.mart(A,b,x0,iter_vec(1));
 out.chi(1) = norm(out.x(:,1)-x_ex);
 tools.textbar(1/length(iter_vec));
 

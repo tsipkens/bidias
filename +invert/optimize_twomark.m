@@ -32,7 +32,7 @@ end
 %-------------------------------------------------------------------------%
 
 
-x_fun = @(Sf) invert.twomey_markowski(A,b,Lb,n,x0,iter,opt_smooth,Sf);
+x_fun = @(Sf) invert.twomark(A,b,Lb,n,x0,iter,opt_smooth,Sf);
 
 out.Sf = 1./logspace(log10(span(1)),log10(span(2)),25);
 out.x = zeros(length(x_ex),length(out.Sf));
