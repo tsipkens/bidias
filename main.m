@@ -20,7 +20,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
 
-phantom = Phantom('demonstration',span_t);
+phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -107,7 +107,7 @@ run_inversions_B;
 
 %%
 %-- Plot solution --------------------------------------------------------%
-x_plot = x_Tk1;
+x_plot = x_TwoMH;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
@@ -138,7 +138,7 @@ for ii=1:length(chi_names)
 end
 
 bar(chi_vals);
-ylim([0,4]);
+ylim([0,22]);
 set(gca,'xticklabel',chi_names);
 
 
@@ -163,10 +163,10 @@ clf;
 dim = 2;
 
 grid_t.plot_marginal(x_t,dim);
-% grid_x.plot_marginal(...
-%     {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
 grid_x.plot_marginal(...
-    {x_Tk1},dim,x0);
+    {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
+% grid_x.plot_marginal(...
+%     {x_Tk1},dim,x0);
 
 
 %{
