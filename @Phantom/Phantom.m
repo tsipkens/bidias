@@ -37,6 +37,7 @@ classdef Phantom
         function obj = Phantom(name,span_grid,varargin)
             
         	%-- Parse inputs ---------------------------------------------% 
+            %   Assign parameter values
             switch name
                 case {'demonstration','1'}
                     obj.name = 'demonstration';
@@ -111,7 +112,7 @@ classdef Phantom
                     
                     t0 = [130,1.8,800,1.8,2.4,100]; % initial guess
                     fun = @(t) t(6).*x-...
-                        obj.eval_phantom(obj.set_p(t,varargin{3}));
+                        obj.eval_phantom(obj.vec2p(t,varargin{3}));
                     
                     t1 = lsqnonlin(fun,t0); % fit phantom to provided data
                     
@@ -126,9 +127,11 @@ classdef Phantom
                     p = varargin{1}; % copy fields into phantom
             end
             
+            
             %-- Evaluate additional parameters ---------------------------%
             obj.n_modes = length(p); % get number of modes
-            obj.p = p; % assign distribution parameters
+            obj.p = p; % assign distribution parameters to the instance of this class
+            
             
             %-- Generate a grid to evaluate phantom on -------------------%
             if isa(span_grid,'Grid') % if grid is specified
@@ -139,17 +142,21 @@ classdef Phantom
                     n_t,'logarithmic'); % generate grid of which to represent phantom
             end
             
+            
             %-- Evaluate phantom -----------------------------------------%
-            [~,obj] = obj.eval_phantom(p);
+            [~,obj] = obj.eval_phantom(p); % assign x to the corresponding field
             
         end
         %=================================================================%
         
         
-        %== SET_P ========================================================%
-        %   Function to format phantom parameters, t.
+        %== VEC2P ========================================================%
+        %   Function to format phantom parameters from a vector, t.
         %   Author:  Timothy Sipkens, 2019-07-18
-        function [p] = set_p(obj,t,type_m)
+        function [p] = vec2p(obj,t,type_m)
+            if ~exist('type_m','var'); type_m = []; end
+            if isempty(type_m); type_m = 'logn'; end
+            
             t_length = length(t);
             n = obj.n_modes*t_length;
             
@@ -165,7 +172,7 @@ classdef Phantom
         
         %== EVAL_PHANTOM =================================================%
         %   Generates a mass-mobiltiy distribution phantom from a set 
-        %   of parameters.
+        %   of input parameters, p.
         %   Author:  Timothy Sipkens, 2018-12-04
         function [x,obj] = eval_phantom(obj,p)
             
@@ -185,6 +192,7 @@ classdef Phantom
             rho_fun = @(d,Dm,k) 6*k./(pi.*d.^(3-Dm));
             mg_fun = @(d,ll) log(1e-9.*rho_fun(d,p(ll).Dm,p(ll).k).*...
                 pi/6.*(d.^3)); % geometric mean mass in fg
+            
             
             %-- Evaluate phantom mass-mobility distribution ---------------%
             x = zeros(length(m_vec),1); % initialize distribution parameter
