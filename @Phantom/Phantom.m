@@ -220,6 +220,43 @@ classdef Phantom
         %=================================================================%
         
         
+        %== MG_FUN =======================================================%
+        %   Function to evaluate mg as a function of mobility diameter.
+        %   Calculation is based on the empirical mass-mobility relation.
+        %   Author:  Timothy Sipkens, 2019-07-19
+        function mg = mg_fun(obj,d)
+            
+            d_size = size(d);
+            if d_size(2)>d_size(1); d = d'; d_size = size(d); end
+                % transpose the mobility if necessary
+            
+            mg = zeros(d_size(1),obj.n_modes);
+            rho = obj.rho_fun(d);
+            for ll=1:obj.n_modes
+                mg(:,ll) = 1e-9.*rho(:,ll).*pi./6.*(d.^3);
+                    % output in fg
+            end
+            
+        end
+        %=================================================================%
+        
+        
+        %== RHO_FUN ======================================================%
+        %   Function to evaluate the effective density as a function of
+        %   mobility diameter.
+        %   Author:  Timothy Sipkens, 2019-07-19
+        function rho = rho_fun(obj,d)
+            
+            rho = zeros(length(d),obj.n_modes);
+            for ll=1:obj.n_modes
+                rho(:,ll) = 6*obj.p(ll).k./(pi.*d.^(3-obj.p(ll).Dm));
+                    % output in kg/m3
+            end
+            
+        end
+        %=================================================================%
+        
+        
         %== PLOT =========================================================%
         %   Plots the phantom mass-mobiltiy distribution phantom.
         %   Author:     Timothy Sipkens, 2019-07-08

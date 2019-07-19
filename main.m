@@ -31,6 +31,11 @@ phantom.plot;
 colormap(gcf,[cm;1,1,1]);
 caxis([0,cmax*(1+1/256)]);
 
+hold on; % plots mg ridges of phantom
+plot(log10(grid_t.edges{2}),...
+    log10(phantom.mg_fun(grid_t.edges{2})),'w:');
+hold off;
+
 
 %%
 %-- Generate A matrix and b vector ---------------------------------------%
