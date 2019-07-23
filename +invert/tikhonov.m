@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2018-11-21
 %=========================================================================%
 
-function [x,D,Lx] = tikhonov(A,b,n,lambda,order,x0,solver)
+function [x,D,Lx,Gpo] = tikhonov(A,b,n,lambda,order,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -18,6 +18,7 @@ function [x,D,Lx] = tikhonov(A,b,n,lambda,order,x0,solver)
 %   x       Regularized estimate
 %   D       Inverse operator (x = D*[b;0])
 %   Lx      Tikhonov matrix
+%   Lpo     Cholesky factorization of posterior covariance
 %-------------------------------------------------------------------------%
 
 x_length = length(A(1,:));
@@ -53,6 +54,10 @@ end
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
     [A;Lx],[b;sparse(x_length,1)],solver,x0);
+
+
+%-- Uncertainty quantification -------------------------------------------%
+Gpo = inv(A'*A+Lx'*Lx);
 
 end
 %=========================================================================%

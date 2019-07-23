@@ -56,6 +56,7 @@ switch solver
     case 'algebraic-inv' % alternate algebraic least squares (less stable than previous option)
         D = inv(A'*A)*A'; % invert combined matrices
         x = D*b;
+        
 end
 %-------------------------------------------------------------------------%
 

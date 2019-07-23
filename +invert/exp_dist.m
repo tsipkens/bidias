@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2018-10-22
 %=========================================================================%
 
-function [x,D,Lx] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver,sigma)
+function [x,D,Lx,Lpo] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver,sigma)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -12,7 +12,8 @@ function [x,D,Lx] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver,sigma)
 % Outputs:
 %   x       Regularized estimate
 %   D       Inverse operator (x = D*[b;0])
-%   Lx      Cholesky factorization of posterior covariance
+%   Lx      Cholesky factorization of prior covariance
+%   Lpo     Cholesky factorization of posterior covariance
 %-------------------------------------------------------------------------%
 
 
@@ -40,6 +41,7 @@ d1 = log(vec_m1)-log(vec_m2);
 d2 = log(vec_d1)-log(vec_d2);
 d = sqrt((d1.*Lex(1,1)+d2.*Lex(1,2)).^2+(d1.*Lex(2,1)+d2.*Lex(2,2)).^2); % distance
 
+%-- Generate prior covariance matrix --------------------------------------
 Gx = exp(-d);
 if exist('sigma','var') % incorporate structure into covariance, if specified
     for ii=1:x_length
@@ -61,6 +63,10 @@ Lx = sparse(Lx);
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
     [A;Lx],[b;sparse(x_length,1)],solver,x0);
+
+
+%-- Uncertainty quantification -------------------------------------------%
+Lpo = [];
 
 end
 
