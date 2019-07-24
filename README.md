@@ -85,7 +85,7 @@ generate a matrix `A` that acts as the forward model. This package references
 an imported submodule, `UBC-tfer-PMA`, which contains the package `+tfer_PMA.m`
 from [Sipkens et al. (Submitted)][2]. This package is used in evaluating the
 transfer function of the particle mass analyzers and some standard reference
-functions used in `tfer_DMA.m`
+functions used in `tfer_DMA.m`.
 
 ###### +tools
 
