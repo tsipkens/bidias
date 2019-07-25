@@ -29,9 +29,7 @@ chi.LSQ = norm(x0-x_LSQ);
 
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
-tic;
-x_Tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0,sparse(length(x0),1));
-t.Tk0 = toc;
+x_Tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0);
 disp('Inversion complete.');
 disp(' ');
 
@@ -40,9 +38,8 @@ chi.Tk0(ii) = norm(x0-x_Tk0);
 
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
-tic;
-x_Tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1,sparse(length(x0),1));
-t.Tk1 = toc;
+[x_Tk1,D_Tk1,L_Tk1,Gpo_Tk1] = ...
+    invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1);
 disp('Inversion complete.');
 disp(' ');
 
@@ -51,10 +48,7 @@ chi.Tk1(ii) = norm(x0-x_Tk1);
 
 %% Tikhonov (2nd) implementation
 disp('Performing Tikhonov (2nd) regularization...');
-% lambda_Tk2 = 8e1;
-tic;
-x_Tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2,sparse(length(x0),1));
-t.Tk2 = toc;
+x_Tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2);
 disp('Inversion complete.');
 disp(' ');
 
@@ -64,9 +58,7 @@ chi.Tk2(ii) = norm(x0-x_Tk2);
 %% MART, Maximum entropy regularized solution
 
 disp('Performing MART...');
-tic;
 x_MART = invert.mart(A,b,x_init,299);
-t.MART = toc;
 disp('Inversion complete.');
 disp(' ');
 

@@ -79,6 +79,10 @@ for kk=1:n_z
             d.*1e-9,z_vec(kk),prop_CPMA,varargin)';
                 % CPMA transfer function
         
+        if or(max(Lambda_mat{kk}(ii,:))>(1+1e-9),any(sum(Lambda_mat{kk}(ii,:))<0))
+            disp(' ');
+        end
+        
         tools.textbar((n_b(1)*(kk-1)+ii)/(n_z*n_b(1)));
     end
 end

@@ -42,8 +42,6 @@ switch order
         Lx = lambda.*genLx1(n,x_length);
     case 2 % 2nd order Tikhonov
         Lx = lambda.*genLx2(n,x_length);
-    case 10
-        Lx = -0.1.*lambda.*speye(x_length)+lambda.*genLx1(n,x_length);
     otherwise
         disp('The specified order of Tikhonov is not available.');
         disp(' ');
@@ -57,7 +55,9 @@ end
 
 
 %-- Uncertainty quantification -------------------------------------------%
-Gpo = inv(A'*A+Lx'*Lx);
+if nargout>=4
+    Gpo = A'*A+Lx'*Lx;
+end
 
 end
 %=========================================================================%

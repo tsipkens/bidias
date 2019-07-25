@@ -109,7 +109,7 @@ This program was largely written and compiled by Timothy Sipkens
 University of British Columbia.
 
 This distribution includes code snippets from the code provided with
-the work of [Buckley et al. (2017)][1],
+the work of [Buckley et al. (2017)][3],
 who used a Twomey-type approach to derive two-dimensional mass-mobility
 distributions.
 
@@ -122,9 +122,9 @@ README in the `cmap` folder.
 
 #### References
 
-1. [Sipkens et al. (Submitted)][1]
-2. [Sipkens et al. (Submitted)][2]
-3. [Buckley et al. (2017)][3]
+1. [Sipkens et al., J. Aerosol Sci. (Submitted)][1]
+2. [Sipkens et al., Aerosol Sci. Technol. (Submitted)][2]
+3. [Buckley et al., J. Aerosol Sci. (2017)][3]
 
 [1]: N/A
 [2]: N/A

@@ -20,7 +20,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
 
-phantom = Phantom('4',span_t);
+phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -85,13 +85,15 @@ b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 Ntot = 1e5;
 theta = 1/Ntot;
 gamma = max(sqrt(theta.*b0)).*1e-8; % underlying Gaussian noise
-% 13 = 1e5, 1e-8; 13b = 1e4, 1e-5;
 Sigma = sqrt(theta.*b0+gamma^2); % sum up Poisson and Gaussian noise
 Lb = sparse(1:grid_b.Ne,1:grid_b.Ne,1./Sigma,grid_b.Ne,grid_b.Ne);
 rng(0);
 epsilon = Sigma.*randn(size(b0));
 b = sparse(b0+epsilon); % add noise
-b = max(b,0); % remove negative values
+% b = max(b,0); % remove negative values
+% b(b<1/Ntot) = 0; % remove negative and small values
+b = max(round(b.*Ntot),0)./Ntot;
+
 
 figure(5);
 colormap(gcf,cm_b);
