@@ -16,9 +16,15 @@ cm_b = cm;
 load('viridis.mat');
 
 
+files = {'20180528_A_L9.mat',...
+    '20180528_B_H9.mat',...
+    '20180601_E_M9.mat'};
+
+ff = 1;
+
 %%
 %-- Load experimental data -----------------------------------------------%
-load('..\data\Soot Data FlareNet 18\20180601_E.mat');
+load(['..\data\Soot Data FlareNet 18\',files{ff}]);
 % load('..\data\Soot-Salt Data M9 Flame\data_flameM9_soot+salt_v1.mat');
 % load('..\data\Soot-Salt Data UA May 2019\20190509_SMPS\20190509g_SMPS.mat');
 
