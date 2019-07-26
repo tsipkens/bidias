@@ -300,7 +300,7 @@ classdef Grid
         %== FIT_MASS_MOB =================================================%
         %   Fits the mass-mobility relation to the returned distribution.
         %   Author: Timothy Sipkens, 2019-07-15
-        function [Dm,k,rho_100] = fit_mass_mob(obj,x,v0,slope,opt_plot)
+        function [Dm,k,rho_100] = fit_mass_mob(obj,x,slope,opt_plot)
             
             if ~exist('slope','var'); slope = []; end
             if ~exist('opt_plot','var'); opt_plot = []; end
@@ -308,6 +308,12 @@ classdef Grid
             if isempty(slope); slope = 3; end
             if isempty(opt_plot); opt_plot = 1; end
             
+            %-- Get location of maximum pixel ----------------------------%
+            t0 = reshape(x,obj.ne);
+            [t1,t2] = find(t0==max(max(t0)));
+            v0 = log10([obj.edges{2}(t2),obj.edges{1}(t1)]);
+            
+            %-- Proceed with fitting -------------------------------------%
             y0 = [v0(2),slope];
             B_fun = @(y) -obj.ray_sum([v0(1),y(1)],y(2),0)*x;
             

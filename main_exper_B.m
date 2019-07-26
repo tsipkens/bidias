@@ -31,7 +31,7 @@ files = {'20180528_A_L9.mat',...
     '20180601_E_M9.mat'};
 fuel = {'L9','H9','BK-BR','RU-KM1','RU-KM2','NS_M9',...
     'M9','BK_WO','AB_M9','EC_AC','EC_AC27','EC_AS1','M9'};
-MMData(length(files)) = struct;
+data0(length(files)) = struct;
 
 for ff=1:length(files)
 
@@ -105,10 +105,10 @@ for ff=1:length(files)
 
     %-- Save copies of data --------------------------------------------------%
     x_plot = x_expRot;
-    MMData(ff).x = x_expRot;
-    MMData(ff).b = b;
-    MMData(ff).grid_x = grid_x;
-    MMData(ff).grid_b = grid_b;
+    data0(ff).x = x_expRot;
+    data0(ff).b = b;
+    data0(ff).grid_x = grid_x;
+    data0(ff).grid_b = grid_b;
 
 
     %=========================================================================%
@@ -116,8 +116,8 @@ for ff=1:length(files)
     figure(40);
     colormap(gcf,cm);
     grid_x.plot2d_marg(x_plot);
-    [MMData(ff).Dm,MMData(ff).k,MMData(ff).rho_100] = ...
-        grid_x.fit_mass_mob(x_plot,[2.1,-0.1]);
+    [data0(ff).Dm,data0(ff).k,data0(ff).rho_100] = ...
+        grid_x.fit_mass_mob(x_plot);
     xlabel('log_{10}(d)');
     ylabel('log_{10}(m)');
 
@@ -134,9 +134,9 @@ for ff=1:length(files)
 
     % [m,b] = grid_rho.fit_mass_mob(y,[2,2.8],-0.6);
     grid_rho.plot_line_overlay(...
-        [0,log10(6*MMData(ff).k/pi)+9],MMData(ff).Dm-3,'w');
+        [0,log10(6*data0(ff).k/pi)+9],data0(ff).Dm-3,'w');
     rho = 2000; % density of base material
-    dpe = 10.^((log10(6*MMData(ff).k/(pi*rho))+9)/(3-MMData(ff).Dm));
+    dpe = 10.^((log10(6*data0(ff).k/(pi*rho))+9)/(3-data0(ff).Dm));
 
 end
 
