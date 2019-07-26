@@ -169,7 +169,7 @@ classdef Grid
             dr_0 = cell(obj.dim,1);
             for ii=1:obj.dim
                 if strcmp(obj.discrete,'logarithmic')
-                    dr_0{ii} = log(obj.nodes{ii}(2:end))-log(obj.nodes{ii}(1:(end-1)));
+                    dr_0{ii} = log10(obj.nodes{ii}(2:end))-log10(obj.nodes{ii}(1:(end-1)));
                 elseif strcmp(obj.discrete,'linear')
                     dr_0{ii} = obj.nodes{ii}(2:end)-obj.nodes{ii}(1:(end-1));
                 end
