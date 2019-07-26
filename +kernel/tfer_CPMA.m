@@ -1,8 +1,9 @@
 
-function [Lambda,prop] = tfer_CPMA(m_star,m,d,z,prop,opt,varargin)
 % TFER_CPMA     Bridging function used to evaluate CPMA transfer function.
 % Author:       Timothy Sipkens, 2018-12-27
-% 
+%=========================================================================%
+
+function [Lambda,prop] = tfer_CPMA(m_star,m,d,z,prop,opt,varargin)
 %--------------------------------------------------------------------------%
 % Inputs:
 %   m_star      Mass corresponding to the measurement set point of the APM
@@ -31,16 +32,16 @@ function [Lambda,prop] = tfer_CPMA(m_star,m,d,z,prop,opt,varargin)
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('prop','var'); prop = []; end
 if ~exist('opt','var'); opt = []; end
-if ~exist('varargin','var'); sp = []; end
+if ~exist('varargin','var'); varargin = []; end
 
 if isempty(prop); prop = kernel.prop_CPMA; end % import properties of CPMA
-if isempty(opt); opt = 'B_diff'; end 
+if isempty(opt); opt = 'B_diff'; end
     % by default use finite difference solution
 if isempty(varargin); varargin = {'Rm',3}; end
     % by default use resolution of 3
-    
 
-addpath('UBC-tfer-PMA'); % include PMA transfer functions as submodule,  
+
+addpath('UBC-tfer-PMA'); % include PMA transfer functions as submodule,
                          % included as the UBC-tfer-PMA directory
 
 fun = str2func(['tfer_PMA.tfer_',opt]); % call relevant function from submodule

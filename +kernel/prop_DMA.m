@@ -1,6 +1,9 @@
+
+% PROP_DMA  Generates the prop struct used to summarize DMA parameters.
+% Author:   Timothy Sipkens, 2019-07-17
+%=========================================================================%
+
 function [prop] = prop_DMA(opt_solver)
-%PROP_DMA Summary of this function goes here
-%   Detailed explanation goes here
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('opt_solver','var') % if order not specified

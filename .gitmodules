@@ -1,4 +1,4 @@
 [submodule "UBC-tfer-PMA"]
 	path = UBC-tfer-PMA
 	url = https://github.com/tsipkens/UBC-tfer-PMA
-	branch = master
+	branch = developer

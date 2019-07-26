@@ -1,6 +1,9 @@
-function [prop] = prop_CPMA(opt)
+
 % PROP_CPMA Generates the prop struct used to summarize CPMA parameters.
-% 
+% Author:   Timothy Sipkens, 2019-06-26
+%=========================================================================%
+
+function [prop] = prop_CPMA(opt)
 %-------------------------------------------------------------------------%
 % Input:
 %   opt         Options string specifying parameter set
@@ -12,13 +15,13 @@ function [prop] = prop_CPMA(opt)
 
 
 if ~exist('opt','var') % if properties set is not specified
-    opt = 'Buckley';
+    opt = 'Olfert';
 elseif isempty(opt)
-    opt = 'Buckley';
+    opt = 'Olfert';
 end
 
 if strcmp(opt,'Olfert')
-    %-- CPMA parameters from Olfert lab --------------%
+    %-- CPMA parameters from Olfert lab ----------------------------------%
     prop.r1 = 0.06; % inner electrode radius [m]
     prop.r2 = 0.061; % outer electrode radius [m]
     prop.L = 0.2; % length of chamber [m]
@@ -28,7 +31,7 @@ if strcmp(opt,'Olfert')
     prop.omega_hat = 32/33; % ratio of angular speeds
 
 elseif strcmp(opt,'Buckley')
-    %-- CPMA/APM parameters from Buckley et al. -------------%
+    %-- CPMA/APM parameters from Buckley et al. --------------------------%
     prop.r2 = 0.025; % outer electrode radius [m]
     prop.r1 = 0.024; % inner electrode radius [m]
     prop.L = 0.1;    % length of APM [m]
