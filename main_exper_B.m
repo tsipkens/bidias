@@ -33,7 +33,7 @@ fuel = {'L9','H9','BK-BR','RU-KM1','RU-KM2','NS_M9',...
     'M9','BK_WO','AB_M9','EC_AC','EC_AC27','EC_AS1','M9'};
 data0(length(files)) = struct;
 
-for ff=1:length(files)
+for ff=length(files)
 
     %=========================================================================%
     %-- Load experimental data -----------------------------------------------%
@@ -53,7 +53,7 @@ for ff=1:length(files)
 
     figure(5);
     colormap(gcf,cm_b);
-    grid_b.plot2d_marg(b);
+    [~,b_m] = grid_b.plot2d_marg(b);
 
     figure(20);
     n2 = floor(grid_b.ne(1));
@@ -115,7 +115,7 @@ for ff=1:length(files)
     %-- Estimate mass-mobility relation --------------------------------------%
     figure(40);
     colormap(gcf,cm);
-    grid_x.plot2d_marg(x_plot);
+    [~,x_plot_m] = grid_x.plot2d_marg(x_plot.*b_max);
     [data0(ff).Dm,data0(ff).k,data0(ff).rho_100] = ...
         grid_x.fit_mass_mob(x_plot);
     xlabel('log_{10}(d)');
