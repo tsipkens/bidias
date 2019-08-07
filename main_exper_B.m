@@ -33,8 +33,11 @@ fuel = {'L9','H9','BK-BR','RU-KM1','RU-KM2','NS_M9',...
     'M9','BK_WO','AB_M9','EC_AC','EC_AC27','EC_AS1','M9'};
 data0(length(files)) = struct;
 
-for ff=length(files)
-
+for ff=1:length(files)
+    
+    disp(['Processing fuel ,',num2str(ff),' of ',...
+        num2str(length(files)),': ',fuel{ff},'...']);
+    
     %=========================================================================%
     %-- Load experimental data -----------------------------------------------%
     load(['..\data\Soot Data FlareNet 18\',files{ff}]);
@@ -87,6 +90,7 @@ for ff=length(files)
 
     %=========================================================================%
     %-- Perfrom exponential, rotated regularization --------------------------%
+    %-{
     s1 = 1.0;
     s2 = 0.1;
     dtot = @(d1,d2) sqrt(exp(d1).^2+exp(d2).^2);
@@ -101,10 +105,15 @@ for ff=length(files)
         lambda_expRot,Lex);
     disp('Inversion complete.');
     disp(' ');
-
+    %}
 
     %-- Save copies of data --------------------------------------------------%
+    [dr,dr1,dr2] = grid_x.dr;
+    dr = dr(1,1); dr1 = dr1(1,1); dr2 = dr2(1,1);
+    x_expRot = x_expRot.*b_max;
     x_plot = x_expRot;
+    dV_fact = 0.3*16.666667*90;
+    data0(ff).fuel = fuel{ff};
     data0(ff).x = x_expRot;
     data0(ff).b = b;
     data0(ff).grid_x = grid_x;
@@ -114,17 +123,17 @@ for ff=length(files)
     %=========================================================================%
     %-- Estimate mass-mobility relation --------------------------------------%
     figure(40);
-    colormap(gcf,cm);
-    [~,x_plot_m] = grid_x.plot2d_marg(x_plot.*b_max);
+    colormap(gcf,cm_alt);
+    [~,x_plot_m] = grid_x.plot2d_marg(x_plot.*dr.*dV_fact);
     [data0(ff).Dm,data0(ff).k,data0(ff).rho_100] = ...
         grid_x.fit_mass_mob(x_plot);
     xlabel('log_{10}(d)');
     ylabel('log_{10}(m)');
-
+    
 
     %-- Plots for effective density ------------------------------------------%
     [y,grid_rho] = ...
-        tools.mass2rho(x_expRot,grid_x);
+        tools.mass2rho(x_plot.*dr.*dV_fact,grid_x);
 
     figure(31);
     colormap(gcf,cm_alt);
