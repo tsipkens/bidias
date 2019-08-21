@@ -17,26 +17,28 @@ load('viridis.mat');
 
 
 files = {'20180528_A_L9.mat',...
-    '20180528_B_H9.mat',...
-    '20180528_C_BK-BR.mat',...
-    '20180528_D_RU-KM1.mat',...
-    '20180528_E_RU-KM2.mat',...
-    '20180528_F_NS_M9.mat',...
     '20180528_G_M9.mat',...
-    '20180529_B_BK_WO.mat',...
+    '20180601_E_M9.mat',...
+    '20180528_F_NS_M9.mat',...
     '20180529_C_AB_M9.mat',...
+    '20180528_B_H9.mat',...
+    '20180528_E_RU-KM2.mat',...
+    '20180528_D_RU-KM1.mat',...
     '20180529_D_EC_AC.mat',...
-    '20180529_E2_EC_AC27.mat',...
-    '20180601_A_EC_AS1.mat',...
-    '20180601_E_M9.mat'};
-fuel = {'L9','H9','BK-BR','RU-KM1','RU-KM2','NS_M9',...
-    'M9','BK_WO','AB_M9','EC_AC','EC_AC27','EC_AS1','M9'};
+    '20180529_B_BK_WO.mat',...
+    '20180528_C_BK-BR.mat',...
+    '20180529_E2_EC_AC27.mat'};
+fuel = {'L9','M9','M9','NS_M9','AB_M9',...
+    'H9','RU_KM2','RU_KM1','EC_AC','BK_WO',...
+    'BK_BR','EC_AC27'};
+% NOTE: EC-AS1 (20180601_A_EC_AS1.mat) has anomalous data
 data0(length(files)) = struct;
+data2(length(files)) = struct;
 
 for ff=1:length(files)
     
-    disp(['Processing fuel ,',num2str(ff),' of ',...
-        num2str(length(files)),': ',fuel{ff},'...']);
+    disp(['Processing fuel ',num2str(ff),' of ',...
+        num2str(length(files)),' (',fuel{ff},') ...']);
     
     %=========================================================================%
     %-- Load experimental data -----------------------------------------------%
@@ -146,6 +148,39 @@ for ff=1:length(files)
         [0,log10(6*data0(ff).k/pi)+9],data0(ff).Dm-3,'w');
     rho = 2000; % density of base material
     dpe = 10.^((log10(6*data0(ff).k/(pi*rho))+9)/(3-data0(ff).Dm));
-
+    
+    pha = Phantom('fit',grid_x,x_plot,'logn');
+    data1(ff) = pha.p;
+    
+    figure(41);
+    colormap(gcf,cm_alt);
+    [~,x_plot_m] = grid_x.plot2d_marg(pha.x.*dr.*dV_fact);
+    xlabel('log_{10}(d)');
+    ylabel('log_{10}(m)');
+    
+    
+    
+    %=====================================================================%
+    %-- Traditional mass-mobility fitting ---%
+    [~,ind_max] = max(b_plot_rs,[],2);
+    d_max = grid_b.edges{2}(ind_max);
+    p_max = polyfit(log10(d_max),log10(grid_b.edges{1}),1);
+    figure(60);
+    grid_b.plot2d(b_plot_rs);
+    colormap(cm_b);
+    hold on;
+    plot(log10(d_max),log10(grid_b.edges{1}),'wo');
+    plot(log10(d_max),polyval(p_max,log10(d_max)),'w');
+    hold off;
+    
+    data2(ff).k = 10.^p_max(2);
+    data2(ff).rho_100 = 1e9*6*data2(ff).k/(pi*100^(3-p_max(1)));
+    data2(ff).Dm = p_max(1);
+    
 end
+
+[data1.fuel] = fuel{:};
+[data2.fuel] = fuel{:};
+
+
 

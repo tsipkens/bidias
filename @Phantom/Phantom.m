@@ -13,12 +13,14 @@ classdef Phantom
         p@struct = struct(... % struct defining distribution parameterization
             'dg',[],... % mean mobility diameter [nm]
             'sg',[],... % standard deviation of mobility diameter
-            'rho',[],... % effective density at mean diameter [kg/m3]
+            'rho',[],... % effective density at mean mobility diameter [kg/m3]
+            'rho_100',[],... % effective density at d = 100 nm [kg/m3]
             'sm',[],... % standard deviation of mas
             'Dm',[],... % mass-mobility exponent
-            'type_m',{},... % form of probability distribution for mass ('logn' or 'norm')
+            'mg',[],...  % conditional mode of the mass distribution
             'k',[],... % mass-mobility pre-exponential factor
-            'mg',[]); % conditional mode of the mass distribution
+            'C',[],... % factor used to scale fits to the data (empty otherwise)
+            'type_m',{}); % form of probability distribution for mass ('logn' or 'norm')
         
         n_modes = []; % number of modes
         % mg_fun = []; % ridge of the mass-mobility distribution (function handle)
@@ -105,20 +107,35 @@ classdef Phantom
                     p.Dm = 3;
                     p.type_m = 'logn';
                     
-                case 'fit' % fits a distribution to data in p
-                    obj.grid = span_grid;
-                    x = varargin{1};
-                    obj.n_modes = varargin{2};
+                case 'fit' % fit a unimodal distribution to data
+                    % Inputs:
+                    %   span_grid - grid_x
+                    %   varargin{1} - x, distribution to fit to
+                    %   varargin{2} - type of distr. (e.g. 'logn')
+                    %-----------------------------------------------------%
                     
-                    t0 = [130,1.8,800,1.8,2.4,100]; % initial guess
-                    fun = @(t) t(6).*x-...
-                        obj.eval_phantom(obj.vec2p(t,varargin{3}));
+                    obj.name = 'fit';
+                    x = varargin{1};
+                    obj.grid = span_grid;
+                    obj.n_modes = 1;
+                    
+                    t0 = [160,1.8,800,1.5,2.3,2.5]; % initial guess
+                    % t0 = [130,1.8,800,1.8,2.38,2]; % initial guess
+                        % format: [dg,sg,rho_100,sm,Dm,log10(C)]
+                    fun = @(t) (10.^t(6)).*x-...
+                        obj.eval_phantom(obj.vec2p(t,varargin{2}));
                     
                     t1 = lsqnonlin(fun,t0); % fit phantom to provided data
                     
-                    p = obj.set_p(t1,varargin{3});
-                    % span_grid = obj.grid.span; % allows for a switch to 
-                                               % higher resolution grid
+                    p = obj.vec2p(t1,varargin{2});
+                    
+                case 'custom' % custom phantom
+                    % Inputs:
+                    %   varargin{1} - structure p to copy to phantom
+                    %-----------------------------------------------------%
+                    
+                    obj.name = 'custom';
+                    p = varargin{1};
                     
                 otherwise % for custom phantom
                     if ~exist('varargin','var'); error('Specify phantom.'); end
@@ -153,18 +170,18 @@ classdef Phantom
         %== VEC2P ========================================================%
         %   Function to format phantom parameters from a vector, t.
         %   Author:  Timothy Sipkens, 2019-07-18
-        function [p] = vec2p(obj,t,type_m)
+        function [p] = vec2p(obj,vec,type_m)
             if ~exist('type_m','var'); type_m = []; end
             if isempty(type_m); type_m = 'logn'; end
             
-            t_length = length(t);
+            t_length = length(vec);
             n = obj.n_modes*t_length;
             
-            p.dg = t(1:t_length:n);
-            p.sg = t(2:t_length:n);
-            p.rho = t(3:t_length:n);
-            p.sm = t(4:t_length:n);
-            p.Dm = t(5:t_length:n);
+            p.dg = vec(1:t_length:n);
+            p.sg = vec(2:t_length:n);
+            p.rho_100 = vec(3:t_length:n);
+            p.sm = vec(4:t_length:n);
+            p.Dm = vec(5:t_length:n);
             p.type_m = type_m;
         end
         %=================================================================%
@@ -182,14 +199,26 @@ classdef Phantom
             m_vec = obj.grid.elements(:,1);
             d_vec = obj.grid.elements(:,2);
             
+            
+            %-- Assign other parameters of distribution ------------------%
             for ll=1:obj.n_modes
-                p(ll).k = (p(ll).rho*pi/6)*...
-                    p(ll).dg^(3-p(ll).Dm); % mass-mobility prefactor
+                if ~isfield(p,'rho'); p.rho = []; end
+                if ~isempty(p(ll).rho) % use effective density at dg
+                    p(ll).k = 1e-9.*(p(ll).rho*pi/6)*...
+                        p(ll).dg^(3-p(ll).Dm); % mass-mobility prefactor
+                    p(ll).rho_100 = 1e9.*6/pi*p(ll).k*100^(p(ll).Dm-3);
+                    
+                else % use effective density at dg = 100 nm
+                    p(ll).k = 1e-9.*(p(ll).rho_100*pi/6)*...
+                        100^(3-p(ll).Dm); % mass-mobility prefactor
+                    p(ll).rho = 1e9.*6/pi*p(ll).k*p(ll).dg^(p(ll).Dm-3);
+                end
+                
                 p(ll).mg = 1e-9*p(ll).rho*pi/6*...
                     (p(ll).dg^3); % geometric mean mass in fg
             end
             
-            rho_fun = @(d,Dm,k) 6*k./(pi.*d.^(3-Dm));
+            rho_fun = @(d,Dm,k) 1e9.*6*k./(pi.*d.^(3-Dm));
             mg_fun = @(d,ll) log(1e-9.*rho_fun(d,p(ll).Dm,p(ll).k).*...
                 pi/6.*(d.^3)); % geometric mean mass in fg
             
