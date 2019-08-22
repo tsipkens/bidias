@@ -362,7 +362,7 @@ classdef Grid
         %== PLOT2D_MARG ==================================================%
         %   Plots x as a 2D function on the grid, with marginalized distributions.
         %   Author: Timothy Sipkens, 2018-11-21
-        function h = plot2d_marg(obj,x,obj_t,x_t)
+        function [h,x_m] = plot2d_marg(obj,x,obj_t,x_t)
         
             subplot(4,4,[5,15]);
             obj.plot2d(x);

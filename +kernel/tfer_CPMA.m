@@ -35,7 +35,7 @@ if ~exist('opt','var'); opt = []; end
 if ~exist('varargin','var'); varargin = []; end
 
 if isempty(prop); prop = kernel.prop_CPMA; end % import properties of CPMA
-if isempty(opt); opt = 'B_diff'; end
+if isempty(opt); opt = '1C_diff'; end
     % by default use finite difference solution
 if isempty(varargin); varargin = {'Rm',3}; end
     % by default use resolution of 3

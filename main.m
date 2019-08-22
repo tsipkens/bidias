@@ -111,8 +111,8 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 %% 
 %-- Perform inversions ---------------------------------------------------%
 % run_inversions_A;
-run_inversions_B;
-% run_inversions_C;
+% run_inversions_B;
+run_inversions_C;
 
 
 %%
@@ -148,12 +148,13 @@ for ii=1:length(chi_names)
 end
 
 bar(chi_vals);
-ylim([0,20]);
-ylim([0,100]);
+% ylim([0,20]);
+% ylim([0,100]);
 set(gca,'xticklabel',chi_names);
 
 
 %%
+%{
 %-- Bar plot of times ----------------------------------------------------%
 figure(40);
 t_names = fieldnames(t);
@@ -167,6 +168,7 @@ set(gca,'xticklabel',t_names);
 set(gca,'yscale','log');
 
 
+
 %%
 %-- Plot marginal distributions ------------------------------------------%
 figure(31);
@@ -178,7 +180,7 @@ grid_x.plot_marginal(...
     {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
 
 
-%{
+
 %%
 %-- Plot conditional distributions ---------------------------------------%
 figure(31);

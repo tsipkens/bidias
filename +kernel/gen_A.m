@@ -76,7 +76,7 @@ for kk=1:n_z
     for ii=1:n_b(1)
         Lambda_mat{kk}(ii,:) = kernel.tfer_CPMA(...
             grid_b.edges{1}(ii).*1e-18,m.*1e-18,...
-            d.*1e-9,z_vec(kk),prop_CPMA,varargin)';
+            d.*1e-9,z_vec(kk),prop_CPMA,[],varargin{:})';
                 % CPMA transfer function
         
         if or(max(Lambda_mat{kk}(ii,:))>(1+1e-9),any(sum(Lambda_mat{kk}(ii,:))<0))
