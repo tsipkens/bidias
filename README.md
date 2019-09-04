@@ -90,7 +90,7 @@ corresponding repository can be found at
 This package is used to evaluate the transfer function of the DMA and 
 particle mass analyzer (such as the CPMA or APM). The primary function 
 within the larger program is to generate a matrix `A` that acts as the 
-forward model. This package references the `+tfer-PMA` package, noted 
+forward model. This package references the `+tfer_PMA` package, noted 
 above.
 
 ###### +tools
