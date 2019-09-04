@@ -17,9 +17,6 @@ function A = gen_A(grid_b,grid_i,varargin)
 %   varargin    Name-value pairs used in evaluating the CPMA tfer. fun.
 %-------------------------------------------------------------------------%
 
-addpath('UBC-tfer-PMA'); % add particle mass analyzer tfer. fun. package
-                         % contains dm2zp and related functions
-
 %-- Parse measurement set points (b) -------------------------------------%
 r_star = grid_b.elements;
 m_star = r_star(:,1);
