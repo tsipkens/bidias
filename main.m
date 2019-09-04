@@ -24,10 +24,7 @@ phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
-% cmax = 5;
-% cmax = 4.2;
-% cmax = 7;
-cmax = 45;
+cmax = nmax;
 
 figure(1);
 phantom.plot;
