@@ -1,5 +1,5 @@
 
-% GEN_A    Generate A matrix describing kernel/transfer functions
+% GEN_A    Generate A matrix describing kernel/transfer functions for DMA-PMA
 % Author:  Timothy Sipkens, 2018-11-27
 %-------------------------------------------------------------------------%
 % Notes:
@@ -14,8 +14,9 @@ function A = gen_A(grid_b,grid_i,varargin)
 % Inputs:
 %   grid_b      Grid on which the data exists
 %   grid_i      Grid on which to perform integration
-%   varargin    Name-value pairs used in evaluating the CPMA tfer. fun.
+%   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
 %-------------------------------------------------------------------------%
+
 
 %-- Parse measurement set points (b) -------------------------------------%
 r_star = grid_b.elements;
@@ -37,13 +38,13 @@ d = r(:,2);
 %-- Start evaluate kernel ------------------------------------------------%
 disp('Evaluating kernel...');
 
-%-- Evaluate particle charging fractions --%
+%== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
 f_z = sparse(kernel.tfer_charge(d.*1e-9,z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
-%-- Evaluate DMA transfer function ---------------------------------------%
+%== Evaluate DMA transfer function =======================================%
 %-- Note: The DMA transfer function is 1D, speeding evaluation.
 Omega_mat = cell(1,n_z); % pre-allocate for speed
 for kk=1:n_z
@@ -63,18 +64,18 @@ for kk=1:n_z
 end
 
 
-%-- Evaluate CPMA transfer function --------------------------------------%
-prop_CPMA = kernel.prop_CPMA('Olfert');
-disp('Evaluating CPMA contribution:');
+%-- Evaluate PMA transfer function ---------------------------------------%
+prop_PMA = kernel.prop_PMA('Olfert');
+disp('Evaluating PMA contribution:');
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
 for kk=1:n_z
     Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
     for ii=1:n_b(1)
-        Lambda_mat{kk}(ii,:) = kernel.tfer_CPMA(...
+        Lambda_mat{kk}(ii,:) = kernel.tfer_PMA(...
             grid_b.edges{1}(ii).*1e-18,m.*1e-18,...
-            d.*1e-9,z_vec(kk),prop_CPMA,[],varargin{:})';
-                % CPMA transfer function
+            d.*1e-9,z_vec(kk),prop_PMA,[],varargin{:})';
+                % PMA transfer function
         
         if or(max(Lambda_mat{kk}(ii,:))>(1+1e-9),any(sum(Lambda_mat{kk}(ii,:))<0))
             disp(' ');
@@ -90,11 +91,11 @@ disp(' ');
 disp('Compiling kernel...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
-    [~,i1] = max(m_star==grid_b.edges{1},[],2); % index corresponding to CPMA setpoint
+    [~,i1] = max(m_star==grid_b.edges{1},[],2); % index corresponding to PMA setpoint
     [~,i2] = max(d_star==grid_b.edges{2},[],2); % index correspondng to DMA setpoint
     
     K = K+f_z(z_vec(kk),:).*... % charging contribution
-        Lambda_mat{kk}(i1,:).*... % CPMA contribution
+        Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat{kk}(i2,:); % DMA contribution
 end
 disp('Completed kernel evaluation.');   
