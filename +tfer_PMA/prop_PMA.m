@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2019-06-26
 %=========================================================================%
 
-function [prop] = prop_CPMA(opt)
+function [prop] = prop_PMA(opt)
 %-------------------------------------------------------------------------%
 % Input:
 %   opt         Options string specifying parameter set

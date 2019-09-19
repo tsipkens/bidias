@@ -9,7 +9,7 @@
 %   (such as those used for phantoms).
 %=========================================================================%
 
-function A = gen_A(grid_b,grid_i,varargin)
+function A = gen_A(grid_b,grid_i,prop_PMA,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
@@ -17,6 +17,8 @@ function A = gen_A(grid_b,grid_i,varargin)
 %   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
 %-------------------------------------------------------------------------%
 
+if ~exist('prop_PMA','var'); prop_PMA = []; end
+if isempty(prop_PMA); prop_PMA = kernel.prop_PMA('Olfert'); end
 
 %-- Parse measurement set points (b) -------------------------------------%
 r_star = grid_b.elements;
@@ -65,7 +67,6 @@ end
 
 
 %-- Evaluate PMA transfer function ---------------------------------------%
-prop_PMA = kernel.prop_PMA('Olfert');
 disp('Evaluating PMA contribution:');
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed

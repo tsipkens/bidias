@@ -24,10 +24,10 @@ function [Lambda,G0] = tfer_2S_diff(m_star,m,d,z,prop,varargin)
 
 %-- Evaluate mechanical mobility for diffusion calc. ---------------------%
 if ~exist('d','var')
-    B = tfer_PMA.mp2zp(m,z,prop.T,prop.p);
+    B = tfer_pma.mp2zp(m,z,prop.T,prop.p);
         % if mobility is not specified, use mass-mobility relation to estimate
 else
-    B = tfer_PMA.dm2zp(d,z,prop.T,prop.p);
+    B = tfer_pma.dm2zp(d,z,prop.T,prop.p);
 end
 
 D = prop.D(B).*z;
@@ -35,7 +35,7 @@ D = prop.D(B).*z;
     % integer charge state
 sig = sqrt(2.*prop.L.*D./prop.v_bar); % diffusive spreading parameter
 
-[~,G0] = tfer_PMA.tfer_2S(m_star,m,d,z,prop,varargin{:});
+[~,G0] = tfer_pma.tfer_2S(m_star,m,d,z,prop,varargin{:});
     % get G0 function for this case
 
 rho_fun = @(G,r) (G-r)./(sqrt(2).*sig); % reuccring quantity

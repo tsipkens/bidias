@@ -27,7 +27,7 @@ function [Lambda,sp,n] = tfer_FD(m_star,m,d,z,prop,varargin)
 % 	laboratory. 
 %-------------------------------------------------------------------------%
 
-tfer_PMA.get_setpoint; % get setpoint (parses d and z)
+tfer_pma.get_setpoint; % get setpoint (parses d and z)
 
 
 %-- Discretize the space -------------------------------------------------%
@@ -97,7 +97,7 @@ for ii=ind % loop over mass (not m_star)
     
     %-- Primary loop for finite difference ---------------------%
     for jj = 2:nz
-        n_vec = tfer_PMA.tridiag([0,a],b,c,RHS(n_vec));
+        n_vec = tfer_pma.tridiag([0,a],b,c,RHS(n_vec));
             % solve system using Thomas algorithm
         
         if D0(ii)<1e-3 % for low diffusion, stabalize by smoothing oscillations

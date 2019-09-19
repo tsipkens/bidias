@@ -22,7 +22,7 @@ function [Lambda] = tfer_tri(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 
 
-tfer_PMA.get_setpoint; % get setpoint
+tfer_pma.get_setpoint; % get setpoint
 
 if ~isfield(sp,'m_max') % if m_max was not specified
     n_B = -0.6436;

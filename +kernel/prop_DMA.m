@@ -14,6 +14,7 @@ end
 
 
 %-- DMA parameters from Olfert lab (TSI 3081) ----------------------------%
+%-- +FlareNet 2018
 prop.Q_s = 0.3/60/1000; % Sample flow [m^3/s]
 prop.Q_a = 0.3/60/1000; % Aerosol flow [m^3/s]
 prop.Q_c = 3/60/1000; % Sheath flow [m^3/s]

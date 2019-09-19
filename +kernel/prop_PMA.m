@@ -1,9 +1,9 @@
 
-% PROP_CPMA Generates the prop struct used to summarize CPMA parameters.
+% PROP_PMA  Generates the prop struct used to summarize CPMA parameters.
 % Author:   Timothy Sipkens, 2019-06-26
 %=========================================================================%
 
-function [prop] = prop_CPMA(opt)
+function [prop] = prop_PMA(opt)
 %-------------------------------------------------------------------------%
 % Input:
 %   opt         Options string specifying parameter set
@@ -41,6 +41,16 @@ elseif strcmp(opt,'Buckley')
     prop.Q = 1.02e-3/60; % aerosol flowrate [m^3/s]
     prop.T = 298; % system temperature [K]
     prop.p = 1; % system pressure [atm]
+    
+elseif strcmp(opt,'FlareNet18')
+    %-- CPMA parameters from Olfert lab ----------------------------------%
+    prop.r1 = 0.06; % inner electrode radius [m]
+    prop.r2 = 0.061; % outer electrode radius [m]
+    prop.L = 0.2; % length of chamber [m]
+    prop.p = 1; % pressure [atm]
+    prop.T = 293; % system temperature [K]
+    prop.Q = 0.3/1000/60;%0.3/1000/60;%1.5/1000/60; % volume flow rate (m^3/s) (prev: ~1 lpm)
+    prop.omega_hat = 32/33; % ratio of angular speeds
 
 end
 

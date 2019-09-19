@@ -55,9 +55,9 @@ q = z.*e; % particle charge
 
 if ~exist('d','var') % evaluate mechanical mobility
     warning('Invoking mass-mobility relation to determine Zp.');
-    B = tfer_PMA.mp2zp(m,z,prop.T,prop.p);
+    B = tfer_pma.mp2zp(m,z,prop.T,prop.p);
 else
-    B = tfer_PMA.dm2zp(d,z,prop.T,prop.p);
+    B = tfer_pma.dm2zp(d,z,prop.T,prop.p);
 end
 tau = B.*m;
 D = prop.D(B).*z; % diffusion as a function of mechanical mobiltiy and charge state
@@ -78,6 +78,15 @@ if isempty(m_star) % case if m_star is not specified (use voltage and speed)
     sp.omega1 = sp.alpha+sp.beta./(prop.r1.^2);
     sp.omega2 = sp.alpha+sp.beta./(prop.r2.^2);
     
+    %-- Calculate resolution ---------------------------------------------%
+    n_B = -0.6436;
+    B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
+    t0 = prop.Q/(m_star*B_star*2*pi*prop.L*...
+        sp.omega^2*prop.rc^2);
+    m_rat = @(Rm) 1/Rm+1;
+    fun = @(Rm) (m_rat(Rm))^(n_B+1)-(m_rat(Rm))^n_B;
+    sp.Rm = fminsearch(@(Rm) (t0-fun(Rm))^2,10);
+    
 elseif isfield(sp,'omega1') % if angular speed of inner electrode is specified
     
     %-- Azimuth velocity distribution and voltage ------------------------%
@@ -89,7 +98,7 @@ elseif isfield(sp,'omega1') % if angular speed of inner electrode is specified
     
     sp.omega2 = sp.alpha+sp.beta./(prop.r2.^2);
     sp.omega = sp.alpha+sp.beta./(prop.rc.^2);
-        
+    
 elseif isfield(sp,'omega') % if angular speed at gap center is specified
     
     %-- Azimuth velocity distribution and voltage ------------------------%
@@ -120,10 +129,10 @@ elseif isfield(sp,'Rm') % if resolution is specified
     %-- Use definition of Rm to derive angular speed at centerline -------%
     %-- See Reavell et al. (2011) for resolution definition --%
     n_B = -0.6436;
-    B_star = tfer_PMA.mp2zp(m_star,1,prop.T,prop.p);
+    B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
         % involves invoking mass-mobility relation
         % z = 1 for the setpoint
-        
+    
     sp.m_max = m_star*(1/sp.Rm+1);
     omega = sqrt(prop.Q/(m_star*B_star*2*pi*prop.rc^2*prop.L*...
         ((sp.m_max/m_star)^(n_B+1)-(sp.m_max/m_star)^n_B)));
@@ -148,7 +157,7 @@ sp.m_star = m_star;
     % copy center mass to sp
     % center mass is for a singly charged particle
 
-B_star = tfer_PMA.mp2zp(m_star,1,prop.T,prop.p);
+B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
 C0 = sp.V.*q./log(1/prop.r_hat); % calcualte recurring C0 parameter
 
 

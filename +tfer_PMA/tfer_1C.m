@@ -22,7 +22,7 @@ function [Lambda,G0] = tfer_1C(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 
 
-tfer_PMA.get_setpoint; % get setpoint (parses d and z)
+tfer_pma.get_setpoint; % get setpoint (parses d and z)
 
 %-- Taylor series expansion constants ------------------------------------%
 C3 = tau.*(sp.alpha^2*prop.rc+2*sp.alpha*sp.beta/prop.rc+sp.beta^2/(prop.rc^3)-C0./(m.*prop.rc));

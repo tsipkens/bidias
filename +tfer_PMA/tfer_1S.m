@@ -21,7 +21,7 @@ function [Lambda,G0] = tfer_1S(m_star,m,d,z,prop,varargin)
 %   G0          Function mapping final to initial radial position
 %-------------------------------------------------------------------------%
 
-tfer_PMA.get_setpoint; % get setpoint (parses d and z)
+tfer_pma.get_setpoint; % get setpoint (parses d and z)
 
 %-- Estimate equilibrium radius ------------------------------------------%
 if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc

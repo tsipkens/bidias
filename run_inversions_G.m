@@ -1,5 +1,6 @@
 
-% RUN_INVERSIONS_F  Runs exponential rotated regularization
+% RUN_INVERSIONS_E  Run inversions to find optimal regularization parameters
+%                   Works only on Tikhonov, consider posterior covariance
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
@@ -19,4 +20,3 @@ disp('Performing rotated exponential distance regularization...');
     lambda_expRot,Lex);
 disp('Inversion complete.');
 disp(' ');
-
