@@ -9,8 +9,8 @@ function [y,grid_rho] = mass2rho(x,grid_x,n_rho)
 if ~exist('n_rho','var'); n_rho = []; end
 if isempty(n_rho); n_rho = 600; end
 
-rho_min = 50;
-rho_max = 5000;
+rho_min = 100;
+rho_max = 10000;
 rho_n = logspace(log10(rho_min),log10(rho_max),n_rho);
 grid_rho = Grid([rho_min,rho_max;grid_x.span(2,:)],...
     [n_rho,length(grid_x.edges{2})],'logarithmic'); % should be uniform basis
