@@ -2,7 +2,8 @@
 % GET_SETPOINT  Script to evaluate setpoint parameters including C0, alpha, and beta.
 % Author:       Timothy A. Sipkens, 2019-05-01
 %=========================================================================%
-%
+
+function [sp,tau,C0,D] = get_setpoint(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 % Required variables:
 %   m_star      Mass corresponding to the measurement set point of the APM
@@ -28,14 +29,10 @@
 
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('z','var'); z = []; end
 if isempty(z); z = 1; end % if integer charge is not specified, use z = 1
 
-if ~exist('m_star','var'); m_star = []; end
-
-
 %-- Parse inputs for setpoint --------------------------------------------%
-if exist('varargin','var') % parse input name-value pair, if it exists
+if ~isempty(varargin) % parse input name-value pair, if it exists
     if length(varargin)==2
         sp.(varargin{1}) = varargin{2};
     elseif length(varargin)==4
@@ -53,7 +50,7 @@ end
 e = 1.60218e-19; % electron charge [C]
 q = z.*e; % particle charge
 
-if ~exist('d','var') % evaluate mechanical mobility
+if isempty(d) % evaluate mechanical mobility
     warning('Invoking mass-mobility relation to determine Zp.');
     B = tfer_pma.mp2zp(m,z,prop.T,prop.p);
 else
@@ -157,7 +154,7 @@ sp.m_star = m_star;
     % copy center mass to sp
     % center mass is for a singly charged particle
 
-B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
+% B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
 C0 = sp.V.*q./log(1/prop.r_hat); % calcualte recurring C0 parameter
 
-
+end

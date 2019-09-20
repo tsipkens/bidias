@@ -27,8 +27,9 @@ function [Lambda,sp,n] = tfer_FD(m_star,m,d,z,prop,varargin)
 % 	laboratory. 
 %-------------------------------------------------------------------------%
 
-tfer_pma.get_setpoint; % get setpoint (parses d and z)
-
+[sp,tau,C0,D] = ...
+    tfer_pma.get_setpoint(m_star,m,d,z,prop,varargin{:});
+        % get setpoint (parses d and z)
 
 %-- Discretize the space -------------------------------------------------%
 nr = 200;
