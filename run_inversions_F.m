@@ -1,8 +1,7 @@
 
-% RUN_INVERSIONS_F  Runs exponential rotated regularization
+% RUN_INVERSIONS_F  Runs exponential rotated regularization (orig. main_bayes)
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
-
 
 % Exponential rotated
 s1 = 2.0;

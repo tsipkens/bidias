@@ -32,10 +32,15 @@ for ii=2:length(iter_vec)
     tools.textbar(ii/length(iter_vec));
 end
 
-[~,ind_min] = min(out.chi);
-iter = iter_vec(ind_min);
-x = out.x(:,ind_min);
+if ~isempty(x_ex)
+    [~,out.ind_min] = min(out.chi);
+else
+    out.ind_min = [];
+end
+out.x_opt = out.x(:,out.ind_min); % store optimal solution in out struct
 
+
+%-- Ouput solution at last step (for compatibility) -------%
 iter = length(iter_vec);
 x = out.x(:,end);
 

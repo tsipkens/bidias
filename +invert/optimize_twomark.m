@@ -24,11 +24,10 @@ function [x,Sf,out] = optimize_twomark(A,b,Lb,n,x0,iter,span,x_ex,opt_smooth)
 
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('opt_smooth','var')
-    opt_smooth = 'Buckley';
-elseif isempty(opt_smooth)
-    opt_smooth = 'Buckley';
-end
+if ~exist('opt_smooth','var'); opt_smooth = []; end
+if isempty(opt_smooth); opt_smooth = 'Buckley'; end
+
+if ~exist('x_ex','var'); x_ex = []; end
 %-------------------------------------------------------------------------%
 
 
@@ -36,7 +35,7 @@ x_fun = @(Sf) invert.twomark(A,b,Lb,n,x0,iter,opt_smooth,Sf);
 
 out.Sf = 1./logspace(log10(span(1)),log10(span(2)),25);
 out.x = zeros(length(x_ex),length(out.Sf));
-out.chi = zeros(length(out.Sf),1);
+if ~isempty(x_ex); out.chi = zeros(length(out.Sf),1); end
 
 disp(' ');
 disp('Optimizing Twomey-Markowski smoothing:');
@@ -44,7 +43,7 @@ tools.textbar(0);
 disp(' ');
 for ii=1:length(out.Sf)
     out.x(:,ii) = x_fun(out.Sf(ii));
-    out.chi(ii) = norm(out.x(:,ii)-x_ex);
+    if ~isempty(x_ex); out.chi(ii) = norm(out.x(:,ii)-x_ex); end
     out.Axb(ii) = norm(A*out.x(:,ii)-b);
     
     disp(' ');
@@ -53,7 +52,11 @@ for ii=1:length(out.Sf)
     disp(' ');
 end
 
-[~,ind_min] = min(out.chi);
+if ~isempty(x_ex)
+    [~,ind_min] = min(out.chi);
+else
+    ind_min = [];
+end
 Sf = out.Sf(ind_min);
 x = out.x(:,ind_min);
 
