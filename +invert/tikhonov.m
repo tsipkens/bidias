@@ -3,22 +3,22 @@
 % Author:   Timothy Sipkens, 2018-11-21
 %=========================================================================%
 
-function [x,D,Lx,Gpo] = tikhonov(A,b,n,lambda,order,x0,solver)
+function [x,D,Lpr,Gpo_inv] = tikhonov(A,b,n,lambda,order,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   A       Model matrix
-%   b       Data
-%   n       Length of first dimension of solution
-%   lambda  Regularization parameter
-%   order   Order of regularization     (Optional, default is 1)
-%   x0      Initial guess for solver    (Optional, default is zeros)
-%   solver  Solver                      (Optional, default is interior-point)
+%   A        Model matrix
+%   b        Data
+%   n        Length of first dimension of solution
+%   lambda   Regularization parameter
+%   order    Order of regularization     (Optional, default is 1)
+%   x0       Initial guess for solver    (Optional, default is zeros)
+%   solver   Solver                      (Optional, default is interior-point)
 %
 % Outputs:
-%   x       Regularized estimate
-%   D       Inverse operator (x = D*[b;0])
-%   Lx      Tikhonov matrix
-%   Lpo     Cholesky factorization of posterior covariance
+%   x        Regularized estimate
+%   D        Inverse operator (x = D*[b;0])
+%   Lpr      Tikhonov matrix
+%   Gpo_inv  Inverse of posterior covariance
 %-------------------------------------------------------------------------%
 
 x_length = length(A(1,:));
@@ -37,11 +37,11 @@ if isempty(solver); solver = 'interior-point'; end % if computation method not s
 %-- Generate Tikhonov smoothing matrix -----------------------------------%
 switch order
     case 0 % 0th order Tikhonov
-        Lx = -lambda.*speye(x_length);
+        Lpr = -lambda.*speye(x_length);
     case 1 % 1st order Tikhonov
-        Lx = lambda.*genLx1(n,x_length);
+        Lpr = lambda.*genL1(n,x_length);
     case 2 % 2nd order Tikhonov
-        Lx = lambda.*genLx2(n,x_length);
+        Lpr = lambda.*genL2(n,x_length);
     otherwise
         disp('The specified order of Tikhonov is not available.');
         disp(' ');
@@ -51,92 +51,92 @@ end
 
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
-    [A;Lx],[b;sparse(x_length,1)],solver,x0);
+    [A;Lpr],[b;sparse(x_length,1)],solver,x0);
 
 
 %-- Uncertainty quantification -------------------------------------------%
 if nargout>=4
-    Gpo = A'*A+Lx'*Lx;
+    Gpo_inv = A'*A+Lpr'*Lpr;
 end
 
 end
 %=========================================================================%
 
 
-%== GENLX1 ===============================================================%
+%== GENL1 ================================================================%
 %   Generates Tikhonov matrix for 1st order Tikhonov regularization.
-function Lx = genLx1(n,x_length)
+function L = genL1(n,x_length)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   n           Length of first dimension of solution
 %   x_length    Length of x vector
 %
 % Outputs:
-%   Lx      Tikhonov matrix
+%   L       Tikhonov matrix
 %-------------------------------------------------------------------------%
 
 % Dx = speye(n);
 % Dx = spdiag(-ones(n,1),1,Dx);
 % Dx = kron(Dx,speye(x_length/n));
 
-Lx = -eye(x_length);
+L = -eye(x_length);
 for jj=1:x_length
     if ~(mod(jj,n)==0)
-        Lx(jj,jj+1) = 0.5;
+        L(jj,jj+1) = 0.5;
     else % if on right edge
-        Lx(jj,jj) = Lx(jj,jj)+0.5;
+        L(jj,jj) = L(jj,jj)+0.5;
     end
     
     if jj<=(x_length-n)
-        Lx(jj,jj+n) = 0.5;
+        L(jj,jj+n) = 0.5;
     else % if on bottom
-        Lx(jj,jj) = Lx(jj,jj)+0.5;
+        L(jj,jj) = L(jj,jj)+0.5;
     end
 end
-Lx = sparse(Lx);
+L = sparse(L);
  
 end
 %=========================================================================%
 
 
-%== GENLX2 ===============================================================%
+%== GENL2 ================================================================%
 %   Generates Tikhonov matrix for 2nd order Tikhonov regularization.
-function Lx = genLx2(n,x_length)
+function L = genL2(n,x_length)
 % Inputs:
 %   n           Length of first dimension of solution
 %   x_length    Length of x vector
 %
 % Outputs:
-%   Lx      Tikhonov matrix
+%   L       Tikhonov matrix
 %-------------------------------------------------------------------------%
 
-Lx = -eye(x_length);
+L = -eye(x_length);
 for jj=1:x_length
     if ~(mod(jj,n)==0)
-        Lx(jj,jj+1) = 0.25;
+        L(jj,jj+1) = 0.25;
     else
-        Lx(jj,jj) = Lx(jj,jj)+0.25;
+        L(jj,jj) = L(jj,jj)+0.25;
     end
     
     if ~(mod(jj-1,n)==0)
-        Lx(jj,jj-1) = 0.25;
+        L(jj,jj-1) = 0.25;
     else
-        Lx(jj,jj) = Lx(jj,jj)+0.25;
+        L(jj,jj) = L(jj,jj)+0.25;
     end
     
     if jj>n
-        Lx(jj,jj-n) = 0.25;
+        L(jj,jj-n) = 0.25;
     else
-        Lx(jj,jj) = Lx(jj,jj)+0.25;
+        L(jj,jj) = L(jj,jj)+0.25;
     end
     
     if jj<=(x_length-n)
-        Lx(jj,jj+n) = 0.25;
+        L(jj,jj+n) = 0.25;
     else
-        Lx(jj,jj) = Lx(jj,jj)+0.25;
+        L(jj,jj) = L(jj,jj)+0.25;
     end
 end
-Lx = sparse(Lx);
+L = sparse(L);
 
 end
 %=========================================================================%

@@ -3,17 +3,17 @@
 % Author:   Timothy Sipkens, 2018-10-22
 %=========================================================================%
 
-function [x,D,Lx,Lpo] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver,sigma)
+function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver,sigma)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   A       Model matrix
-%   b       Data
+%   A        Model matrix
+%   b        Data
 %
 % Outputs:
-%   x       Regularized estimate
-%   D       Inverse operator (x = D*[b;0])
-%   Lx      Cholesky factorization of prior covariance
-%   Lpo     Cholesky factorization of posterior covariance
+%   x        Regularized estimate
+%   D        Inverse operator (x = D*[b;0])
+%   Lpr      Cholesky factorization of prior covariance
+%   Gpo_inv  Inverse of posterior covariance
 %-------------------------------------------------------------------------%
 
 
@@ -42,31 +42,33 @@ d2 = log(vec_d1)-log(vec_d2);
 d = sqrt((d1.*Lex(1,1)+d2.*Lex(1,2)).^2+(d1.*Lex(2,1)+d2.*Lex(2,2)).^2); % distance
 
 %-- Generate prior covariance matrix --------------------------------------
-Gx = exp(-d);
+Gpr = exp(-d);
 if exist('sigma','var') % incorporate structure into covariance, if specified
     for ii=1:x_length
         for jj=1:x_length
-            Gx(ii,jj) = Gx(ii,jj).*sigma(ii).*sigma(jj);
+            Gpr(ii,jj) = Gpr(ii,jj).*sigma(ii).*sigma(jj);
         end
     end
 end
-Gx(Gx<(0.05.*mean(mean(Gx)))) = 0; % remove any entries below thershold
-Gx = Gx./max(max(Gx)); % normalize matrix structure
+Gpr(Gpr<(0.05.*mean(mean(Gpr)))) = 0; % remove any entries below thershold
+Gpr = Gpr./max(max(Gpr)); % normalize matrix structure
 
-Gxi = inv(Gx);
-Lx = chol(Gxi);
-Lx = lambda.*Lx./max(max(Lx));
-Lx(abs(Lx)<(0.01.*mean(mean(abs(Lx))))) = 0;
-Lx = sparse(Lx);
+Gpr_inv = inv(Gpr);
+Lpr = chol(Gpr_inv);
+Lpr = lambda.*Lpr./max(max(Lpr));
+Lpr(abs(Lpr)<(0.01.*mean(mean(abs(Lpr))))) = 0;
+Lpr = sparse(Lpr);
 
 
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
-    [A;Lx],[b;sparse(x_length,1)],solver,x0);
+    [A;Lpr],[b;sparse(x_length,1)],solver,x0);
 
 
 %-- Uncertainty quantification -------------------------------------------%
-Lpo = [];
+if nargout>=4
+    Gpo_inv = A'*A+Lpr'*Lpr;
+end
 
 end
 
