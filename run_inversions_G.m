@@ -42,14 +42,14 @@ Gpo_logdet = [];
 n = prod(n_x);
 tools.textbar(0);
 for ii=1:length(out_Tk1)
-    Gpo_logdet(ii) = tools.logdet(inv(out_Tk1(ii).Gpo_inv));
-    Fi_pr(ii) = -1/2.*(norm(out_Tk1(ii).Lpr*(out_Tk1(ii).x))^2);
-    Fi_b(ii) = -1/2.*(norm(Lb*(A*out_Tk1(ii).x-b))^2);
-    tools.textbar(ii/length(out_Tk1));
+    Gpo_logdet(ii) = tools.logdet(inv(out_expRot(ii).Gpo_inv));
+    Fi_pr(ii) = -1/2.*(norm(out_expRot(ii).Lpr*out_expRot(ii).x)^2);
+    Fi_b(ii) = -1/2.*(norm(Lb*(A*out_expRot(ii).x-b))^2);
+    tools.textbar(ii/length(out_expRot));
 end
 Ci = 1/2.*(Gpo_logdet+...
-    2*n.*log([out_Tk1.lambda]));
+    2*n.*log([out_expRot.lambda]));
 Fi = Fi_pr+Fi_b;
 Bi = Fi+Ci;
-% semilogx([out_Tk1.lambda],[Ci;Fi;Bi]');
+semilogx([out_expRot.lambda],[Ci;Fi;Bi]');
 

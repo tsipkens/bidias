@@ -34,7 +34,7 @@ disp('Optimizing Tikhonov regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii);
-    [out(ii).x,~,out(ii).Lx,out(ii).Gpo_inv] = invert.tikhonov(...
+    [out(ii).x,~,out(ii).Lpr,out(ii).Gpo_inv] = invert.tikhonov(...
         A,b,n,lambda(ii),order,x0,solver);
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);

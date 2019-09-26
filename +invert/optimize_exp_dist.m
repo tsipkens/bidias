@@ -32,8 +32,8 @@ disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii);
-    [out(ii).x,~,out(ii).Lx,out(ii).Gpo_inv] = invert.exp_dist(...
-        A,b,d_vec,m_vec,lambda,Lex,x0,solver);
+    [out(ii).x,~,out(ii).Lpr,out(ii).Gpo_inv] = invert.exp_dist(...
+        A,b,d_vec,m_vec,lambda(ii),Lex,x0,solver);
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
     
