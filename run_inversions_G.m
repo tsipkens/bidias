@@ -45,6 +45,7 @@ for ii=1:length(out_Tk1)
     Gpo_logdet(ii) = tools.logdet(inv(out_expRot(ii).Gpo_inv));
     Fi_pr(ii) = -1/2.*(norm(out_expRot(ii).Lpr*out_expRot(ii).x)^2);
     Fi_b(ii) = -1/2.*(norm(Lb*(A*out_expRot(ii).x-b))^2);
+    Axb(ii) = -1/2.*(norm(A*out_expRot(ii).x-b)^2);
     tools.textbar(ii/length(out_expRot));
 end
 Ci = 1/2.*(Gpo_logdet+...
