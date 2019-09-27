@@ -48,7 +48,13 @@ switch solver
         options = optimoptions('lsqlin','Algorithm','trust-region-reflective');
         x = lsqlin(A,b,...
             [],[],[],[],x_lb,[],x0,options);
-
+    
+    case 'interior-point-neg'
+        options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
+        x = lsqlin(A,b,...
+            [],[],[],[],[],[],x0,options);
+        D = []; % not specified when using this method
+        
     case 'algebraic' % matrix multiplication least squares (not non-negative constrained)
         D = (A'*A)\A'; % invert combined matrices
         x = D*b;

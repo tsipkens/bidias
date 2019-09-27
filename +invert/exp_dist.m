@@ -55,6 +55,7 @@ Gpr = Gpr./max(max(Gpr)); % normalize matrix structure
 
 Gpr_inv = inv(Gpr);
 Lpr = chol(Gpr_inv);
+clear Gpr_inv; % to save memory
 Lpr = lambda.*Lpr./max(max(Lpr));
 Lpr(abs(Lpr)<(0.01.*mean(mean(abs(Lpr))))) = 0;
 Lpr = sparse(Lpr);
