@@ -1,4 +1,4 @@
-# UBC-aerosol-inversion
+# mat-2d-aerosol-inversion
 
 A program to invert CPMA-DMA data to find the two-dimensional
 mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
@@ -117,7 +117,8 @@ University of British Columbia.
 This distribution includes code snippets from the code provided with
 the work of [Buckley et al. (2017)][3],
 who used a Twomey-type approach to derive two-dimensional mass-mobility
-distributions.
+distributions. Much of the code from that work has been significantly
+modified in this distribution. 
 
 Also included is a reference to code designed to quickly evaluate
 the transfer function of particle mass analyzers (e.g. APM, CPMA) by
@@ -129,7 +130,7 @@ README in the `cmap` folder.
 #### References
 
 1. [Sipkens et al., J. Aerosol Sci. (Submitted)][1]
-2. [Sipkens et al., Aerosol Sci. Technol. (Submitted)][2]
+2. [Sipkens et al., Aerosol Sci. Technol. (Accepted)][2]
 3. [Buckley et al., J. Aerosol Sci. (2017)][3]
 
 [1]: N/A
