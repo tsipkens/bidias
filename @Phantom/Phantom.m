@@ -10,7 +10,7 @@ classdef Phantom
     properties
         name = []; % optional name for the phantom
         
-        p@struct = struct();
+        p struct = struct();
         %{
             ... % struct defining distribution parameterization
             'dg',[],... % mean mobility diameter [nm]

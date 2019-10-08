@@ -35,6 +35,7 @@ chi.exp_dist = norm(x0-x_expRot);
 
 
 %-- Calculate Bayes factor ----------%
+%{
 Fi_pr = []; % fit
 Fi_b = [];
 Gpo_inv_logdet = [];
@@ -53,4 +54,7 @@ Ci = 1/2.*(Gpo_logdet+...
 Fi = Fi_pr+Fi_b;
 Bi = Fi+Ci;
 semilogx([out_expRot.lambda],[Ci;Fi;Bi]');
+%}
+
+
 
