@@ -102,9 +102,10 @@ above.
 ###### +tools
 
 A series of utility functions that serve various purposes, including printing
-a text-based progress bar (based on code from Samuel Grauer) and a function
-to convert mass-mobility distributions to effective density-mobility
-distributions.
+a text-based progress bar (based on code from 
+[Samuel Grauer](https://www.researchgate.net/profile/Samuel_Grauer)) 
+and a function to convert mass-mobility distributions to effective 
+density-mobility distributions.
 
 ----------------------------------------------------------------------
 
