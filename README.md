@@ -6,14 +6,14 @@ mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
 
 ### Description
 
-This program is organized into several packages and classes. The `main.m`
-scripts in the top directory of the code can be called to demonstrate
-the code.
+This program is organized into several packages and classes. 
 
 
 #### Main script
 
-Scripts to execute this program should be structured as follows:
+The `main.m` scripts in the top directory of the code can be called to 
+demonstrate use of the code. Scripts to execute this program should be 
+structured as follows:
 
 1. Optionally, one can define a phantom used to generate synthetic data and a
 ground truth. The `@Phantom` class, described below, is designed to
