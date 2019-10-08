@@ -79,15 +79,17 @@ Tikhonov regularization, Twomey, Twomey-Markowski (including using the method
 of [Buckley et al. (2017)][3]), and the multiplicative algebraic reconstruction
 technique (MART). Also included are functions that, given the true distribution,
 can determine the optimal number of iterations or the optimal regularization
-parameter.
+parameter. Development is underyway on the use of an exponential covariance 
+function to correlate pixel values and reduce reconstruction errors. 
 
 ###### +tfer_PMA
 
-This is imported from a package distributed with [Sipkens et al. (Submitted)][2]. 
+This is imported from a package distributed with [Sipkens et al. (Accepted)][2]. 
 This package is used in evaluating the transfer function of the particle mass 
-analyzers and some standard reference functions used in `tfer_DMA.m`. The 
-corresponding repository can be found at 
-[https://github.com/tsipkens/UBC-tfer-PMA](https://github.com/tsipkens/UBC-tfer-PMA). 
+analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal 
+particle mass analyzer (CPMA). The package also contains some standard reference 
+functions used in `tfer_DMA.m`. The corresponding repository can be found at 
+[https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). 
 
 ###### +kernel
 
