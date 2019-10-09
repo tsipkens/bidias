@@ -34,7 +34,7 @@ disp('Optimizing Tikhonov regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii);
-    [out(ii).x,~,out(ii).Lpr,out(ii).Gpo_inv] = invert.tikhonov(...
+    [out(ii).x,~,Lpr] = invert.tikhonov(...
         A,b,n,lambda(ii),order,x0,solver);
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
@@ -49,6 +49,11 @@ else
 end
 lambda = out(ind_min).lambda;
 x = out(ind_min).x;
+
+out(1).Lpr = Lpr./lambda(end); % store Lpr structure
+    % to save memory, only output Lpr structure
+    % Lpr for any lambda can be found using scalar multiplication
+    % Gpo_inv = A'*A+Lpr'*Lpr; <- can be done is post-process
 
 end
 

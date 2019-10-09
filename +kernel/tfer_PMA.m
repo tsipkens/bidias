@@ -40,7 +40,6 @@ if isempty(opt); opt = '1C_diff'; end
 if isempty(varargin); varargin = {'Rm',3}; end
     % by default use resolution of 3
 
-
 fun = str2func(['tfer_pma.tfer_',opt]); % call relevant function from submodule
 Lambda = fun(m_star,m,d,z,prop,varargin{1},varargin{2})'; % CPMA transfer function
 
