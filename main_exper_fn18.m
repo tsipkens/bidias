@@ -36,10 +36,11 @@ data0(length(files)) = struct;
 data2(length(files)) = struct;
 data3(length(files)) = struct;
 
-for ff=2%1:length(files)
+for ff=1:length(files)
     
-    disp(['Processing fuel ',num2str(ff),' of ',...
-        num2str(length(files)),' (',fuel{ff},') ...']);
+    disp(' ');
+    disp(['<== PROCESSING FUEL ',num2str(ff),' OF ',...
+        num2str(length(files)),' (',fuel{ff},') =====================>']);
     
     %=========================================================================%
     %-- Load experimental data -----------------------------------------------%
