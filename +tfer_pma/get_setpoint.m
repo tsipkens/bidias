@@ -83,6 +83,7 @@ if isempty(m_star) % case if m_star is not specified (use voltage and speed)
     m_rat = @(Rm) 1/Rm+1;
     fun = @(Rm) (m_rat(Rm))^(n_B+1)-(m_rat(Rm))^n_B;
     sp.Rm = fminsearch(@(Rm) (t0-fun(Rm))^2,10);
+    sp.m_max = m_star*(1/sp.Rm+1);
     
 elseif isfield(sp,'omega1') % if angular speed of inner electrode is specified
     

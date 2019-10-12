@@ -13,6 +13,7 @@ function [Omega,Zp_tilde] = tfer_DMA(d_star,d,z,prop,opts)
 %   prop            DMA properties, struct, generated using prop_DMA function (optional)
 %   opts.diffusion  Indicates whether to include diffusion, boolean (optional)
 %       .solver     Indicates the method by which diffusion is calculated (optional)
+%       .param      String indicated which parameter set to use (see prop_DMA.m)
 %
 % Outputs:
 %   Omega           Transfer function
@@ -25,8 +26,8 @@ if ~exist('opts','var'); opts = []; end % initialize options struct
 if ~exist('prop','var'); prop = []; end
 
 if ~isfield(opts,'solver'); opts.solver = 'fullydeveloped'; end
-if ~isfield(opts,'diffu'); opts.diffusion = true; end
-if isempty(prop); prop = kernel.prop_DMA(opts.solver); end
+if ~isfield(opts,'diffu'); opts.diffusion = 1; end
+if isempty(prop); prop = kernel.prop_DMA(opts); end
 
 
 %-- Physical constants ---------------------------------------------------%

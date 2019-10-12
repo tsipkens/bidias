@@ -44,9 +44,7 @@ for ff=2%1:length(files)
     %=========================================================================%
     %-- Load experimental data -----------------------------------------------%
     load(['..\data\Soot Data FlareNet 18\',files{ff}]);
-    % load('..\data\Soot-Salt Data M9 Flame\data_flameM9_soot+salt_v1.mat');
-    % load('..\data\Soot-Salt Data UA May 2019\20190509_SMPS\20190509g_SMPS.mat');
-
+    
     %-- Reformat data --------------------------------------------------------%
     data = data';
     b_max = max(max(data));

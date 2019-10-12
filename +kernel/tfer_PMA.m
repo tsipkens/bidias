@@ -22,10 +22,6 @@ function [Lambda,prop] = tfer_PMA(m_star,m,d,z,prop,opt,varargin)
 % Outputs:
 %   Lambda      CPMA transfer function
 %   prop        CPMA device settings
-%
-% Note:
-%   Some of this code is adapted from Buckley et al. (2017) and Olfert
-%   laboratory.
 %-------------------------------------------------------------------------%
 
 
@@ -35,10 +31,15 @@ if ~exist('opt','var'); opt = []; end
 if ~exist('varargin','var'); varargin = []; end
 
 if isempty(prop); prop = kernel.prop_CPMA; end % import properties of CPMA
+
 if isempty(opt); opt = '1C_diff'; end
-    % by default use finite difference solution
+    % by default, use Taylor series solution baout rc (Case 1C) with diffusion
+    % see Sipkens et al., Aerosol Sci. Technol. (2019) for more information
+
 if isempty(varargin); varargin = {'Rm',3}; end
-    % by default use resolution of 3
+    % by default, use resolution of 3
+%-------------------------------------------------------------------------%
+
 
 fun = str2func(['tfer_pma.tfer_',opt]); % call relevant function from submodule
 Lambda = fun(m_star,m,d,z,prop,varargin{1},varargin{2})'; % CPMA transfer function

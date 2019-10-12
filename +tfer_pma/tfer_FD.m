@@ -60,8 +60,8 @@ v_z = 3/2*prop.v_bar.*(1-((r_vec-rc)./(del)).^2);
 %-- Speed computation using resolution to limit computation --------------%
 ind = 1:length(m);
 if isfield(sp,'Rm') % if resolution is specified, use to reduce necessary computation
-    cond0 = or(m>(z.*m_star+2.*sp.m_max),...
-        m<(z.*m_star-2.*sp.m_max));
+    cond0 = or(m>(z.*sp.m_star+2.*sp.m_max),...
+        m<(z.*sp.m_star-2.*sp.m_max));
             % NOTE: conditions limits consideration of those regions where particles
             % do not escape, speeding computation.
     ind = ind(~cond0);
