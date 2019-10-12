@@ -3,16 +3,15 @@
 A program to invert CPMA-DMA data to find the two-dimensional
 mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
 
-
-### Description
-
-This program is organized into several packages and classes. 
+This program is organized into several packages and classes.
 
 
-#### Main script
+### Scripts in upper director
 
-The `main.m` scripts in the top directory of the code can be called to 
-demonstrate use of the code. Scripts to execute this program should be 
+###### `main*.m` scripts
+
+The `main*.m` scripts in the top directory of the code can be called to
+demonstrate use of the code. Scripts to execute this program should be
 structured as follows:
 
 1. Optionally, one can define a phantom used to generate synthetic data and a
@@ -49,8 +48,14 @@ the axes.
 A description of the classes and packages that are included to perform these
 tasks are included below.
 
+##### `run_inversions*.m` scripts
 
-#### Classes
+These scripts are intend to bundle a series of inversion methods into a single
+line of codd in the `main*.m` scripts. This can include optimization routines,
+included in the `+invert` package, which run through several values of the
+regularization parameters.
+
+### Classes
 
 ###### @Grid
 
@@ -63,10 +68,10 @@ or custom spaced elements along the edges.
 Phantom is a class developed to contain the parameters and other information
 for the phantom distributions that are used in testing the different inversion
 methods. Currently the phantom class is programmed to produce joint-normal
-or joint-lognormal mass-mobiltiy distributons. The four sample phantoms from 
+or joint-lognormal mass-mobiltiy distributons. The four sample phantoms from
 [Sipkens et al. (Submitted)][1] can be called using strings encompassing the
-distribution numbers from that work (e.g. the demonstration phantom can be 
-generated using `'1'`. 
+distribution numbers from that work (e.g. the demonstration phantom can be
+generated using `'1'`.
 
 
 #### Packages
@@ -79,32 +84,32 @@ Tikhonov regularization, Twomey, Twomey-Markowski (including using the method
 of [Buckley et al. (2017)][3]), and the multiplicative algebraic reconstruction
 technique (MART). Also included are functions that, given the true distribution,
 can determine the optimal number of iterations or the optimal regularization
-parameter. Development is underyway on the use of an exponential covariance 
-function to correlate pixel values and reduce reconstruction errors. 
+parameter. Development is underyway on the use of an exponential covariance
+function to correlate pixel values and reduce reconstruction errors.
 
 ###### +tfer_PMA
 
-This is imported from a package distributed with [Sipkens et al. (Accepted)][2]. 
-This package is used in evaluating the transfer function of the particle mass 
-analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal 
-particle mass analyzer (CPMA). The package also contains some standard reference 
-functions used in `tfer_DMA.m`. The corresponding repository can be found at 
-[https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). 
+This is imported from a package distributed with [Sipkens et al. (Accepted)][2].
+This package is used in evaluating the transfer function of the particle mass
+analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
+particle mass analyzer (CPMA). The package also contains some standard reference
+functions used in `tfer_DMA.m`. The corresponding repository can be found at
+[https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma).
 
 ###### +kernel
 
-This package is used to evaluate the transfer function of the DMA and 
-particle mass analyzer (such as the CPMA or APM). The primary function 
-within the larger program is to generate a matrix `A` that acts as the 
-forward model. This package references the `+tfer_PMA` package, noted 
+This package is used to evaluate the transfer function of the DMA and
+particle mass analyzer (such as the CPMA or APM). The primary function
+within the larger program is to generate a matrix `A` that acts as the
+forward model. This package references the `+tfer_PMA` package, noted
 above.
 
 ###### +tools
 
 A series of utility functions that serve various purposes, including printing
-a text-based progress bar (based on code from 
-[Samuel Grauer](https://www.researchgate.net/profile/Samuel_Grauer)) 
-and a function to convert mass-mobility distributions to effective 
+a text-based progress bar (based on code from
+[Samuel Grauer](https://www.researchgate.net/profile/Samuel_Grauer))
+and a function to convert mass-mobility distributions to effective
 density-mobility distributions.
 
 ----------------------------------------------------------------------
@@ -125,11 +130,11 @@ This distribution includes code snippets from the code provided with
 the work of [Buckley et al. (2017)][3],
 who used a Twomey-type approach to derive two-dimensional mass-mobility
 distributions. Much of the code from that work has been significantly
-modified in this distribution. 
+modified in this distribution.
 
 Also included is a reference to code designed to quickly evaluate
 the transfer function of particle mass analyzers (e.g. APM, CPMA) by
-Sipkens et al. (Under review).
+Sipkens et al. (Accepted).
 
 Information on the provided colormaps can be found in an associated
 README in the `cmap` folder.
