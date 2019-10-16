@@ -6,7 +6,7 @@ mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
 This program is organized into several packages and classes.
 
 
-### Scripts in upper director
+### Scripts in upper directory
 
 ###### `main*.m` scripts
 
