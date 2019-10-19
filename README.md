@@ -1,5 +1,7 @@
 # mat-2d-aerosol-inversion
 
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+
 A program to invert CPMA-DMA data to find the two-dimensional
 mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
 
