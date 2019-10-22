@@ -13,8 +13,10 @@ load('inferno.mat');
 cm = cm(40:end,:);
 % load('matter.mat');
 cm_b = cm;
-load('speed.mat');
-cm = cm(end:-1:1,:);
+% load('speed.mat');
+% cm = cm(end:-1:1,:);
+load('viridis.mat');
+% cm = cm(20:(end-20),:);
 
 
 %%
@@ -25,7 +27,8 @@ cm = cm(end:-1:1,:);
 % load('..\data\Soot-Salt Data UA May 2019\20190509_SMPS\20190509d_SMPS.mat');
     % 0.3% NaCl
     
-load('..\data\Soot-Salt Data UA May 2019\20190509_SMPS\20190509f_SMPS.mat');
+load('..\data\Soot-Salt Data UA May 2019\20190508_SMPS\20190508c_SMPS.mat');
+% load('..\data\Soot-Salt Data UA May 2019\20190509_SMPS\20190510b_SMPS.mat');
     % 3% NaCl
     
 % load('..\data\Soot-Salt Data UA May 2019\20190509_SMPS\20190509g_SMPS.mat');
@@ -77,13 +80,13 @@ A = kernel.gen_A(grid_b,grid_x); % generate A matrix based on grid for x and b
 
 %% 
 %-- Perfrom exponential, rotated regularization --------------------------%
-s1 = 1.0;
-s2 = 0.1;
+s1 = 0.7;
+s2 = 0.08;
 dtot = @(d1,d2) sqrt(exp(d1).^2+exp(d2).^2);
 theta = -atan2(1,2.5);
 Lex = diag([1/s1,1/s2])*...
     [cos(theta),-sin(theta);sin(theta),cos(theta)];
-lambda_expRot = 1e-3; % 5e-4
+lambda_expRot = 5e-4; % 5e-4
 
 disp('Performing rotated exponential distance regularization...');
 [x_expRot,L] = invert.exp_dist(...
@@ -99,12 +102,12 @@ x_plot = x_expRot;
 %-- Estimate mass-mobility relation --------------------------------------%
 figure(40);
 colormap(gcf,cm);
-grid_x.plot2d(x_plot);
+grid_x.plot2d_marg(x_plot);
 % [Dm,k,rho_100] = grid_x.fit_mass_mob(x_plot,[2.1,-0.1]);
 xlabel('log_{10}(d)');
 ylabel('log_{10}(m)');
 
-%{
+
 %-- Plots for effective density ------------------------------------------%
 [y,grid_rho] = ...
     tools.mass2rho(x_expRot,grid_x);
@@ -115,10 +118,10 @@ grid_rho.plot2d_marg(y);
 xlabel('log_{10}(d)');
 ylabel('log_{10}(\rho_{eff})');
 
-% [m,b] = grid_rho.fit_mass_mob(y,[2,2.8],-0.6);
-grid_rho.plot_line_overlay([0,log10(6*k/pi)+9],Dm-3,'w');
-rho = 2000; % density of base material
-dpe = 10.^((log10(6*k/(pi*rho))+9)/(3-Dm));
-%}
+% % [m,b] = grid_rho.fit_mass_mob(y,[2,2.8],-0.6);
+% grid_rho.plot_line_overlay([0,log10(6*k/pi)+9],Dm-3,'w');
+% rho = 2000; % density of base material
+% dpe = 10.^((log10(6*k/(pi*rho))+9)/(3-Dm));
+
 
 

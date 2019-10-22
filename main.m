@@ -108,8 +108,8 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 %% 
 %-- Perform inversions ---------------------------------------------------%
 % run_inversions_A;
-% run_inversions_B;
-run_inversions_C;
+run_inversions_B;
+% run_inversions_C;
 
 
 %%

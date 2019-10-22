@@ -15,6 +15,9 @@ cm = cm(40:end,:);
 cm_b = cm;
 load('viridis.mat');
 
+ref_fuel = {'L9','M9','NS-M9',...
+    'H9','RU-KM2','RU-KM1','EC-AC','BK-WO','BK-BR','EC-AS1','RU-FI','EC-A27'};
+ref_HHVv = [35.8,41.6,43.2,47,48.5,51.4,54.6,52.3,61.1,6.9,71.5,75.2];
 
 files = {'20180528_A_L9.mat',...
     '20180528_G_M9.mat',...
@@ -28,14 +31,24 @@ files = {'20180528_A_L9.mat',...
     '20180529_B_BK_WO.mat',...
     '20180528_C_BK-BR.mat',...
     '20180529_E2_EC_AC27.mat'};
-fuel = {'L9','M9','M9','NS_M9','AB_M9',...
-    'H9','RU_KM2','RU_KM1','EC_AC','BK_WO',...
-    'BK_BR','EC_AC27'};
+fuel = {'L9','M9','M9','NS-M9','AB-M9',...
+    'H9','RU-KM2','RU-KM1','EC-AC','BK-WO',...
+    'BK-BR','EC-A27'};
 % NOTE: EC-AS1 (20180601_A_EC_AS1.mat) has anomalous data
+
+HHVv = zeros(length(fuel),1);
+for ii=1:length(fuel)
+    ind_ref =  strcmp(fuel{ii},ref_fuel);
+    if sum(ind_ref)~=0
+        HHVv(ii) = ref_HHVv(ind_ref);
+    end
+end
+
 data0(length(files)) = struct;
 data2(length(files)) = struct;
 data3(length(files)) = struct;
 
+%%
 for ff=1:length(files)
     
     disp(' ');
@@ -117,7 +130,8 @@ for ff=1:length(files)
     x_plot = x_expRot;
     dV_fact = 0.3*16.666667*90;
     data0(ff).fuel = fuel{ff};
-    data0(ff).x = x_expRot;
+    data0(ff).HHVv = HHVv(ff);
+    data0(ff).x_expRot = x_expRot;
     data0(ff).b = b;
     data0(ff).grid_x = grid_x;
     data0(ff).grid_b = grid_b;
@@ -139,6 +153,7 @@ for ff=1:length(files)
     xlabel('log_{10}(d)');
     ylabel('log_{10}(m)');
     
+    data0(ff).p = pha.p;
     data1(ff) = pha.p;
     data2(ff).m_100 = m_100;
     data2(ff).rho_100 = rho_100;
