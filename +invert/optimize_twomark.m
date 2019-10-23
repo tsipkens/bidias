@@ -33,32 +33,32 @@ if ~exist('x_ex','var'); x_ex = []; end
 
 x_fun = @(Sf) invert.twomark(A,b,Lb,n,x0,iter,opt_smooth,Sf);
 
-out.Sf = 1./logspace(log10(span(1)),log10(span(2)),25);
-out.x = zeros(length(x_ex),length(out.Sf));
-if ~isempty(x_ex); out.chi = zeros(length(out.Sf),1); end
+Sf = 1./logspace(log10(span(1)),log10(span(2)),25);
 
 disp(' ');
 disp('Optimizing Twomey-Markowski smoothing:');
 tools.textbar(0);
 disp(' ');
-for ii=1:length(out.Sf)
-    out.x(:,ii) = x_fun(out.Sf(ii));
-    if ~isempty(x_ex); out.chi(ii) = norm(out.x(:,ii)-x_ex); end
-    out.Axb(ii) = norm(A*out.x(:,ii)-b);
+for ii=length(Sf):-1:1 % loop through values of Sf
+    out(ii).Sf = Sf(ii);
+    out(ii).x = x_fun(out(ii).Sf);
+    if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
+    out(ii).Axb = norm(A*out(ii).x-b);
     
     disp(' ');
     disp('Optimizing Twomey-Markowski smoothing:');
-    tools.textbar(ii/length(out.Sf));
+    tools.textbar(0); % reinitialize textbar
+    tools.textbar((length(Sf)-ii+1)/length(Sf));
     disp(' ');
 end
 
 if ~isempty(x_ex)
-    [~,ind_min] = min(out.chi);
+    [~,ind_min] = min([out.chi]);
 else
     ind_min = [];
 end
-Sf = out.Sf(ind_min);
-x = out.x(:,ind_min);
+Sf = out(ind_min).Sf;
+x = out(ind_min).x;
 
 end
 

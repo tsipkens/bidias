@@ -23,19 +23,23 @@ disp('Optimizing MART:');
 tools.textbar(0);
 disp(' ');
 
-out.iter_vec = iter_vec;
-out.x(:,1) = invert.mart(A,b,x0,iter_vec(1));
-out.chi(1) = norm(out.x(:,1)-x_ex);
+out(length(iter_vec)).chi = [];
+    % initialize size of output structure
+
+out(1).x = invert.mart(A,b,x0,iter_vec(1));
+out(1).chi = norm(out(1).x-x_ex);
+out(1).iter_vec = iter_vec(1);
 tools.textbar(1/length(iter_vec));
 
 for ii=2:length(iter_vec)
-    out.x(:,ii) = invert.mart(A,b,out.x(:,ii-1),iter_vec(ii)-iter_vec(ii-1));
-    out.chi(ii) = norm(out.x(:,ii)-x_ex);
+    out(ii).iter_vec = iter_vec(ii);
+    out(ii).x = invert.mart(A,b,out(ii-1).x,iter_vec(ii)-iter_vec(ii-1));
+    out(ii).chi = norm(out(ii).x-x_ex);
     tools.textbar(ii/length(iter_vec));
 end
 
 iter = length(iter_vec);
-x = out.x(:,end);
+x = out(end).x;
 
 end
 

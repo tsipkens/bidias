@@ -35,7 +35,6 @@ classdef Grid
     methods
         %== GRID =========================================================%
         %   Class constructor.
-        function obj = Grid(span_edges,ne,discrete)
         %-----------------------------------------------------------------%
         % Inputs: 
         %   span_edges  Either (i) a span over which discretization occurs 
@@ -46,6 +45,7 @@ classdef Grid
         %               marginalization and/or discretization
         %               Possible values: 'linear' or 'logarithmic' (default)
         %-----------------------------------------------------------------%
+        function obj = Grid(span_edges,ne,discrete)
         
             if isa(span_edges,'cell') % consider case where edges are given
                 obj.edges = span_edges;
@@ -73,7 +73,6 @@ classdef Grid
         %== MESH =========================================================%
         %   Responsible for generating a mesh represented by a series of nodes.
         %   Author:	Timothy Sipkens, 2019-02-03
-        function obj = mesh(obj)
         %-----------------------------------------------------------------%
         %   Currently setup to do simple linear or logarithmic spaced 
         %   quadrilateral mesh.
@@ -82,6 +81,7 @@ classdef Grid
         %   a matrix, with a row for each node and a column for each 
         %   dimension.
         %-----------------------------------------------------------------%
+        function obj = mesh(obj)
             
             %-- If required, generate edge discretization vectors --------%
             if isempty(obj.edges)
@@ -188,7 +188,7 @@ classdef Grid
             
             tot = sum(x.*dr); % integrated total
             
-            x = reshape(x,obj.ne);
+            x = obj.reshape(x);
             
             marg{1} = sum(dr2.*x,2); % integrate over diameter
             marg{2} = sum(dr1.*x,1); % integrate over mass
@@ -230,11 +230,38 @@ classdef Grid
         %=================================================================%
         
         
+        %== RESHAPE ======================================================%
+        %   A simple function to reshape a vector based on the grid.
+        function x = reshape(obj,x)
+            x = reshape(x,obj.ne);
+        end
+        %=================================================================%
+        
+        
+        %== VECTORIZE ====================================================%
+        %   A simple function to vectorize 2D gridded data.
+        %-----------------------------------------------------------------%
+        % Outputs: 
+        %   x	Vectorized data
+        %   t1  Vectorized element centers for first dimension
+        %   t2  Vectorized element centers for second dimension
+        %-----------------------------------------------------------------%
+        function [x,t1,t2] = vectorize(obj,x)
+            if exist('x','var'); x = x(:); else; x = []; end
+            
+            if nargout>1; t1 = repmat(obj.edges{1}',[obj.ne(2),1]); end
+            if nargout>2
+                t2 = repmat(obj.edges{2},[obj.ne(1),1]);
+                t2 = t2(:);
+            end
+        end
+        %=================================================================%
+        
+        
         %== RAY_SUM ======================================================%
         %   Prefrom a ray sum for a given ray and the current grid. 
         %   Based on:	Code from Samuel Grauer
         %   Author:     Timothy Sipkens, 2019-07-14
-        function A = ray_sum(obj,v0,slope,opt_bar)
         %-----------------------------------------------------------------%
         % Inputs:
         %   v0      A single point on the time
@@ -243,6 +270,7 @@ classdef Grid
         % Outputs:
         %   A       Ray-sum matrix
         %-----------------------------------------------------------------%
+        function A = ray_sum(obj,v0,slope,opt_bar)
             
             %-- Preallocate arrays ---------------------------------------%
             m = size(slope,1);
@@ -309,7 +337,7 @@ classdef Grid
             if isempty(opt_plot); opt_plot = 1; end
             
             %-- Get location of maximum pixel ----------------------------%
-            t0 = reshape(x,obj.ne);
+            t0 = obj.reshape(x);
             [t1,t2] = find(t0==max(max(t0)));
             v0 = log10([obj.edges{2}(t2),obj.edges{1}(t1)]);
             
@@ -336,7 +364,7 @@ classdef Grid
         %   Author: Timothy Sipkens, 2018-11-21
         function [h,x] = plot2d(obj,x)
             
-            x = reshape(x,obj.ne);
+            x = obj.reshape(x);
             
             if strcmp('linear',obj.discrete)
                 imagesc(obj.edges{2},obj.edges{1},x);

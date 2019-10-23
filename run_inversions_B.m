@@ -90,7 +90,7 @@ disp('Performing Twomey-Markowski-Buckley...');
 tic;
 [x_TwoMH,Sf_TwoMH,out_TwoMH] = ...
     invert.optimize_twomark(A,b,Lb,n_x(1),...
-    x_init,35,[1,1e3],x0,'Buckley');
+    x_init,35,[1e-1,1e2],x0,'Buckley');
 t.TwoMH = toc;
 
 chi.TwoMH = norm(x0-x_TwoMH);

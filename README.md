@@ -10,7 +10,7 @@ This program is organized into several packages and classes.
 
 ### Scripts in upper directory
 
-###### `main*.m` scripts
+###### Main scripts (`main*.m`)
 
 The `main*.m` scripts in the top directory of the code can be called to
 demonstrate use of the code. Scripts to execute this program should be
@@ -50,7 +50,12 @@ the axes.
 A description of the classes and packages that are included to perform these
 tasks are included below.
 
-##### `run_inversions*.m` scripts
+##### Main demonstration script (`main_jas19.m`)
+
+Of particular note, the `main_jas19.m` script is designed to replicate the
+results in the associated paper [Sipkens et al. (Submitted)][1].
+
+##### Scripts to run a series of inversion methods (`run_inversions*.m`)
 
 These scripts are intend to bundle a series of inversion methods into a single
 line of codd in the `main*.m` scripts. This can include optimization routines,
@@ -63,7 +68,19 @@ regularization parameters.
 
 Grid is a class developed to discretize mass-mobility space. This is
 done using a simple rectangular grid that can have linear, logarithmic
-or custom spaced elements along the edges.
+or custom spaced elements along the edges. Methods are designed
+to make it easier to deal with gridded data, allowing users to reshape
+vectorized data back to a 2D grid (`reshape`) or vice versa. Other
+methods allow for plotting the 2D representation of vector data (`plot2d`) or
+calculate the gradient of vector data (`grad`). More information is available
+in the class definition.
+
+Both the **b** and **x** vectors are defined with respect to an instance of
+ this class. The vectors are arranged such that the first entry corresponds
+ to the smallest mass and mobility diameter. The vector proceeds, first with
+ increasing mass and then with increasing mobility diameter. Vectorizing the
+ 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
+ the `vectorize` method.
 
 ###### @Phantom
 

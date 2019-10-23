@@ -21,28 +21,31 @@ disp('Optimizing Twomey:');
 tools.textbar(0);
 disp(' ');
 
-out.iter_vec = iter_vec;
-out.x(:,1) = invert.twomey(A,b,x0,iter_vec(1));
-out.chi(1) = norm(out.x(:,1)-x_ex);
+out(length(iter_vec)).chi = [];
+    % initialize size of output structure
+
+out(1).iter_vec = iter_vec(1);
+out(1).x = invert.twomey(A,b,x0,iter_vec(1));
+out(1).chi = norm(out(1).x-x_ex);
 tools.textbar(1/length(iter_vec));
 
 for ii=2:length(iter_vec)
-    out.x(:,ii) = invert.twomey(A,b,out.x(:,ii-1),1);
-    out.chi(ii) = norm(out.x(:,ii)-x_ex);
+    out(ii).x = invert.twomey(A,b,out(ii).x,1);
+    out(ii).chi = norm(out(ii).x-x_ex);
     tools.textbar(ii/length(iter_vec));
 end
 
 if ~isempty(x_ex)
-    [~,out.ind_min] = min(out.chi);
+    [~,out.ind_min] = min([out.chi]);
 else
     out.ind_min = [];
 end
-out.x_opt = out.x(:,out.ind_min); % store optimal solution in out struct
+out.x_opt = out(out.ind_min).x; % store optimal solution in out struct
 
 
 %-- Ouput solution at last step (for compatibility) -------%
 iter = length(iter_vec);
-x = out.x(:,end);
+x = out(end).x;
 
 end
 
