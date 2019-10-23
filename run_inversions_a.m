@@ -19,11 +19,11 @@ x_init_m = grid_x.marginalize(x_init);
 %% Least squares
 disp('Performing LS inversion...');
 x_length = length(A(1,:));
-x_LSQ = invert.lsq(A,b,'interior-point');
+x_lsq = invert.lsq(A,b,'interior-point');
 disp('Inversion complete.');
 disp(' ');
 
-chi.LSQ = norm(x0-x_LSQ);
+chi.lsq = norm(x0-x_lsq);
 
 
 %% Tikhonov (0th) implementation
@@ -90,7 +90,7 @@ disp('Performing Twomey-Markowski-Buckley...');
 tic;
 [x_two_mh,Sf_two_mh,out_two_mh] = ...
     invert.optimize_twomark(A,b,Lb,n_x(1),...
-    x_init,35,[1e-3,1e2],x0,'Buckley');
+    x_init,35,[1e1,1e-4],x0,'Buckley');
 t.two_mh = toc;
 
 chi.two_mh = norm(x0-x_two_mh);

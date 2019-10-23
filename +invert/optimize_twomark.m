@@ -33,7 +33,7 @@ if ~exist('x_ex','var'); x_ex = []; end
 
 x_fun = @(Sf) invert.twomark(A,b,Lb,n,x0,iter,opt_smooth,Sf);
 
-Sf = 1./logspace(log10(span(1)),log10(span(2)),25);
+Sf = logspace(log10(span(1)),log10(span(2)),35);
 
 disp(' ');
 disp('Optimizing Twomey-Markowski smoothing:');

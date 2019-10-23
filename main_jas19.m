@@ -107,15 +107,14 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 
 %% 
 %-- Perform inversions ---------------------------------------------------%
-% run_inversions_A;
-run_inversions_B;
-% run_inversions_C;
+run_inversions_a;
+% run_inversions_b;
+% run_inversions_c;
 
 
 %%
 %-- Plot solution --------------------------------------------------------%
-x_plot = x_Tk1;
-x_plot = out_TwoMH(1).x;
+x_plot = x_tk1;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
