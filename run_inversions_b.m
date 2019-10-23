@@ -1,6 +1,6 @@
 
-% RUN_INVERSIONS_D  Invert multuple times to determine CPU time.
-% Author:           Timothy Sipkens, 2019-07-22
+% RUN_INVERSIONS_A  Single inversion of each technique using externally defined parameters.
+% Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
 %% Initial guess for iterative schemes
@@ -16,59 +16,49 @@ chi.init = norm(x0-x_init);
 x_init_m = grid_x.marginalize(x_init);
 
 
-for ii=1:20
-
 %% Least squares
 disp('Performing LS inversion...');
 tic;
-x_LSQ = invert.lsq(A,b,'interior-point');
-t.LSQ(ii) = toc;
+x_lsq = invert.lsq(A,b,'interior-point');
+t.lsq = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.LSQ = norm(x0-x_LSQ);
+chi.lsq = norm(x0-x_lsq);
 
 
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
-tic;
-x_Tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0);
-t.Tk0(ii) = toc;
+x_tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0);
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk0(ii) = norm(x0-x_Tk0);
+chi.tk0(ii) = norm(x0-x_tk0);
 
 
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
-tic;
-x_Tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1);
-t.Tk1(ii) = toc;
+[x_tk1,D_tk1,L_tk1,Gpo_tk1] = ...
+    invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk1(ii) = norm(x0-x_Tk1);
+chi.tk1(ii) = norm(x0-x_tk1);
 
 
 %% Tikhonov (2nd) implementation
 disp('Performing Tikhonov (2nd) regularization...');
-% lambda_Tk2 = 8e1;
-tic;
-x_Tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2);
-t.Tk2(ii) = toc;
+x_tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2);
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk2(ii) = norm(x0-x_Tk2);
+chi.tk2(ii) = norm(x0-x_tk2);
 
 
 %% MART, Maximum entropy regularized solution
 
 disp('Performing MART...');
-tic;
 x_MART = invert.mart(A,b,x_init,299);
-t.MART(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
@@ -79,7 +69,7 @@ chi.MART = norm(x0-x_MART);
 disp('Performing Twomey...');
 tic;
 x_Two = invert.twomey(A,b,x_init,500);
-t.Two(ii) = toc;
+t.Two = toc;
 disp('Completed Twomey.');
 disp(' ');
 
@@ -91,13 +81,33 @@ disp('Performing Twomey-Markowski...');
 tic;
 x_TwoMH = invert.twomark(A,b,Lb,n_x(1),...
     x_init,35,'Buckley',1/Sf_TwoMH);
-t.TwoMH(ii) = toc;
+t.TwoMH = toc;
 disp('Completed Twomey-Markowski.');
 
 chi.TwoMH = norm(x0-x_TwoMH);
 
 
-end
+
+%% Exponential, rotated
+%{
+s1 = 1.0;
+s2 = 0.1;
+dtot = @(d1,d2) sqrt(exp(d1).^2+exp(d2).^2);
+theta = -atan2(1,3);%-45/180*pi;%-atan2(3,1);
+Lex = diag([1/s1,1/s2])*...
+    [cos(theta),-sin(theta);sin(theta),cos(theta)];
+lambda_expRot = 5;
+
+disp('Performing rotated exponential distance regularization...');
+tic;
+[x_expRot,L] = invert.exponential_distance(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
+    lambda_expRot,Lex,x0);
+t.expRot = toc;
+disp('Inversion complete.');
+disp(' ');
+
+chi.expRot = norm(x0-x_expRot);
+%}
 
 
 

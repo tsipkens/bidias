@@ -8,9 +8,9 @@ main_exper_fn18.m
 main_exper_ua19_salt.m
 submodule_update.sh
 +uncertainty
-run_inversion_D.m
-run_inversion_E.m
-run_inversion_F.m
-run_inversion_G.m
+run_inversions_D.m
+run_inversions_E.m
+run_inversions_F.m
+run_inversions_G.m
 main_tfer.m
 *.asv

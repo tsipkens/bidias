@@ -11,7 +11,7 @@ out = out_TwoMH;
 lambda = out.Sf;
 x_norm = sum(out.x.^2);
 Axb = out.Axb;
-chi = out.chi;
+chi0 = out.chi;
 
 % Axb_alt = [];
 % for ii=1:length(lambda)
@@ -53,7 +53,7 @@ ind_HankeRaus = 20; % [~,ind_HankeRaus] = min(Axb_alt./lambda);
 lambda_HankeRaus = lambda(ind_HankeRaus);
 
 figure(10);
-loglog(lambda,chi,'-');
+loglog(lambda,chi0,'-');
 % ylim([1e6,9e6]);
 hold on;
 plot([lambda_Lcurve,lambda_Lcurve],ylim);

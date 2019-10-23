@@ -115,6 +115,7 @@ run_inversions_B;
 %%
 %-- Plot solution --------------------------------------------------------%
 x_plot = x_Tk1;
+x_plot = out_TwoMH(1).x;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
