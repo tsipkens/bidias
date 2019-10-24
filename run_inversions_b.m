@@ -39,7 +39,7 @@ chi.tk0(ii) = norm(x0-x_tk0);
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
 [x_tk1,D_tk1,L_tk1,Gpo_tk1] = ...
-    invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
+    invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1,[],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 

@@ -29,7 +29,8 @@ chi.lsq = norm(x0-x_lsq);
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
 tic;
-[x_tk0,lambda_tk0,out_tk0] = invert.optimize_tikhonov(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,0);
+[x_tk0,lambda_tk0,out_tk0] = invert.optimize_tikhonov(Lb*A,Lb*b,n_x(1),...
+    [1e-2,1e2],x0,0,[],'interior-point');
 t.tk0 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -40,7 +41,8 @@ chi.tk0 = norm(x0-x_tk0);
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
 tic;
-[x_tk1,lambda_tk1,out_tk1] = invert.optimize_tikhonov(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,1);
+[x_tk1,lambda_tk1,out_tk1] = invert.optimize_tikhonov(Lb*A,Lb*b,n_x(1),...
+    [1e-2,1e2],x0,1,[],'interior-point');
 t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -51,7 +53,8 @@ chi.tk1 = norm(x0-x_tk1);
 %% Tikhonov (2nd) implementation
 disp('Performing Tikhonov (2nd) regularization...');
 tic;
-[x_tk2,lambda_tk2,out_tk2] = invert.optimize_tikhonov(Lb*A,Lb*b,n_x(1),[1e-2,1e2],x0,2);
+[x_tk2,lambda_tk2,out_tk2] = invert.optimize_tikhonov(Lb*A,Lb*b,n_x(1),...
+    [1e-2,1e2],x0,2,[],'interior-point');
 t.tk2 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -90,7 +93,7 @@ disp('Performing Twomey-Markowski-Buckley...');
 tic;
 [x_two_mh,Sf_two_mh,out_two_mh] = ...
     invert.optimize_twomark(A,b,Lb,n_x(1),...
-    x_init,35,[1e1,1e-4],x0,'Buckley');
+    x_init,35,[1e2,1e-5],x0,'Buckley');
 t.two_mh = toc;
 
 chi.two_mh = norm(x0-x_two_mh);

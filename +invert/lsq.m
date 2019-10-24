@@ -23,7 +23,7 @@ function [x,D] = lsq(A,b,solver,x0)
 if ~exist('x0','var'); x0 = []; end % use empty if not specified
 if ~exist('solver','var'); solver = []; end
 
-if isempty(solver); solver = 'interior-point'; end % if computation method not specified
+if isempty(solver); solver = 'non-neg'; end % if computation method not specified
 %-------------------------------------------------------------------------%
 
 
@@ -35,6 +35,11 @@ if ~isempty(x0)
 end
 
 switch solver
+    case 'non-neg' % constrained, iterative linear least squares
+        options = optimset('Display','off');
+        x = lsqnonneg(A,b,options);
+        D = []; % not specified when using this method
+    
     case 'interior-point' % constrained, iterative linear least squares
         options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
         x = lsqlin(A,b,...

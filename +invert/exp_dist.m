@@ -22,7 +22,6 @@ x_length = length(A(1,:));
 
 %-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end
-if isempty(solver); solver = 'interior-point'; end
     % if computation method not specified
 
 if ~exist('Lex','var'); Lex = []; end
