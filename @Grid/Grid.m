@@ -439,10 +439,10 @@ classdef Grid
         %== PLOT_MARGINAL ================================================%
         %   Plot marginal distributions
         %   Author:	Timothy Sipkens, 2019-07-17
-        function [] = plot_marginal(obj,x,dim,x0)
         %-----------------------------------------------------------------%
         %   x	Can be a cell array containing multiple x vectors
         %-----------------------------------------------------------------%
+        function [] = plot_marginal(obj,x,dim,x0)
             
             %-- Parse inputs ---------------------------------------------% 
             if ~iscell(x); x = {x}; end
@@ -547,18 +547,20 @@ classdef Grid
         %== PLOT_LINE_OVERLAY ============================================%
         %   Plots a line on top of the current grid
         %   Author:	Timothy Sipkens, 2019-07-15
-        function [] = plot_line_overlay(obj,r0,slope,cspec)
+        function h = plot_line_overlay(obj,r0,slope,cspec)
             
-            if ~exist('cspec','var'); cspec = []; end
+            if ~exist('cspec','var'); cspec = 'w'; end
             
             rmin = log10(min([obj.edges{:}]));
             rmax = log10(max([obj.edges{:}]));
             
             hold on;
-            plot([rmin,rmax],...
+            h = plot([rmin,rmax],...
                 [r0(2)+slope*(rmin-r0(1)),...
-                r0(2)+slope*(rmax-r0(1))],cspec)
+                r0(2)+slope*(rmax-r0(1))],cspec);
             hold off;
+            
+            if nargout==0; clear h; end
             
         end
         %=================================================================%
