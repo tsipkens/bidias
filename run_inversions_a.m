@@ -19,7 +19,7 @@ x_init_m = grid_x.marginalize(x_init);
 %% Least squares
 disp('Performing LS inversion...');
 x_length = length(A(1,:));
-x_lsq = invert.lsq(A,b,'interior-point');
+x_lsq = invert.lsq(Lb*A,Lb*b);
 disp('Inversion complete.');
 disp(' ');
 
@@ -42,7 +42,7 @@ chi.tk0 = norm(x0-x_tk0);
 disp('Performing Tikhonov (1st) regularization...');
 tic;
 [x_tk1,lambda_tk1,out_tk1] = invert.optimize_tikhonov(Lb*A,Lb*b,n_x(1),...
-    [1e-2,1e2],x0,1,[],'interior-point');
+    [1e-6,1e2],x0,1,[],'interior-point');
 t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');

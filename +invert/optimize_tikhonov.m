@@ -1,5 +1,6 @@
 
 % OPTIMIZE_TIKHONOV  Finds optimal lambda for Tikhonov solver using known distribution, x.
+% Author: Timothy Sipkens, 2019-07-17
 %=========================================================================%
 
 function [x,lambda,out] = optimize_tikhonov(A,b,n,span,x_ex,order,x0,solver)

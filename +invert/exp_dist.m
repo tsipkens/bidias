@@ -65,7 +65,7 @@ Lpr = sparse(Lpr);
 
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
-    [A;Lpr],[b;sparse(x_length,1)],solver,x0);
+    [A;Lpr],[b;sparse(x_length,1)],x0,solver);
 
 
 %-- Uncertainty quantification -------------------------------------------%

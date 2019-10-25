@@ -1,22 +1,20 @@
 
-%{
-out = out_Tk1;
-x_norm = sum([out.x].^2);
+out = out_tk1;
+x_norm = sqrt(sum([out.x].^2));
 lambda = [out.lambda];
 Axb = [out.Axb];
-chi = [out.chi];
-%}
+chi0 = [out.chi];
 
-out = out_TwoMH;
-lambda = out.Sf;
-x_norm = sum(out.x.^2);
-Axb = out.Axb;
-chi0 = out.chi;
+% out = out_two_mh;
+% lambda = [out.Sf];
+% x_norm = sqrt(sum([out.x].^2));
+% Axb = out.Axb;
+% chi0 = out.chi;
 
-% Axb_alt = [];
-% for ii=1:length(lambda)
-%     Axb_alt(ii) = norm(A*out(ii).x-b);
-% end
+Axb_alt = [];
+for ii=1:length(lambda)
+    Axb_alt(ii) = norm(A*out(ii).x-b);
+end
 
 %-- Plot L-curve ------------------------------------------%
 figure(11);

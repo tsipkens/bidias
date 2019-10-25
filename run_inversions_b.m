@@ -19,40 +19,86 @@ x_init_m = grid_x.marginalize(x_init);
 %% Least squares
 disp('Performing LS inversion...');
 tic;
-x_lsq = invert.lsq(A,b,'interior-point');
+x_lsq = invert.lsq(Lb*A,Lb*b);
+t.lsq = toc;
+disp('Inversion complete.');
+disp(' ');
+
+disp('Performing LS inversion...');
+tic;
+x_lsq_nn = invert.lsq(Lb*A,Lb*b,[],'non-neg');
 t.lsq = toc;
 disp('Inversion complete.');
 disp(' ');
 
 chi.lsq = norm(x0-x_lsq);
+chi.lsq_nn = norm(x0-x_lsq_nn);
 
 
 %% Tikhonov (0th) implementation
+lambda_tk0_hr = tools.perform_hankeraus(out_tk0,A,b,0);
 disp('Performing Tikhonov (0th) regularization...');
+x_tk0_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0_hr,0);
+disp('Inversion complete.');
+disp(' ');
+
+disp('Performing Tikhonov (0th) regularization (int.-p.)...');
 x_tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0);
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk0(ii) = norm(x0-x_tk0);
-
-
-%% Tikhonov (1st) implementation
-disp('Performing Tikhonov (1st) regularization...');
-[x_tk1,D_tk1,L_tk1,Gpo_tk1] = ...
-    invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1,[],'non-neg');
+disp('Performing Tikhonov (0th) regularization (non-neg)...');
+x_tk0_nn = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0,[],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk1(ii) = norm(x0-x_tk1);
+diff.tk0 = norm(x_tk0-x_tk0_nn);
+chi.tk0_hr = norm(x0-x_tk0_hr);
+chi.tk0 = norm(x0-x_tk0_nn);
 
 
-%% Tikhonov (2nd) implementation
+% Tikhonov (1st) implementation
+lambda_tk1_hr = tools.perform_hankeraus(out_tk1,A,b,1);
+disp('Performing Tikhonov (1st) regularization...');
+x_tk1_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1_hr,1);
+disp('Inversion complete.');
+disp(' ');
+
+disp('Performing Tikhonov (1st) regularization (int.-p.)...');
+x_tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
+disp('Inversion complete.');
+disp(' ');
+
+disp('Performing Tikhonov (1st) regularization (non-neg)...');
+x_tk1_nn = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1,[],'non-neg');
+disp('Inversion complete.');
+disp(' ');
+
+diff.tk1 = norm(x_tk1-x_tk1_nn);
+chi.tk1 = norm(x0-x_tk1_nn);
+chi.tk1_hr = norm(x0-x_tk1_hr);
+
+
+% Tikhonov (2nd) implementation
+lambda_tk2_hr = tools.perform_hankeraus(out_tk2,A,b,0);
 disp('Performing Tikhonov (2nd) regularization...');
+x_tk2_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2_hr,2);
+disp('Inversion complete.');
+disp(' ');
+
+disp('Performing Tikhonov (2nd) regularization (int.-p.)...');
 x_tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2);
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk2(ii) = norm(x0-x_tk2);
+disp('Performing Tikhonov (2nd) regularization (non-neg)...');
+x_tk2_nn = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2,[],'non-neg');
+disp('Inversion complete.');
+disp(' ');
+
+diff.tk2 = norm(x_tk2-x_tk2_nn);
+chi.tk2 = norm(x0-x_tk2_nn);
+chi.tk2_hr = norm(x0-x_tk2_hr);
 
 
 %% MART, Maximum entropy regularized solution
