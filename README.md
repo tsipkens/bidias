@@ -111,7 +111,7 @@ parameter. Development is underyway on the use of an exponential covariance
 function to correlate pixel values and reduce reconstruction errors.
 
 Details on these approaches to inversion are provided in the 
-associated paper, [Sipkens et al., J. Aerosol Sci. (Submitted)][1]. 
+associated paper, [Sipkens et al. (Submitted)][1]. 
 
 #### +tfer_PMA
 
