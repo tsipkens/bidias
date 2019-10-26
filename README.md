@@ -94,7 +94,7 @@ methods. Currently the phantom class is programmed to produce joint-normal
 or joint-lognormal mass-mobiltiy distributons. The four sample phantoms from
 [Sipkens et al. (Submitted)][1] can be called using strings encompassing the
 distribution numbers from that work (e.g. the demonstration phantom can be
-generated using `'1'`.
+generated using `'1'`).
 
 
 ## Packages
