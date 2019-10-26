@@ -150,9 +150,9 @@ for details).
 This work can be cited in two ways. 
 
 1. If the methods are used, but the code is not, 
-please cite [Sipkens et al., J. Aerosol Sci. (Submitted)][1]. 
+please cite [Sipkens et al. (Submitted)][1]. 
 Note that if the Twomey-Markowski approach is used, 
-one should also cite [Buckley et al., J. Aerosol Sci. (2017)][3]. 
+one should also cite [Buckley et al. (2017)][3]. 
 
 2. If this code is used directly, cite both this code 
 (including the DOI) and the associated paper. 
