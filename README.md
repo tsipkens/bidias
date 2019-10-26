@@ -5,12 +5,16 @@
 A program to invert CPMA-DMA data to find the two-dimensional
 mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
 
-This program is organized into several packages and classes.
+This program is organzed into several:
+
+1. classes (folders starting with the @ symbol), 
+2. packages (folders starting with the + symbol), and
+3. upper level scripts that form the base of the program. 
 
 
-### Scripts in upper directory
+## Scripts in upper directory
 
-###### Main scripts (`main*.m`)
+#### Main scripts (`main*.m`)
 
 The `main*.m` scripts in the top directory of the code can be called to
 demonstrate use of the code. Scripts to execute this program should be
@@ -50,21 +54,21 @@ the axes.
 A description of the classes and packages that are included to perform these
 tasks are included below.
 
-##### Main demonstration script (`main_jas19.m`)
+#### Main demonstration script (`main_jas19.m`)
 
 Of particular note, the `main_jas19.m` script is designed to replicate the
 results in the associated paper [Sipkens et al. (Submitted)][1].
 
-##### Scripts to run a series of inversion methods (`run_inversions*.m`)
+#### Scripts to run a series of inversion methods (`run_inversions*.m`)
 
 These scripts are intend to bundle a series of inversion methods into a single
 line of codd in the `main*.m` scripts. This can include optimization routines,
 included in the `+invert` package, which run through several values of the
 regularization parameters.
 
-### Classes
+## Classes
 
-###### @Grid
+#### @Grid
 
 Grid is a class developed to discretize mass-mobility space. This is
 done using a simple rectangular grid that can have linear, logarithmic
@@ -76,13 +80,13 @@ calculate the gradient of vector data (`grad`). More information is available
 in the class definition.
 
 Both the **b** and **x** vectors are defined with respect to an instance of
- this class. The vectors are arranged such that the first entry corresponds
- to the smallest mass and mobility diameter. The vector proceeds, first with
- increasing mass and then with increasing mobility diameter. Vectorizing the
- 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
- the `vectorize` method.
+this class. The vectors are arranged such that the first entry corresponds
+to the smallest mass and mobility diameter. The vector proceeds, first with
+increasing mass and then with increasing mobility diameter. Vectorizing the
+2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
+the `vectorize` method.
 
-###### @Phantom
+#### @Phantom
 
 Phantom is a class developed to contain the parameters and other information
 for the phantom distributions that are used in testing the different inversion
@@ -93,9 +97,9 @@ distribution numbers from that work (e.g. the demonstration phantom can be
 generated using `'1'`.
 
 
-#### Packages
+## Packages
 
-###### +invert
+#### +invert
 
 Contains various functions used to invert the measured data for the desired
 two-dimensional distribution. This includes implementations of least-squares,
@@ -106,16 +110,19 @@ can determine the optimal number of iterations or the optimal regularization
 parameter. Development is underyway on the use of an exponential covariance
 function to correlate pixel values and reduce reconstruction errors.
 
-###### +tfer_PMA
+Details on these approaches to inversion are provided in the 
+associated paper, [Sipkens et al., J. Aerosol Sci. (Submitted)][1]. 
 
-This is imported from a package distributed with [Sipkens et al. (Accepted)][2].
+#### +tfer_PMA
+
+This is imported from a package distributed with [Sipkens et al. (2019)][2].
 This package is used in evaluating the transfer function of the particle mass
 analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
 particle mass analyzer (CPMA). The package also contains some standard reference
 functions used in `tfer_DMA.m`. The corresponding repository can be found at
 [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma).
 
-###### +kernel
+#### +kernel
 
 This package is used to evaluate the transfer function of the DMA and
 particle mass analyzer (such as the CPMA or APM). The primary function
@@ -123,7 +130,7 @@ within the larger program is to generate a matrix `A` that acts as the
 forward model. This package references the `+tfer_PMA` package, noted
 above.
 
-###### +tools
+#### +tools
 
 A series of utility functions that serve various purposes, including printing
 a text-based progress bar (based on code from
@@ -138,6 +145,15 @@ density-mobility distributions.
 This software is licensed under an MIT license (see the corresponding file
 for details).
 
+#### How to cite
+
+This work can be cited in two ways:
+
+1. If the methods are used elsewhere, but the code is not, 
+pkease cite [Sipkens et al., J. Aerosol Sci. (Submitted)][1]. 
+
+2. If this code is used directly, cite both this code 
+(including the DOI) and the associated paper. 
 
 #### Contact information and acknowledgements
 
@@ -153,7 +169,11 @@ modified in this distribution.
 
 Also included is a reference to code designed to quickly evaluate
 the transfer function of particle mass analyzers (e.g. APM, CPMA) by
-Sipkens et al. (Accepted).
+[Sipkens et al. (2019)][2]. 
+
+The authors would also like to thank Samuel Grauer
+for consulting on small pieces of this code (such as
+the MART code). 
 
 Information on the provided colormaps can be found in an associated
 README in the `cmap` folder.
@@ -161,9 +181,9 @@ README in the `cmap` folder.
 #### References
 
 1. [Sipkens et al., J. Aerosol Sci. (Submitted)][1]
-2. [Sipkens et al., Aerosol Sci. Technol. (Accepted)][2]
+2. [Sipkens et al., Aerosol Sci. Technol. (2019)][2]
 3. [Buckley et al., J. Aerosol Sci. (2017)][3]
 
 [1]: N/A
-[2]: N/A
+[2]: https://doi.org/10.1080/02786826.2019.1680794
 [3]: https://doi.org/10.1016/j.jaerosci.2017.09.012
