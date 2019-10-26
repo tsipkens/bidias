@@ -17,7 +17,7 @@ end
 
 if bool_plot
     figure(13);
-    loglog(lambda,Axb_alt./lambda,'o');
+    loglog(lambda,Axb_alt./lambda);
 end
 
 bool_continue = 0;

@@ -114,7 +114,7 @@ run_inversions_a;
 
 %%
 %-- Plot solution --------------------------------------------------------%
-x_plot = x_tk1;
+x_plot = x_tk1_nn;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);

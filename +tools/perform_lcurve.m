@@ -1,5 +1,5 @@
 
-out = out_tk1;
+out = out_tk2;
 x_norm = sqrt(sum([out.x].^2));
 Axb = [out.Axb];
 
