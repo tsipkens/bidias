@@ -5,11 +5,10 @@
 A program to invert CPMA-DMA data to find the two-dimensional
 mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
 
-This program is organzed into several:
-
-1. classes (folders starting with the @ symbol), 
-2. packages (folders starting with the + symbol), and
-3. upper level scripts that form the base of the program. 
+This program is organzed into several: 
+classes (folders starting with the @ symbol), 
+packages (folders starting with the + symbol), and
+scripts that form the base of the program. 
 
 
 ## Scripts in upper directory
@@ -183,8 +182,9 @@ README in the `cmap` folder.
 #### References
 
 1. [Sipkens et al., J. Aerosol Sci. (Submitted)][1]
-2. [Sipkens et al., Aerosol Sci. Technol. (2019)][2]
-3. [Buckley et al., J. Aerosol Sci. (2017)][3]
+2. [Sipkens et al. (2019). New approaches to calculate the transfer function of particle mass 
+analyzers. Aerosol Sci. Technol.][2]
+3. [Buckley et al. (2019). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. J. Aerosol Sci., 114, 157-168.][3]
 
 [1]: N/A
 [2]: https://doi.org/10.1080/02786826.2019.1680794
