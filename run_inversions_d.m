@@ -1,6 +1,6 @@
 
-% RUN_INVERSIONS_B  Run inversions to find optimal regularization parameters
-% Author:           Timothy Sipkens, 2019-05-28
+% RUN_INVERSIONS_D  Invert multuple times to determine CPU time.
+% Author:           Timothy Sipkens, 2019-07-22
 %=========================================================================%
 
 %% Initial guess for iterative schemes
@@ -16,59 +16,59 @@ chi.init = norm(x0-x_init);
 x_init_m = grid_x.marginalize(x_init);
 
 
+for ii=1:20
+
 %% Least squares
 disp('Performing LS inversion...');
-x_length = length(A(1,:));
-x_lsq = invert.lsq(Lb*A,Lb*b);
+tic;
+x_LSQ = invert.lsq(A,b,'interior-point');
+t.LSQ(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.lsq = norm(x0-x_lsq);
+chi.LSQ = norm(x0-x_LSQ);
 
 
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
 tic;
-[x_tk0,lambda_tk0,out_tk0] = optimize.tikhonov(Lb*A,Lb*b,n_x(1),...
-    [1e-2,1e2],x0,0,[],'interior-point');
-t.tk0 = toc;
+x_tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0);
+t.tk0(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk0 = norm(x0-x_tk0);
+chi.tk0(ii) = norm(x0-x_tk0);
 
 
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
 tic;
-[x_tk1,lambda_tk1,out_tk1] = optimize.tikhonov(Lb*A,Lb*b,n_x(1),...
-    [1e-6,1e2],x0,1,[],'interior-point');
-t.tk1 = toc;
+x_tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
+t.tk1(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk1 = norm(x0-x_tk1);
+chi.tk1(ii) = norm(x0-x_tk1);
 
 
 %% Tikhonov (2nd) implementation
 disp('Performing Tikhonov (2nd) regularization...');
+% lambda_tk2 = 8e1;
 tic;
-[x_tk2,lambda_tk2,out_tk2] = optimize.tikhonov(Lb*A,Lb*b,n_x(1),...
-    [1e-2,1e2],x0,2,[],'interior-point');
-t.tk2 = toc;
+x_tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2);
+t.tk2(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk2 = norm(x0-x_tk2);
+chi.tk2(ii) = norm(x0-x_tk2);
 
 
 %% MART, Maximum entropy regularized solution
 
 disp('Performing MART...');
 tic;
-[x_mart,iter_mart,out_mart] = ...
-    optimize.mart(A,b,x_init,1:300,x0);
-t.MART = toc;
+x_mart = invert.mart(A,b,x_init,299);
+t.mart(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
 
@@ -78,10 +78,8 @@ chi.mart = norm(x0-x_mart);
 %% Twomey
 disp('Performing Twomey...');
 tic;
-[x_two,iter_two,out_two] = ...
-    optimize.twomey(A,b,x_init,1:500,x0);
-t.two = toc;
-
+x_two = invert.twomey(A,b,x_init,500);
+t.two(ii) = toc;
 disp('Completed Twomey.');
 disp(' ');
 
@@ -89,14 +87,17 @@ chi.two = norm(x0-x_two);
 
 
 %% Twomey-Markowski-Buckley
-disp('Performing Twomey-Markowski-Buckley...');
+disp('Performing Twomey-Markowski...');
 tic;
-[x_two_mh,Sf_two_mh,out_two_mh] = ...
-    optimize.twomark(A,b,Lb,n_x(1),...
-    x_init,35,[1e2,1e-5],x0,'Buckley');
-t.two_mh = toc;
+x_two_mh = invert.twomark(A,b,Lb,n_x(1),...
+    x_init,35,'Buckley',1/Sf_two_mh);
+t.two_mh(ii) = toc;
+disp('Completed Twomey-Markowski.');
 
 chi.two_mh = norm(x0-x_two_mh);
+
+
+end
 
 
 

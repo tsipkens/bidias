@@ -9,7 +9,6 @@ main_exper_ua19_salt.m
 main_jas19_noise.m
 submodule_update.sh
 +uncertainty
-run_inversions_d.m
 run_inversions_e.m
 run_inversions_f.m
 run_inversions_g.m

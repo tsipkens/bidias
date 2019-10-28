@@ -104,13 +104,19 @@ Contains various functions used to invert the measured data for the desired
 two-dimensional distribution. This includes implementations of least-squares,
 Tikhonov regularization, Twomey, Twomey-Markowski (including using the method
 of [Buckley et al. (2017)][3]), and the multiplicative algebraic reconstruction
-technique (MART). Also included are functions that, given the true distribution,
-can determine the optimal number of iterations or the optimal regularization
-parameter. Development is underyway on the use of an exponential covariance
+technique (MART). Development is underyway on the use of an exponential covariance
 function to correlate pixel values and reduce reconstruction errors.
 
 Details on these approaches to inversion are provided in the 
 associated paper, [Sipkens et al. (Submitted)][1]. 
+
+#### +optimize
+
+This package mirrors the content of the +inver package but, 
+given the true distribution, aims to determine the optimal number of 
+iterations for the Twomey and MART schemes or the optimal regularization 
+parameter for the Twomey-Markowski and Tikhonov methods. 
+
 
 #### +tfer_PMA
 
