@@ -1,5 +1,6 @@
 # mat-2d-aerosol-inversion
 
+[![DOI](https://zenodo.org/badge/190667091.svg)](https://zenodo.org/badge/latestdoi/190667091)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
 A program to invert CPMA-DMA data to find the two-dimensional
