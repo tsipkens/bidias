@@ -1,27 +1,35 @@
 
+out = out_tk1;
+x_norm = sqrt(sum([out.x].^2));
+lambda = [out.lambda];
+Axb = [out.Axb];
+chi0 = [out.chi];
 
-out = out_Tk1;
-x_norm = sum(out.x.^2);
+% out = out_two_mh;
+% lambda = [out.Sf];
+% x_norm = sqrt(sum([out.x].^2));
+% Axb = out.Axb;
+% chi0 = out.chi;
 
 Axb_alt = [];
-for ii=1:length(out.lambda)
-    Axb_alt(ii) = norm(A*out.x(:,ii)-b);
+for ii=1:length(lambda)
+    Axb_alt(ii) = norm(A*out(ii).x-b);
 end
 
 %-- Plot L-curve ------------------------------------------%
 figure(11);
-loglog(out.Axb,x_norm,'o');
-text(out.Axb,x_norm,num2cell(1:length(out.lambda)),...
+loglog(Axb,x_norm,'o');
+text(Axb,x_norm,num2cell(1:length(lambda)),...
     'VerticalAlignment','bottom','HorizontalAlignment','right');
 hold on;
-loglog(out.Axb(2:(end-1)),...
+loglog(Axb(2:(end-1)),...
     abs(-2.*x_norm(2:(end-1))+x_norm(3:end)+x_norm(1:(end-2))),...
     'o');
-text(out.Axb(2:(end-1)),abs(-2.*x_norm(2:(end-1))+x_norm(3:end)+x_norm(1:(end-2))),num2cell(2:(length(out.lambda)-1)),...
+text(Axb(2:(end-1)),abs(-2.*x_norm(2:(end-1))+x_norm(3:end)+x_norm(1:(end-2))),num2cell(2:(length(lambda)-1)),...
     'VerticalAlignment','bottom','HorizontalAlignment','right');
 hold off;
 ind_Lcurve = 20;
-lambda_Lcurve = out.lambda(ind_Lcurve);
+lambda_Lcurve = lambda(ind_Lcurve);
 
 
 % figure(12);
@@ -36,14 +44,14 @@ lambda_Lcurve = out.lambda(ind_Lcurve);
 
 %-- Hanke-Raus rule ------------------------------------------------------%
 figure(13);
-loglog(out.lambda,Axb_alt./out.lambda,'o');
-text(out.lambda,Axb_alt./out.lambda,num2cell(1:length(out.lambda)),...
+loglog(lambda,Axb_alt./lambda,'o');
+text(lambda,Axb_alt./lambda,num2cell(1:length(lambda)),...
     'VerticalAlignment','bottom','HorizontalAlignment','right');
-ind_HankeRaus = 20; % [~,ind_HankeRaus] = min(Axb_alt./out.lambda);
-lambda_HankeRaus = out.lambda(ind_HankeRaus);
+ind_HankeRaus = 20; % [~,ind_HankeRaus] = min(Axb_alt./lambda);
+lambda_HankeRaus = lambda(ind_HankeRaus);
 
 figure(10);
-loglog(out.lambda,out.chi,'-');
+loglog(lambda,chi0,'-');
 % ylim([1e6,9e6]);
 hold on;
 plot([lambda_Lcurve,lambda_Lcurve],ylim);

@@ -5,7 +5,7 @@
 % Author:  Timothy Sipkens, 2019-07-17
 %=========================================================================%
 
-function [x,D] = lsq(A,b,solver,x0)
+function [x,D] = lsq(A,b,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -35,6 +35,11 @@ if ~isempty(x0)
 end
 
 switch solver
+    case 'non-neg' % constrained, iterative linear least squares
+        options = optimset('Display','off','TolX',eps*norm(A,1)*length(A));
+        x = lsqnonneg(A,b,options);
+        D = []; % not specified when using this method
+    
     case 'interior-point' % constrained, iterative linear least squares
         options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
         x = lsqlin(A,b,...
@@ -48,7 +53,13 @@ switch solver
         options = optimoptions('lsqlin','Algorithm','trust-region-reflective');
         x = lsqlin(A,b,...
             [],[],[],[],x_lb,[],x0,options);
-
+    
+    case 'interior-point-neg'
+        options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
+        x = lsqlin(A,b,...
+            [],[],[],[],[],[],x0,options);
+        D = []; % not specified when using this method
+        
     case 'algebraic' % matrix multiplication least squares (not non-negative constrained)
         D = (A'*A)\A'; % invert combined matrices
         x = D*b;

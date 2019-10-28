@@ -1,19 +1,23 @@
-# UBC-aerosol-inversion
+# mat-2d-aerosol-inversion
+
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
 A program to invert CPMA-DMA data to find the two-dimensional
 mass-mobility distribution associated with [Sipkens et al. (Submitted)][1].
 
-
-### Description
-
-This program is organized into several packages and classes. The `main.m`
-scripts in the top directory of the code can be called to demonstrate
-the code.
+This program is organzed into several: 
+classes (folders starting with the @ symbol), 
+packages (folders starting with the + symbol), and
+scripts that form the base of the program. 
 
 
-#### Main script
+## Scripts in upper directory
 
-Scripts to execute this program should be structured as follows:
+#### Main scripts (`main*.m`)
+
+The `main*.m` scripts in the top directory of the code can be called to
+demonstrate use of the code. Scripts to execute this program should be
+structured as follows:
 
 1. Optionally, one can define a phantom used to generate synthetic data and a
 ground truth. The `@Phantom` class, described below, is designed to
@@ -49,56 +53,95 @@ the axes.
 A description of the classes and packages that are included to perform these
 tasks are included below.
 
+#### Main demonstration script (`main_jas19.m`)
 
-#### Classes
+Of particular note, the `main_jas19.m` script is designed to replicate the
+results in the associated paper [Sipkens et al. (Submitted)][1].
 
-###### @Grid
+#### Scripts to run a series of inversion methods (`run_inversions*.m`)
+
+These scripts are intend to bundle a series of inversion methods into a single
+line of codd in the `main*.m` scripts. This can include optimization routines,
+included in the `+invert` package, which run through several values of the
+regularization parameters.
+
+## Classes
+
+#### @Grid
 
 Grid is a class developed to discretize mass-mobility space. This is
 done using a simple rectangular grid that can have linear, logarithmic
-or custom spaced elements along the edges.
+or custom spaced elements along the edges. Methods are designed
+to make it easier to deal with gridded data, allowing users to reshape
+vectorized data back to a 2D grid (`reshape`) or vice versa. Other
+methods allow for plotting the 2D representation of vector data (`plot2d`) or
+calculate the gradient of vector data (`grad`). More information is available
+in the class definition.
 
-###### @Phantom
+Both the **b** and **x** vectors are defined with respect to an instance of
+this class. The vectors are arranged such that the first entry corresponds
+to the smallest mass and mobility diameter. The vector proceeds, first with
+increasing mass and then with increasing mobility diameter. Vectorizing the
+2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
+the `vectorize` method.
+
+#### @Phantom
 
 Phantom is a class developed to contain the parameters and other information
 for the phantom distributions that are used in testing the different inversion
-methods.
+methods. Currently the phantom class is programmed to produce joint-normal
+or joint-lognormal mass-mobiltiy distributons. The four sample phantoms from
+[Sipkens et al. (Submitted)][1] can be called using strings encompassing the
+distribution numbers from that work (e.g. the demonstration phantom can be
+generated using `'1'`).
 
 
-#### Packages
+## Packages
 
-###### +invert
+#### +invert
 
 Contains various functions used to invert the measured data for the desired
 two-dimensional distribution. This includes implementations of least-squares,
 Tikhonov regularization, Twomey, Twomey-Markowski (including using the method
 of [Buckley et al. (2017)][3]), and the multiplicative algebraic reconstruction
-technique (MART). Also included are functions that, given the true distribution,
-can determine the optimal number of iterations or the optimal regularization
-parameter.
+technique (MART). Development is underyway on the use of an exponential covariance
+function to correlate pixel values and reduce reconstruction errors.
 
-###### +tfer_PMA
+Details on these approaches to inversion are provided in the 
+associated paper, [Sipkens et al. (Submitted)][1]. 
 
-This is imported from a package distributed with [Sipkens et al. (Submitted)][2]. 
-This package is used in evaluating the transfer function of the particle mass 
-analyzers and some standard reference functions used in `tfer_DMA.m`. The 
-corresponding repository can be found at 
-[https://github.com/tsipkens/UBC-tfer-PMA](https://github.com/tsipkens/UBC-tfer-PMA). 
+#### +optimize
 
-###### +kernel
+This package mirrors the content of the +inver package but, 
+given the true distribution, aims to determine the optimal number of 
+iterations for the Twomey and MART schemes or the optimal regularization 
+parameter for the Twomey-Markowski and Tikhonov methods. 
 
-This package is used to evaluate the transfer function of the DMA and 
-particle mass analyzer (such as the CPMA or APM). The primary function 
-within the larger program is to generate a matrix `A` that acts as the 
-forward model. This package references the `+tfer_PMA` package, noted 
+
+#### +tfer_PMA
+
+This is imported from a package distributed with [Sipkens et al. (2019)][2].
+This package is used in evaluating the transfer function of the particle mass
+analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
+particle mass analyzer (CPMA). The package also contains some standard reference
+functions used in `tfer_DMA.m`. The corresponding repository can be found at
+[https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma).
+
+#### +kernel
+
+This package is used to evaluate the transfer function of the DMA and
+particle mass analyzer (such as the CPMA or APM). The primary function
+within the larger program is to generate a matrix `A` that acts as the
+forward model. This package references the `+tfer_PMA` package, noted
 above.
 
-###### +tools
+#### +tools
 
 A series of utility functions that serve various purposes, including printing
-a text-based progress bar (based on code from Samuel Grauer) and a function
-to convert mass-mobility distributions to effective density-mobility
-distributions.
+a text-based progress bar (based on code from
+[Samuel Grauer](https://www.researchgate.net/profile/Samuel_Grauer))
+and a function to convert mass-mobility distributions to effective
+density-mobility distributions.
 
 ----------------------------------------------------------------------
 
@@ -107,6 +150,17 @@ distributions.
 This software is licensed under an MIT license (see the corresponding file
 for details).
 
+#### How to cite
+
+This work can be cited in two ways. 
+
+1. If the methods are used, but the code is not, 
+please cite [Sipkens et al. (Submitted)][1]. 
+Note that if the Twomey-Markowski approach is used, 
+one should also cite [Buckley et al. (2017)][3]. 
+
+2. If this code is used directly, cite both this code 
+(including the DOI) and the associated paper. 
 
 #### Contact information and acknowledgements
 
@@ -117,11 +171,16 @@ University of British Columbia.
 This distribution includes code snippets from the code provided with
 the work of [Buckley et al. (2017)][3],
 who used a Twomey-type approach to derive two-dimensional mass-mobility
-distributions.
+distributions. Much of the code from that work has been significantly
+modified in this distribution.
 
 Also included is a reference to code designed to quickly evaluate
 the transfer function of particle mass analyzers (e.g. APM, CPMA) by
-Sipkens et al. (Under review).
+[Sipkens et al. (2019)][2]. 
+
+The authors would also like to thank Samuel Grauer
+for consulting on small pieces of this code (such as
+the MART code). 
 
 Information on the provided colormaps can be found in an associated
 README in the `cmap` folder.
@@ -129,9 +188,10 @@ README in the `cmap` folder.
 #### References
 
 1. [Sipkens et al., J. Aerosol Sci. (Submitted)][1]
-2. [Sipkens et al., Aerosol Sci. Technol. (Submitted)][2]
-3. [Buckley et al., J. Aerosol Sci. (2017)][3]
+2. [Sipkens et al. (2019). New approaches to calculate the transfer function of particle mass 
+analyzers. Aerosol Sci. Technol.][2]
+3. [Buckley et al. (2019). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. J. Aerosol Sci., 114, 157-168.][3]
 
 [1]: N/A
-[2]: N/A
+[2]: https://doi.org/10.1080/02786826.2019.1680794
 [3]: https://doi.org/10.1016/j.jaerosci.2017.09.012
