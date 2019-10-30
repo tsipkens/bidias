@@ -90,19 +90,27 @@ the `vectorize` method.
 
 Phantom is a class developed to contain the parameters and other information
 for the phantom distributions that are used in testing the different inversion
-methods. Currently the phantom class is programmed to produce joint-normal
-or joint-lognormal mass-mobiltiy distributons. The four sample phantoms from
-[Sipkens et al. (Submitted)][1] can be called using strings encompassing the
-distribution numbers from that work (e.g. the demonstration phantom can be
+methods. Currently the phantom class is programmed to primarily produce 
+bivariate lognormal distributions and secondarily distributions 
+that are lognormal with mobility and conditional normal for mass. 
+The four sample phantoms from [Sipkens et al. (Submitted)][1] 
+can be called using strings encompassing the distribution numbers
+or names from that work (e.g. the demonstration phantom can be
 generated using `'1'`).
 
 The Phantom class parameterizes the aerosol distribution in two 
-ways. Most generally, the class parameterized the distribution
+ways. 
+
+1. Most generally, the class parameterized the distribution
 using a mean, `mu`, and covariance matrix, `Sigma`. For lognormal-lognormal
-distributions, the mean and covariance are given in [log_{10}m,log_{10}d]^T
+distributions, the mean and covariance are given in 
+[log<sub>10</sub>*m*, log<sub>10</sub>*d*]<sup>T</sup>
 space. For phantoms of the form provided by [Buckley et al. (2017)][3] 
 are lognormal in mobility diameter space and conditionally normally
 distributed in mass space. 
+
+2. The distribution is parameterized using the typical
+mass-mobility relations. 
 
 ## Packages
 
