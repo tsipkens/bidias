@@ -96,6 +96,13 @@ or joint-lognormal mass-mobiltiy distributons. The four sample phantoms from
 distribution numbers from that work (e.g. the demonstration phantom can be
 generated using `'1'`).
 
+The Phantom class parameterizes the aerosol distribution in two 
+ways. Most generally, the class parameterized the distribution
+using a mean, `mu`, and covariance matrix, `Sigma`. For lognormal-lognormal
+distributions, the mean and covariance are given in [log_{10}m,log_{10}d]^T
+space. For phantoms of the form provided by [Buckley et al. (2017)][3] 
+are lognormal in mobility diameter space and conditionally normally
+distributed in mass space. 
 
 ## Packages
 
