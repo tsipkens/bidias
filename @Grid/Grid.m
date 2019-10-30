@@ -259,13 +259,13 @@ classdef Grid
         
         
         %== RAY_SUM ======================================================%
-        %   Prefrom a ray sum for a given ray and the current grid. 
+        %   Perfrom a ray sum for a given ray and the current grid. 
         %   Based on:	Code from Samuel Grauer
         %   Author:     Timothy Sipkens, 2019-07-14
         %-----------------------------------------------------------------%
         % Inputs:
-        %   v0      A single point on the time
-        %	slope   Slope of line
+        %   v0      A single point on the line
+        %	slope   Slope of the line
         %   f_bar   Flag for progress bar
         % Outputs:
         %   A       Ray-sum matrix
@@ -439,8 +439,7 @@ classdef Grid
         %== PLOT_MARGINAL ================================================%
         %   Plot marginal distributions
         %   Author:	Timothy Sipkens, 2019-07-17
-        %-----------------------------------------------------------------%
-        %   x	Can be a cell array containing multiple x vectors
+        %   Note: 'x' can be a cell array containing multiple x vectors
         %-----------------------------------------------------------------%
         function [] = plot_marginal(obj,x,dim,x0)
             
@@ -490,10 +489,8 @@ classdef Grid
         %== PLOT_CONDITIONAL =============================================%
         %   Plot conditional distributions
         %   Author:	Timothy Sipkens, 2019-07-17
+        %   Note: 'x' can be a cell array containing multiple x vectors
         function [] = plot_conditional(obj,x,dim,ind,x0)
-        %-----------------------------------------------------------------%
-        %   x	Can be a cell array containing multiple x vectors
-        %-----------------------------------------------------------------%
             
             %-- Parse inputs ---------------------------------------------% 
             if ~iscell(x); x = {x}; end
@@ -547,6 +544,14 @@ classdef Grid
         %== PLOT_LINE_OVERLAY ============================================%
         %   Plots a line on top of the current grid
         %   Author:	Timothy Sipkens, 2019-07-15
+        %-----------------------------------------------------------------%
+        % Inputs:
+        %   r0      A single point on the line
+        %	slope   Slope of the line
+        %   c_spec  Color specification string, e.g. 'k' for a black line
+        % Outputs:
+        %   h       Line object
+        %-----------------------------------------------------------------%
         function h = plot_line_overlay(obj,r0,slope,cspec)
             
             if ~exist('cspec','var'); cspec = 'w'; end
