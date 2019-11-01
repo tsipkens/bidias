@@ -52,7 +52,7 @@ q = z.*e; % particle charge
 
 if isempty(d) % evaluate mechanical mobility
     warning('Invoking mass-mobility relation to determine Zp.');
-    B = tfer_pma.mp2zp(m,z,prop.T,prop.p);
+    B = tfer_pma.mp2zp(m,z,prop.T,prop.p,prop);
 else
     B = tfer_pma.dm2zp(d,z,prop.T,prop.p);
 end
@@ -77,7 +77,7 @@ if isempty(m_star) % case if m_star is not specified (use voltage and speed)
     
     %-- Calculate resolution ---------------------------------------------%
     n_B = -0.6436;
-    B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
+    B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p,prop);
     t0 = prop.Q/(m_star*B_star*2*pi*prop.L*...
         sp.omega^2*prop.rc^2);
     m_rat = @(Rm) 1/Rm+1;
@@ -127,7 +127,7 @@ elseif isfield(sp,'Rm') % if resolution is specified
     %-- Use definition of Rm to derive angular speed at centerline -------%
     %-- See Reavell et al. (2011) for resolution definition --%
     n_B = -0.6436;
-    B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
+    B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p,prop);
         % involves invoking mass-mobility relation
         % z = 1 for the setpoint
     
@@ -155,7 +155,7 @@ sp.m_star = m_star;
     % copy center mass to sp
     % center mass is for a singly charged particle
 
-% B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p);
+% B_star = tfer_pma.mp2zp(m_star,1,prop.T,prop.p,prop);
 C0 = sp.V.*q./log(1/prop.r_hat); % calcualte recurring C0 parameter
 
 end

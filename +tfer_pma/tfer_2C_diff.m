@@ -24,7 +24,7 @@ function [Lambda,G0] = tfer_2C_diff(m_star,m,d,z,prop,varargin)
 
 %-- Evaluate mechanical mobility for diffusion calc. ---------------------%
 if ~exist('d','var')
-    B = tfer_pma.mp2zp(m,z,prop.T,prop.p);
+    B = tfer_pma.mp2zp(m,z,prop.T,prop.p,prop);
         % if mobility is not specified, use mass-mobility relation to estimate
 else
     B = tfer_pma.dm2zp(d,z,prop.T,prop.p);
