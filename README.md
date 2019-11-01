@@ -90,16 +90,16 @@ the `vectorize` method.
 
 Phantom is a class developed to contain the parameters and other information
 for the phantom distributions that are used in testing the different inversion
-methods. Currently the phantom class is programmed to primarily produce 
+methods. Currently, the phantom class is programmed to primarily produce 
 bivariate lognormal distributions and secondarily distributions 
-that are lognormal with mobility and conditional normal for mass. 
-The four sample phantoms from [Sipkens et al. (Submitted)][1] 
-can be called using strings encompassing the distribution numbers
-or names from that work (e.g. the demonstration phantom can be
-generated using `'1'`).
+that are lognormal with mobility and conditional normal for mass
+following [Buckley et al. (2017)][3]. The four sample phantoms from 
+[Sipkens et al. (Submitted)][1] can be called using strings encompassing 
+the distribution numbers or names from that work (e.g. the demonstration phantom 
+can be generated using `'1'`).
 
 The Phantom class parameterizes the aerosol distribution in two 
-ways. 
+possible ways: 
 
 1. Most generally, the class parameterized the distribution
 using a mean, `mu`, and covariance matrix, `Sigma`. For lognormal-lognormal
@@ -110,7 +110,10 @@ are lognormal in mobility diameter space and conditionally normally
 distributed in mass space. 
 
 2. The distribution is parameterized using the typical
-mass-mobility relations. 
+mass-mobility parameters, stored in the `p` field. This includes
+parameters, such as the geometric mean diameter, `dg`; 
+mass-mobility exponent, `Dm`; and the effective density of particles
+with a mobility diameter of 100 nm `rho_100`.
 
 ## Packages
 
@@ -140,8 +143,11 @@ This is imported from a package distributed with [Sipkens et al. (2019)][2].
 This package is used in evaluating the transfer function of the particle mass
 analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
 particle mass analyzer (CPMA). The package also contains some standard reference
-functions used in `tfer_DMA.m`. The corresponding repository can be found at
+functions used in `tfer_DMA.m`. 
+
+The original repository can be found at
 [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma).
+The current implementation corresponds to v1.3 of that code. 
 
 #### +kernel
 
