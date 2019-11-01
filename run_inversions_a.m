@@ -42,7 +42,7 @@ chi.tk0 = norm(x0-x_tk0);
 disp('Performing Tikhonov (1st) regularization...');
 tic;
 [x_tk1,lambda_tk1,out_tk1] = optimize.tikhonov(Lb*A,Lb*b,n_x(1),...
-    [1e-6,1e2],x0,1,[],'interior-point');
+    [1e-2,1e2],x0,1,[],'interior-point');
 t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');

@@ -15,41 +15,41 @@ chi.init = norm(x0-x_init);
 
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
-lambda_Tk0 = 0.4199;
-[x_Tk0,D_Tk0,L_Tk0,Gpo_Tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk0,0);
+lambda_tk0 = 0.419941123497942;
+[x_tk0,D_tk0,L_tk0,Gpo_tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0);
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk0 = norm(x0-x_Tk0);
+chi.tk0 = norm(x0-x_tk0);
 
 
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
-lambda_Tk1 = 1.0690;
-[x_Tk1,D_Tk1,L_Tk1,Gpo_Tk1] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk1,1);
+lambda_tk1 = 0.935436889902617;
+[x_tk1,D_tk1,L_tk1,Gpo_tk1] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk1 = norm(x0-x_Tk1);
+chi.tk1 = norm(x0-x_tk1);
 
 
 %% Tikhonov (2nd) implementation
 disp('Performing Tikhonov (2nd) regularization...');
-lambda_Tk2 = 1.3961;
-[x_Tk2,D_Tk2,L_Tk2] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_Tk2,2);
+lambda_tk2 = 1.069019204603001;
+[x_tk2,D_tk2,L_tk2] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2);
 disp('Inversion complete.');
 disp(' ');
 
-chi.Tk2 = norm(x0-x_Tk2);
+chi.tk2 = norm(x0-x_tk2);
 
 
 %% Twomey
 %-- Perform Twomey algorithm ----------------------------%
 disp('Performing Twomey...');
-x_Two = invert.twomey(A,b,x_init,500,[],[],1);
+x_two = invert.twomey(A,b,x_init,500,[],[],1);
 
 disp('Completed Twomey.');
 disp(' ');
 
-chi.Two = norm(x0-x_Two);
+chi.two = norm(x0-x_two);
 

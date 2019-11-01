@@ -1,8 +1,8 @@
 
-% OPTIMIZE_EXP_DIST  Finds optimal lambda for exponential distance solver.
+% EXP_DIST  Finds optimal lambda for exponential distance solver.
 %=========================================================================%
 
-function [x,lambda,out] = optimize_exp_dist(A,b,d_vec,m_vec,span,x_ex,Lex,x0,solver)
+function [x,lambda,out] = exp_dist(A,b,d_vec,m_vec,span,x_ex,Lex,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix

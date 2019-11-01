@@ -46,7 +46,9 @@ classdef Grid
         %               Possible values: 'linear' or 'logarithmic' (default)
         %-----------------------------------------------------------------%
         function obj = Grid(span_edges,ne,discrete)
-        
+            
+            if nargin==0; return; end % return empty grid
+            
             if isa(span_edges,'cell') % consider case where edges are given
                 obj.edges = span_edges;
                 obj.ne = [length(span_edges{1}),...

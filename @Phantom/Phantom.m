@@ -9,8 +9,8 @@ classdef Phantom
     %-- Phantom properties -----------------------------------------------%
     properties
         type = []; % optional name for the phantom
-        modes = {'logn'}; % types of distribution for each mode
-        n_modes = 1; % number of modes
+        modes = {}; % types of distribution for each mode
+        n_modes = []; % number of modes
         
         mu = []; % center of bivariate distribution
         Sigma = []; % covariance of bivariate distribution
@@ -29,6 +29,7 @@ classdef Phantom
         %   Intialize phantom object.
         function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
             
+            if nargin==0; return; end % return empty phantom
             
             %-- Assign parameter values ----------------------------------%
             switch type
@@ -86,7 +87,7 @@ classdef Phantom
             
             
             %-- Evaluate phantom -----------------------------------------%
-            if any(strcmp('cond-norm',obj.modes))
+            if 1%any(strcmp('cond-norm',obj.modes))
                 obj.x = obj.eval_p(obj.p);
                     % special evaluation for conditional normal conditions
             else
