@@ -36,7 +36,7 @@ plot(log10(grid_t.edges{2}),...
     log10(phantom.mg_fun(grid_t.edges{2})),'w:');
 hold off;
 
-n_b_vec = [35,42,50,60,75];
+n_b_vec = [25,35,42,50,60,75];
 for ii=1:length(n_b_vec)
     %%
     %-- Generate A matrix and b vector ---------------------------------------%
@@ -133,7 +133,7 @@ end
 
 %%
 %-- Plot solution --------------------------------------------------------%
-x_plot = x_tk1;
+x_plot = x_vec(1).x_two;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);

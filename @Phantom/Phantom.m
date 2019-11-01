@@ -8,18 +8,18 @@ classdef Phantom
     
     %-- Phantom properties -----------------------------------------------%
     properties
-        name = []; % optional name for the phantom
-        type = []; % type of distribution for each mode
+        type = []; % optional name for the phantom
+        modes = {'logn'}; % types of distribution for each mode
+        n_modes = 1; % number of modes
         
-        p struct = struct(); % parameters relevant to mass-mobility distributions
         mu = []; % center of bivariate distribution
         Sigma = []; % covariance of bivariate distribution
-        
-        n_modes = []; % number of modes
         
         x = []; % evaluated phantom
         grid = []; % grid phantom is represented on
                    % generally a high resolution mesh
+        
+        p struct = struct(); % parameters relevant to mass-mobility distributions
     end
     
     
@@ -27,83 +27,58 @@ classdef Phantom
     methods
         %== PHANTOM ======================================================%
         %   Intialize phantom object.
-        function [obj] = Phantom(name,span_grid,p)
+        function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
+            
             
             %-- Assign parameter values ----------------------------------%
-            switch name
-                case {'demonstration','1'}
-                    obj.name = 'demonstration';
+            switch type
+                
+                %-- OPTION 1: Standard bivariate lognormal distribution --%
+                case {'standard'}
+                    n_modes = length(mu_p);
+                    if ~iscell(mu_p); n_modes = 1; end
                     
-                    p(1).dg = 50;
-                    p(1).sg = 1.4;
-                    p(1).rho = 12000; % density of gold-ish
-                    p(1).smd = 1.3;
-                    p(1).Dm = 3;
-                    obj.type{1} = 'logn';
+                    obj.mu = mu_p;
+                    obj.Sigma = Sigma_modes;
                     
-                    p(2).dg = 200;
-                    p(2).sg = 1.4;
-                    p(2).rho = 500; % density of salt
-                    p(2).smd = 1.3;
-                    p(2).Dm = 2.3;
-                    obj.type{2} = 'logn';
+                    [obj.modes{1:n_modes}] = 'logn';
                     
-                case {'soot-surrogate','2'}
-                    obj.name = 'soot-surrogate';
-                    obj.type{1} = 'logn';
+                    p = obj.cov2p(obj.mu,obj.Sigma,{'logn'});
+                        % mass-mobility equivlanet params.
+                    obj.p = obj.fill_p(p); % get mg as well
+                
+                %-- OPTION 2: Using a mass-mobility parameter set (p) ----%
+                case {'mass-mobility'} % for custom mass-mobility phantom
+                    obj.type = 'mass-mobility';
+                    obj.modes = Sigma_modes;
+                    obj.p = mu_p;
                     
-                    p.dg = 127;
-                    p.sg = 1.72;
-                    p.rho = 626;
-                    p.smd = 1.46;
-                    p.Dm = 2.34;
+                    if ~any(strcmp('cond-norm',Sigma_modes))
+                        [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
+                    end
                     
-                case {'Buckley','Hogan','3'}
-                    obj.name = 'Buckley';
+                %-- OPTION 3: Use a preset or sample distribution --------%
+                otherwise % check if type is a preset phantom
+                    [p,modes,type] = obj.preset_phantoms(type);
+                    if isempty(p); error('Invalid phantom call.'); end
                     
-                    p(1).dg = 200;
-                    p(1).sg = 1.5;
-                    p(1).rho = 10000;
-                    p(1).smd = 0.15;
-                    p(1).Dm = 3;
-                    obj.type{1} = 'norm';
+                    obj.type = type;
+                    obj.modes = modes;
                     
-                    p(2).dg = 300;
-                    p(2).sg = 2.2;
-                    p(2).rho = 1000;
-                    p(2).smd = 0.15;
-                    p(2).Dm = 3;
-                    obj.type{2} = 'norm';
+                    obj.p = obj.fill_p(p);
                     
-                case {'narrow','4'}
-                    obj.name = 'narrow';
-                    obj.type{1} = 'logn';
-                    
-                    p.dg = 125;
-                    p.sg = 1.5;
-                    p.rho = 1000;
-                    p.smd = 1.05;
-                    p.Dm = 3;
-                    
-                otherwise % for custom phantom
-                    if ~exist('p','var'); error('Specify phantom.'); end
-                    if isempty(p); error('Specify phantom.'); end
-                    
-                    obj.name = 'custom';
+                    if ~any(strcmp('cond-norm',modes))
+                        [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
+                    end
             end
-            p = obj.get_mg(p);
             
-            %-- Evaluate additional parameters ---------------------------%
-            obj.n_modes = length(p); % get number of modes
-            obj.p = p; % assign distribution parameters to the instance of this class
-            [obj.mu,obj.Sigma] = obj.p2cov(p);
+            obj.n_modes = length(obj.modes); % get number of modes
             
             
             %-- Generate a grid to evaluate phantom on -------------------%
             if isa(span_grid,'Grid') % if grid is specified
                 obj.grid = span_grid;
-                
-            else % if span is specified
+            else % if span is specified, create grid
                 n_t = [540,550]; % resolution of phantom distribution
                 obj.grid = Grid(span_grid,... 
                     n_t,'logarithmic'); % generate grid of which to represent phantom
@@ -111,9 +86,12 @@ classdef Phantom
             
             
             %-- Evaluate phantom -----------------------------------------%
-            obj.p = obj.fill_p(obj.p);
-            obj.x = obj.eval_p(obj.p);
-            % obj.x = Phantom.eval(obj.mu,obj.Sigma);
+            if any(strcmp('cond-norm',obj.modes))
+                obj.x = obj.eval_p(obj.p);
+                    % special evaluation for conditional normal conditions
+            else
+                obj.x = obj.eval(obj.mu,obj.Sigma);
+            end
         end
         %=================================================================%
         
@@ -164,87 +142,22 @@ classdef Phantom
         %=================================================================%
         
         
-        %== COV2P ========================================================%
-        %   Function to convert covariance matrix and mean to p.
-        %   Author:  Timothy Sipkens, 2019-10-29
-        function [p] = cov2p(obj,mu,Sigma)
-            
-            if ~iscell(mu); mu = {mu}; end
-            if ~iscell(Sigma); Sigma = {Sigma}; end
-            
-            p = [];
-            for ll=length(mu):-1:1 % loop through modes
-                p(ll).dg = 10.^mu{ll}(2);
-                p(ll).mg = mu{ll}(1);
-                
-                if strcmp(obj.type{ll},'logn') % if lognormal distribution, convert to geometric mean
-                    p(ll).mg = 10.^p(ll).mg;
-                end
-                
-                p(ll).sg = 10^sqrt(Sigma{ll}(2,2));
-                
-                Sigma_inv = inv(Sigma{ll});
-                p(ll).smd = 10^sqrt(1/Sigma_inv(1,1));
-                p(ll).Dm = -Sigma_inv(1,2)*log10(p(ll).smd)^2;
-                
-                p(ll).rho = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
-            end
-            
-            p = obj.fill_p(p);
-        end
-        %=================================================================%
-        
-        
-        %== P2COV ========================================================%
-        %   Function to convert p to a covariance matrix and mean.
-        %   Author:  Timothy Sipkens, 2019-10-29
-        function [mu,Sigma] = p2cov(obj,p)
-            
-            for ll=length(p):-1:1
-                mu{ll} = [p(ll).mg,p(ll).dg];
-                
-                if strcmp(obj.type{ll},'logn')
-                    Sigma{ll} = inv([(1/log10(p(ll).smd))^2,...
-                        -p(ll).Dm/log10(p(ll).smd)^2;...
-                        -p(ll).Dm/log10(p(ll).smd)^2,...
-                        1/log10(p(ll).sg)^2+p(ll).Dm^2/log10(p(ll).smd)^2]);
-                    mu{ll} = log10(mu{ll});
-                        % if lognormal distribution, convert from geometric mean
-                else
-                    Sigma{ll} = inv([(1/p(ll).smd)^2,...
-                        -p(ll).Dm/p(ll).smd^2;...
-                        -p(ll).Dm/p(ll).smd^2,...
-                        1/log10(p(ll).sg)^2+p(ll).Dm^2/p(ll).smd^2]);
-                    mu{ll}(2) = log10(mu{ll}(2));
-                end
-            end
-            
-            if length(mu)==1
-                mu = mu{1};
-                Sigma = Sigma{1};
-            end
-        end
-        %=================================================================%
-        
-        
         %== EVAL =========================================================%
         %   Generates a distribution from the phantom mean and covariance.
         %   Author:  Timothy Sipkens, 2019-10-29
+        %   NOTE: Does not work for conditional normal distributions
+        %         (which cannot be defined with mu and Sigma)
         function [x] = eval(obj,mu,Sigma)
             
             if ~iscell(mu); mu = {mu}; end
             if ~iscell(Sigma); Sigma = {Sigma}; end
-        
+            
             [~,m_vec,d_vec] = obj.grid.vectorize();
             
             %-- Assign other parameters of distribution ------------------%
             x = zeros(size(m_vec));
             for ll=1:obj.n_modes % loop through distribution modes
-                if strcmp(obj.type{ll},'logn')
-                    x = x + mvnpdf(log10([m_vec,d_vec]),mu{ll},Sigma{ll});
-                else
-                    x = x + mvnpdf([m_vec,log10(d_vec)],mu{ll},Sigma{ll});
-                end
+                x = x + mvnpdf(log10([m_vec,d_vec]),mu{ll},Sigma{ll});
             end
             
             %-- Reweight modes -------------------------------------------%
@@ -254,7 +167,7 @@ classdef Phantom
         
         
         %== EVAL_P =======================================================%
-        %   Generates a distribution from p.
+        %   Generates a distribution from p as required for cond-norm modes.
         %   Author:  Timothy Sipkens, 2019-10-29
         function [x] = eval_p(obj,p)
             
@@ -266,7 +179,7 @@ classdef Phantom
             %-- Evaluate phantom mass-mobility distribution ---------------%
             x = zeros(length(m_vec),1); % initialize distribution parameter
             for ll=1:obj.n_modes % loop over different modes
-                if strcmp(obj.type{ll},'logn')
+                if strcmp(obj.modes{ll},'logn')
                     p_m = lognpdf(m_vec,m_fun(d_vec,ll),log(p(ll).smd));
                 else
                     p_m = normpdf(m_vec,...
@@ -284,9 +197,32 @@ classdef Phantom
                 % convert to [log10(m),log10(d)]T space
         end
         %=================================================================%
+        
+        
+        %== MASS2RHO =====================================================%
+        %   Convert a mass-mobility phantom to an effective-density mobility phanatom. 
+        %   Author:  Timothy Sipkens, 2019-10-31
+        function [phantom] = mass2rho(obj,grid_rho)
+            
+            mu_new = log10([obj.p.rho,obj.p.dg]);
+            
+            logsmd2 = log10(obj.p.smd)^2;
+            Sigma_new = inv([1/logsmd2,...
+                (3-obj.p.Dm)/logsmd2;...
+                (3-obj.p.Dm)/logsmd2,...
+                (9-6*obj.p.Dm+obj.p.Dm^2)/logsmd2+1/log10(obj.p.sg)^2]);
+            
+            phantom = Phantom('standard',grid_rho,mu_new,Sigma_new);
+            
+        end
+        %=================================================================%
     end
     
     methods (Static)
+        [p,modes,type] = preset_phantoms(obj,type);
+            % returns a set of parameters for preset/sample phantoms
+        
+        
         %== FILL_P =======================================================%
         %   Generates the remainder of the components of p.
         %   Author:  Timothy Sipkens, 2019-10-30
@@ -296,6 +232,9 @@ classdef Phantom
             
             %-- Assign other parameters of distribution ------------------%
             for ll=1:n_modes % loop through distribution modes
+                p(ll).mg = 1e-9*p(ll).rho*pi/6*...
+                    (p(ll).dg^3); % geometric mean mass in fg
+                
                 if ~isfield(p,'rho'); p.rho = []; end
                 
                 if ~isempty(p(ll).rho) % use effective density at dg
@@ -304,9 +243,6 @@ classdef Phantom
                 
                 p(ll).m_100 = 1e-9*p(ll).rho_100*pi/6*100^3;
                 p(ll).rho = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
-                p(ll).mg = 1e-9*p(ll).rho*pi/6*...
-                    (p(ll).dg^3); % geometric mean mass in fg
-                
                 p(ll).k = p(ll).m_100/(100^p(ll).Dm);
             end
             
@@ -330,42 +266,94 @@ classdef Phantom
         %=================================================================%
         
         
-        %== GET_MG =======================================================%
-        %   Function to convert effective density and dg to mg.
-        %   Employs the defintion of the effective density to do so.
+        %== COV2P ========================================================%
+        %   Function to convert covariance matrix and mean to p.
         %   Author:  Timothy Sipkens, 2019-10-29
-        function [p] = get_mg(p)
+        function [p] = cov2p(mu,Sigma,modes)
             
-            for ll=1:length(p) 
-                p(ll).mg = p(ll).rho*pi*p(ll).dg^3/6/1e9;
+            if ~iscell(mu); mu = {mu}; end
+            if ~iscell(Sigma); Sigma = {Sigma}; end
+            
+            p = [];
+            for ll=length(mu):-1:1 % loop through modes
+                p(ll).dg = 10.^mu{ll}(2);
+                p(ll).mg = mu{ll}(1);
+                
+                if strcmp(modes{ll},'logn') % if lognormal distribution, convert to geometric mean
+                    p(ll).mg = 10.^p(ll).mg;
+                end
+                
+                p(ll).sg = 10^sqrt(Sigma{ll}(2,2));
+                
+                Sigma_inv = inv(Sigma{ll});
+                p(ll).smd = 10^sqrt(1/Sigma_inv(1,1));
+                p(ll).Dm = -Sigma_inv(1,2)*log10(p(ll).smd)^2;
+                
+                p(ll).rho = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
             end
             
+            p = Phantom.fill_p(p);
+        end
+        %=================================================================%
+        
+        
+        %== P2COV ========================================================%
+        %   Function to convert p to a covariance matrix and mean.
+        %   Author:  Timothy Sipkens, 2019-10-29
+        function [mu,Sigma] = p2cov(p,modes)
+            
+            for ll=length(p):-1:1
+                mu{ll} = [p(ll).mg,p(ll).dg];
+                
+                if strcmp(modes{ll},'logn')
+                    Sigma{ll} = inv([(1/log10(p(ll).smd))^2,...
+                        -p(ll).Dm/log10(p(ll).smd)^2;...
+                        -p(ll).Dm/log10(p(ll).smd)^2,...
+                        1/log10(p(ll).sg)^2+p(ll).Dm^2/log10(p(ll).smd)^2]);
+                    mu{ll} = log10(mu{ll});
+                        % if lognormal distribution, convert from geometric mean
+                else
+                    Sigma{ll} = inv([(1/p(ll).smd)^2,...
+                        -p(ll).Dm/p(ll).smd^2;...
+                        -p(ll).Dm/p(ll).smd^2,...
+                        1/log10(p(ll).sg)^2+p(ll).Dm^2/p(ll).smd^2]);
+                    mu{ll}(2) = log10(mu{ll}(2));
+                end
+            end
+            
+            if length(mu)==1
+                mu = mu{1};
+                Sigma = Sigma{1};
+            end
         end
         %=================================================================%
         
         
         %== FIT ==========================================================%
-        function phantom = fit(grid,x)
+        function phantom = fit(x,grid)
             % Inputs:
-            %   grid - 'Grid' object on which input data is evaluated
             %   x - input data (2D distribution data)
-            %   type - type of distr. (e.g. 'logn')
+            %   grid - 'Grid' object on which input data is evaluated
             %-----------------------------------------------------%
             
-            n_modes = 1;
+            [~,vec1,vec2] = grid.vectorize();
             
-            t0 = [160,1.8,700,1.5,2.6,2.5]; % initial guess
-            % t0 = [130,1.8,800,1.8,2.38,2]; % initial guess
-                % format: [dg,sg,rho_100,smd,Dm,log10(C)]
-            fun = @(t) (10.^t(6)).*x-...
-                Phantom.eval_phantom_mm(Phantom.vec2p(t,n_modes),obj.type,grid);
+            corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
             
-            t1 = lsqnonlin(fun,t0); % fit phantom to provided data
+            fun_pha = @(y) y(1).*mvnpdf(log10([vec1,vec2]),[y(2),y(3)],...
+                corr2cov(y(4).*[y(5),1],[1,y(6);y(6),1]));
+            y0 = [max(x),0,2.3,0.3,3,0.99];
+                % [C,mg,dg,sigma,Dm,corr]
             
-            p = Phantom.vec2p(t1,n_modes);
+            y1 = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
+                [0,-10,-10,0,0,-1],[inf,10,10,10,3,1]);
+
+            mu = [y1(2),y1(3)];
+            sigma = y1(4).*[y1(5),1];
+            Sigma = corr2cov(sigma,[1,y1(6);y1(6),1]);
             
-            phantom = Phantom('custom',grid,p);
-            phantom.name = 'fit';
+            phantom = Phantom('standard',grid,mu,Sigma);
+            phantom.type = 'standard-fit';
         end
         %=================================================================%
     end

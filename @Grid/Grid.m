@@ -353,7 +353,7 @@ classdef Grid
                 % expected effective density at dm = 100 nm
                 % 1e9 converts from fg/nm^3 to kg/m^3
             
-            if opt_plot; obj.plot_line_overlay([v0(1),y1(1)],y1(2),'w'); end
+            if opt_plot; obj.overlay_line([v0(1),y1(1)],y1(2),'w'); end
             
         end
         %=================================================================%
@@ -541,7 +541,7 @@ classdef Grid
         %=================================================================%
         
         
-        %== PLOT_LINE_OVERLAY ============================================%
+        %== OVERLAY_LINE =================================================%
         %   Plots a line on top of the current grid
         %   Author:	Timothy Sipkens, 2019-07-15
         %-----------------------------------------------------------------%
@@ -552,7 +552,7 @@ classdef Grid
         % Outputs:
         %   h       Line object
         %-----------------------------------------------------------------%
-        function h = plot_line_overlay(obj,r0,slope,cspec)
+        function h = overlay_line(obj,r0,slope,cspec)
             
             if ~exist('cspec','var'); cspec = 'w'; end
             

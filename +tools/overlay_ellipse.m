@@ -1,11 +1,11 @@
 
-% PLOT_ELLIPSE Plots an ellipse give a center, major and minor radii, and slope.
+% OVERLAY_ELLIPSE Plots an ellipse give a center, major and minor radii, and slope.
 % Author: Timothy Sipkens, 2019-10-27
 % Note:   For raidus, the first entry is the major axis, the second entry
 %         is the minor axis
 %=========================================================================%
 
-function h = plot_ellipse(mu,Sigma,s,cspec)
+function h = overlay_ellipse(mu,Sigma,s,cspec)
 
 if ~exist('cspec','var'); cspec = []; end
 if isempty(cspec); cspec = 'w'; end
