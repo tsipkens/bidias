@@ -3,7 +3,7 @@
 % Author:       Timothy Sipkens, 2018-12-27
 %=========================================================================%
 
-function [Lambda] = tfer_Ehara(m_star,m,d,z,prop,varargin)
+function [Lambda,sp] = tfer_Ehara(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   m_star      Setpoint particle mass

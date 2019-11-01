@@ -158,6 +158,8 @@ classdef Grid
             end
             
             [dr1,dr2] = ndgrid(dr_0{1},dr_0{2});
+            dr1 = abs(dr1); % in case edges vector is reversed
+            dr2 = abs(dr2);
             dr = dr2(:).*dr1(:);
             
         end
