@@ -1,9 +1,9 @@
 
-% OPTIMIZE_MART  Finds optimal number of iterations for MART solver.
+% MART  Finds optimal number of iterations for MART solver.
 % Author:        Timothy Sipkens, 2019-02-13
 %=========================================================================%
 
-function [x,iter,out] = optimize_mart(A,b,x0,iter_vec,x_ex)
+function [x,iter,out] = mart(A,b,x0,iter_vec,x_ex)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix

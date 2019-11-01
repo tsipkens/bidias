@@ -3,10 +3,10 @@
 % Author:   Timothy Sipkens, 2019-07-17
 %=========================================================================%
 
-function [prop] = prop_DMA(opts)
+function [prop] = prop_dma(opts)
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('opt','var'); opts = []; end
+if ~exist('opts','var'); opts = []; end
 if ~isfield(opts,'solver'); opts.solver = 'fullydeveloped'; end % if order not specified
 if ~isfield(opts,'params'); opts.params = 'Olfert'; end % if order not specified
 

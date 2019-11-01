@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2019-06-26
 %=========================================================================%
 
-function [prop] = prop_PMA(opts)
+function [prop] = prop_pma(opts)
 %-------------------------------------------------------------------------%
 % Input:
 %   opt         Options string specifying parameter set
@@ -20,8 +20,11 @@ elseif isempty(opts)
     opts = 'Olfert';
 end
 
-switch opts
+prop.mass_mob_pref = 524;
+prop.mass_mob_exp = 3;
 
+switch opts
+    
     %-- CPMA parameters from Olfert lab ----------------------------------%
     case 'Olfert'
         prop.r1 = 0.06; % inner electrode radius [m]
@@ -43,15 +46,15 @@ switch opts
         prop.Q = 1.02e-3/60; % aerosol flowrate [m^3/s]
         prop.T = 298; % system temperature [K]
         prop.p = 1; % system pressure [atm]
-
+    
     %-- CPMA parameters from Olfert lab ----------------------------------%
-    case 'FlareNet18'
+    case {'FlareNet18','fn18'}
         prop.r1 = 0.06; % inner electrode radius [m]
         prop.r2 = 0.061; % outer electrode radius [m]
         prop.L = 0.2; % length of chamber [m]
         prop.p = 1; % pressure [atm]
         prop.T = 293; % system temperature [K]
-        prop.Q = 0.3/1000/60;%0.3/1000/60;%1.5/1000/60; % volume flow rate (m^3/s) (prev: ~1 lpm)
+        prop.Q = 0.3/1000/60; % volume flow rate (m^3/s) (prev: ~1 lpm)
         prop.omega_hat = 32/33; % ratio of angular speeds
 
     %-- APM parameters from Ehara et al. -------------%
@@ -63,7 +66,7 @@ switch opts
         prop.Q = 0.5/1000/60; % aerosol flowrate [m^3/s], assumed
         prop.T = 298; % system temperature [K]
         prop.p = 1; % system pressure [atm]
-
+    
     %-- Parameters from Olfert and Collings -------------%
     %   Nearly identical to the Ehara et al. case
     case 'Olfert-Collings'
@@ -74,7 +77,7 @@ switch opts
         prop.Q = 0.5/1000/60; % aerosol flowrate [m^3/s]
         prop.T = 295; % system temperature [K]
         prop.p = 1; % system pressure [atm]
-
+    
     %-- Parameters from Kuwata --------------------------%
     case 'Kuwata'
         prop.r2 = 0.052; % outer electrode radius [m]
@@ -103,3 +106,4 @@ prop.D = @(B) kB.*prop.T.*B; % diffusion coefficient
 
 
 end
+

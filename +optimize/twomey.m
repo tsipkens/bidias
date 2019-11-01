@@ -1,8 +1,8 @@
 
-% OPTIMIZE_TWOMEY  Finds optimal number of iterations for MART solver.
+% TWOMEY  Finds optimal number of iterations for MART solver.
 %=========================================================================%
 
-function [x,iter,out] = optimize_twomey(A,b,x0,iter_vec,x_ex)
+function [x,iter,out] = twomey(A,b,x0,iter_vec,x_ex)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix

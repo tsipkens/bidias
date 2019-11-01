@@ -9,16 +9,16 @@
 %   (such as those used for phantoms).
 %=========================================================================%
 
-function A = gen_A(grid_b,grid_i,prop_PMA,varargin)
+function A = gen_A(grid_b,grid_i,prop_pma,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
 %   grid_i      Grid on which to perform integration
+%   prop_pma    Structure defining the properties of the PMA
 %   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
 %-------------------------------------------------------------------------%
 
-if ~exist('prop_PMA','var'); prop_PMA = []; end
-if isempty(prop_PMA); prop_PMA = kernel.prop_PMA('Olfert'); end
+if ~exist('prop_pma','var'); prop_pma = []; end
 
 %-- Parse measurement set points (b) -------------------------------------%
 r_star = grid_b.elements;
@@ -52,7 +52,7 @@ Omega_mat = cell(1,n_z); % pre-allocate for speed
 for kk=1:n_z
     Omega_mat{kk} = sparse(n_b(2),n_i(2));% pre-allocate for speed
     for ii=1:n_b(2)
-        Omega_mat{kk}(ii,:) = kernel.tfer_DMA(...
+        Omega_mat{kk}(ii,:) = kernel.tfer_dma(...
             grid_b.edges{2}(ii).*1e-9,...
             grid_i.edges{2}.*1e-9,...
             z_vec(kk));
@@ -73,9 +73,9 @@ Lambda_mat = cell(1,n_z); % pre-allocate for speed
 for kk=1:n_z
     Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
     for ii=1:n_b(1)
-        Lambda_mat{kk}(ii,:) = kernel.tfer_PMA(...
+        Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
             grid_b.edges{1}(ii).*1e-18,m.*1e-18,...
-            d.*1e-9,z_vec(kk),prop_PMA,[],varargin{:})';
+            d.*1e-9,z_vec(kk),prop_pma,[],varargin{:})';
                 % PMA transfer function
         
         if or(max(Lambda_mat{kk}(ii,:))>(1+1e-9),any(sum(Lambda_mat{kk}(ii,:))<0))

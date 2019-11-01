@@ -46,7 +46,9 @@ classdef Grid
         %               Possible values: 'linear' or 'logarithmic' (default)
         %-----------------------------------------------------------------%
         function obj = Grid(span_edges,ne,discrete)
-        
+            
+            if nargin==0; return; end % return empty grid
+            
             if isa(span_edges,'cell') % consider case where edges are given
                 obj.edges = span_edges;
                 obj.ne = [length(span_edges{1}),...
@@ -259,13 +261,13 @@ classdef Grid
         
         
         %== RAY_SUM ======================================================%
-        %   Prefrom a ray sum for a given ray and the current grid. 
+        %   Perfrom a ray sum for a given ray and the current grid. 
         %   Based on:	Code from Samuel Grauer
         %   Author:     Timothy Sipkens, 2019-07-14
         %-----------------------------------------------------------------%
         % Inputs:
-        %   v0      A single point on the time
-        %	slope   Slope of line
+        %   v0      A single point on the line
+        %	slope   Slope of the line
         %   f_bar   Flag for progress bar
         % Outputs:
         %   A       Ray-sum matrix
@@ -353,7 +355,7 @@ classdef Grid
                 % expected effective density at dm = 100 nm
                 % 1e9 converts from fg/nm^3 to kg/m^3
             
-            if opt_plot; obj.plot_line_overlay([v0(1),y1(1)],y1(2),'w'); end
+            if opt_plot; obj.overlay_line([v0(1),y1(1)],y1(2),'w'); end
             
         end
         %=================================================================%
@@ -439,8 +441,7 @@ classdef Grid
         %== PLOT_MARGINAL ================================================%
         %   Plot marginal distributions
         %   Author:	Timothy Sipkens, 2019-07-17
-        %-----------------------------------------------------------------%
-        %   x	Can be a cell array containing multiple x vectors
+        %   Note: 'x' can be a cell array containing multiple x vectors
         %-----------------------------------------------------------------%
         function [] = plot_marginal(obj,x,dim,x0)
             
@@ -490,10 +491,8 @@ classdef Grid
         %== PLOT_CONDITIONAL =============================================%
         %   Plot conditional distributions
         %   Author:	Timothy Sipkens, 2019-07-17
+        %   Note: 'x' can be a cell array containing multiple x vectors
         function [] = plot_conditional(obj,x,dim,ind,x0)
-        %-----------------------------------------------------------------%
-        %   x	Can be a cell array containing multiple x vectors
-        %-----------------------------------------------------------------%
             
             %-- Parse inputs ---------------------------------------------% 
             if ~iscell(x); x = {x}; end
@@ -544,10 +543,18 @@ classdef Grid
         %=================================================================%
         
         
-        %== PLOT_LINE_OVERLAY ============================================%
+        %== OVERLAY_LINE =================================================%
         %   Plots a line on top of the current grid
         %   Author:	Timothy Sipkens, 2019-07-15
-        function h = plot_line_overlay(obj,r0,slope,cspec)
+        %-----------------------------------------------------------------%
+        % Inputs:
+        %   r0      A single point on the line
+        %	slope   Slope of the line
+        %   c_spec  Color specification string, e.g. 'k' for a black line
+        % Outputs:
+        %   h       Line object
+        %-----------------------------------------------------------------%
+        function h = overlay_line(obj,r0,slope,cspec)
             
             if ~exist('cspec','var'); cspec = 'w'; end
             

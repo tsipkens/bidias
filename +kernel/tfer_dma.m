@@ -4,7 +4,7 @@
 % Adapted:	Buckley et al. (2017) and Olfert group
 %=========================================================================%
 
-function [Omega,Zp_tilde] = tfer_DMA(d_star,d,z,prop,opts)
+function [Omega,Zp_tilde] = tfer_dma(d_star,d,z,prop,opts)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   d_star          Particle diameter, measurement set point for DMA [m]
@@ -27,7 +27,8 @@ if ~exist('prop','var'); prop = []; end
 
 if ~isfield(opts,'solver'); opts.solver = 'fullydeveloped'; end
 if ~isfield(opts,'diffu'); opts.diffusion = 1; end
-if isempty(prop); prop = kernel.prop_DMA(opts); end
+if isempty(prop); prop = kernel.prop_dma(opts); end
+%-------------------------------------------------------------------------%
 
 
 %-- Physical constants ---------------------------------------------------%

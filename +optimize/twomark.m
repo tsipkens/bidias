@@ -1,9 +1,9 @@
 
-% OPTIMIZE_TWOMARK  Finds optimal smoothing for Twomey-Markowski solver using known distribution, x.
+% TWOMARK  Finds optimal smoothing for Twomey-Markowski solver using known distribution, x.
 % Author:           Timothy Sipkens, 2018-12-20
 %=========================================================================%
 
-function [x,Sf,out] = optimize_twomark(A,b,Lb,n,x0,iter,span,x_ex,opt_smooth)
+function [x,Sf,out] = twomark(A,b,Lb,n,x0,iter,span,x_ex,opt_smooth)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
