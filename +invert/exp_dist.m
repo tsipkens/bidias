@@ -25,7 +25,7 @@ if ~exist('solver','var'); solver = []; end
     % if computation method not specified
 
 if ~exist('Lex','var'); Lex = []; end
-if isempty(solver); Lex = speye(2); end
+if isempty(Lex); Lex = speye(2); end
      % if coordinate transform is not specified
 
 if ~exist('x0','var'); x0 = []; end % if no initial x is given
