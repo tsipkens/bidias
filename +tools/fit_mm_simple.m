@@ -8,7 +8,7 @@ fun = @(x) (log10(m_vec) - log10(x(1)) - ...
 x1 = lsqnonlin(fun,[1,2.2]);
 
 hold on;
-plot(log10(d_max),log10(grid_b.edges{1}),'ro');
+plot(log10(d_max),log10(grid_b.edges{1}),'r.');
 plot(log10(grid_x.edges{2}),...
     log10(x1(1))+x1(2).*log10(grid_x.edges{2}./100),'r');
 hold off;
