@@ -1,4 +1,4 @@
-# mat-2d-aerosol-inversion
+# MATLAB tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
 
 [![DOI](https://zenodo.org/badge/190667091.svg)](https://zenodo.org/badge/latestdoi/190667091)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
@@ -114,6 +114,9 @@ mass-mobility parameters, stored in the `p` field. This includes
 parameters, such as the geometric mean diameter, `dg`; 
 mass-mobility exponent, `Dm`; and the effective density of particles
 with a mobility diameter of 100 nm `rho_100`.
+
+Methods to convert between these parameterizations are provided
+with the `@Phantom` class as the `p2cov` and `cov2p` methods. 
 
 ## Packages
 
