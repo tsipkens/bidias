@@ -16,7 +16,8 @@ chi.init = norm(x0-x_init);
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
 lambda_tk0 = 0.419941123497942;
-[x_tk0,D_tk0,L_tk0,Gpo_tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0);
+[x_tk0,D_tk0,L_tk0,Gpo_tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,...
+    0,[],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 
@@ -26,7 +27,8 @@ chi.tk0 = norm(x0-x_tk0);
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
 lambda_tk1 = 0.935436889902617;
-[x_tk1,D_tk1,L_tk1,Gpo_tk1] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
+[x_tk1,D_tk1,L_tk1,Gpo_tk1] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,...
+    1,[],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 
@@ -36,7 +38,8 @@ chi.tk1 = norm(x0-x_tk1);
 %% Tikhonov (2nd) implementation
 disp('Performing Tikhonov (2nd) regularization...');
 lambda_tk2 = 1.069019204603001;
-[x_tk2,D_tk2,L_tk2] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2);
+[x_tk2,D_tk2,L_tk2] = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,...
+    2,[],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 
