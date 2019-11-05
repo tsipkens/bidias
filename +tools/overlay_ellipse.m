@@ -17,7 +17,7 @@ s = s.*2; % double number of std. dev.
 
 [V, D] = eig(Sigma.*s);
 
-t = linspace(0, 2 * pi);
+t = linspace(0, 2*pi);
 a = (V*sqrt(D))*[cos(t(:))'; sin(t(:))'];
 
 hold on;

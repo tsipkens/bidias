@@ -23,7 +23,8 @@ h1.Color = color;
 h1 = tools.overlay_ellipse(pha.mu,pha.Sigma,3);
 h1.Color = color;
 
-h1 = grid.overlay_line(fliplr(pha.mu),pha.p.Dm);
+h1 = grid.overlay_line(fliplr(pha.mu),...
+    pha.p.Dm);
 h1.Color = color;
 
 if nargout==0; clear pha; end % prevent unnecessary output
