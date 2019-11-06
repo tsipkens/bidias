@@ -13,7 +13,8 @@ if isempty(cspec); cspec = 'w'; end
 mu = fliplr(mu); % flip mean and covar.
 Sigma = rot90(Sigma,2);
 
-s = s.*2; % double number of std. dev.
+s = s.*2; % double number of std. dev. for ellipse
+          % (i.e. one std. dev. in each direction)
 
 [V, D] = eig(Sigma.*s);
 

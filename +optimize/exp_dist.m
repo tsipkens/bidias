@@ -11,20 +11,27 @@ function [x,lambda,out] = exp_dist(A,b,d_vec,m_vec,span,x_ex,Lex,x0,solver)
 %   lambda  Regularization parameter
 %   span    Range for 1/Sf, two entry vector
 %   x_ex    Exact distribution project to current basis
+%   Lex     Transformation to rotate space (Optional, default is indentity matrix)
 %   x0      Initial guess for solver    (Optional, default is zeros)
 %   solver  Solver                      (Optional, default is interior-point)
 %
 % Outputs:
 %   x       Regularized estimate
-%   D       Inverse operator (x = D*[b;0])
-%   Lx      Tikhonov matrix
 %-------------------------------------------------------------------------%
 
-%-- Parse inputs ---------------------------------------------------------%
-if ~exist('x0','var'); x0 = []; end
-if ~exist('x_ex','var'); x_ex = []; end
+
+%-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end
-%-------------------------------------------------------------------------%
+    % if computation method not specified
+
+if ~exist('Lex','var'); Lex = []; end
+if isempty(Lex); Lex = speye(2); end
+     % if coordinate transform is not specified
+
+if ~exist('x0','var'); x0 = []; end % if no initial x is given
+if ~exist('x_ex','var'); x_ex = []; end
+%--------------------------------------------------------------%
+
 
 lambda = logspace(log10(span(1)),log10(span(2)),70);
 
