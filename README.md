@@ -242,7 +242,7 @@ README in the `cmap` folder.
 3. [Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., Hogan Jr, C. J. (2017). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. *J. Aerosol Sci.* 114, 157-168.][3]
 4. [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (Under preparation). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: Existing and novel Bayesian methods.][4]
 
-[1]: N/A
+[1]: https://doi.org/10.1016/j.jaerosci.2019.105484
 [2]: https://doi.org/10.1080/02786826.2019.1680794
 [3]: https://doi.org/10.1016/j.jaerosci.2017.09.012
 [4]: N/A
