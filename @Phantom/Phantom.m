@@ -206,15 +206,12 @@ classdef Phantom
         %   Author:  Timothy Sipkens, 2019-10-31
         function [phantom] = mass2rho(obj,grid_rho)
             
-            mu_new = log10([obj.p.rhog,obj.p.dg]);
+            A = [1,-3;0,1]; % corresponds to mass-mobility relation
             
-            logsmd2 = log10(obj.p.smd)^2;
-            Sigma_new = inv([1/logsmd2,...
-                (3-obj.p.Dm)/logsmd2;...
-                (3-obj.p.Dm)/logsmd2,...
-                (9-6*obj.p.Dm+obj.p.Dm^2)/logsmd2+1/log10(obj.p.sg)^2]);
+            mu_rhod = (A*obj.mu'+[log10(6/pi)+9;0])';
+            Sigma_rhod = A*obj.Sigma*A';
             
-            phantom = Phantom('standard',grid_rho,mu_new,Sigma_new);
+            phantom = Phantom('standard',grid_rho,mu_rhod,Sigma_rhod);
             
         end
         %=================================================================%
