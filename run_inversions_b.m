@@ -18,9 +18,7 @@ x_init_m = grid_x.marginalize(x_init);
 
 %% Least squares
 disp('Performing LS inversion...');
-tic;
 x_lsq = invert.lsq(Lb*A,Lb*b);
-t.lsq = toc;
 disp('Inversion complete.');
 disp(' ');
 
@@ -31,13 +29,13 @@ t.lsq = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.lsq = norm(x0-x_lsq);
-chi.lsq_nn = norm(x0-x_lsq_nn);
+% chi.lsq = norm(x0-x_lsq);
+chi.lsq = norm(x0-x_lsq_nn);
 
 
 %% Tikhonov (0th) implementation
 % lambda_tk0_hr = tools.perform_hankeraus(out_tk0,A,b,0);
-% disp('Performing Tikhonov (0th) regularization...');
+% disp('Performing Tikhonov (0th) regularization (Hanke-Raus)...');
 % x_tk0_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0_hr,0);
 % disp('Inversion complete.');
 % disp(' ');
@@ -57,9 +55,9 @@ chi.tk0 = norm(x0-x_tk0_nn);
 % chi.tk0_hr = norm(x0-x_tk0_hr);
 
 
-% Tikhonov (1st) implementation
-% lambda_tk1_hr = tools.perform_hankeraus(out_tk1,A,b,1);
-% disp('Performing Tikhonov (1st) regularization...');
+%% Tikhonov (1st) implementation
+% lambda_tk1_hr = tools.perform_hankeraus(out_tk1,A,b,0);
+% disp('Performing Tikhonov (1st) regularization (Hanke-Raus)...');
 % x_tk1_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1_hr,1);
 % disp('Inversion complete.');
 % disp(' ');
@@ -79,9 +77,9 @@ chi.tk1 = norm(x0-x_tk1_nn);
 % chi.tk1_hr = norm(x0-x_tk1_hr);
 
 
-% Tikhonov (2nd) implementation
+%% Tikhonov (2nd) implementation
 % lambda_tk2_hr = tools.perform_hankeraus(out_tk2,A,b,0);
-% disp('Performing Tikhonov (2nd) regularization...');
+% disp('Performing Tikhonov (2nd) regularization (Hanke-Raus)...');
 % x_tk2_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2_hr,2);
 % disp('Inversion complete.');
 % disp(' ');
@@ -113,9 +111,7 @@ chi.mart = norm(x0-x_MART);
 
 %% Twomey
 disp('Performing Twomey...');
-tic;
 x_Two = invert.twomey(A,b,x_init,500);
-t.Two = toc;
 disp('Completed Twomey.');
 disp(' ');
 
@@ -124,10 +120,8 @@ chi.two = norm(x0-x_Two);
 
 %% Twomey-Markowski-Buckley
 disp('Performing Twomey-Markowski...');
-tic;
 x_two_mh = invert.twomark(A,b,Lb,n_x(1),...
     x_init,35,'Buckley',Sf_two_mh);
-t.two_mh = toc;
 disp('Completed Twomey-Markowski.');
 
 chi.two_mh = norm(x0-x_two_mh);

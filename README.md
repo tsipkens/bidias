@@ -4,20 +4,20 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
 This program, originally released with [Sipkens et al. (2019)][1_JAS1],
-is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. The results of the aforementioned paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code.
+is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
-This program is organzed into several:
-classes (folders starting with the @ symbol),
-packages (folders starting with the + symbol), and
-scripts that form the base of the program.
+The results of the aforementioned paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in the updated code provides a better optimized regularization parameter and thus a slightly smaller Euclidean error.
+
+This program is organzed into several: classes (folders starting with the @ symbol),
+packages (folders starting with the + symbol), and scripts that form the base of the program.
 
 
-## Scripts in upper directory
+## 1. Scripts in upper directory
 
-#### Main scripts (`main*.m`)
+#### 1.1 Main scripts (`main*.m`)
 
 The `main*.m` scripts in the top directory of the code can be called to
-demonstrate use of the code. Of particular note, the `main_jas19.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2019)][1_JAS1].
+demonstrate use of the code. Of particular note, the `main_jas19.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2019)][1_JAS1], as noted above.
 
 Scripts to execute this program should be structured as follows:
 
@@ -56,7 +56,7 @@ by calling the `plot2d_marg` method of this class. This plots both the
 retrieved distribution as well as the marginalized distribution on each of
 the axes, taking the reconstruction (e.g. `x_tk1`) as an input.
 
-#### Scripts to run a series of inversion methods (`run_inversions*.m`)
+#### 1.2 Scripts to run a series of inversion methods (`run_inversions*.m`)
 
 As noted above, these scripts are intend to bundle a series of
 inversion methods into a single line of code in the `main*.m` scripts.
@@ -78,9 +78,9 @@ schemes.
 `run_inversions_d.m` - Run the inversion methods multiple times and time the
 length of time required to produce a reconstruction.
 
-## Classes
+## 2. Classes
 
-#### @Grid
+#### 2.1 @Grid
 
 Grid is a class developed to discretize mass-mobility space. This is
 done using a simple rectangular grid that can have linear, logarithmic
@@ -98,7 +98,7 @@ increasing mass and then with increasing mobility diameter. Vectorizing the
 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
 the `vectorize` method.
 
-#### @Phantom
+#### 2.2 @Phantom
 
 Phantom is a class developed to contain the parameters and other information
 for the phantom distributions that are used in testing the different inversion
@@ -139,9 +139,9 @@ analysis. The `p` properties of the Phantom class then contains many of the
 morphological parameters of interest to practitioners measuring
 mass-mobility distributions.
 
-## Packages
+## 3. Packages
 
-#### +invert
+#### 3.1 +invert
 
 The invert package contains various functions used to invert the measured data
 for the desired two-dimensional distribution. This includes implementations of
@@ -156,7 +156,7 @@ Development is underway on the use of an
 exponential covariance function to correlate pixel values and reduce
 reconstruction errors [Sipkens et al. (Under preparation)][4]..
 
-#### +optimize
+#### 3.2 +optimize
 
 This package mirrors the content of the +inver package but,
 given the true distribution, aims to determine the optimal number of
@@ -164,7 +164,7 @@ iterations for the Twomey and MART schemes or the optimal regularization
 parameter for the Twomey-Markowski and Tikhonov methods.
 
 
-#### +tfer_PMA
+#### 3.3 +tfer_PMA
 
 This is imported from a package distributed with [Sipkens et al. (2019)][2_AST] and is
 available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) with the associated archive
@@ -179,7 +179,7 @@ The original repository can be found at
 .
 The current implementation corresponds to v1.3 of that code.
 
-#### +kernel
+#### 3.4 +kernel
 
 This package is used to evaluate the transfer function of the DMA and
 particle mass analyzer (such as the CPMA or APM). The primary function
@@ -187,7 +187,7 @@ within the larger program is to generate a matrix `A` that acts as the
 forward model. This package references the `+tfer_PMA` package, noted
 above.
 
-#### +tools
+#### 3.5 +tools
 
 A series of utility functions that serve various purposes, including printing
 a text-based progress bar (based on code from
