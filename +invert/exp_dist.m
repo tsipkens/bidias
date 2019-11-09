@@ -25,7 +25,7 @@ if ~exist('solver','var'); solver = []; end
     % if computation method not specified
 
 if ~exist('Lex','var'); Lex = []; end
-if isempty(solver); Lex = speye(2); end
+if isempty(Lex); Lex = speye(2); end
      % if coordinate transform is not specified
 
 if ~exist('x0','var'); x0 = []; end % if no initial x is given
@@ -59,7 +59,7 @@ clear Gpr_inv; % to save memory
 Lpr = lambda.*Lpr./max(max(Lpr));
 Lpr(abs(Lpr)<(0.005.*max(max(abs(Lpr))))) = 0;
 [x,y] = meshgrid(1:size(Lpr,1),1:size(Lpr,2));
-Lpr = Lpr.*(abs(x-y)<200); % crop distant pixels
+Lpr = Lpr.*(abs(x-y)<100); % crop distant pixels
 Lpr = sparse(Lpr);
 
 

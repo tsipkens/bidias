@@ -14,6 +14,7 @@ classdef Phantom
         
         mu = []; % center of bivariate distribution
         Sigma = []; % covariance of bivariate distribution
+        R = []; % correlation matrix
         
         x = []; % evaluated phantom
         grid = []; % grid phantom is represented on
@@ -44,7 +45,7 @@ classdef Phantom
                     
                     [obj.modes{1:n_modes}] = 'logn';
                     
-                    p = obj.cov2p(obj.mu,obj.Sigma,{'logn'});
+                    p = obj.cov2p(obj.mu,obj.Sigma,obj.modes);
                         % mass-mobility equivlanet params.
                     obj.p = obj.fill_p(p); % get mg as well
                 
@@ -87,7 +88,7 @@ classdef Phantom
             
             
             %-- Evaluate phantom -----------------------------------------%
-            if 1%any(strcmp('cond-norm',obj.modes))
+            if any(strcmp('cond-norm',obj.modes))
                 obj.x = obj.eval_p(obj.p);
                     % special evaluation for conditional normal conditions
             else
@@ -205,15 +206,12 @@ classdef Phantom
         %   Author:  Timothy Sipkens, 2019-10-31
         function [phantom] = mass2rho(obj,grid_rho)
             
-            mu_new = log10([obj.p.rho,obj.p.dg]);
+            A = [1,-3;0,1]; % corresponds to mass-mobility relation
             
-            logsmd2 = log10(obj.p.smd)^2;
-            Sigma_new = inv([1/logsmd2,...
-                (3-obj.p.Dm)/logsmd2;...
-                (3-obj.p.Dm)/logsmd2,...
-                (9-6*obj.p.Dm+obj.p.Dm^2)/logsmd2+1/log10(obj.p.sg)^2]);
+            mu_rhod = (A*obj.mu'+[log10(6/pi)+9;0])';
+            Sigma_rhod = A*obj.Sigma*A';
             
-            phantom = Phantom('standard',grid_rho,mu_new,Sigma_new);
+            phantom = Phantom('standard',grid_rho,mu_rhod,Sigma_rhod);
             
         end
         %=================================================================%
@@ -233,17 +231,17 @@ classdef Phantom
             
             %-- Assign other parameters of distribution ------------------%
             for ll=1:n_modes % loop through distribution modes
-                p(ll).mg = 1e-9*p(ll).rho*pi/6*...
+                p(ll).mg = 1e-9*p(ll).rhog*pi/6*...
                     (p(ll).dg^3); % geometric mean mass in fg
                 
-                if ~isfield(p,'rho'); p.rho = []; end
+                if ~isfield(p,'rhog'); p.rho = []; end
                 
-                if ~isempty(p(ll).rho) % use effective density at dg
-                    p(ll).rho_100 = p(ll).rho*(100/p(ll).dg)^(p(ll).Dm-3);
+                if ~isempty(p(ll).rhog) % use effective density at dg
+                    p(ll).rho_100 = p(ll).rhog*(100/p(ll).dg)^(p(ll).Dm-3);
                 end
                 
                 p(ll).m_100 = 1e-9*p(ll).rho_100*pi/6*100^3;
-                p(ll).rho = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
+                p(ll).rhog = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
                 p(ll).k = p(ll).m_100/(100^p(ll).Dm);
             end
             
@@ -285,12 +283,21 @@ classdef Phantom
                 end
                 
                 p(ll).sg = 10^sqrt(Sigma{ll}(2,2));
+                p(ll).sm = 10^sqrt(Sigma{ll}(1,1));
                 
                 Sigma_inv = inv(Sigma{ll});
                 p(ll).smd = 10^sqrt(1/Sigma_inv(1,1));
-                p(ll).Dm = -Sigma_inv(1,2)*log10(p(ll).smd)^2;
                 
-                p(ll).rho = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
+                p(ll).Dm = Sigma{ll}(1,2)/Sigma{ll}(2,2);
+                    % corresponds to slope of "locus of vertical"
+                    % (Friendly, Monette, and Fox, 2013)
+                    % can be calculated as Dm = corr*sy/sx
+                
+                % t0 = eigs(rot90(Sigma{ll},2),1);
+                % p(ll).ma = (t0-Sigma{ll}(2,2))./Sigma{ll}(1,2);
+                    % calculate the major axis slope
+                
+                p(ll).rhog = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
             end
             
             p = Phantom.fill_p(p);
@@ -331,26 +338,29 @@ classdef Phantom
         
         
         %== FIT ==========================================================%
+        %   Fits a phantom to a given set of data, x, defined on a given
+        %   grid. Outputs a fit phantom object. 
+        %-----------------------------------------------------------------%
+        % Inputs:
+        %   x - input data (2D distribution data)
+        %   grid - 'Grid' object on which input data is evaluated
+        %-----------------------------------------------------------------%
         function phantom = fit(x,grid)
-            % Inputs:
-            %   x - input data (2D distribution data)
-            %   grid - 'Grid' object on which input data is evaluated
-            %-----------------------------------------------------%
             
             [~,vec1,vec2] = grid.vectorize();
             
             corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
             
             fun_pha = @(y) y(1).*mvnpdf(log10([vec1,vec2]),[y(2),y(3)],...
-                corr2cov(y(4).*[y(5),1],[1,y(6);y(6),1]));
-            y0 = [max(x),0,2.3,0.3,3,0.99];
-                % [C,mg,dg,sigma,Dm,corr]
+                corr2cov([y(4),y(5)],[1,y(6);y(6),1]));
+            y0 = [max(x),0,2.3,0.3,0.2,0.99];
+                % [C,mg,dg,sm,sg,corr]
             
             y1 = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
                 [0,-10,-10,0,0,-1],[inf,10,10,10,3,1]);
-
+            
             mu = [y1(2),y1(3)];
-            sigma = y1(4).*[y1(5),1];
+            sigma = [y1(4),y1(5)];
             Sigma = corr2cov(sigma,[1,y1(6);y1(6),1]);
             
             phantom = Phantom('standard',grid,mu,Sigma);

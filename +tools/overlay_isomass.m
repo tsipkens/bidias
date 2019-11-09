@@ -1,9 +1,9 @@
 
-% ISORHO Overlay effective density isolines on mass-mobility plots.
+% ISOMASS Overlay mass isolines on effective density-mobility plots.
 % Author: Timothy Sipkens, 2019-11-01
 %=========================================================================%
 
-function [] = overlay_isorho(grid,color)
+function [] = overlay_isomass(grid,color)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('color','var'); color = []; end
@@ -14,10 +14,11 @@ end
 %-------------------------------------------------------------------------%
 
 
-isorho_vec = 10.^(-1:1:7);
-for ii=1:length(isorho_vec)
+isom_vec = 10.^(-4:1:3);
+
+for ii=1:length(isom_vec)
     hl = grid.overlay_line(...
-            [1,log10(isorho_vec(ii)*10^3./1e9)],3); % line for rho_eff = 0.1
+            [1,log10(6*isom_vec(ii)/(pi*10^3).*1e9)],-3); % line for rho_eff = 0.1
     hl.Color = color;
 end
 

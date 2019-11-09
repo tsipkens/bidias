@@ -18,9 +18,7 @@ x_init_m = grid_x.marginalize(x_init);
 
 %% Least squares
 disp('Performing LS inversion...');
-tic;
 x_lsq = invert.lsq(Lb*A,Lb*b);
-t.lsq = toc;
 disp('Inversion complete.');
 disp(' ');
 
@@ -31,13 +29,13 @@ t.lsq = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.lsq = norm(x0-x_lsq);
-chi.lsq_nn = norm(x0-x_lsq_nn);
+% chi.lsq = norm(x0-x_lsq);
+chi.lsq = norm(x0-x_lsq_nn);
 
 
 %% Tikhonov (0th) implementation
 % lambda_tk0_hr = tools.perform_hankeraus(out_tk0,A,b,0);
-% disp('Performing Tikhonov (0th) regularization...');
+% disp('Performing Tikhonov (0th) regularization (Hanke-Raus)...');
 % x_tk0_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0_hr,0);
 % disp('Inversion complete.');
 % disp(' ');
@@ -57,9 +55,9 @@ chi.tk0 = norm(x0-x_tk0_nn);
 % chi.tk0_hr = norm(x0-x_tk0_hr);
 
 
-% Tikhonov (1st) implementation
-% lambda_tk1_hr = tools.perform_hankeraus(out_tk1,A,b,1);
-% disp('Performing Tikhonov (1st) regularization...');
+%% Tikhonov (1st) implementation
+% lambda_tk1_hr = tools.perform_hankeraus(out_tk1,A,b,0);
+% disp('Performing Tikhonov (1st) regularization (Hanke-Raus)...');
 % x_tk1_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1_hr,1);
 % disp('Inversion complete.');
 % disp(' ');
@@ -79,9 +77,9 @@ chi.tk1 = norm(x0-x_tk1_nn);
 % chi.tk1_hr = norm(x0-x_tk1_hr);
 
 
-% Tikhonov (2nd) implementation
+%% Tikhonov (2nd) implementation
 % lambda_tk2_hr = tools.perform_hankeraus(out_tk2,A,b,0);
-% disp('Performing Tikhonov (2nd) regularization...');
+% disp('Performing Tikhonov (2nd) regularization (Hanke-Raus)...');
 % x_tk2_hr = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2_hr,2);
 % disp('Inversion complete.');
 % disp(' ');
@@ -108,52 +106,25 @@ x_MART = invert.mart(A,b,x_init,299);
 disp('Inversion complete.');
 disp(' ');
 
-chi.MART = norm(x0-x_MART);
+chi.mart = norm(x0-x_MART);
 
 
 %% Twomey
 disp('Performing Twomey...');
-tic;
 x_Two = invert.twomey(A,b,x_init,500);
-t.Two = toc;
 disp('Completed Twomey.');
 disp(' ');
 
-chi.Two = norm(x0-x_Two);
+chi.two = norm(x0-x_Two);
 
 
 %% Twomey-Markowski-Buckley
 disp('Performing Twomey-Markowski...');
-tic;
-x_TwoMH = invert.twomark(A,b,Lb,n_x(1),...
-    x_init,35,'Buckley',1/Sf_TwoMH);
-t.TwoMH = toc;
+x_two_mh = invert.twomark(A,b,Lb,n_x(1),...
+    x_init,35,'Buckley',Sf_two_mh);
 disp('Completed Twomey-Markowski.');
 
-chi.TwoMH = norm(x0-x_TwoMH);
-
-
-
-%% Exponential, rotated
-%{
-s1 = 1.0;
-s2 = 0.1;
-dtot = @(d1,d2) sqrt(exp(d1).^2+exp(d2).^2);
-theta = -atan2(1,3);%-45/180*pi;%-atan2(3,1);
-Lex = diag([1/s1,1/s2])*...
-    [cos(theta),-sin(theta);sin(theta),cos(theta)];
-lambda_expRot = 5;
-
-disp('Performing rotated exponential distance regularization...');
-tic;
-[x_expRot,L] = invert.exponential_distance(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    lambda_expRot,Lex,x0);
-t.expRot = toc;
-disp('Inversion complete.');
-disp(' ');
-
-chi.expRot = norm(x0-x_expRot);
-%}
+chi.two_mh = norm(x0-x_two_mh);
 
 
 

@@ -158,6 +158,8 @@ classdef Grid
             end
             
             [dr1,dr2] = ndgrid(dr_0{1},dr_0{2});
+            dr1 = abs(dr1); % in case edges vector is reversed
+            dr2 = abs(dr2);
             dr = dr2(:).*dr1(:);
             
         end
@@ -355,7 +357,7 @@ classdef Grid
                 % expected effective density at dm = 100 nm
                 % 1e9 converts from fg/nm^3 to kg/m^3
             
-            if opt_plot; obj.overlay_line([v0(1),y1(1)],y1(2),'w'); end
+            if opt_plot; obj.overlay_line([v0(1),y1(1)],y1(2),'r'); end
             
         end
         %=================================================================%
