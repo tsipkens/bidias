@@ -6,7 +6,7 @@
 This program, originally released with [Sipkens et al. (2019)][1_JAS1],
 is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
-The results of the aforementioned paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code. See [1.1.2](#1.1.2-Script-associated-with-J.-Aerosol-Sci.-paper) of this README for more details.
+The results of the aforementioned paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code. See [1.1.2](#####1.1.2-Script-associated-with-J.-Aerosol-Sci.-paper) of this README for more details.
 
 This program is organzed into several: classes (folders starting with the @ symbol),
 packages (folders starting with the + symbol), and scripts that form the base of the program.
