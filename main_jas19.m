@@ -6,8 +6,6 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath('cmap');
-cm = load_cmap('YlGnBu',255);
-cm_alt = cm;
 load('inferno.mat');
 cm = cm(40:end,:);
 cm_b = cm;
@@ -15,7 +13,7 @@ load('viridis.mat');
 
 
 %%
-%-- Generate phantom (x_t) -----------------------------------------------%
+%== Generate phantom (x_t) ===============================================%
 %   High resolution version of the distribution to be projected to coarse 
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
@@ -38,7 +36,7 @@ hold off;
 
 
 %%
-%-- Generate A matrix and b vector ---------------------------------------%
+%== Generate A matrix and b vector =======================================%
 n_b = [14,50]; %[12,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
@@ -49,7 +47,8 @@ A_t = kernel.gen_A(grid_b,grid_t,[],'Rm',3);
 
 
 %%
-%--  Generate x vector on coarser grid -----------------------------------%
+%== Generate x vector on coarser grid ====================================%
+%   This will be used later to gauge accuracy of reconstructions
 n_x = [50,64]; % number of elements per dimension in x
     % [20,32]; % used for plotting projections of basis functions
     % [40,64]; % used in evaluating previous versions of regularization
@@ -72,7 +71,7 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %%
-%-- Generate data --------------------------------------------------------%
+%== Generate data ========================================================%
 b0 = A_t*x_t; % forward evaluate kernel
 
 
@@ -106,17 +105,17 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 
 
 %% 
-%-- Perform inversions ---------------------------------------------------%
-% run_inversions_a;
-% run_inversions_b;
-run_inversions_c;
+%== Perform inversions ===================================================%
+run_inversions_a; % optimize regularization parameter
+run_inversions_b;
+% run_inversions_c;
 
 
 %%
-%-- Plot solution --------------------------------------------------------%
+%== Plot solution ========================================================%
 x_plot = x_tk1;
 
-figure(10);
+figure(10); % plot reconstruction and marginal distributions
 colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x_plot,grid_t,x_t);
 caxis([0,cmax*(1+1/256)]);
@@ -136,7 +135,7 @@ figure(10);
 
 
 %%
-%-- Bar plot of results --------------------------------------------------%
+%== Bar plot of Euclidean error ==========================================%
 figure(30);
 chi_names = fieldnames(chi);
 chi_vals = zeros(length(chi_names),1);
@@ -150,43 +149,5 @@ bar(chi_vals);
 set(gca,'xticklabel',chi_names);
 
 
-%%
-%{
-%-- Bar plot of times ----------------------------------------------------%
-figure(40);
-t_names = fieldnames(t);
-t_vals = zeros(length(t_names),1);
-for ii=1:length(t_names)
-    t_vals(ii) = mean(t.(t_names{ii}),2);
-end
-
-bar(t_vals);
-set(gca,'xticklabel',t_names);
-set(gca,'yscale','log');
-
-
-
-%%
-%-- Plot marginal distributions ------------------------------------------%
-figure(31);
-clf;
-dim = 2;
-
-grid_t.plot_marginal(x_t,dim);
-grid_x.plot_marginal(...
-    {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
-
-
-
-%%
-%-- Plot conditional distributions ---------------------------------------%
-figure(31);
-clf;
-dim = 2;
-ind_plot = 25;
-
-grid_x.plot_conditional(...
-    {x0,x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,ind_plot,x0);
-%}
 
 

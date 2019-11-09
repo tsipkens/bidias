@@ -108,7 +108,7 @@ x_MART = invert.mart(A,b,x_init,299);
 disp('Inversion complete.');
 disp(' ');
 
-chi.MART = norm(x0-x_MART);
+chi.mart = norm(x0-x_MART);
 
 
 %% Twomey
@@ -119,41 +119,18 @@ t.Two = toc;
 disp('Completed Twomey.');
 disp(' ');
 
-chi.Two = norm(x0-x_Two);
+chi.two = norm(x0-x_Two);
 
 
 %% Twomey-Markowski-Buckley
 disp('Performing Twomey-Markowski...');
 tic;
-x_TwoMH = invert.twomark(A,b,Lb,n_x(1),...
-    x_init,35,'Buckley',1/Sf_TwoMH);
-t.TwoMH = toc;
+x_two_mh = invert.twomark(A,b,Lb,n_x(1),...
+    x_init,35,'Buckley',Sf_two_mh);
+t.two_mh = toc;
 disp('Completed Twomey-Markowski.');
 
-chi.TwoMH = norm(x0-x_TwoMH);
-
-
-
-%% Exponential, rotated
-%{
-s1 = 1.0;
-s2 = 0.1;
-dtot = @(d1,d2) sqrt(exp(d1).^2+exp(d2).^2);
-theta = -atan2(1,3);%-45/180*pi;%-atan2(3,1);
-Lex = diag([1/s1,1/s2])*...
-    [cos(theta),-sin(theta);sin(theta),cos(theta)];
-lambda_expRot = 5;
-
-disp('Performing rotated exponential distance regularization...');
-tic;
-[x_expRot,L] = invert.exponential_distance(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    lambda_expRot,Lex,x0);
-t.expRot = toc;
-disp('Inversion complete.');
-disp(' ');
-
-chi.expRot = norm(x0-x_expRot);
-%}
+chi.two_mh = norm(x0-x_two_mh);
 
 
 

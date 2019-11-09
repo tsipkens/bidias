@@ -3,7 +3,6 @@ archive/
 data/
 +buckley_program/
 +olfert/
-main_exper_A.m
 main_exper_fn18.m
 main_exper_ua19_salt.m
 main_jas19_noise.m
@@ -13,4 +12,5 @@ run_inversions_e.m
 run_inversions_f.m
 run_inversions_g.m
 main_tfer.m
+main_bayes.m
 *.asv
