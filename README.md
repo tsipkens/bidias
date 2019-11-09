@@ -6,7 +6,7 @@
 This program, originally released with [Sipkens et al. (2019)][1_JAS1],
 is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
-The results of the aforementioned paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in the updated code provides a better optimized regularization parameter and thus a slightly smaller Euclidean error.
+The results of the aforementioned paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code. See [1.1.2](#1.1.2-Script-associated-with-J.-Aerosol-Sci.-paper) of this README for more details.
 
 This program is organzed into several: classes (folders starting with the @ symbol),
 packages (folders starting with the + symbol), and scripts that form the base of the program.
@@ -17,7 +17,9 @@ packages (folders starting with the + symbol), and scripts that form the base of
 #### 1.1 Main scripts (`main*.m`)
 
 The `main*.m` scripts in the top directory of the code can be called to
-demonstrate use of the code. Of particular note, the `main_jas19.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2019)][1_JAS1], as noted above.
+demonstrate use of the code.
+
+##### 1.1.1 General structure
 
 Scripts to execute this program should be structured as follows:
 
@@ -55,6 +57,10 @@ Preset groupings on inversion approaches are available in the
 by calling the `plot2d_marg` method of this class. This plots both the
 retrieved distribution as well as the marginalized distribution on each of
 the axes, taking the reconstruction (e.g. `x_tk1`) as an input.
+
+##### 1.1.2 Script associated with J. Aerosol Sci. paper
+
+Of particular note, the `main_jas19.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2019)][1_JAS1], as noted above. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in the updated code provides a better optimized regularization parameter and thus a slightly smaller Euclidean error.
 
 #### 1.2 Scripts to run a series of inversion methods (`run_inversions*.m`)
 
