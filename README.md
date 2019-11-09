@@ -4,7 +4,7 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
 This program, originally released with [Sipkens et al. (2019)][1_JAS1],
-is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. The results of that paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code.
+is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. The results of the aforementioned paper can be produced by running `main_jas19.m` in [v1.1][code_v11] of this code.
 
 This program is organzed into several:
 classes (folders starting with the @ symbol),
@@ -243,13 +243,13 @@ README in the `cmap` folder.
 
 [Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., Hogan Jr, C. J. (2017). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. *J. Aerosol Sci.* 114, 157-168.][3_Buck]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (Under preparation). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: Existing and novel Bayesian methods.][4]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). MATLAB tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. doi: 10.5281/zenodo.3513259][5_code]
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: A critical comparison of established methods. *J. Aerosol Sci.*  doi: 10.1016/j.jaerosci.2019.105484][1_JAS1]
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). New approaches to calculate the transfer function of particle mass analyzers. *Aerosol Sci. Technol.* doi: 10.1080/02786826.2019.1680794][2_AST]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). MATLAB tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. doi: 10.5281/zenodo.3513259][5_code]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (Under preparation). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: Existing and novel Bayesian methods.][4]
 
 [1_JAS1]: https://doi.org/10.1016/j.jaerosci.2019.105484
 [2_AST]: https://doi.org/10.1080/02786826.2019.1680794
