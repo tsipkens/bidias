@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2018-10-22
 %=========================================================================%
 
-function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver,sigma)
+function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A        Model matrix
@@ -36,30 +36,20 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 [vec_d1,vec_d2] = ndgrid(d_vec,d_vec);
 [vec_m1,vec_m2] = ndgrid(m_vec,m_vec);
 
-d1 = log10(vec_m1)-log10(vec_m2);
-d2 = log10(vec_d1)-log10(vec_d2);
-d = sqrt((d1.*Lex(1,1)+d2.*Lex(1,2)).^2+...
-    (d1.*Lex(2,1)+d2.*Lex(2,2)).^2); % distance
+drm = log10(vec_m1)-log10(vec_m2);
+drd = log10(vec_d1)-log10(vec_d2);
+d = sqrt((drm.*Lex(1,1)+drd.*Lex(1,2)).^2+...
+    (drm.*Lex(2,1)+drd.*Lex(2,2)).^2); % distance
 
 %-- Generate prior covariance matrix --------------------------------------
 Gpr = exp(-d);
-if exist('sigma','var') % incorporate structure into covariance, if specified
-    for ii=1:x_length
-        for jj=1:x_length
-            Gpr(ii,jj) = Gpr(ii,jj).*sigma(ii).*sigma(jj);
-        end
-    end
-end
-Gpr(Gpr<(0.05.*mean(mean(Gpr)))) = 0; % remove any entries below thershold
-Gpr = Gpr./max(max(Gpr)); % normalize matrix structure
 
 Gpr_inv = inv(Gpr);
-Lpr = chol(Gpr_inv);
+[Lpr,~] = chol(Gpr_inv);
 clear Gpr_inv; % to save memory
-Lpr = lambda.*Lpr./max(max(Lpr));
-Lpr(abs(Lpr)<(0.005.*max(max(abs(Lpr))))) = 0;
-[x,y] = meshgrid(1:size(Lpr,1),1:size(Lpr,2));
-Lpr = Lpr.*(abs(x-y)<10); % crop distant pixels
+Lpr = lambda.*Lpr;
+Lpr(abs(Lpr)<(0.0001.*max(max(abs(Lpr))))) = 0;
+Lpr(d>2) = 0;
 Lpr = sparse(Lpr);
 
 

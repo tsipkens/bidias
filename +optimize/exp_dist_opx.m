@@ -30,23 +30,23 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 
 min_fun = @(x) norm(x-x_ex)^2;
 
-Lex_fun = @(y2,y3) [1/y2,0;0,1/y3];
+Lex_fun = @(y2) [1/y2,0;0,2.7/y2];
 tic;
 disp('Optimizing exponential distance regularization (using least-squares)...');
 y0 = log10(guess);
 y1 = fminsearch(@(y) min_fun(invert.exp_dist(...
-    A,b,d_vec,m_vec,10^y(1),Lex_fun(10^y(2),10^y(3)),x0,solver)),...
+    A,b,d_vec,m_vec,10^y(1),Lex_fun(10^y(2)),x0,solver)),...
     y0);
 toc;
 
 lambda = y1(1);
 x = invert.exp_dist(...
-    A,b,d_vec,m_vec,10^y1(1),Lex_fun(10^y1(2),10^y1(3)),x0,solver);
+    A,b,d_vec,m_vec,10^y1(1),Lex_fun(10^y1(2)),x0,solver);
 
 out.lambda = 10^y1(1);
 out.s1 = 10^y1(2);
-out.s2 = 10^y1(3);
-out.Lex = Lex_fun(10^y1(2),10^y1(3));
+out.s2 = out.s1/2.7;
+out.Lex = Lex_fun(10^y1(2));
 
 
 end
