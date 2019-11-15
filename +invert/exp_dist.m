@@ -36,8 +36,8 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 [vec_d1,vec_d2] = ndgrid(d_vec,d_vec);
 [vec_m1,vec_m2] = ndgrid(m_vec,m_vec);
 
-d1 = log(vec_m1)-log(vec_m2);
-d2 = log(vec_d1)-log(vec_d2);
+d1 = log10(vec_m1)-log10(vec_m2);
+d2 = log10(vec_d1)-log10(vec_d2);
 d = sqrt((d1.*Lex(1,1)+d2.*Lex(1,2)).^2+...
     (d1.*Lex(2,1)+d2.*Lex(2,2)).^2); % distance
 
@@ -59,7 +59,7 @@ clear Gpr_inv; % to save memory
 Lpr = lambda.*Lpr./max(max(Lpr));
 Lpr(abs(Lpr)<(0.005.*max(max(abs(Lpr))))) = 0;
 [x,y] = meshgrid(1:size(Lpr,1),1:size(Lpr,2));
-Lpr = Lpr.*(abs(x-y)<100); % crop distant pixels
+Lpr = Lpr.*(abs(x-y)<10); % crop distant pixels
 Lpr = sparse(Lpr);
 
 

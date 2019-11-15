@@ -1,5 +1,5 @@
 
-% RUN_INVERSIONS_A  Single inversion of each technique using externally defined parameters.
+% RUN_INVERSIONS_B  Single inversion of each technique using externally defined parameters.
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
