@@ -40,13 +40,11 @@ tools.textbar(0);
 for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii);
     
-    [out(ii).x,~,Lpr,Gpo_inv] = invert.exp_dist(...
+    [out(ii).x,~,Lpr] = invert.exp_dist(...
         A,b,d_vec,m_vec,lambda(ii),Lex,x0,solver);
     
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
-    out(ii).Gpo_inv = Gpo_inv;
-    [out(ii).Lpo,out(ii).is_pos_def] = chol(Gpo_inv);
     out(ii).Lex = Lex;
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));

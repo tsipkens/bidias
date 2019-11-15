@@ -36,13 +36,11 @@ tools.textbar(0);
 for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii);
     
-    [out(ii).x,~,Lpr,Gpo_inv] = invert.tikhonov(...
+    [out(ii).x,~,Lpr] = invert.tikhonov(...
         A,b,n,lambda(ii),order,x0,solver);
     
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
-    out(ii).Gpo_inv = Gpo_inv;
-    [out(ii).Lpo,out(ii).is_pos_def] = chol(Gpo_inv);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end
