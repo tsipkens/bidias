@@ -7,7 +7,7 @@ function [p,type,name] = preset_phantoms(name)
 
 switch name
     case {'demonstration','1'}
-        name = 'demonstration';
+        name = 'Demonstration, 1';
         
         p(1).dg = 50;
         p(1).sg = 1.4;
@@ -24,7 +24,7 @@ switch name
         type{2} = 'logn';
 
     case {'soot-surrogate','2'}
-        name = 'soot-surrogate';
+        name = 'Soot surrogate, 2';
         
         p.dg = 127;
         p.sg = 1.72;
@@ -34,7 +34,7 @@ switch name
         type{1} = 'logn';
 
     case {'Buckley','Hogan','3'}
-        name = 'Buckley';
+        name = 'Buckley-Hogan, 3';
         
         p(1).dg = 200;
         p(1).sg = 1.5;
@@ -51,7 +51,7 @@ switch name
         type{2} = 'cond-norm';
 
     case {'narrow','4'}
-        name = 'narrow';
+        name = 'Narrow, 4';
         
         p.dg = 125;
         p.sg = 1.5;
