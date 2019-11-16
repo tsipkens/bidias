@@ -1,8 +1,8 @@
 
-% EXP_DIST_OPX  Finds optimal lambda for exponential distance solver.
+% EXP_DIST_OPXR  Finds optimal lambda for exponential distance, rotated solver.
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,x0,solver)
+function [x,lambda,out] = exp_dist_opxr(A,b,d_vec,m_vec,guess,x_ex,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -30,9 +30,10 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 
 min_fun = @(x) norm(x-x_ex)^2;
 
-Gd_fun = @(y) [y(2)^2,0;...
-    0,y(3)^2]; % version for no correlation
-% y(2) = sm, y(3) = sd
+thresh = @(y) max(y(2),y(4)*y(3)); % to prevent correlation > 1
+Gd_fun = @(y) [thresh(y)^2,y(3)^2*y(4);...
+    y(3)^2*y(4),y(3)^2];
+% y(2) = sm, y(3) = sd, y(4) = Dm
 
 tic;
 disp('Optimizing exponential distance regularization (using least-squares)...');
@@ -42,13 +43,15 @@ y1 = fminsearch(@(y) min_fun(invert.exp_dist(...
     y0);
 toc;
 
+y1(2) = thresh(y1);
 lambda = y1(1);
 x = invert.exp_dist(...
-    A,b,d_vec,m_vec,y1(1),Gd_fun(y1),x0,solver);
+    A,b,d_vec,m_vec,10^y1(1),Gd_fun(y1),x0,solver);
 
 out.lambda = y1(1);
 out.s1 = y1(2);
 out.s2 = y1(3);
+out.Dm = y1(4);
 out.Lex = Gd_fun(y1);
 
 

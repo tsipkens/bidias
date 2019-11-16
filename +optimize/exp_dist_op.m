@@ -2,7 +2,7 @@
 % EXP_DIST_OP  Finds optimal lambda for exponential distance solver.
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Lex,x0,solver)
+function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Gd,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -24,8 +24,8 @@ function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Lex,x0,solver)
 if ~exist('solver','var'); solver = []; end
     % if computation method not specified
 
-if ~exist('Lex','var'); Lex = []; end
-if isempty(Lex); Lex = speye(2); end
+if ~exist('Gd','var'); Gd = []; end
+if isempty(Gd); Gd = speye(2); end
      % if coordinate transform is not specified
 
 if ~exist('x0','var'); x0 = []; end % if no initial x is given
@@ -41,11 +41,10 @@ for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii);
     
     [out(ii).x,~,Lpr] = invert.exp_dist(...
-        A,b,d_vec,m_vec,lambda(ii),Lex,x0,solver);
+        A,b,d_vec,m_vec,lambda(ii),Gd,x0,solver);
     
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
-    out(ii).Lex = Lex;
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end
@@ -58,10 +57,11 @@ end
 lambda = out(ind_min).lambda;
 x = out(ind_min).x;
 
+out(1).Gd = Gd;
 out(1).Lpr = Lpr./lambda(end); % store Lpr structure
-    % to save memory, only output Lpr structure
+    % to save memory, only output Lpr and Gd structure for first entry
     % Lpr for any lambda can be found using scalar multiplication
-    % Gpo_inv = A'*A+Lpr'*Lpr; <- can be done is post-process
+    % Gpo_inv = A'*A+Lpr'*Lpr; <- can be done in post-process
 
 end
 

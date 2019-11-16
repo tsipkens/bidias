@@ -10,9 +10,5 @@ submodule_update.sh
 +uncertainty
 run_inversions_e.m
 run_inversions_f.m
-run_inversions_g.m
-run_inversions_h.m
-run_inversions_i.m
 main_tfer.m
-main_bayes.m
 *.asv

@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2018-10-22
 %=========================================================================%
 
-function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Lex,x0,solver)
+function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Gd,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A        Model matrix
@@ -24,8 +24,8 @@ x_length = length(A(1,:));
 if ~exist('solver','var'); solver = []; end
     % if computation method not specified
 
-if ~exist('Lex','var'); Lex = []; end
-if isempty(Lex); Lex = speye(2); end
+if ~exist('Gd','var'); Gd = []; end
+if isempty(Gd); Gd = speye(2); end
      % if coordinate transform is not specified
 
 if ~exist('x0','var'); x0 = []; end % if no initial x is given
@@ -36,10 +36,11 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 [vec_d1,vec_d2] = ndgrid(d_vec,d_vec);
 [vec_m1,vec_m2] = ndgrid(m_vec,m_vec);
 
+Gd_inv = inv(Gd);
 drm = log10(vec_m1)-log10(vec_m2);
 drd = log10(vec_d1)-log10(vec_d2);
-d = sqrt((drm.*Lex(1,1)+drd.*Lex(1,2)).^2+...
-    (drm.*Lex(2,1)+drd.*Lex(2,2)).^2); % distance
+d = sqrt(drm.^2.*Gd_inv(1,1)+2.*drd.*drm.*Gd_inv(1,2)+drd.^2.*Gd_inv(2,2)); % distance
+
 
 %-- Generate prior covariance matrix --------------------------------------
 Gpr = exp(-d);
@@ -47,9 +48,9 @@ Gpr = exp(-d);
 Gpr_inv = inv(Gpr);
 [Lpr,~] = chol(Gpr_inv);
 clear Gpr_inv; % to save memory
-Lpr = lambda.*Lpr;
-Lpr(abs(Lpr)<(0.0001.*max(max(abs(Lpr))))) = 0;
-Lpr(d>2) = 0;
+Lpr = lambda.*Lpr./max(max(Lpr));
+% Lpr(abs(Lpr)<(0.01.*mean(mean(abs(Lpr))))) = 0;
+Lpr(d>1.5) = 0;
 Lpr = sparse(Lpr);
 
 
