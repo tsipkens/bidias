@@ -5,7 +5,7 @@
 
 
 %-- Exponential, normal -------%
-guess = [1.1,0.1,0.05]; % [lambda, sm, sd]
+guess = [1.1,1.2,0.4]; % [lambda, sm, sd]
 disp('Performing exponential distance regularization...');
 [x_exp_opt,lambda_exp_opt,out_exp_opt] = optimize.exp_dist_opx(...
     Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
@@ -17,7 +17,7 @@ chi.exp_opt = norm(x0-x_exp_opt);
 
 
 %-- Exponential, normal (diff. start) -------%
-guess = [1.4,0.3,0.1]; % [lambda, sm, sd]
+guess = [1.4,0.9,0.4]; % [lambda, sm, sd]
 disp('Performing exponential distance regularization...');
 [x_exp_opt2,lambda_exp_opt2,out_exp_opt2] = optimize.exp_dist_opx(...
     Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...

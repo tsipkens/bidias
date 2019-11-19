@@ -30,7 +30,7 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 
 min_fun = @(x) norm(x-x_ex)^2;
 
-thresh = @(y) max(y(2),y(4)*y(3)); % to prevent correlation > 1
+thresh = @(y) max(y(2),y(4)*y(3)-1e-5); % to prevent correlation >= 1
 Gd_fun = @(y) [thresh(y)^2,y(3)^2*y(4);...
     y(3)^2*y(4),y(3)^2];
 % y(2) = sm, y(3) = sd, y(4) = Dm
