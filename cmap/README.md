@@ -30,34 +30,53 @@ always first.
 
 From mpl colormaps:
 1. *viridis*
+
 2. *inferno*
+
 3. *plasma*
+
 4. *magma*
 
 From cmocean:
+
 5. *thermal*
+
 6. *haline*
+
 7. *ice*
+
 8. *deep*
+
 9. *dense*
+
 10. *matter*
+
 11. *tempo*
 
 From colorbrewer2:
+
 12. *YlGnBu*
+
 13. *BuPu*
+
 14. *RdPu*
 
 ##### Divergent colormaps
 
 From cmocean:
+
 1. *balance*
+
 2. *delta*
+
 3. *curl*
 
 From colorbrewer2:
+
 4. *PuOr*
+
 5. *RdBu*
+
 6. *PrGn*
 
 ##### Rainbow, uniform colormaps
