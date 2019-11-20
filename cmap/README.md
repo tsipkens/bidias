@@ -4,14 +4,14 @@
 
 These `.mat` files contain the colormaps from four primary sources:
 
-1. *cmocean* - Kristen M. Thyng, Chad A. Greene, Robert D. Hetland, Heather M. Zimmerle,
+1. *matplotlib* - Colormaps designed by Stéfan van der Walt and
+Nathaniel Smith. (More information is available at https://bids.github.io/colormap/).
+
+2. *cmocean* - Kristen M. Thyng, Chad A. Greene, Robert D. Hetland, Heather M. Zimmerle,
 and Steven F. DiMarco. True colors of oceanography: Guidelines for effective
 and accurate colormap selection. Oceanography, September 2016.  
 http://dx.doi.org/10.5670/oceanog.2016.66 (More information is available at
 https://matplotlib.org/cmocean/).
-
-2. *matplotlib* - Colormaps designed by Stéfan van der Walt and
-Nathaniel Smith. (More information is available at https://bids.github.io/colormap/).
 
 3. *colorbrewer2* - Colormaps by Cynthia Brewer and Mark Harrower. (More information
   available at http://colorbrewer2.org/).
