@@ -29,51 +29,68 @@ It is also noted that the *deep*, *dense*, *matter*, and *tempo* colormaps
 are reversed from their original order, such that the darker color is
 always first.
 
-### Included Colormaps
+The colormaps, and swages indicating their color progression, are included below.
 
-#### Sequantial
+## Sequantial colormaps
 
-From mpl colormaps:
+###### From mpl colormaps:
 
-1. *viridis*
-2. *inferno*
-3. *plasma*
-4. *magma*
+![viridis](imgs/viridis.jpg) *viridis*
 
-From cmocean:
+![inferno](imgs/inferno.jpg) *inferno*
 
-5. *thermal*
-6. *haline*
-7. *ice*
-8. *deep*
-9. *dense*
-10. *matter*
-11. *tempo*
-12. *speed* - Yellow, green colormap
+![plasma](imgs/plasma.jpg) *plasma*
 
-From colorbrewer2:
+![magma](imgs/magma.jpg) *magma*
 
-13. *YlGnBu*
-14. *BuPu*
-15. *RdPu*
+###### From cmocean:
 
-#### Divergent colormaps
+![thermal](imgs/thermal.jpg) *thermal*
 
-From cmocean:
+![haline](imgs/haline.jpg) *haline*
 
-1. *balance*
-2. *delta*
-3. *curl*
+![ice](imgs/ice.jpg) *ice*
 
-From colorbrewer2:
+![deep](imgs/deep.jpg) *deep*
 
-4. *PuOr*
-5. *RdBu*
-6. *PrGn*
+![dense](imgs/dense.jpg) *dense*
 
-#### Rainbow colormaps
+![matter](imgs/matter.jpg) *matter*
 
-1. *turbo* (dedicated source)
+![tempo](imgs/tempo.jpg) *tempo*
 
-From cmocean:
-2. *phase*
+![speed](imgs/speed.jpg) *speed*
+
+###### From colorbrewer2:
+
+![YlGnBu](imgs/YlGnBu.jpg) *YlGnBu*
+
+![BuPu](imgs/BuPu.jpg) *BuPu*
+
+![RdPu](imgs/RdPu.jpg) *RdPu*
+
+## Divergent colormaps
+
+###### From cmocean:
+
+![balance](imgs/balance.jpg) *balance*
+
+![delta](imgs/delta.jpg) *delta*
+
+![curl](imgs/curl.jpg) *curl*
+
+###### From colorbrewer2:
+
+![PuOr](imgs/PuOr.jpg) *PuOr*
+
+![RdBu](imgs/RdBu.jpg) *RdBu*
+
+![PrGn](imgs/PrGn.jpg) *PrGn*
+
+## Rainbow colormaps
+
+![turbo](imgs/turbo.jpg) *turbo* (dedicated source)
+
+###### From cmocean:
+
+![phase](imgs/phase.jpg) *phase*

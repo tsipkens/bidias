@@ -34,7 +34,7 @@ chi.exp = norm(x0-x_exp);
 s1 = 0.8;
 s2 = 0.3;
 Dm = 1.92; % used to specify correlation
-R12 = Dm*s2/s1; % correlation
+R12 = 0.99;%Dm*s2/s1; % correlation
 Gd2 = [s1^2,R12*(s1*s2);R12*(s1*s2),s2^2];
 
 disp('Performing rotated exponential distance regularization...');
