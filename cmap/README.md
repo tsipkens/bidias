@@ -90,7 +90,3 @@ The colormaps, and swages indicating their color progression, are included below
 ## Rainbow colormaps
 
 ![turbo](imgs/turbo.jpg) *turbo* (dedicated source)
-
-#### From cmocean:
-
-![phase](imgs/phase.jpg) *phase*
