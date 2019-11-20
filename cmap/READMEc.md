@@ -22,8 +22,8 @@ Nathaniel Smith. (More information is available at https://bids.github.io/colorm
 When loaded directly, the colormaps will appear as the variable `cm` in the
 workspace. Otherwise `load_cmap` can be used to load the colormap specified
 by a string, `str`, containing the colormap name. The function `load_cmap`
-also takes `n` as a second input, which can be used reduce the number of
-colors in the colormap, while still respecting the color order.
+also takes `n` as a second input, which can be used reduce or increase (by interpolation)
+the number of colors in the colormap, while still respecting the color order.
 
 It is also noted that the *deep*, *dense*, *matter*, and *tempo* colormaps
 are reversed from their original order, such that the darker color is
