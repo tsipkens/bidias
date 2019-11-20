@@ -33,7 +33,7 @@ The colormaps, and swages indicating their color progression, are included below
 
 ## Sequantial colormaps
 
-###### From mpl colormaps:
+#### From mpl colormaps:
 
 ![viridis](imgs/viridis.jpg) *viridis*
 
@@ -43,7 +43,7 @@ The colormaps, and swages indicating their color progression, are included below
 
 ![magma](imgs/magma.jpg) *magma*
 
-###### From cmocean:
+#### From cmocean:
 
 ![thermal](imgs/thermal.jpg) *thermal*
 
@@ -61,7 +61,7 @@ The colormaps, and swages indicating their color progression, are included below
 
 ![speed](imgs/speed.jpg) *speed*
 
-###### From colorbrewer2:
+#### From colorbrewer2:
 
 ![YlGnBu](imgs/YlGnBu.jpg) *YlGnBu*
 
@@ -71,7 +71,7 @@ The colormaps, and swages indicating their color progression, are included below
 
 ## Divergent colormaps
 
-###### From cmocean:
+#### From cmocean:
 
 ![balance](imgs/balance.jpg) *balance*
 
@@ -79,7 +79,7 @@ The colormaps, and swages indicating their color progression, are included below
 
 ![curl](imgs/curl.jpg) *curl*
 
-###### From colorbrewer2:
+#### From colorbrewer2:
 
 ![PuOr](imgs/PuOr.jpg) *PuOr*
 
@@ -91,6 +91,6 @@ The colormaps, and swages indicating their color progression, are included below
 
 ![turbo](imgs/turbo.jpg) *turbo* (dedicated source)
 
-###### From cmocean:
+#### From cmocean:
 
 ![phase](imgs/phase.jpg) *phase*
