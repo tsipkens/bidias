@@ -35,58 +35,58 @@ The colormaps, and swages indicating their color progression, are included below
 
 #### From mpl colormaps:
 
-![viridis](imgs/viridis.jpg) *viridis*
+![viridis](docs/viridis.jpg) *viridis*
 
-![inferno](imgs/inferno.jpg) *inferno*
+![inferno](docs/inferno.jpg) *inferno*
 
-![plasma](imgs/plasma.jpg) *plasma*
+![plasma](docs/plasma.jpg) *plasma*
 
-![magma](imgs/magma.jpg) *magma*
+![magma](docs/magma.jpg) *magma*
 
 #### From cmocean:
 
-![thermal](imgs/thermal.jpg) *thermal*
+![thermal](docs/thermal.jpg) *thermal*
 
-![haline](imgs/haline.jpg) *haline*
+![haline](docs/haline.jpg) *haline*
 
-![ice](imgs/ice.jpg) *ice*
+![ice](docs/ice.jpg) *ice*
 
-![deep](imgs/deep.jpg) *deep*
+![deep](docs/deep.jpg) *deep*
 
-![dense](imgs/dense.jpg) *dense*
+![dense](docs/dense.jpg) *dense*
 
-![matter](imgs/matter.jpg) *matter*
+![matter](docs/matter.jpg) *matter*
 
-![tempo](imgs/tempo.jpg) *tempo*
+![tempo](docs/tempo.jpg) *tempo*
 
-![speed](imgs/speed.jpg) *speed*
+![speed](docs/speed.jpg) *speed*
 
 #### From colorbrewer2:
 
-![YlGnBu](imgs/YlGnBu.jpg) *YlGnBu*
+![YlGnBu](docs/YlGnBu.jpg) *YlGnBu*
 
-![BuPu](imgs/BuPu.jpg) *BuPu*
+![BuPu](docs/BuPu.jpg) *BuPu*
 
-![RdPu](imgs/RdPu.jpg) *RdPu*
+![RdPu](docs/RdPu.jpg) *RdPu*
 
 ## Divergent colormaps
 
 #### From cmocean:
 
-![balance](imgs/balance.jpg) *balance*
+![balance](docs/balance.jpg) *balance*
 
-![delta](imgs/delta.jpg) *delta*
+![delta](docs/delta.jpg) *delta*
 
-![curl](imgs/curl.jpg) *curl*
+![curl](docs/curl.jpg) *curl*
 
 #### From colorbrewer2:
 
-![PuOr](imgs/PuOr.jpg) *PuOr*
+![PuOr](docs/PuOr.jpg) *PuOr*
 
-![RdBu](imgs/RdBu.jpg) *RdBu*
+![RdBu](docs/RdBu.jpg) *RdBu*
 
-![PrGn](imgs/PrGn.jpg) *PrGn*
+![PrGn](docs/PrGn.jpg) *PrGn*
 
 ## Rainbow colormaps
 
-![turbo](imgs/turbo.jpg) *turbo* (dedicated source)
+![turbo](docs/turbo.jpg) *turbo* (dedicated source)

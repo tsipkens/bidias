@@ -113,7 +113,7 @@ run_inversions_i;
 
 %%
 %-- Plot solution --------------------------------------------------------%
-x_plot = x_exp;
+x_plot = x_exp_rot;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
