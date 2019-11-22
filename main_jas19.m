@@ -12,8 +12,9 @@ cm_b = cm;
 load('viridis.mat');
 
 
+
 %%
-%== Generate phantom (x_t) ===============================================%
+%== STEP 1: Generate phantom (x_t) =======================================%
 %   High resolution version of the distribution to be projected to coarse 
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
@@ -34,19 +35,6 @@ plot(log10(grid_t.edges{2}),...
     log10(phantom.mg_fun(grid_t.edges{2})),'w:');
 hold off;
 
-
-%%
-%== Generate A matrix and b vector =======================================%
-n_b = [14,50]; %[12,50]; %[17,35];
-span_b = grid_t.span;
-grid_b = Grid(span_b,...
-    n_b,'logarithmic'); % should be uniform basis
-
-A_t = kernel.gen_A(grid_b,grid_t,[],'Rm',3);
-    % generate A matrix based on grid for x_t and b
-
-
-%%
 %== Generate x vector on coarser grid ====================================%
 %   This will be used later to gauge accuracy of reconstructions
 n_x = [50,64]; % number of elements per dimension in x
@@ -56,6 +44,18 @@ n_x = [50,64]; % number of elements per dimension in x
 grid_x = Grid([grid_t.span],...
     n_x,'logarithmic');
 x0 = grid_x.project(grid_t.edges,x_t); % project into basis for x
+
+
+
+%%
+%== STEP 2: Generate A matrix and b vector ===============================%
+n_b = [14,50]; %[12,50]; %[17,35];
+span_b = grid_t.span;
+grid_b = Grid(span_b,...
+    n_b,'logarithmic'); % should be uniform basis
+
+A_t = kernel.gen_A(grid_b,grid_t,[],'Rm',3);
+    % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in x...');
 B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
@@ -70,8 +70,9 @@ grid_x.plot2d_marg(x0,grid_t,x_t);
 caxis([0,cmax*(1+1/256)]);
 
 
+
 %%
-%== Generate data ========================================================%
+%== STEP 3: Generate data ===============================================%
 b0 = A_t*x_t; % forward evaluate kernel
 
 
@@ -104,15 +105,17 @@ b_plot_rs = reshape(b,grid_b.ne);
 semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 
 
+
 %% 
-%== Perform inversions ===================================================%
+%== STEP 4: Perform inversions ============================================%
 run_inversions_a; % optimize regularization parameter
 run_inversions_b;
 % run_inversions_c;
 
 
+
 %%
-%== Plot solution ========================================================%
+%== STEP 5: Plot solution =================================================%
 x_plot = x_tk1;
 
 figure(10); % plot reconstruction and marginal distributions
