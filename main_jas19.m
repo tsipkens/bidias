@@ -25,16 +25,6 @@ grid_t = phantom.grid;
 nmax = max(x_t);
 cmax = nmax;
 
-figure(1);
-phantom.plot;
-colormap(gcf,[cm;1,1,1]);
-caxis([0,cmax*(1+1/256)]);
-
-hold on; % plots mg ridges of phantom
-plot(log10(grid_t.edges{2}),...
-    log10(phantom.mg_fun(grid_t.edges{2})),'w:');
-hold off;
-
 %== Generate x vector on coarser grid ====================================%
 %   This will be used later to gauge accuracy of reconstructions
 n_x = [50,64]; % number of elements per dimension in x
@@ -44,6 +34,16 @@ n_x = [50,64]; % number of elements per dimension in x
 grid_x = Grid([grid_t.span],...
     n_x,'logarithmic');
 x0 = grid_x.project(grid_t.edges,x_t); % project into basis for x
+
+figure(1);
+phantom.plot;
+colormap(gcf,[cm;1,1,1]);
+caxis([0,cmax*(1+1/256)]);
+
+hold on; % plots mg ridges of phantom
+plot(log10(grid_t.edges{2}),...
+    log10(phantom.mg_fun(grid_t.edges{2})),'w:');
+hold off;
 
 
 
