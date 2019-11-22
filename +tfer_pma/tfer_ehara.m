@@ -1,5 +1,5 @@
 
-% TFER_EHARA    Evaluates the transfer function for a PMA in Case A as per Ehara et al. (1996).
+% TFER_EHARA    Evaluates the transfer function for a PMA in Case 1S as per Ehara et al. (1996).
 % Author:       Timothy Sipkens, 2018-12-27
 %-------------------------------------------------------------------------%
 % Inputs:
