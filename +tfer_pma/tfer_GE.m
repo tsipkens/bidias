@@ -1,38 +1,25 @@
 
 % TFER_GE   Evaluates the transfer function for a PMA in Case F.
 % Author:   Timothy Sipkens, 2019-03-21
-%=========================================================================%
-
-function [Lambda,G0,sp] = tfer_GE(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   m_star      Setpoint particle mass
+%   sp          Structure defining various setpoint parameters 
+%               (e.g. m_star, V). Use 'get_setpoint' method to generate 
+%               this structure.
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
 %   prop        Device properties (e.g. classifier length)
-%   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
-%                   ('Rm',double) - Resolution
-%                   ('omega1',double) - Angular speed of inner electrode
-%                   ('V',double) - Setpoint voltage
 %
 % Outputs:
 %   Lambda      Transfer function
 %   G0          Function mapping final to initial radial position
-%-------------------------------------------------------------------------%
+%=========================================================================%
 
+function [Lambda,G0] = tfer_GE(sp,m,d,z,prop)
 
-[sp,tau,C0] = ...
-    tfer_pma.get_setpoint(m_star,m,d,z,prop,varargin{:});
-        % get setpoint (parses d and z)
-
-%-- Estimate equilibrium radius ------------------------------------------%
-if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc
-    rs = real((sqrt(C0./m)-sqrt(C0./m-4*sp.alpha*sp.beta))./(2*sp.alpha)); % equiblirium radius for a given mass
-else
-    rs = real((sqrt(C0./m)+sqrt(C0./m-4*sp.alpha*sp.beta))./(2*sp.alpha)); % equiblirium radius for a given mass
-end
-
+[tau,C0,~,rs] = tfer_pma.parse_inputs(sp,m,d,z,prop);
+        % parse inputs for common parameters
 
 %-- Estimate recurring quantities ----------------------------------------%
 C6 = 2*sp.alpha*sp.beta-C0./m;

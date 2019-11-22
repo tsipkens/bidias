@@ -9,7 +9,7 @@
 %   (such as those used for phantoms).
 %=========================================================================%
 
-function A = gen_A(grid_b,grid_i,prop_pma,varargin)
+function [A,sp] = gen_A(grid_b,grid_i,prop_pma,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
@@ -19,7 +19,11 @@ function A = gen_A(grid_b,grid_i,prop_pma,varargin)
 %-------------------------------------------------------------------------%
 
 if ~exist('prop_pma','var'); prop_pma = []; end
+if isempty(prop_pma); prop_pma = kernel.prop_pma; end
+    % import properties of PMA
+    % use default properties selected by prop_pma function
 
+    
 %-- Parse measurement set points (b) -------------------------------------%
 r_star = grid_b.elements;
 m_star = r_star(:,1);
@@ -73,9 +77,11 @@ Lambda_mat = cell(1,n_z); % pre-allocate for speed
 for kk=1:n_z
     Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
     for ii=1:n_b(1)
+        sp(ii) = tfer_pma.get_setpoint(...
+            prop_pma,'m_star',grid_b.edges{1}(ii).*1e-18,varargin{:});
         Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
-            grid_b.edges{1}(ii).*1e-18,m.*1e-18,...
-            d.*1e-9,z_vec(kk),prop_pma,[],varargin{:})';
+            sp(ii),m.*1e-18,...
+            d.*1e-9,z_vec(kk),prop_pma)';
                 % PMA transfer function
         
         if or(max(Lambda_mat{kk}(ii,:))>(1+1e-9),any(sum(Lambda_mat{kk}(ii,:))<0))

@@ -1,35 +1,30 @@
 
 % TFER_FD   Evaluates the transfer function of a PMA using finite differences.
 % Author:   Timothy Sipkens, 2018-12-27
-%=========================================================================%
-
-function [Lambda,sp,n] = tfer_FD(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   m_star      Setpoint particle mass
+%   sp          Structure defining various setpoint parameters (e.g. m_star, V)
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
 %   prop        Device properties (e.g. classifier length)
-%   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
-%                   ('Rm',double) - Resolution
-%                   ('omega1',double) - Angular speed of inner electrode
-%                   ('V',double) - Setpoint voltage
 %
 % Outputs:
 %   Lambda      Transfer function
-%   prop        Device properties (e.g. classifier length)
+%   sp          Device properties (e.g. classifier length)
 %   n           Struct containing information about the particle
 %               distribution at different axial position (used for plotting)
 %
 % Notes:
 % 	This code is adapted from Buckley et al. (2017) and the Olfert
 % 	laboratory. 
-%-------------------------------------------------------------------------%
+%=========================================================================%
 
-[sp,tau,C0,D] = ...
-    tfer_pma.get_setpoint(m_star,m,d,z,prop,varargin{:});
-        % get setpoint (parses d and z)
+function [Lambda,n] = tfer_FD(sp,m,d,z,prop)
+
+[tau,C0,D] = tfer_pma.parse_inputs(sp,m,d,z,prop);
+        % parse inputs for common parameters
+
 
 %-- Discretize the space -------------------------------------------------%
 nr = 200;
@@ -38,7 +33,7 @@ r_vec = (prop.r1+dr/2):dr:(prop.r2-dr/2);
 
 nz = 200;
 dz = prop.L/(nz-1);
-if nargout==3; n.z_vec=0:dz:prop.L; n.r_vec=r_vec; end % vector of z positions, used for plotting only
+if nargout>=2; n.z_vec=0:dz:prop.L; n.r_vec=r_vec; end % vector of z positions, used for plotting only
 
 
 %-- Parameters related to CPMA geometry ----------------------------------%
@@ -80,7 +75,7 @@ for ii=ind % loop over mass (not m_star)
     %-- Initialize variables -----------------------------------%
     n_vec = ones(size(r_vec)); % number concentration at current axial position
     n_vec0 = n_vec; % initial number concentration (used for  func. eval.)
-    if nargout==3 % initilize variables used for visualizing number concentrations
+    if sp.m_star>=2 % initilize variables used for visualizing number concentrations
         n_mat = zeros(nz,length(r_vec));
         n_mat(1,:) = n_vec;
     end
@@ -107,12 +102,12 @@ for ii=ind % loop over mass (not m_star)
                 (1e2+2);
         end
         
-        if nargout==3; n_mat(jj,:) = n_vec; end
+        if nargout>=2; n_mat(jj,:) = n_vec; end
             % record particle distribution at this axial position
     end
     
     %-- Format output ------------------------------------------%
-    if nargout==3 % for visualizing number concentrations
+    if nargout>=2 % for visualizing number concentrations
         n.n_mat{ii} = max(n_mat,0);
     end
     

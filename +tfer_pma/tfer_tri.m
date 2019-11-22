@@ -1,51 +1,28 @@
 
 % TFER_TRI Evaluates the transfer function for a PMA as a triangular function.
 % Author: Timothy Sipkens, 2018-12-27
+%%-------------------------------------------------------------------------%
+% Inputs:
+%   sp          Structure defining various setpoint parameters 
+%               (e.g. m_star, V). Use 'get_setpoint' method to generate 
+%               this structure.
+%   m           Particle mass
+%   ~           Placeholder for mobility diameter
+%   ~           Placeholder for integer charge state
+%   ~           Placeholder for device properties (e.g. classifier length)
+%
+% Outputs:
+%   Lambda      Transfer function
 %=========================================================================%
 
-function [Lambda,sp] = tfer_tri(m_star,m,d,z,prop,varargin)
-% 
-%-------------------------------------------------------------------------%
-% Inputs:
-%   m_star      Setpoint particle mass
-%   m           Particle mass
-%   d           Particle mobility diameter
-%   z           Integer charge state
-%   prop        Properties of particle mass analyzer
-%   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
-%                   ('Rm',double) - Resolution
-%                   ('omega1',double) - Angular speed of inner electrode
-%                   ('V',double) - Setpoint voltage
-%
-% Output:
-%   Lambda      Transfer function
-%-------------------------------------------------------------------------%
+function [Lambda] = tfer_tri(sp,m,~,~,~)
 
-
-sp = tfer_pma.get_setpoint(m_star,m,d,z,prop,varargin{:});
-        % get setpoint (parses d and z)
-
-if ~isfield(sp,'m_max') % if m_max was not specified
-    n_B = -0.6436;
-    B_star = mp2zp(m_star,1,prop.T,prop.p); % involves invoking mass-mobility relation
-    
-    omega = sp.omega1.*...
-        ((prop.r_hat^2-prop.omega_hat)/(prop.r_hat^2-1)+...
-        prop.r1^2*(prop.omega_hat-1)/(prop.r_hat^2-1)/prop.rc^2);
-    
-    m_ratio = fzero(@(x) abs(x).^(n_B+1)-abs(x).^n_B-...
-        prop.Q/(omega.^2.*m_star*B_star*2*pi*prop.rc^2*prop.L),m_star.*1.5);
-    sp.m_max = m_star.*abs(m_ratio);
-    
-end
-
-
-m_del = sp.m_max-m_star; % FWHM of the transfer function (related to resolution)
-m_min = 2.*m_star-sp.m_max; % lower end of the transfer function
+m_del = sp.m_max-sp.m_star; % FWHM of the transfer function (related to resolution)
+m_min = 2.*sp.m_star-sp.m_max; % lower end of the transfer function
 
 Lambda = zeros(size(m))+...
-    (m<=m_star).*(m>m_min).*(m-m_min)./m_del+...
-    (m>m_star).*(m<sp.m_max).*((m_star-m)./m_del+1);
+    (m<=sp.m_star).*(m>m_min).*(m-m_min)./m_del+...
+    (m>sp.m_star).*(m<sp.m_max).*((sp.m_star-m)./m_del+1);
         % evaluate the transfer function
 
 end
