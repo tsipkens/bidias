@@ -70,13 +70,14 @@ for kk=1:n_z
 end
 
 
-%-- Evaluate PMA transfer function ---------------------------------------%
+%== Evaluate PMA transfer function =======================================%
 disp('Evaluating PMA contribution:');
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
-for kk=1:n_z
+for kk=1:n_z % loop over the charge state
     Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
-    for ii=1:n_b(1)
+    
+    for ii=1:n_b(1) % loop over m_star
         sp(ii) = tfer_pma.get_setpoint(...
             prop_pma,'m_star',grid_b.edges{1}(ii).*1e-18,varargin{:});
         Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
