@@ -440,11 +440,29 @@ classdef Grid
         %=================================================================%
         
         
+        %== PLOT2D_SWEEP =================================================%
+        %   Plot data in slices, sweeping through the provided colormap.
+        %   Author: Timothy Sipkens, 2019-11-28
+        function [h,x] = plot2d_sweep(grid,x,cmap)
+        
+        n1 = ceil(grid.ne(1)./20);
+        n2 = floor(grid.ne(1)/n1);
+        n3 = floor(length(cmap)/n2);
+        cmap2 = cmap(1:n3:end,:);
+        
+        set(gca,'ColorOrder',cmap2,'NextPlot','replacechildren');
+        x = reshape(x,grid.ne);
+        h = semilogx(grid.edges{2},x(1:n1:end,:));
+        
+        if nargout==0; clear h; end
+        
+        end
+        
+        
         %== PLOT_MARGINAL ================================================%
         %   Plot marginal distributions
         %   Author:	Timothy Sipkens, 2019-07-17
         %   Note: 'x' can be a cell array containing multiple x vectors
-        %-----------------------------------------------------------------%
         function [] = plot_marginal(obj,x,dim,x0)
             
             %-- Parse inputs ---------------------------------------------% 

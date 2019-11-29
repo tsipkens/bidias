@@ -138,7 +138,7 @@ figure(10);
 
 
 %%
-%== Bar plot of Euclidean error ==========================================%
+%-- Bar plot of Euclidean error ------------------------------------------%
 figure(30);
 chi_names = fieldnames(chi);
 chi_vals = zeros(length(chi_names),1);

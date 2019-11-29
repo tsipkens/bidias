@@ -203,6 +203,12 @@ a text-based progress bar (based on code from
 and a function to convert mass-mobility distributions to effective
 density-mobility distributions.
 
+The `overlay*` functions produce overlay to be placed on top of plots in
+mass-mobility space. For example, `overlay_phantom` will plot the line
+corresponding to the least-squares line representative of the phantom (equivalent
+to the mass-mobility relation for mass-mobility phantoms) and ellipses representing
+isolines one, two, and three standard deviations from the center of the distribution.
+
 ----------------------------------------------------------------------
 
 #### License

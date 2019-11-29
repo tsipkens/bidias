@@ -50,9 +50,11 @@ f_z = sparse(kernel.tfer_charge(d.*1e-9,z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
-%== Evaluate DMA transfer function =======================================%
-%-- Note: The DMA transfer function is 1D, speeding evaluation.
-Omega_mat = cell(1,n_z); % pre-allocate for speed
+%== STEP 1: Evaluate DMA transfer function ===============================%
+%   Note: The DMA transfer function is 1D (only a function of mobility),
+%   which is exploited to speed evaluation. The results is 1 by 3 cell, 
+%   with one entry per charge state.
+Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 for kk=1:n_z
     Omega_mat{kk} = sparse(n_b(2),n_i(2));% pre-allocate for speed
     for ii=1:n_b(2)
@@ -66,14 +68,16 @@ for kk=1:n_z
         % remove numerical noise in kernel
         
 	[~,jj] = max(d==grid_i.edges{2},[],2);
-    Omega_mat{kk} = Omega_mat{kk}(:,jj); % extend for 2D evaluation
+    Omega_mat{kk} = Omega_mat{kk}(:,jj);
+        % repeat transfer function for repeated mass setpoint
 end
 
 
-%== Evaluate PMA transfer function =======================================%
+%== STEP 2: Evaluate PMA transfer function ===============================%
 disp('Evaluating PMA contribution:');
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
+    % one cell entry per charge state
 for kk=1:n_z % loop over the charge state
     Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
     
@@ -85,16 +89,12 @@ for kk=1:n_z % loop over the charge state
             d.*1e-9,z_vec(kk),prop_pma)';
                 % PMA transfer function
         
-        if or(max(Lambda_mat{kk}(ii,:))>(1+1e-9),any(sum(Lambda_mat{kk}(ii,:))<0))
-            disp(' ');
-        end
-        
         tools.textbar((n_b(1)*(kk-1)+ii)/(n_z*n_b(1)));
     end
 end
 
 
-%-- Combine to calculate kernel ------------------------------------------%
+%== SETP 3: Combine to compile kernel ====================================%
 disp(' ');
 disp('Compiling kernel...');
 K = sparse(N_b,N_i);

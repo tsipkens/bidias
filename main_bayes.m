@@ -17,12 +17,12 @@ load('viridis.mat');
 
 
 %%
-%-- STEP 1: Generate phantom (x_t) ---------------------------------------%
+%== STEP 1: Generate phantom (x_t) =======================================%
 %   High resolution version of the distribution to be projected to coarse 
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
 
-phantom = Phantom('4',span_t);
+phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -50,7 +50,7 @@ hold off;
 
 
 %%
-%-- STEP 2: Generate A matrix and b vector -------------------------------%
+%== STEP 2: Generate A matrix ============================================%
 n_b = [14,50]; %[12,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
@@ -76,7 +76,7 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %%
-%-- STEP 3: Generate data ------------------------------------------------%
+%== STEP 3: Generate data ================================================%
 b0 = A_t*x_t; % forward evaluate kernel
 
 
@@ -85,7 +85,7 @@ b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
 Ntot = 1e5;
 theta = 1/Ntot;
-gamma = max(sqrt(theta.*b0)).*1e-8; % underlying Gaussian noise
+gamma = max(sqrt(theta.*b0)).*1e0; % underlying Gaussian noise
 Sigma = sqrt(theta.*b0+gamma^2); % sum up Poisson and Gaussian noise
 Lb = sparse(1:grid_b.Ne,1:grid_b.Ne,1./Sigma,grid_b.Ne,grid_b.Ne);
 rng(0);
@@ -100,30 +100,26 @@ colormap(gcf,cm_b);
 grid_b.plot2d_marg(b);
 
 figure(20);
-n2 = floor(grid_b.ne(1));
-n3 = floor(length(cm_b(:,1))/n2);
-cm_b_mod = cm_b(10:n3:end,:);
-set(gca,'ColorOrder',cm_b_mod,'NextPlot','replacechildren');
-b_plot_rs = reshape(b,grid_b.ne);
-semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
+grid_b.plot2d_sweep(b,cm_b);
 
 
 
 %% 
-%-- STEP 4: Perform inversions -------------------------------------------%
+%== STEP 4: Perform inversions ===========================================%
 run_inversions_g;
 run_inversions_i;
 
 
 
 %%
-%-- STEP 5: Plot solution ------------------------------------------------%
-x_plot = x_exp_rot;
+%== STEP 5: Plot solution ================================================%
+x_plot = out_tk1(1).x; % out_tk1(36).x;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d_marg(x_plot,grid_t,x_t);
+grid_x.plot2d(x_plot); % ,grid_t,x_t);
 caxis([0,cmax*(1+1/256)]);
+colorbar;
 
 figure(11);
 ind = 20;
@@ -134,17 +130,32 @@ caxis([-scl,scl]);
 
 %{
 figure(13);
-n1 = ceil(grid_x.ne(1)./20);
-n2 = floor(grid_x.ne(1)/n1);
-n3 = floor(240/n2);
-cm_x = cm(10:n3:250,:);
-set(gca,'ColorOrder',cm_x,'NextPlot','replacechildren');
-x_plot_rs = reshape(x_plot,grid_x.ne);
-semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
+grid_x.plot2d_sweep(x_plot,cm);
 %}
 
 figure(10);
 
+
+%%
+ind = 36;
+x_plot = out_tk1(ind).x; % out_tk1(36).x;
+
+figure(10);
+colormap(gcf,[cm;1,1,1]);
+grid_x.plot2d(x_plot); % ,grid_t,x_t);
+caxis([0,cmax*(1+1/256)]);
+colorbar;
+
+Gpo_inv = (Lb_alt*A)'*(Lb_alt*A)+...
+    out_tk1(ind).lambda^2.*(out_tk1(1).Lpr'*out_tk1(1).Lpr);
+spo = sqrt(1./diag(Gpo_inv));
+% Gpo = inv(Gpo_inv);
+% spo = sqrt(max(diag(Gpo),1e-19));
+
+figure(12);
+colormap(gcf,cm_alt);
+grid_x.plot2d(spo);
+colorbar;
 
 
 %%

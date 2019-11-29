@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2018-11-21
 %=========================================================================%
 
-function [x,D,Lpr,Gpo_inv] = tikhonov(A,b,n,lambda,order,x0,solver)
+function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n,lambda,order,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A        Model matrix
@@ -17,7 +17,7 @@ function [x,D,Lpr,Gpo_inv] = tikhonov(A,b,n,lambda,order,x0,solver)
 % Outputs:
 %   x        Regularized estimate
 %   D        Inverse operator (x = D*[b;0])
-%   Lpr      Tikhonov matrix
+%   Lpr0     Tikhonov matrix
 %   Gpo_inv  Inverse of posterior covariance
 %-------------------------------------------------------------------------%
 
@@ -36,16 +36,17 @@ if ~exist('solver','var'); solver = []; end
 %-- Generate Tikhonov smoothing matrix -----------------------------------%
 switch order
     case 0 % 0th order Tikhonov
-        Lpr = -lambda.*speye(x_length);
+        Lpr0 = -speye(x_length);
     case 1 % 1st order Tikhonov
-        Lpr = lambda.*genL1(n,x_length);
+        Lpr0 = genL1(n,x_length);
     case 2 % 2nd order Tikhonov
-        Lpr = lambda.*genL2(n,x_length);
+        Lpr0 = genL2(n,x_length);
     otherwise
         disp('The specified order of Tikhonov is not available.');
         disp(' ');
         return
 end
+Lpr = lambda.*Lpr0;
 
 
 %-- Choose and execute solver --------------------------------------------%
