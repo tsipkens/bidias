@@ -53,7 +53,7 @@ end
 lambda = out(ind_min).lambda;
 x = out(ind_min).x;
 
-out(1).Lpr = Lpr./lambda(end); % store Lpr structure
+out(1).Lpr = Lpr; % store Lpr structure
     % to save memory, only output Lpr structure
     % Lpr for any lambda can be found using scalar multiplication
     % Gpo_inv = A'*A+Lpr'*Lpr; <- can be done is post-process

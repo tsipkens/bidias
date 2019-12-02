@@ -6,13 +6,13 @@
 %-- Tikhonov (1st order) -----%
 disp('Performing Tikhonov (1st) regularization...');
 tic;
-[x_tk1_nn,lambda_tk1_nn,out_tk1_nn] = optimize.tikhonov_op(...
-    Lb*A,Lb*b,n_x(1),[1e-2,1e1],x0,1,[],'non-neg');
+[x_tk1,lambda_tk1,out_tk1] = optimize.tikhonov_op(...
+    Lb*A,Lb*b,n_x(1),[1e-2,1e1],x0,1);
 t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk1_nn = norm(x0-x_tk1_nn);
+chi.tk1_nn = norm(x0-x_tk1);
 
 
 %-- Exponential, normal ------%

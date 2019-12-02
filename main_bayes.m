@@ -20,9 +20,9 @@ load('viridis.mat');
 %== STEP 1: Generate phantom (x_t) =======================================%
 %   High resolution version of the distribution to be projected to coarse 
 %   grid to generate x.
-span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
+span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('1',span_t);
+phantom = Phantom('3',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -85,7 +85,7 @@ b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
 Ntot = 1e5;
 theta = 1/Ntot;
-gamma = max(sqrt(theta.*b0)).*1e0; % underlying Gaussian noise
+gamma = max(sqrt(theta.*b0)).*1e-4; % underlying Gaussian noise
 Sigma = sqrt(theta.*b0+gamma^2); % sum up Poisson and Gaussian noise
 Lb = sparse(1:grid_b.Ne,1:grid_b.Ne,1./Sigma,grid_b.Ne,grid_b.Ne);
 rng(0);
@@ -157,6 +157,32 @@ colormap(gcf,cm_alt);
 grid_x.plot2d(spo);
 colorbar;
 
+%%
+ind = 35;
+Lpr = out_tk1(1).Lpr;
+Gpo_inv = (Lb*A)'*(Lb*A)+out_tk1(ind).lambda^2*(Lpr')*Lpr;
+Gpo = inv(Gpo_inv);
+spo = sqrt(diag(Gpo));
+figure(35);
+grid_x.plot2d(spo);
+colormap(cm);
+colorbar;
+
+%%
+det_po = [];
+det_pr = [];
+out = out_tk1;
+for kk=1:length(out)
+    kk
+    Gpo_inv = (Lb*A)'*(Lb*A)+out(kk).lambda^2*(Lpr')*Lpr;
+    Gpo = inv(Gpo_inv);
+    det_po(kk) = tools.logdet(Gpo);
+    Gpr = inv(out(kk).lambda^2*(Lpr')*Lpr);
+    det_pr(kk) = tools.logdet(Gpr);
+    fit_b(kk) = norm(Lb*(A*out(kk).x-b));
+    fit_pr(kk) = norm(Lpr*out(kk).x);
+end
+B = 1/2.*(-(fit_pr+fit_b) -det_pr+det_po);
 
 %%
 %-- Bar plot of results --------------------------------------------------%
