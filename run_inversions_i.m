@@ -5,7 +5,7 @@
 
 
 %-- Exponential, normal -------%
-guess = [0.4,1.2,0.4]; % [lambda, sm, sd]
+guess = [0.4,1.2,0.8]; % [lambda, sm, sd]
 disp('Performing exponential distance regularization...');
 [x_exp_opt,lambda_exp_opt,out_exp_opt] = optimize.exp_dist_opbf(...
     Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...

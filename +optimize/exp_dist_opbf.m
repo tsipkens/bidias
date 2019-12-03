@@ -28,14 +28,12 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 % x_ex is required
 %--------------------------------------------------------------%
 
-min_fun = @(x) norm(x-x_ex)^2;
-
 Gd_fun = @(y) [y(2)^2,0;0,y(3)^2]; % version for no correlation
 % y(2) = sm, y(3) = sd
 
-lambda_vec = logspace(log10(0.1*guess(1)),log10(10*guess(1)),8);
-sm_vec = logspace(log10(0.1*guess(2)),log10(10*guess(2)),10);
-sd_vec = logspace(log10(0.1*guess(3)),log10(10*guess(3)),10);
+lambda_vec = logspace(log10(0.5*guess(1)),log10(2*guess(1)),15);
+sm_vec = logspace(log10(0.1*guess(2)),log10(10*guess(2)),7);
+sd_vec = logspace(log10(0.1*guess(3)),log10(10*guess(3)),7);
 
 [vec_l,vec_m,vec_d] = ndgrid(lambda_vec,sm_vec,sd_vec);
 vec_l = vec_l(:);
@@ -50,16 +48,16 @@ chi = zeros(length(vec_l),1);
 out(length(vec_l)).chi = [];
 for ii=1:length(vec_l)
     y = [vec_l(ii),vec_m(ii),vec_d(ii)];
-    x(ii,:) = invert.exp_dist(...
-        A,b,d_vec,m_vec,y(1),Gd_fun(y),x0,solver);
-    chi(ii) = min_fun(squeeze(x(ii,:))');
-    tools.textbar(ii/length(vec_l));
     
-    out.x(ii) = x(ii);
-    out.chi(ii) = chi(ii);
+    out(ii).x = invert.exp_dist(...
+        A,b,d_vec,m_vec,y(1),Gd_fun(y),x0,solver);
+    out(ii).chi = norm(out(ii).x-x_ex);
+    
     out(ii).lambda = vec_l(ii);
     out(ii).sm = vec_m(ii);
     out(ii).sd = vec_d(ii);
+    
+    tools.textbar(ii/length(vec_l));
 end
 
 [~,ind_min] = min(chi);
