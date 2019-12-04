@@ -10,7 +10,6 @@
 %   for creation.
 %=========================================================================%
 
-%-- Class definition -----------------------------------------------------%
 classdef Grid
     
     %-- Grid properties --------------------------------------------------%
@@ -18,16 +17,16 @@ classdef Grid
         discrete = 'logarithmic'; % discretization to be applied to the edges
         dim = 2; % number of dimensions for mesh
         span = []; % span of values in each dimension
+                   % span applies to the center of the elements, i.e.
+                   % span(1,1) is the center of the first element for the
+                   % first dimension
         
         elements = []; % contains position element centers
         nodes = []; % contains position of nodes surrounding elements
         edges = []; % vector containing edge points of element centers
         
-        ne = []; % number of elements in each dimenion
-        Ne = []; % total number of elements, i.e. prod(ne)
-        
-        nn = []; % number of nodes in each dimension
-        Nn = []; % total number of nodes, i.e. prod(nn)
+        ne = []; % number of pixels/elements in each dimenion
+        Ne = []; % total number of pixels/elements, i.e. prod(ne)
     end
     
     
@@ -39,8 +38,8 @@ classdef Grid
         % Inputs: 
         %   span_edges  Either (i) a span over which discretization occurs 
         %               or (ii) a cell of edge vectors
-        %   nn          If a span is specified, this is the number of nodes
-        %               in each dimension
+        %   ne          If a span is specified, this is the number of
+        %               elements/pixels in each dimension
         %   discrete    Specifies type of discretization, used for
         %               marginalization and/or discretization
         %               Possible values: 'linear' or 'logarithmic' (default)
@@ -173,7 +172,7 @@ classdef Grid
             
             [~,dr1,dr2] = obj.dr;
             
-            [grad2,grad1] = gradient(reshape(x,obj.nn));
+            [grad2,grad1] = gradient(reshape(x,obj.ne));
             grad1 = grad1.*dr1;
             grad2 = grad2.*dr2;
             
