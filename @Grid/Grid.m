@@ -14,19 +14,23 @@ classdef Grid
     
     %-- Grid properties --------------------------------------------------%
     properties
-        discrete = 'logarithmic'; % discretization to be applied to the edges
-        dim = 2; % number of dimensions for mesh
-        span = []; % span of values in each dimension
-                   % span applies to the center of the elements, i.e.
+        discrete = 'logarithmic';
+            % type discretization to be applied to the edges
+            % ('logarithmic' or 'linear')
+        
+        dim = 2; % number of dimensions of mesh
+        span = []; % span covered by the grid in each dimension
+                   % Span applies to the center of the elements, i.e.
                    % span(1,1) is the center of the first element for the
-                   % first dimension
-        
-        elements = []; % contains position element centers
-        nodes = []; % contains position of nodes surrounding elements
-        edges = []; % vector containing edge points of element centers
-        
+                   % first dimension. 
+                   
         ne = []; % number of pixels/elements in each dimenion
         Ne = []; % total number of pixels/elements, i.e. prod(ne)
+        
+        edges = []; % vector containing edge points of element centers
+        elements = []; % contains position of pixel/element centers as a (ne x 2) vector
+        nodes = []; % contains position of nodes surrounding elements for each dimension
+                    % Each cell has a vecotr of size (ne + 1).
     end
     
     
@@ -36,8 +40,9 @@ classdef Grid
         %   Class constructor.
         %-----------------------------------------------------------------%
         % Inputs: 
-        %   span_edges  Either (i) a span over which discretization occurs 
-        %               or (ii) a cell of edge vectors
+        %   span_edges  Either:
+        %                (i) a span over which discretization occurs or
+        %                (ii) a cell of edge vectors
         %   ne          If a span is specified, this is the number of
         %               elements/pixels in each dimension
         %   discrete    Specifies type of discretization, used for
