@@ -30,9 +30,8 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 
 min_fun = @(x) norm(x-x_ex)^2;
 
-Gd_fun = @(y) [y(2)^2,0;...
-    0,y(3)^2]; % version for no correlation
-% y(2) = sm, y(3) = sd
+Gd_fun = @(y) [(y(3)/y(2))^2,y(4)*y(3)^2;y(4)*y(3)^2,y(3)^2]; % version for no correlation
+    % y(2) = ratio, y(3) = ld, y(4) = Dm
 
 tic;
 disp('Optimizing exponential distance regularization (using least-squares)...');

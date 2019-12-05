@@ -28,36 +28,39 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 % x_ex is required
 %--------------------------------------------------------------%
 
-Gd_fun = @(y) [y(2)^2,0;0,y(3)^2]; % version for no correlation
-% y(2) = sm, y(3) = sd
+Gd_fun = @(y) [(y(3)/y(2))^2,y(4)*y(3)^2;y(4)*y(3)^2,y(3)^2]; % version for no correlation
+    % y(2) = ratio, y(3) = ld, y(4) = Dm
 
-lambda_vec = logspace(log10(0.5*guess(1)),log10(2*guess(1)),15);
-sm_vec = logspace(log10(0.1*guess(2)),log10(10*guess(2)),7);
-sd_vec = logspace(log10(0.1*guess(3)),log10(10*guess(3)),7);
+lambda_vec = logspace(log10(0.7),log10(1.3),5);
+ratio_vec = logspace(log10(1/5),log10(1/2),5); % ratio = ld/lm
+ld_vec = logspace(log10(log10(1.5)),log10(log10(2)),5);
+Dm_vec = linspace(2,3,4);
 
-[vec_l,vec_m,vec_d] = ndgrid(lambda_vec,sm_vec,sd_vec);
-vec_l = vec_l(:);
-vec_m = vec_m(:);
-vec_d = vec_d(:);
+[vec_lambda,vec_ratio,vec_ld,vec_Dm] = ndgrid(lambda_vec,ratio_vec,ld_vec,Dm_vec);
+vec_lambda = vec_lambda(:);
+vec_ratio = vec_ratio(:);
+vec_ld = vec_ld(:);
+vec_Dm = vec_Dm(:);
 
 disp('Optimizing exponential distance regularization (using least-squares)...');
 
 tools.textbar(0);
-x = zeros(length(vec_l),length(x_ex));
-chi = zeros(length(vec_l),1);
-out(length(vec_l)).chi = [];
-for ii=1:length(vec_l)
-    y = [vec_l(ii),vec_m(ii),vec_d(ii)];
+out(length(vec_lambda)).chi = [];
+for ii=1:length(vec_lambda)
+    y = [vec_lambda(ii),vec_ratio(ii),vec_ld(ii),vec_Dm(ii)];
+    
+    out(ii).rho = y(4)*y(2);
+    if out(ii).rho>1; continue; end % non-physical case
     
     out(ii).x = invert.exp_dist(...
         A,b,d_vec,m_vec,y(1),Gd_fun(y),x0,solver);
     out(ii).chi = norm(out(ii).x-x_ex);
     
-    out(ii).lambda = vec_l(ii);
-    out(ii).sm = vec_m(ii);
-    out(ii).sd = vec_d(ii);
+    out(ii).lambda = vec_lambda(ii);
+    out(ii).sm = vec_ratio(ii);
+    out(ii).sd = vec_ld(ii);
     
-    tools.textbar(ii/length(vec_l));
+    tools.textbar(ii/length(vec_lambda));
 end
 
 [~,ind_min] = min(chi);

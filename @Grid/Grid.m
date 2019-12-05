@@ -27,10 +27,12 @@ classdef Grid
         ne = []; % number of pixels/elements in each dimenion
         Ne = []; % total number of pixels/elements, i.e. prod(ne)
         
-        edges = []; % vector containing edge points of element centers
+        edges = []; % vector containing edge points of pixel/element centers
+                    % one cell per dimension
+                    
         elements = []; % contains position of pixel/element centers as a (ne x 2) vector
         nodes = []; % contains position of nodes surrounding elements for each dimension
-                    % Each cell has a vecotr of size (ne + 1).
+                    % each cell has a vector of size (ne + 1).
     end
     
     
@@ -94,6 +96,7 @@ classdef Grid
                 for ii=1:obj.dim % loop through both dimensions
                     if strcmp('linear',obj.discrete)
                         obj.edges{ii} = linspace(obj.span(ii,1),obj.span(ii,2),obj.ne(ii));
+                        
                     elseif strcmp('logarithmic',obj.discrete)
                         obj.edges{ii} = logspace(...
                             log10(obj.span(ii,1)),log10(obj.span(ii,2)),obj.ne(ii));
@@ -102,23 +105,29 @@ classdef Grid
                 obj.Ne = prod(obj.ne);
             end
             
-            %-- Generate elements ----------------------------------------%
-            [grid{1},grid{2}] = ndgrid(obj.edges{1},obj.edges{2});
-            obj.elements(:,1) = grid{1}(:); % vectorize output
-            obj.elements(:,2) = grid{2}(:);
-            
             %-- Generate nodes -------------------------------------------%
             for ii=1:obj.dim
                 if strcmp(obj.discrete,'logarithmic')
-                    r_m = exp((log(obj.edges{ii}(2:end))+log(obj.edges{ii}(1:(end-1))))./2); % mean of edges
+                    r_m = exp((log(obj.edges{ii}(2:end))+...
+                        log(obj.edges{ii}(1:(end-1))))./2); % mean of edges
+                    
                     obj.nodes{ii} = [exp(2*log(obj.edges{ii}(1))-log(r_m(1))),...
                         r_m, exp(2*log(obj.edges{ii}(end))-log(r_m(end)))];
+                
                 elseif strcmp(obj.discrete,'linear')
-                    r_m = (obj.edges{ii}(2:end)+obj.edges{ii}(1:(end-1)))./2; % mean of edges
+                    r_m = (obj.edges{ii}(2:end)+...
+                        obj.edges{ii}(1:(end-1)))./2; % mean of edges
+                    
                     obj.nodes{ii} = [2*obj.edges{ii}(1)-r_m(1),...
                         r_m, 2*obj.edges{ii}(end)-r_m(end)];
                 end
             end
+            
+            %-- Generate vectorized list of elements ---------------------%
+            %   One column per dimension
+            [grid{1},grid{2}] = ndgrid(obj.edges{1},obj.edges{2});
+            obj.elements(:,1) = grid{1}(:); % vectorize output
+            obj.elements(:,2) = grid{2}(:);
 
         end
         %=================================================================%
