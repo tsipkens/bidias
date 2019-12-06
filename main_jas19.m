@@ -54,7 +54,7 @@ span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % should be uniform basis
 
-A_t = kernel.gen_A(grid_b,grid_t,[],'Rm',3);
+A_t = kernel.gen_A_grid(grid_b,grid_t,[],'Rm',3);
     % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in x...');

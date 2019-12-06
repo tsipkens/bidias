@@ -1,6 +1,6 @@
 
-% GEN_A2   Generate A matrix describing kernel/transfer functions for DMA-PMA
-% Author:  Timothy Sipkens, 2018-11-27
+% GEN_A_grid  Generate A matrix describing kernel/transfer functions for DMA-PMA
+% Author: Timothy Sipkens, 2018-11-27
 %-------------------------------------------------------------------------%
 % Notes:
 %   Cell arrays are used for Omega_mat and Lambda_mat in order to 
@@ -9,7 +9,7 @@
 %   (such as those used for phantoms).
 %=========================================================================%
 
-function [A,sp] = gen_A2(sp,grid_i,prop_pma,varargin)
+function [A,sp] = gen_A_grid(grid_b,grid_i,prop_pma,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
