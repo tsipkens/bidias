@@ -6,12 +6,16 @@
 [![Version](https://img.shields.io/badge/Version-1.1+-blue.svg)]()
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1],
-is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
+is designed to invert tandem particle mass analyzer-differential mobility analyzer
+(PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
-The results of the aforementioned paper can be produced by running `main_jas19` in [v1.1][code_v11] of this code. See Section [1.1.2](#1.1.2-script-associated-with-j.-aerosol-sci.-paper) of this README for more details.
+The results of the aforementioned paper can be produced by running `main_jas19`
+in [v1.1][code_v11] of this code. See Section [1.1.2](#1.1.2-script-associated-with-j.-aerosol-sci.-paper)
+of this README for more details.
 
-This program is organzed into several: classes (folders starting with the `@` symbol),
-packages (folders starting with the `+` symbol), and scripts that form the base of the program.
+This program is organized into several: classes (folders starting with the `@` symbol),
+packages (folders starting with the `+` symbol), and scripts that form the
+base of the program.
 
 
 ## 1. Scripts in upper directory
@@ -62,7 +66,12 @@ the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
 ##### 1.1.2 Script associated with J. Aerosol Sci. paper
 
-Of particular note, the `main_jas19.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in the updated code provides a better optimized regularization parameter and thus a slightly smaller Euclidean error.
+Of particular note, the `main_jas19.m` script is designed to replicate the results
+in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor
+differences in the Euclidean error stem from using a smaller search space when 
+optimizing the regularization parameter for Tikhonov regularization. The narrower
+range in the updated code provides a better optimized regularization parameter
+and thus a slightly smaller Euclidean error.
 
 ### 1.2 Scripts to run a series of inversion methods (run_inversions*.m)
 
@@ -77,7 +86,8 @@ The lettered scripts roughly perform as follows:
 the Tikhonov, MART, Twomey, and Twomey-Markowski approaches.
 
 `run_inversions_b` - Re-runs inversion at the set of optimal parameters
-produced by *run_inversions_a.m*. Can be modified to adjust the optimization approach used in the Tikhonov solvers (e.g. specifying the `'non-neg'` option).
+produced by *run_inversions_a.m*. Can be modified to adjust the optimization
+approach used in the Tikhonov solvers (e.g. specifying the `'non-neg'` option).
 
 `run_inversions_c` - A simple set of the Tikhonov and Twomey approaches where
 the user must explicitly set the regularization parameter of the Tikhonov
@@ -177,8 +187,8 @@ parameter for the Twomey-Markowski and Tikhonov methods.
 ### 3.3 +tfer_PMA
 
 This is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is
-available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) with the associated archive
-[Sipkens et al.][5_code].
+available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma)
+with the associated archive [Sipkens et al.][5_code].
 
 This package is used in evaluating the transfer function of the particle mass
 analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
@@ -223,10 +233,13 @@ This work can be cited in two ways.
 1. If the methods are used, but the code is not,
 please cite [Sipkens et al. (2020a)][1_JAS1].
 Note that if the Twomey-Markowski approach is used
-one should also cite [Buckley et al. (2017)][3_Buck], and if particle mass analyzer transfer function evaluation is discussed, one should cite [Sipkens et al. (2020b)][2_AST].
+one should also cite [Buckley et al. (2017)][3_Buck], and if particle mass analyzer
+transfer function evaluation is discussed, one should cite [Sipkens et al. (2020b)][2_AST].
 
 2. If this code is used directly, cite: (*i*) this [code][5_code]
-(including the DOI, included at the top) and (*ii*) the associated paper describing the methods, [Sipkens et al. (2020a)][1_JAS1]. Also note that additional references to [Buckley et al. (2017)][3_Buck] and [Sipkens et al. (2020b)][2_AST]
+(including the DOI, included at the top) and (*ii*) the associated paper describing
+the methods, [Sipkens et al. (2020a)][1_JAS1]. Also note that additional references
+to [Buckley et al. (2017)][3_Buck] and [Sipkens et al. (2020b)][2_AST]
 should also be considered as per above.
 
 #### Contact information and acknowledgements
@@ -244,7 +257,8 @@ modified in this distribution.
 Also included is a reference to code designed to quickly evaluate
 the transfer function of particle mass analyzers (e.g. APM, CPMA) by
 [Sipkens et al. (2020b)][2_AST]. See the parallel repository
-parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) for more details.  
+parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma)
+for more details.  
 
 The authors would also like to thank
 [Samuel Grauer](https://www.researchgate.net/profile/Samuel_Grauer)
