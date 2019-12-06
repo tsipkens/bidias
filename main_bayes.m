@@ -138,7 +138,7 @@ figure(10);
 
 %%
 ind = 36;
-x_plot = out_tk1(ind).x; % out_tk1(36).x;
+x_plot = x_em; % out_tk1(ind).x;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
@@ -169,20 +169,29 @@ colormap(cm);
 colorbar;
 
 %%
-det_po = [];
-det_pr = [];
-out = out_tk1;
+% det_po = [];
+% det_pr = [];
+out = out_exp_par;
+% Lpr = out(1).Lpr;
+% Lpr = Lpr./Lpr(1,1);
+
 for kk=1:length(out)
-    kk
-    Gpo_inv = (Lb*A)'*(Lb*A)+out(kk).lambda^2*(Lpr')*Lpr;
-    Gpo = inv(Gpo_inv);
-    det_po(kk) = tools.logdet(Gpo);
-    Gpr = inv(out(kk).lambda^2*(Lpr')*Lpr);
-    det_pr(kk) = tools.logdet(Gpr);
+%     kk
+%     Gpo_inv = (Lb*A)'*(Lb*A)+out(kk).lambda^2*(Lpr')*Lpr;
+%     Gpo = inv(Gpo_inv);
+%     det_po(kk) = tools.logdet(Gpo);
+%     Gpr = inv(out(kk).lambda^2*(Lpr')*Lpr);
+%     det_pr(kk) = tools.logdet(Gpr);
     fit_b(kk) = norm(Lb*(A*out(kk).x-b));
     fit_pr(kk) = norm(Lpr*out(kk).x);
 end
-B = 1/2.*(-(fit_pr+fit_b) -det_pr+det_po);
+% B = 1/2.*(-(fit_pr+fit_b) -det_pr+det_po);
+F = -1/2.*(fit_pr+fit_b);
+
+loglog([out_tk1.lambda],[out_tk1.chi]);
+hold on;
+loglog([out_tk1.lambda],-F);
+hold off;
 
 %%
 %-- Bar plot of results --------------------------------------------------%
