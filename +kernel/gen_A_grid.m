@@ -3,7 +3,9 @@
 % Author: Timothy Sipkens, 2018-11-27
 %-------------------------------------------------------------------------%
 % Notes:
-%   Cell arrays are used for Omega_mat and Lambda_mat in order to 
+% 	1. This function exploits the grid structure to minimize the number of
+%	transfer function evaluations. 
+%   2. Cell arrays are used for Omega_mat and Lambda_mat in order to 
 %   allow for the use of sparse matrices, which is necessary to 
 %   store information on higher resolutions grids
 %   (such as those used for phantoms).

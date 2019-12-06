@@ -1,5 +1,5 @@
 
-% GEN_A2   Generate A matrix describing kernel/transfer functions for DMA-PMA
+% GEN_A   Generate A matrix describing kernel/transfer functions for DMA-PMA
 % Author:  Timothy Sipkens, 2018-11-27
 %-------------------------------------------------------------------------%
 % Notes:
@@ -9,7 +9,7 @@
 %   (such as those used for phantoms).
 %=========================================================================%
 
-function [A,sp] = gen_A2(sp,grid_i,prop_pma,varargin)
+function [A,sp] = gen_A(m_sp,d,grid_i,prop_pma)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
@@ -57,7 +57,8 @@ n_z = length(z_vec);
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 for kk=1:n_z
     Omega_mat{kk} = sparse(n_b(2),n_i(2));% pre-allocate for speed
-    for ii=1:n_b(2)
+    
+    for ii=1:n_b(2) % loop over d_star
         Omega_mat{kk}(ii,:) = kernel.tfer_dma(...
             grid_b.edges{2}(ii).*1e-9,...
             grid_i.edges{2}.*1e-9,...
