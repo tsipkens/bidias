@@ -28,44 +28,43 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 % x_ex is required
 %--------------------------------------------------------------%
 
-Gd_fun = @(y) [(y(3)/y(2))^2,y(4)*y(3)^2;y(4)*y(3)^2,y(3)^2]; % version for no correlation
-    % y(2) = ratio, y(3) = ld, y(4) = Dm
+Gd_fun = @(y) [(y(3)/y(2))^2,y(4)*y(3)^2/y(2);y(4)*y(3)^2/y(2),y(3)^2]; % version for no correlation
+    % y(2) = ratio, y(3) = ld, y(4) = corr
 
-lambda_vec = logspace(log10(0.7),log10(1.3),5);
-ratio_vec = logspace(log10(1/5),log10(1/2),5); % ratio = ld/lm
-ld_vec = logspace(log10(log10(1.5)),log10(log10(2)),5);
-Dm_vec = linspace(2,3,4);
+lambda = logspace(log10(1),log10(1.7),5);
+ratio = logspace(log10(1/4),log10(1/2),5); % ratio = ld/lm
+ld = logspace(log10(log10(1.5)),log10(log10(2.2)),4);
+corr = linspace(0.7,0.98,6);
 
-[vec_lambda,vec_ratio,vec_ld,vec_Dm] = ndgrid(lambda_vec,ratio_vec,ld_vec,Dm_vec);
+[vec_lambda,vec_ratio,vec_ld,vec_corr] = ...
+    ndgrid(lambda,ratio,ld,corr);
 vec_lambda = vec_lambda(:);
 vec_ratio = vec_ratio(:);
 vec_ld = vec_ld(:);
-vec_Dm = vec_Dm(:);
-
-disp('Optimizing exponential distance regularization (using least-squares)...');
+vec_corr = vec_corr(:);
 
 tools.textbar(0);
 out(length(vec_lambda)).chi = [];
 for ii=1:length(vec_lambda)
-    y = [vec_lambda(ii),vec_ratio(ii),vec_ld(ii),vec_Dm(ii)];
-    
-    out(ii).rho = y(4)*y(2);
-    if out(ii).rho>1; continue; end % non-physical case
+    y = [vec_lambda(ii),vec_ratio(ii),vec_ld(ii),vec_corr(ii)];
     
     out(ii).x = invert.exp_dist(...
         A,b,d_vec,m_vec,y(1),Gd_fun(y),x0,solver);
     out(ii).chi = norm(out(ii).x-x_ex);
     
     out(ii).lambda = vec_lambda(ii);
-    out(ii).sm = vec_ratio(ii);
-    out(ii).sd = vec_ld(ii);
+    out(ii).ratio = vec_ratio(ii);
+    out(ii).ld = vec_ld(ii);
+    out(ii).corr_vec = vec_corr(ii);
     
     tools.textbar(ii/length(vec_lambda));
 end
 
-[~,ind_min] = min(chi);
-x = out(ind_min).x;
-lambda = out(ind_min).lambda;
+tools.textbar(1);
+
+[~,ind_min] = min([out(ii).chi]);
+x = [];%out(ind_min).x;
+lambda = [];%out(ind_min).lambda;
 
 end
 

@@ -45,7 +45,7 @@ d = sqrt(drm.^2.*Gd_inv(1,1)+2.*drd.*drm.*Gd_inv(1,2)+drd.^2.*Gd_inv(2,2)); % di
 %-- Generate prior covariance matrix --------------------------------------
 Gpr = exp(-d);
 
-Gpr_inv = inv(Gpr);
+Gpr_inv = pinv(Gpr);
 [Lpr,~] = chol(Gpr_inv);
 clear Gpr_inv; % to save memory
 Lpr = lambda.*Lpr./max(max(Lpr));
