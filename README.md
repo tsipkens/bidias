@@ -5,7 +5,7 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Version](https://img.shields.io/badge/Version-1.1+-blue.svg)]()
 
-This program, originally released with [Sipkens et al. (2019)][1_JAS1],
+This program, originally released with [Sipkens et al. (2020a)][1_JAS1],
 is designed to invert tandem particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
 The results of the aforementioned paper can be produced by running `main_jas19` in [v1.1][code_v11] of this code. See Section [1.1.2](#1.1.2-script-associated-with-j.-aerosol-sci.-paper) of this README for more details.
@@ -47,7 +47,7 @@ should include some definition of the expected uncertainties in each point
 in `b`, encoded in the matrix `Lb`. For those cases involving counting noise,
 this can be approximated as `Lb = theta*diag(sqrt(b));`, where `theta` is
 related to the total number of particle counts as described in
-[Sipkens et al. (2019)][1_JAS1].
+[Sipkens et al. (2020a)][1_JAS1].
 
 4. With this information, one can proceed to implement various inversion
 approaches, such as those available in the `+invert` package described below.
@@ -62,7 +62,7 @@ the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
 ##### 1.1.2 Script associated with J. Aerosol Sci. paper
 
-Of particular note, the `main_jas19.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2019)][1_JAS1], as noted above. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in the updated code provides a better optimized regularization parameter and thus a slightly smaller Euclidean error.
+Of particular note, the `main_jas19.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in the updated code provides a better optimized regularization parameter and thus a slightly smaller Euclidean error.
 
 ### 1.2 Scripts to run a series of inversion methods (run_inversions*.m)
 
@@ -116,7 +116,7 @@ methods. Currently, the phantom class is programmed to primarily produce
 bivariate lognormal distributions and secondarily distributions
 that are lognormal with mobility and conditional normal for mass
 following [Buckley et al. (2017)][3_Buck]. The four sample phantoms from
-[Sipkens et al. (2019)][1_JAS1] can be called using strings encompassing
+[Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing
 the distribution numbers or names from that work (e.g. the demonstration phantom
 can be generated using `'1'`).
 
@@ -160,7 +160,7 @@ the method of [Buckley et al. (2017)][3_Buck]), and the multiplicative algebraic
 reconstruction technique (MART).
 
 Details on these approaches to inversion are provided in the
-associated paper, [Sipkens et al. (2019)][1_JAS1].
+associated paper, [Sipkens et al. (2020a)][1_JAS1].
 
 Development is underway on the use of an exponential
 distance covariance function to correlate pixel values and reduce
@@ -176,7 +176,7 @@ parameter for the Twomey-Markowski and Tikhonov methods.
 
 ### 3.3 +tfer_PMA
 
-This is imported from a package distributed with [Sipkens et al. (2019)][2_AST] and is
+This is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is
 available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) with the associated archive
 [Sipkens et al.][5_code].
 
@@ -221,12 +221,12 @@ for details).
 This work can be cited in two ways.
 
 1. If the methods are used, but the code is not,
-please cite [Sipkens et al. (2019)][1_JAS1].
+please cite [Sipkens et al. (2020a)][1_JAS1].
 Note that if the Twomey-Markowski approach is used
-one should also cite [Buckley et al. (2017)][3_Buck], and if particle mass analyzer transfer function evaluation is discussed, one should cite [Sipkens et al. (2019)][2_AST].
+one should also cite [Buckley et al. (2017)][3_Buck], and if particle mass analyzer transfer function evaluation is discussed, one should cite [Sipkens et al. (2020b)][2_AST].
 
 2. If this code is used directly, cite: (*i*) this [code][5_code]
-(including the DOI, included at the top) and (*ii*) the associated paper describing the methods, [Sipkens et al. (2019)][1_JAS1]. Also note that additional references to [Buckley et al. (2017)][3_Buck] and [Sipkens et al. (2019)][2_AST]
+(including the DOI, included at the top) and (*ii*) the associated paper describing the methods, [Sipkens et al. (2020a)][1_JAS1]. Also note that additional references to [Buckley et al. (2017)][3_Buck] and [Sipkens et al. (2020b)][2_AST]
 should also be considered as per above.
 
 #### Contact information and acknowledgements
@@ -243,7 +243,7 @@ modified in this distribution.
 
 Also included is a reference to code designed to quickly evaluate
 the transfer function of particle mass analyzers (e.g. APM, CPMA) by
-[Sipkens et al. (2019)][2_AST]. See the parallel repository
+[Sipkens et al. (2020b)][2_AST]. See the parallel repository
 parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) for more details.  
 
 The authors would also like to thank
@@ -257,11 +257,11 @@ README in the `cmap` folder.
 
 [Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., Hogan Jr, C. J. (2017). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. *J. Aerosol Sci.* 114, 157-168.][3_Buck]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). MATLAB tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. doi: 10.5281/zenodo.3513259][5_code]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). MATLAB tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. DOI: 10.5281/zenodo.3513259][5_code]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: A critical comparison of established methods. *J. Aerosol Sci.*  doi: 10.1016/j.jaerosci.2019.105484][1_JAS1]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020a). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: A critical comparison of established methods. *J. Aerosol Sci.* 140, 105484. DOI: 10.1016/j.jaerosci.2019.105484][1_JAS1]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). New approaches to calculate the transfer function of particle mass analyzers. *Aerosol Sci. Technol.* doi: 10.1080/02786826.2019.1680794][2_AST]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020b). New approaches to calculate the transfer function of particle mass analyzers. *Aerosol Sci. Technol.* 54, 111-127. DOI: 10.1080/02786826.2019.1680794][2_AST]
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (Under preparation). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: Existing and novel Bayesian methods.][4]
 
