@@ -22,7 +22,7 @@ m_star = grid_b.elements(:,1);
 
 for ii=length(m_star):-1:1
     sp(ii) = tfer_pma.get_setpoint(prop,...
-        'm_star',m_star(ii),varargin{:});
+        'm_star',m_star(ii).*1e-18,varargin{:});
 end
 
 end
