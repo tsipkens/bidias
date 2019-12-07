@@ -54,13 +54,16 @@ hold off;
 n_b = [14,50]; %[12,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
-    n_b,'logarithmic'); % should be uniform basis
+    n_b,'logarithmic'); % grid for data
 
-sp_pma = kernel.grid2sp(...
-    kernel.prop_pma,grid_b,'Rm',3);
-A_t = kernel.gen_A_grid(grid_b,grid_t,[],'Rm',3);
+prop_pma = kernel.prop_pma;
+A_t = kernel.gen_A_grid(grid_b,grid_t,prop_pma,'Rm',3);
     % generate A matrix based on grid for x_t and b
 
+sp_pma = kernel.grid2sp(...
+    prop_pma,grid_b,'Rm',3);
+A_alt = kernel.gen_A(sp_pma,grid_b.elements(:,2),...
+    grid_t,prop_pma);
 
 %%
 disp('Transform to discretization in x...');
@@ -173,9 +176,9 @@ colorbar;
 %%
 % det_po = [];
 % det_pr = [];
-out = out_exp_par;
-% Lpr = out(1).Lpr;
-% Lpr = Lpr./Lpr(1,1);
+out = out_tk1;
+Lpr = out(1).Lpr;
+Lpr = Lpr./Lpr(1,1);
 
 for kk=1:length(out)
 %     kk

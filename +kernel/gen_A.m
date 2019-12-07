@@ -9,7 +9,7 @@
 %   (such as those used for phantoms).
 %=========================================================================%
 
-function [A,sp] = gen_A(m_sp,d,grid_i,prop_pma)
+function [A,sp] = gen_A(sp,d_star,grid_i,prop_pma)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
@@ -22,14 +22,11 @@ if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
     % import properties of PMA
     % use default properties selected by prop_pma function
+if length(sp)~=length(d_star); error('Setpoint / d_star mismatch.'); end
 
     
 %-- Parse measurement set points (b) -------------------------------------%
-r_star = grid_b.elements;
-m_star = r_star(:,1);
-d_star = r_star(:,2);
-n_b = grid_b.ne;
-N_b = prod(n_b); % length of data vector
+N_b = length(sp); % length of data vector
 
 
 %-- Generate grid for intergration ---------------------------------------%
@@ -56,19 +53,19 @@ n_z = length(z_vec);
 %   with one entry per charge state.
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 for kk=1:n_z
-    Omega_mat{kk} = sparse(n_b(2),n_i(2));% pre-allocate for speed
+    Omega_mat{kk} = sparse(N_b,n_i(2)); % pre-allocate for speed
     
-    for ii=1:n_b(2) % loop over d_star
+    for ii=1:N_b % loop over d_star
         Omega_mat{kk}(ii,:) = kernel.tfer_dma(...
-            grid_b.edges{2}(ii).*1e-9,...
+            d_star(ii).*1e-9,...
             grid_i.edges{2}.*1e-9,...
             z_vec(kk));
     end
     
     Omega_mat{kk}(Omega_mat{kk}<(1e-7.*max(max(Omega_mat{kk})))) = 0;
         % remove numerical noise in kernel
-        
-	[~,jj] = max(d==grid_i.edges{2},[],2);
+    
+    [~,jj] = max(d==grid_i.edges{2},[],2);
     Omega_mat{kk} = Omega_mat{kk}(:,jj);
         % repeat transfer function for repeated mass setpoint
 end
@@ -80,35 +77,26 @@ tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
     % one cell entry per charge state
 for kk=1:n_z % loop over the charge state
-    Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
+    Lambda_mat{kk} = sparse(N_b,N_i);% pre-allocate for speed
     
-    for ii=1:n_b(1) % loop over m_star
-        sp(ii) = tfer_pma.get_setpoint(...
-            prop_pma,'m_star',grid_b.edges{1}(ii).*1e-18,varargin{:});
+    for ii=1:N_b % loop over m_star
         Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
             sp(ii),m.*1e-18,...
             d.*1e-9,z_vec(kk),prop_pma)';
                 % PMA transfer function
         
-        tools.textbar((n_b(1)*(kk-1)+ii)/(n_z*n_b(1)));
+        tools.textbar((N_b*(kk-1)+ii)/(n_z*N_b));
     end
 end
 
 
 %== SETP 3: Combine to compile kernel ====================================%
-disp(' ');
-disp('Compiling kernel...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
-    [~,i1] = max(m_star==grid_b.edges{1},[],2); % index corresponding to PMA setpoint
-    [~,i2] = max(d_star==grid_b.edges{2},[],2); % index correspondng to DMA setpoint
-    
     K = K+f_z(z_vec(kk),:).*... % charging contribution
-        Lambda_mat{kk}(i1,:).*... % PMA contribution
-        Omega_mat{kk}(i2,:); % DMA contribution
+        Lambda_mat{kk}(:,:).*... % PMA contribution
+        Omega_mat{kk}(:,:); % DMA contribution
 end
-disp('Completed kernel evaluation.');   
-disp(' ');
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
@@ -116,7 +104,6 @@ A = sparse(A); % exploit sparse structure
 
 disp('Completed A matrix calculation.');
 disp(' ');
-
 
 end
 
