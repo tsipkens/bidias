@@ -37,9 +37,9 @@ s1 = 0.8;
 s2 = 0.3;
 Dm = 1.92; % used to specify correlation
 R12 = Dm*s2/s1; % correlation
-Gd = [s1^2,R12*(s1*s2);R12*(s1*s2),s2^2];
+Gd2 = [s1^2,R12*(s1*s2);R12*(s1*s2),s2^2];
 
-[V,~] = eig(Gd);
+[V,~] = eig(Gd2);
 the = atan(V(1,2)/V(2,2))/pi*180;
 
 disp('Performing rotated exponential distance regularization...');

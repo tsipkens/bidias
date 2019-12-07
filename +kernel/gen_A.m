@@ -75,7 +75,7 @@ disp(' ');
 
 
 %== STEP 2: Evaluate PMA transfer function ===============================%
-fprintf('Computing PMA contribution:');
+disp('Computing PMA contribution:');
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
     % one cell entry per charge state
