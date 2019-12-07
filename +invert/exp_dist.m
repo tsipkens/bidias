@@ -25,8 +25,10 @@ if ~exist('solver','var'); solver = []; end
     % if computation method not specified
 
 if ~exist('Gd','var'); Gd = []; end
-if isempty(Gd); Gd = speye(2); end
-     % if coordinate transform is not specified
+if isempty(Gd); Gd = speye(2); end % if not specified, use an identity matrix
+if Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2))>=1
+    error('Correlation greater than 1.');
+end
 
 if ~exist('x0','var'); x0 = []; end % if no initial x is given
 %--------------------------------------------------------------%
