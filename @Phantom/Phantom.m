@@ -29,7 +29,13 @@ classdef Phantom
         %   Intialize phantom object.
         function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
             
+            %-- Parse inputs ---------------------------------------------%
             if nargin==0; return; end % return empty phantom
+            
+            if ~exist('span_grid','var'); span_grid = []; end
+            if isempty(span_grid); span_grid = [10^-1.5,10^1.5;20,10^3]; end
+            %-------------------------------------------------------------%
+            
             
             %-- Assign parameter values ----------------------------------%
             switch type
