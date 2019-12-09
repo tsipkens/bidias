@@ -23,10 +23,22 @@ classdef Phantom
     end
     
     
-    %-- Phantom methods --------------------------------------------------%
+    
     methods
         %== PHANTOM ======================================================%
         %   Intialize phantom object.
+        %-----------------------------------------------------------------%
+        % Inputs:
+        %   type        The type of phantom specified as a string
+        %               (e.g. 'standard', 'mass-mobility', '1')
+        %   span_grid   Either (i) the span over which the phantom is to be
+        %               evaluated or (ii) a grid on which the phantom is to
+        %               be evaluated
+        %   mu_p        Either a vector of distribution means or a vector p
+        %               specifying the mass-mobility parameters
+        %   Sigma_modes Either the covariance matrix for the distribution
+        %               or the number of modes in the distribution
+        %-----------------------------------------------------------------%
         function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
             
             %-- Parse inputs ---------------------------------------------%
@@ -37,7 +49,7 @@ classdef Phantom
             %-------------------------------------------------------------%
             
             
-            %-- Assign parameter values ----------------------------------%
+            %== Assign parameter values - 3 options ======================%
             switch type
                 
                 %-- OPTION 1: Standard bivariate lognormal distribution --%
@@ -103,6 +115,7 @@ classdef Phantom
         %=================================================================%
         
         
+        
         %== MG_FUN =======================================================%
         %   Function to evaluate mg as a function of mobility diameter.
         %   Calculation is based on the empirical mass-mobility relation.
@@ -124,6 +137,7 @@ classdef Phantom
         %=================================================================%
         
         
+        
         %== RHO_FUN ======================================================%
         %   Function to evaluate the effective density as a function of
         %   mobility diameter.
@@ -140,6 +154,7 @@ classdef Phantom
         %=================================================================%
         
         
+        
         %== PLOT =========================================================%
         %   Plots the phantom mass-mobiltiy distribution phantom.
         %   Author:     Timothy Sipkens, 2019-07-08
@@ -147,6 +162,7 @@ classdef Phantom
             h = obj.grid.plot2d_marg(obj.x);
         end
         %=================================================================%
+        
         
         
         %== EVAL =========================================================%
@@ -171,6 +187,7 @@ classdef Phantom
             x = x./obj.n_modes;
         end
         %=================================================================%
+        
         
         
         %== EVAL_P =======================================================%
@@ -206,6 +223,7 @@ classdef Phantom
         %=================================================================%
         
         
+        
         %== MASS2RHO =====================================================%
         %   Convert a mass-mobility phantom to an effective-density mobility phanatom. 
         %   Author:  Timothy Sipkens, 2019-10-31
@@ -221,6 +239,8 @@ classdef Phantom
         end
         %=================================================================%
     end
+    
+    
     
     methods (Static)
         [p,modes,type] = preset_phantoms(obj,type);
@@ -254,6 +274,7 @@ classdef Phantom
         %=================================================================%
         
         
+        
         %== VEC2P ========================================================%
         %   Function to format phantom parameters from a vector, t.
         %   Author:  Timothy Sipkens, 2019-07-18
@@ -268,6 +289,7 @@ classdef Phantom
             p.Dm = vec(5:t_length:n);
         end
         %=================================================================%
+        
         
         
         %== COV2P ========================================================%
@@ -310,6 +332,7 @@ classdef Phantom
         %=================================================================%
         
         
+        
         %== P2COV ========================================================%
         %   Function to convert p to a covariance matrix and mean.
         %   Author:  Timothy Sipkens, 2019-10-29
@@ -340,6 +363,7 @@ classdef Phantom
             end
         end
         %=================================================================%
+        
         
         
         %== FIT ==========================================================%
