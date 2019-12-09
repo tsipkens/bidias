@@ -30,8 +30,9 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 
 min_fun = @(x) norm(x-x_ex)^2;
 
-Gd_fun = @(y) [(y(3)/y(2))^2,min(y(4)*y(3)^2/y(2),0.98);...
-    min(y(4)*y(3)^2/y(2),0.98),y(3)^2]; % version for no correlation
+corr_fun = @(y) min(y(4)*y(3)^2/y(2),0.98).*(y(3)^2/y(2));
+Gd_fun = @(y) [(y(3)/y(2))^2,corr_fun(y);...
+    corr_fun(y),y(3)^2]; % version for no correlation
     % y(2) = ratio, y(3) = ld, y(4) = corr
 
 tic;

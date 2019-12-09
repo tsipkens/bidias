@@ -1,7 +1,15 @@
 
-% RUN_INVERSIONS_I  Multi-dimensional optimized exponential rotated and Tikhonov regularization
+% RUN_INVERSIONS_I  Multi-dimensional optimized exponential rotated and exp. dist. regularization
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
+
+guess = [1.3,1/4,log10(1.8),0.84]; % [lambda, ratio, ld, corr]
+disp('Optimizing exponential distance regularization...');
+[x_exp_opt,lambda_exp_opt,out_exp_opt] = optimize.exp_dist_opx(...
+    Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
+    guess,x0); 
+disp('Inversion complete.');
+disp(' ');
 
 
 disp('Parametric study of exponential distance regularization...');
@@ -11,17 +19,11 @@ disp('Parametric study of exponential distance regularization...');
 disp('Inversion complete.');
 disp(' ');
 
-
-guess = [1.3,1/4,log10(1.8),0.84]; % [lambda, sm, sd]
-disp('Optimizing exponential distance regularization...');
-[x_exp_opt,lambda_exp_opt,out_exp_opt] = optimize.exp_dist_opx(...
-    Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    guess,x0); 
-disp('Inversion complete.');
-disp(' ');
+chi.exp_dist = norm(x_exp_opt-x0);
 
 
 %%
+%{
 [vec_d1,vec_d2] = ndgrid(grid_x.elements(:,2),grid_x.elements(:,2));
 [vec_m1,vec_m2] = ndgrid(grid_x.elements(:,1),grid_x.elements(:,1));
 Gd_fun = @(y) [(y(3)/y(2))^2,min(y(4)*y(3)^2/y(2),0.98);...
@@ -62,4 +64,4 @@ for kk=1:length(out)
 end
 % B = 1/2.*(-(fit_pr+fit_b) -det_pr+det_po);
 F = -1/2.*(fit_pr+fit_b);
-
+%}

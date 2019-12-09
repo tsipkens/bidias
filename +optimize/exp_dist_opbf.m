@@ -31,7 +31,7 @@ if ~exist('x0','var'); x0 = []; end % if no initial x is given
 Gd_fun = @(y) [(y(3)/y(2))^2,y(4)*y(3)^2/y(2);y(4)*y(3)^2/y(2),y(3)^2]; % version for no correlation
     % y(2) = ratio, y(3) = ld, y(4) = corr
 
-lambda = logspace(log10(1),log10(1.7),5);
+lambda = logspace(log10(1),log10(2),5);
 ratio = logspace(log10(1/4),log10(1/2),5); % ratio = ld/lm
 ld = logspace(log10(log10(1.5)),log10(log10(2.2)),4);
 corr = linspace(0.7,0.98,6);
