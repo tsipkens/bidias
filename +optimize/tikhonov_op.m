@@ -52,6 +52,7 @@ else
 end
 lambda = out(ind_min).lambda;
 x = out(ind_min).x;
+out(1).ind_min = ind_min;
 
 out(1).Lpr = Lpr; % store Lpr structure
     % to save memory, only output Lpr structure

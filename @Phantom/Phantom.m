@@ -38,6 +38,7 @@ classdef Phantom
         %               specifying the mass-mobility parameters
         %   Sigma_modes Either the covariance matrix for the distribution
         %               or the number of modes in the distribution
+        %               (e.g. 'logn','cond-norm')
         %-----------------------------------------------------------------%
         function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
             

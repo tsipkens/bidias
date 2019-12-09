@@ -12,7 +12,7 @@ t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk1_nn = norm(x0-x_tk1);
+chi.tk1 = norm(x0-x_tk1);
 
 
 

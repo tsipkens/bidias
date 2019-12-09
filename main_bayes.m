@@ -22,7 +22,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('3',span_t);
+phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -103,19 +103,18 @@ grid_b.plot2d_sweep(b,cm_b);
 %% 
 %== STEP 4: Perform inversions ===========================================%
 run_inversions_g;
-run_inversions_i;
+% run_inversions_i;
 
 
 
 %%
 %== STEP 5: Visualize the results ========================================%
-x_plot = out_tk1(1).x; % out_tk1(36).x;
+x_plot = out_tk1(35).x; % out_tk1(36).x;
 
 figure(10);
 colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d(x_plot); % ,grid_t,x_t);
+grid_x.plot2d_marg(x_plot);
 caxis([0,cmax*(1+1/256)]);
-colorbar;
 
 figure(11);
 ind = 20;
@@ -131,7 +130,7 @@ grid_x.plot2d_sweep(x_plot,cm);
 
 figure(10);
 
-
+%{
 %%
 ind = 36;
 x_plot = x_em; % out_tk1(ind).x;
@@ -242,5 +241,5 @@ ind_plot = 25;
 grid_x.plot_conditional(...
     {x0,x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,ind_plot,x0);
 %}
-
+%}
 
