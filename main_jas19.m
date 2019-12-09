@@ -81,16 +81,7 @@ b0 = A_t*x_t; % forward evaluate kernel
 b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
 Ntot = 1e5;
-theta = 1/Ntot;
-gamma = max(sqrt(theta.*b0)).*1e-8; % underlying Gaussian noise
-Sigma = sqrt(theta.*b0+gamma^2); % sum up Poisson and Gaussian noise
-Lb = sparse(1:grid_b.Ne,1:grid_b.Ne,1./Sigma,grid_b.Ne,grid_b.Ne);
-rng(0);
-epsilon = Sigma.*randn(size(b0));
-b = sparse(b0+epsilon); % add noise
-% b = max(b,0); % remove negative values
-% b(b<1/Ntot) = 0; % remove negative and small values
-b = max(round(b.*Ntot),0)./Ntot;
+[b,Lb] = tools.add_noise(b0,Ntot);
 
 
 figure(5);
