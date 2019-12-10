@@ -6,11 +6,9 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath('cmap');
-cm = load_cmap('YlGnBu',255);
-cm_alt = cm;
-load('inferno.mat');
-cm = cm(40:end,:);
-cm_b = cm;
+cm_alt = load_cmap('tempo',255);
+cm_b = load_cmap('inferno',255);
+cm_b = cm_b(40:end,:);
 cm_div = load_cmap('RdBu',200);
 load('viridis.mat');
 
@@ -103,67 +101,59 @@ grid_b.plot2d_sweep(b,cm_b);
 %% 
 %== STEP 4: Perform inversions ===========================================%
 run_inversions_g;
-% run_inversions_i;
+run_inversions_i;
 
 
 
 %%
 %== STEP 5: Visualize the results ========================================%
-x_plot = out_tk1(35).x; % out_tk1(36).x;
+ind = 70;%out_tk1.ind_min;
+x_plot = out_tk1(ind).x; % out_tk1(36).x;
 
+
+%-- Plot retrieved solution --------------%
 figure(10);
 colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d_marg(x_plot);
+grid_x.plot2d(x_plot);
+% colorbar;
 caxis([0,cmax*(1+1/256)]);
 
+
+%-- Plot difference to true phantom ------%
 figure(11);
-ind = 20;
 scl = max(max(abs(x_plot-x0)));
 grid_x.plot2d(x_plot-x0);
 colormap(cm_div);
 caxis([-scl,scl]);
+
 
 %{
 figure(13);
 grid_x.plot2d_sweep(x_plot,cm);
 %}
 
-figure(10);
 
-%{
-%%
-ind = 36;
-x_plot = x_em; % out_tk1(ind).x;
-
-figure(10);
-colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d(x_plot); % ,grid_t,x_t);
-caxis([0,cmax*(1+1/256)]);
-colorbar;
-
-Gpo_inv = (Lb_alt*A)'*(Lb_alt*A)+...
-    out_tk1(ind).lambda^2.*(out_tk1(1).Lpr'*out_tk1(1).Lpr);
-spo = sqrt(1./diag(Gpo_inv));
-% Gpo = inv(Gpo_inv);
-% spo = sqrt(max(diag(Gpo),1e-19));
+%-- Plot posterior uncertainties ---------%
+[~,spo] = tools.get_posterior(...
+    A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
 
 figure(12);
 colormap(gcf,cm_alt);
 grid_x.plot2d(spo);
-colorbar;
+% hold on;
+% plot(log10(grid_b.elements(:,2)),...
+%     log10(grid_b.elements(:,1)),'.w');
+% hold off;
+% colorbar;
+caxis([0,cmax.*0.3]);
+
+
+figure(10);
+
+
 
 %%
-ind = 35;
-Lpr = out_tk1(1).Lpr;
-Gpo_inv = (Lb*A)'*(Lb*A)+out_tk1(ind).lambda^2*(Lpr')*Lpr;
-Gpo = inv(Gpo_inv);
-spo = sqrt(diag(Gpo));
-figure(35);
-grid_x.plot2d(spo);
-colormap(cm);
-colorbar;
-
-%%
+%{
 % det_po = [];
 % det_pr = [];
 out = out_tk1;
