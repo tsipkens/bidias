@@ -3,19 +3,18 @@
 % Citation:     Gordon et al, J. Theor. Biol. 29(3), 471-481 (1970)
 % Author:       Timothy Sipkens, 2018-20-12
 % Adapted from: Samuel Grauer
-%=========================================================================%
-
-function [x] = mart(A,b,x0,iter)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
 %   b       Data
 %   iter    MART iterations     (Optional, default 10)
-%   x0      Initial guess       (Optional, default ones vector)
+%   xi      Initial guess       (Optional, default ones vector)
 %
 % Output:
 %   x       MART estimate
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x] = mart(A,b,xi,iter)
 
 
 %-- Parse inputs -------------%
@@ -23,10 +22,10 @@ if ~exist('iter','var')
     iter = 10; % default of 10 iterations
 end
 
-if exist('x0','var')
-    x = x0;
+if exist('xi','var')
+    x = xi;
 else
-    x = ones(size(A,2),1); % intiate vector of ones if x0 is not specified
+    x = ones(size(A,2),1); % intiate vector of ones if xi is not specified
 end
 
 
@@ -62,7 +61,7 @@ for kk = 1:iter
     nz = and(y~=0,b~=0); % boolean of non-zero values
     lam = log(b(nz)./y(nz));
     x = x.*exp(w.*A(nz,:)'*lam);
-    
+
     if sum(isnan(x))~=0
         disp(' ');
     end
@@ -70,5 +69,3 @@ end
 
 
 end
-
-

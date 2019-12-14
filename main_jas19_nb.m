@@ -18,7 +18,7 @@ load('viridis.mat');
 
 %%
 %-- Generate phantom (x_t) -----------------------------------------------%
-%   High resolution version of the distribution to be projected to coarse 
+%   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
 
@@ -46,41 +46,41 @@ for ii=1:length(n_b_vec)
     span_b = grid_t.span;
     grid_b = Grid(span_b,...
         n_b,'logarithmic'); % should be uniform basis
-    
+
     A_t = kernel.gen_A_grid(grid_b,grid_t,prop_pma,'Rm',3);
         % generate A matrix based on grid for x_t and b
-    
-    
+
+
     %%
     %--  Generate x vector on coarser grid -----------------------------------%
     n_x = [50,64]; % number of elements per dimension in x
         % [20,32]; % used for plotting projections of basis functions
         % [40,64]; % used in evaluating previous versions of regularization
-    
+
     grid_x = Grid([grid_t.span],...
         n_x,'logarithmic');
-    x0 = grid_x.project(grid_t.edges,x_t); % project into basis for x
-    
+    x0 = grid_x.project(grid_t,x_t); % project into basis for x
+
     disp('Transform to discretization in x...');
     B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
     A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
     A = sparse(A);
     disp('Complete.');
     disp(' ');
-    
+
     figure(2);
     colormap(gcf,[cm;1,1,1]);
     grid_x.plot2d_marg(x0,grid_t,x_t);
     caxis([0,cmax*(1+1/256)]);
-    
-    
+
+
     %%
     %-- Generate data --------------------------------------------------------%
     b0 = A_t*x_t; % forward evaluate kernel
-    
+
     %-- Corrupt data with noise ----------------------------------------------%
     b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
-    
+
     Ntot = 1e5;
     [b,Lb] = tools.add_noise(b0,Ntot);
 
@@ -96,14 +96,14 @@ for ii=1:length(n_b_vec)
     set(gca,'ColorOrder',cm_b_mod,'NextPlot','replacechildren');
     b_plot_rs = reshape(b,grid_b.ne);
     semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
-    
+
     x_vec(ii).b = max(b);
-    
-    
+
+
     %-- Perform inversions -----------------------------------------------%
     run_inversions_a; % run regularization
-    
-    
+
+
     %-- Store values -----------------------------------------------------%
     x_vec(ii).tk0 = x_tk0;
     x_vec(ii).tk1 = x_tk1;
@@ -200,5 +200,3 @@ ind_plot = 25;
 grid_x.plot_conditional(...
     {x0,x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,ind_plot,x0);
 %}
-
-

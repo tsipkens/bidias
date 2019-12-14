@@ -1,9 +1,6 @@
 
 % TIKHONOV  Performs inversion using various order Tikhonov regularization in 2D.
 % Author:   Timothy Sipkens, 2018-11-21
-%=========================================================================%
-
-function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n,lambda,order,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A        Model matrix
@@ -11,7 +8,7 @@ function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n,lambda,order,x0,solver)
 %   n        Length of first dimension of solution
 %   lambda   Regularization parameter
 %   order    Order of regularization     (Optional, default is 1)
-%   x0       Initial guess for solver    (Optional, default is zeros)
+%   xi       Initial guess for solver    (Optional, default is zeros)
 %   solver   Solver                      (Optional, default is interior-point)
 %
 % Outputs:
@@ -19,7 +16,9 @@ function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n,lambda,order,x0,solver)
 %   D        Inverse operator (x = D*[b;0])
 %   Lpr0     Tikhonov matrix
 %   Gpo_inv  Inverse of posterior covariance
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n,lambda,order,xi,solver)
 
 x_length = length(A(1,:));
 
@@ -28,7 +27,7 @@ if ~exist('order','var'); order = []; end
 if isempty(order); order = 1; end
     % if order not specified
 
-if ~exist('x0','var'); x0 = []; end % if initial guess is not specified
+if ~exist('xi','var'); xi = []; end % if initial guess is not specified
 if ~exist('solver','var'); solver = []; end
 %-------------------------------------------------------------------------%
 
@@ -51,7 +50,7 @@ Lpr = lambda.*Lpr0;
 
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
-    [A;Lpr],[b;sparse(x_length,1)],x0,solver);
+    [A;Lpr],[b;sparse(x_length,1)],xi,solver);
 
 
 %-- Uncertainty quantification -------------------------------------------%
@@ -86,7 +85,7 @@ for jj=1:x_length
     else % if on right edge
         L(jj,jj) = L(jj,jj)+0.5;
     end
-    
+
     if jj<=(x_length-n)
         L(jj,jj+n) = 0.5;
     else % if on bottom
@@ -94,7 +93,7 @@ for jj=1:x_length
     end
 end
 L = sparse(L);
- 
+
 end
 %=========================================================================%
 
@@ -117,19 +116,19 @@ for jj=1:x_length
     else
         L(jj,jj) = L(jj,jj)+0.25;
     end
-    
+
     if ~(mod(jj-1,n)==0)
         L(jj,jj-1) = 0.25;
     else
         L(jj,jj) = L(jj,jj)+0.25;
     end
-    
+
     if jj>n
         L(jj,jj-n) = 0.25;
     else
         L(jj,jj) = L(jj,jj)+0.25;
     end
-    
+
     if jj<=(x_length-n)
         L(jj,jj+n) = 0.25;
     else
@@ -140,4 +139,3 @@ L = sparse(L);
 
 end
 %=========================================================================%
-

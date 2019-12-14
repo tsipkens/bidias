@@ -16,23 +16,23 @@ chi.tk1_nn = norm(x0-x_tk1_nn);
 
 
 %-- Exponential, uncorrelated ------%
-lambda_exp = 1.1;
+lambda_ed = 1.1;
 s1 = 0.4;
 s2 = 0.2;
 Gd = diag([s1^2,s2^2]);
 
 disp('Performing exponential distance regularization...');
-x_exp_a = invert.exp_dist(...
+x_ed_a = invert.exp_dist(...
     Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    lambda_exp,Gd);
+    lambda_ed,Gd);
 disp('Inversion complete.');
 disp(' ');
 
-chi.exp_a = norm(x0-x_exp_a);
+chi.exp_a = norm(x0-x_ed_a);
 
 
 %-- Exponential rotated ------%
-lambda_exp_rot = 1.4;
+lambda_ed_rot = 1.4;
 s1 = 0.8;
 s2 = 0.3;
 Dm = 1.92; % used to specify correlation
@@ -43,13 +43,13 @@ Gd2 = [s1^2,R12*(s1*s2);R12*(s1*s2),s2^2];
 the = atan(V(1,2)/V(2,2))/pi*180;
 
 disp('Performing rotated exponential distance regularization...');
-x_exp_rot_a = invert.exp_dist(...
+x_ed_rot_a = invert.exp_dist(...
     Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    lambda_exp_rot,Gd2);
+    lambda_ed_rot,Gd2);
 disp('Inversion complete.');
 disp(' ');
 
-chi.exp_rot_a = norm(x0-x_exp_rot_a);
+chi.exp_rot_a = norm(x0-x_ed_rot_a);
 
 
 

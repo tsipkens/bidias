@@ -2,16 +2,13 @@
 % TWOMARK  Performs inversion using the iterative Twomey approach with intermediate smoothing.
 % Author:  Timothy Sipkens, 2018-12-20
 % Note:    Includes sub-functions responsible for smoothing.
-%=========================================================================%
-
-function x = twomark(A,b,Lb,n,x0,iter,opt_smooth,Sf)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
 %   b           Data
 %   Lb          Cholesky factorization of inverse covariance matrix
 %   n           Length of first dimension of solution, used in smoothing
-%   x0          Initial guess
+%   xi          Initial guess
 %   iter        Max. number of iterations of Twomey_Markowski algorithm
 %   opt_smooth  Type of smoothing to apply      (Optional, default is 'Buckley')
 %   Sf          Smoothing parameter             (Optional, default is 1/300)
@@ -19,7 +16,9 @@ function x = twomark(A,b,Lb,n,x0,iter,opt_smooth,Sf)
 %
 % Outputs:
 %   x           Estimate
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function x = twomark(A,b,Lb,n,xi,iter,opt_smooth,Sf)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -40,7 +39,7 @@ end
 iter_two = 150; % max number of iterations in Twomey pass
 iter_2m = iter; % max number of iterations of Twomey_Markowski algorithm
 
-x = x0;
+x = xi;
 x = invert.twomey(A,b,x,iter_two); % initial Towmey procedure
 SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % average square error for cases where b~= 0
 R = roughness(x,n); % roughness vector
@@ -49,10 +48,10 @@ iter_two = 150; % max number of iterations in Twomey pass
 for kk=1:iter_2m % iterate Twomey and smoothing procedure
     x_temp = x; % store temporarily for the case that roughness increases
     x = smooth_markowski(A,b,Lb,x,n,10,opt_smooth,Sf,SIGMA); % perform smoothing
-    
+
     SIGMA_fun = @(x) calc_mean_sq_error(Lb*A,x,Lb*b);
     x = invert.twomey(A,b,x,iter_two,SIGMA_fun,SIGMA); % perform Twomey
-    
+
     %-- Check roughness of solution ------------------%
     R(kk+1) = roughness(x,n);
     if R(kk+1)>1.03*R(kk) % exit if roughness has stopped decreasing
@@ -61,7 +60,7 @@ for kk=1:iter_2m % iterate Twomey and smoothing procedure
         x = x_temp; % restore previous iteration
         break;
     end
-    
+
     disp(['Completed iteration ',num2str(kk),' of the Twomey-Markowski loop.']);
     disp(' ');
 end
@@ -89,13 +88,13 @@ end
 jj = 1;
 while jj<=iter
     x = G_smooth*x; % apply smoothing
-    
+
     SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % calculate mean square error
     if SIGMA>SIGMA_end % exit smoothing if mean square error exceeds end position
         disp(['SMOOTHING: Completed smoothing algorithm after ',num2str(jj),' iteration(s).']);
         return
     end
-    
+
     jj = jj+1;
 end
 
@@ -116,19 +115,19 @@ for jj=1:x_length
     else
         G_smooth(jj,jj) = G_smooth(jj,jj)+0.125;
     end
-    
+
     if ~(mod(jj-1,n)==0)
         G_smooth(jj,jj-1) = 0.125;
     else
         G_smooth(jj,jj) = G_smooth(jj,jj)+0.125;
     end
-    
+
     if jj<=(x_length-n)
         G_smooth(jj,jj+n) = 0.125;
     else
         G_smooth(jj,jj) = G_smooth(jj,jj)+0.125;
     end
-    
+
     if jj>n
         G_smooth(jj,jj-n) = 0.125;
     else
@@ -199,9 +198,9 @@ end
 
 
 %== ROUGHNESS ============================================================%
-%   Computes an estimate of the roughness of the solution. 
+%   Computes an estimate of the roughness of the solution.
 %   This function is used for convergence in the Twomey-Markowski loop and
-%   is based on the average, absolute value of the second derivative. 
+%   is based on the average, absolute value of the second derivative.
 function R = roughness(x,n)
 
 x = reshape(x,[n,length(x)/n]);
@@ -220,4 +219,3 @@ SIGMA = mean(sqErr(b~=0)); % average square error for cases where b~= 0
 
 end
 %=========================================================================%
-

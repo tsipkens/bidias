@@ -1,20 +1,26 @@
 
-% EXP_DIST  Regularization based on the exponential of the inverse distance. 
+% EXP_DIST  Regularization based on the exponential of the distance between elements.
 % Author:   Timothy Sipkens, 2018-10-22
-%=========================================================================%
-
-function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Gd,x0,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A        Model matrix
 %   b        Data
+%   d_vec    Position of elements in mobility space
+%   m_vec    Position of elements in mass space
+%   lambda   Regularization parameter
+%   Gd       Mass-mobility covariance matrix, used to calculate
+%            Mahalanobis distance (Optional, default: identity matrix)
+%   xi       Initial guess for solver (Optional, default: empty)
+%   solver   Least-squares solver to use (e.g. 'interior-point', see 'lsq' function)
 %
 % Outputs:
 %   x        Regularized estimate
 %   D        Inverse operator (x = D*[b;0])
 %   Lpr      Cholesky factorization of prior covariance
-%   Gpo_inv  Inverse of posterior covariance
-%-------------------------------------------------------------------------%
+%   Gpo_inv  Inverse of the posterior covariance
+%=========================================================================%
+
+function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Gd,xi,solver)
 
 
 x_length = length(A(1,:));
@@ -26,39 +32,21 @@ if ~exist('solver','var'); solver = []; end
 
 if ~exist('Gd','var'); Gd = []; end
 if isempty(Gd); Gd = speye(2); end % if not specified, use an identity matrix
-if Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2))>=1
+if Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2))>=1 % check if correlation is unphysical
     error('Correlation greater than 1.');
 end
 
-if ~exist('x0','var'); x0 = []; end % if no initial x is given
+if ~exist('xi','var'); xi = []; end % if no initial x is given
 %--------------------------------------------------------------%
 
 
-%-- Generate prior covariance matrix -----------------%
-[vec_d1,vec_d2] = ndgrid(d_vec,d_vec);
-[vec_m1,vec_m2] = ndgrid(m_vec,m_vec);
-
-Gd_inv = inv(Gd);
-drm = log10(vec_m1)-log10(vec_m2);
-drd = log10(vec_d1)-log10(vec_d2);
-d = sqrt(drm.^2.*Gd_inv(1,1)+2.*drd.*drm.*Gd_inv(1,2)+drd.^2.*Gd_inv(2,2)); % distance
-
-
-%-- Generate prior covariance matrix --------------------------------------
-Gpr = exp(-d);
-
-Gpr_inv = pinv(Gpr);
-[Lpr,~] = chol(Gpr_inv);
-clear Gpr_inv; % to save memory
-Lpr = lambda.*Lpr./max(max(Lpr));
-% Lpr(abs(Lpr)<(0.01.*mean(mean(abs(Lpr))))) = 0;
-Lpr(d>1.5) = 0;
-Lpr = sparse(Lpr);
+Lpr = invert.exp_dist_lpr(d_vec,m_vec,lambda,Gd);
+    % use external function to evaluate prior covariance
 
 
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...
-    [A;Lpr],[b;sparse(x_length,1)],x0,solver);
+    [A;Lpr],[b;sparse(x_length,1)],xi,solver);
 
 
 %-- Uncertainty quantification -------------------------------------------%
@@ -67,4 +55,3 @@ if nargout>=4
 end
 
 end
-

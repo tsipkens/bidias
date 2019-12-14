@@ -2,7 +2,7 @@
 % EXP_DIST_OPX  Finds optimal lambda for exponential distance solver.
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,x0,solver)
+function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -12,7 +12,7 @@ function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,x0,solver)
 %   span    Range for 1/Sf, two entry vector
 %   x_ex    Exact distribution project to current basis
 %   Lex     Transformation to rotate space (Optional, default is indentity matrix)
-%   x0      Initial guess for solver    (Optional, default is zeros)
+%   xi      Initial guess for solver    (Optional, default is zeros)
 %   solver  Solver                      (Optional, default is interior-point)
 %
 % Outputs:
@@ -24,7 +24,7 @@ function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,x0,solver)
 if ~exist('solver','var'); solver = []; end
     % if computation method not specified
 
-if ~exist('x0','var'); x0 = []; end % if no initial x is given
+if ~exist('xi','var'); xi = []; end % if no initial x is given
 % x_ex is required
 %--------------------------------------------------------------%
 
@@ -38,13 +38,13 @@ Gd_fun = @(y) [(y(3)/y(2))^2,corr_fun(y);...
 tic;
 y0 = guess;
 y1 = fminsearch(@(y) min_fun(invert.exp_dist(...
-    A,b,d_vec,m_vec,y(1),Gd_fun(y),x0,solver)),...
+    A,b,d_vec,m_vec,y(1),Gd_fun(y),xi,solver)),...
     y0);
 toc;
 
 lambda = y1(1);
 x = invert.exp_dist(...
-    A,b,d_vec,m_vec,y1(1),Gd_fun(y1),x0,solver);
+    A,b,d_vec,m_vec,y1(1),Gd_fun(y1),xi,solver);
 
 out.lambda = y1(1);
 out.ratio = y1(2);

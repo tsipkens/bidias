@@ -15,7 +15,7 @@ load('viridis.mat');
 
 %%
 %== STEP 1: Generate phantom (x_t) =======================================%
-%   High resolution version of the distribution to be projected to coarse 
+%   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
 
@@ -33,7 +33,7 @@ n_x = [50,64]; % number of elements per dimension in x
 
 grid_x = Grid([grid_t.span],...
     n_x,'logarithmic');
-x0 = grid_x.project(grid_t.edges,x_t); % project into basis for x
+x0 = grid_x.project(grid_t,x_t); % project into basis for x
 
 figure(1);
 phantom.plot;
@@ -98,7 +98,7 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 
 
 
-%% 
+%%
 %== STEP 4: Perform inversions ============================================%
 run_inversions_a; % optimize regularization parameter
 run_inversions_b;
@@ -142,7 +142,3 @@ bar(chi_vals);
 % ylim([0,20]);
 % ylim([0,100]);
 set(gca,'xticklabel',chi_names);
-
-
-
-

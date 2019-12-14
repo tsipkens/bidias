@@ -3,7 +3,7 @@
 % Author: Timothy Sipkens, 2019-07-17
 %=========================================================================%
 
-function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,x0,solver)
+function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,xi,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -13,7 +13,7 @@ function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,x0,solver)
 %   span    Range for 1/Sf, two entry vector
 %   x_ex    Exact distribution project to current basis
 %   order   Order of regularization     (Optional, default is 1)
-%   x0      Initial guess for solver    (Optional, default is zeros)
+%   xi      Initial guess for solver    (Optional, default is zeros)
 %   solver  Solver                      (Optional, default is interior-point)
 %
 % Outputs:
@@ -24,7 +24,7 @@ function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,x0,solver)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
-if ~exist('x0','var'); x0 = []; end
+if ~exist('xi','var'); xi = []; end
 if ~exist('x_ex','var'); x_ex = []; end
 if ~exist('solver','var'); solver = []; end
 %-------------------------------------------------------------------------%
@@ -37,7 +37,7 @@ for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii);
     
     [out(ii).x,~,Lpr] = invert.tikhonov(...
-        A,b,n,lambda(ii),order,x0,solver);
+        A,b,n,lambda(ii),order,xi,solver);
     
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);

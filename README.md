@@ -68,7 +68,7 @@ the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
 Of particular note, the `main_jas19.m` script is designed to replicate the results
 in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor
-differences in the Euclidean error stem from using a smaller search space when 
+differences in the Euclidean error stem from using a smaller search space when
 optimizing the regularization parameter for Tikhonov regularization. The narrower
 range in the updated code provides a better optimized regularization parameter
 and thus a slightly smaller Euclidean error.
@@ -161,7 +161,50 @@ mass-mobility distributions.
 
 ## 3. Packages
 
-### 3.1 +invert
+### 3.1 +kernel
+
+This package is used to evaluate the transfer function of the DMA and
+particle mass analyzer (such as the CPMA or APM). The primary function
+within the larger program is to generate a matrix `A` that acts as the
+forward model. This package references the `tfer_pma` package, noted
+above.
+
+Transfer function evaluation can proceed using two inputs: a `sp` structure
+or a instance of the `Grid` class defined for the data.
+
+##### sp
+
+The `sp` or setpoint structure is a structured array containing the information
+necessary to define the device setpoints. For a DMA, the setpoint mobility diameter,
+`d_star`, is sufficient to accomplish this task. For a PMA, a pair of parameters
+is required to establish the setpoint. Pairings can be converted into a `sp` structured
+array using the `get_setpoint` function included with the `tfer_pma` package described
+below. Generally, this function can be placed inside a loop that generates an entry
+in `sp` for each available setpoint. The output structure will contain all of the
+relevant parameters that could be used to specify that setpoint, including
+mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
+the voltage, `V`; and the electrode speeds, `omega*`.
+
+##### grid_b
+
+Alternatively, one can generate a grid corresponding to the data points. This can
+speed transfer function evaluation be exploiting the structure of the setpoints
+to minimize the number of function evaluations (using the `gen_A_grid` function).
+
+### 3.2 +tfer_PMA
+
+This is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is
+available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma)
+with the associated archive [Sipkens et al.][5_code].
+
+This package is used in evaluating the transfer function of the particle mass
+analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
+particle mass analyzer (CPMA). The package also contains some standard reference
+functions used in `tfer_dma.m`.
+
+The current implementation corresponds to v1.3 of that code.
+
+### 3.3 +invert
 
 The invert package contains various functions used to invert the measured data
 for the desired two-dimensional distribution. This includes implementations of
@@ -176,34 +219,12 @@ Development is underway on the use of an exponential
 distance covariance function to correlate pixel values and reduce
 reconstruction errors [Sipkens et al. (Under preparation)][4].
 
-### 3.2 +optimize
+### 3.4 +optimize
 
 This package mirrors the content of the +inver package but,
 given the true distribution, aims to determine the optimal number of
 iterations for the Twomey and MART schemes or the optimal regularization
 parameter for the Twomey-Markowski and Tikhonov methods.
-
-
-### 3.3 +tfer_PMA
-
-This is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is
-available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma)
-with the associated archive [Sipkens et al.][5_code].
-
-This package is used in evaluating the transfer function of the particle mass
-analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
-particle mass analyzer (CPMA). The package also contains some standard reference
-functions used in `tfer_dma.m`.
-
-The current implementation corresponds to v1.3 of that code.
-
-### 3.4 +kernel
-
-This package is used to evaluate the transfer function of the DMA and
-particle mass analyzer (such as the CPMA or APM). The primary function
-within the larger program is to generate a matrix `A` that acts as the
-forward model. This package references the `tfer_pma` package, noted
-above.
 
 ### 3.5 +tools
 

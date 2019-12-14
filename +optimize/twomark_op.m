@@ -3,14 +3,14 @@
 % Author:	  Timothy Sipkens, 2018-12-20
 %=========================================================================%
 
-function [x,Sf,out] = twomark_op(A,b,Lb,n,x0,iter,span,x_ex,opt_smooth)
+function [x,Sf,out] = twomark_op(A,b,Lb,n,xi,iter,span,x_ex,opt_smooth)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
 %   b           Data
 %   Lb          Cholesky factorization of inverse covariance matrix
 %   n           Length of first dimension of solution, used in smoothing
-%   x0          Initial guess
+%   xi          Initial guess
 %   iter        Max. number of iterations of Twomey_Markowski algorithm
 %   span        Range for 1/Sf, two entry vector
 %   x_ex        Exact distribution project to current basis
@@ -31,7 +31,7 @@ if ~exist('x_ex','var'); x_ex = []; end
 %-------------------------------------------------------------------------%
 
 
-x_fun = @(Sf) invert.twomark(A,b,Lb,n,x0,iter,opt_smooth,Sf);
+x_fun = @(Sf) invert.twomark(A,b,Lb,n,xi,iter,opt_smooth,Sf);
 
 Sf = logspace(log10(span(1)),log10(span(2)),35);
 

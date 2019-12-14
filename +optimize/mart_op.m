@@ -3,12 +3,12 @@
 % Author:  Timothy Sipkens, 2019-02-13
 %=========================================================================%
 
-function [x,iter,out] = mart_op(A,b,x0,iter_vec,x_ex)
+function [x,iter,out] = mart_op(A,b,xi,iter_vec,x_ex)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
 %   b           Data
-%   x0          Initial guess
+%   xi          Initial guess
 %   iter_vec    Vector fo iteration counts
 %   x_ex        Exact solution
 %
@@ -27,7 +27,7 @@ out(length(iter_vec)).iter_vec = [];
     % initialize size of output structure
 
 out(1).iter_vec = iter_vec(1);
-out(1).x = invert.mart(A,b,x0,iter_vec(1));
+out(1).x = invert.mart(A,b,xi,iter_vec(1));
 out(1).chi = norm(out(1).x-x_ex);
 tools.textbar(1/length(iter_vec));
 

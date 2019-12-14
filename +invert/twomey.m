@@ -1,15 +1,12 @@
 
 % TWOMEY   Performs inversion using the iterative Twomey approach.
 % Author:  Timothy Sipkens, 2018-11-21
-%=========================================================================%
-
-function [x] = twomey(A,b,x0,iter,SIGMA_fun,SIGMA,bool_textbar)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A             Model matrix
 %   b             Data
-%   Lb            Cholesky factorization of inverse covariance matrix 
-%   x0            Initial guess
+%   Lb            Cholesky factorization of inverse covariance matrix
+%   xi            Initial guess
 %   iter          Max. number of iterations
 %   SIGMA_fun     Function of x to be evaluated to determine convergence
 %                 (Optional, default: ignore)
@@ -20,7 +17,9 @@ function [x] = twomey(A,b,x0,iter,SIGMA_fun,SIGMA,bool_textbar)
 %
 % Outputs:
 %   x             Twomey estimate
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x] = twomey(A,b,xi,iter,SIGMA_fun,SIGMA,bool_textbar)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -48,7 +47,7 @@ if bool_textbar
     tools.textbar(0); % outputs progresss
 end
 
-x = x0;
+x = xi;
 factor = 1; % factor, allows one to decrease step size in Twomey
 
 
@@ -64,9 +63,9 @@ for kk=1:iter % perform multiple Twomey passes
             end
         end
     end
-    
+
     if bool_textbar; tools.textbar(kk/iter); end % outputs progresss
-    
+
     %-- Exit conditions if SIGMA is specific (e.g. Twomey-Markowski) ----%
     if bool_SIGMA
         if SIGMA_fun(x)<SIGMA %calc_mean_sq_error(Lb*A0,x,Lb*b0)<SIGMA % average square error for cases where b~= 0
@@ -78,5 +77,3 @@ for kk=1:iter % perform multiple Twomey passes
 end
 
 end
-
-

@@ -2,12 +2,12 @@
 % TWOMEY_OP  Finds optimal number of iterations for MART solver.
 %=========================================================================%
 
-function [x,iter,out] = twomey_op(A,b,x0,iter_vec,x_ex)
+function [x,iter,out] = twomey_op(A,b,xi,iter_vec,x_ex)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
 %   b           Data
-%   x0          Initial guess
+%   xi          Initial guess
 %   iter_vec    Span of considered Twomey iterations, 1x2 int
 %
 % Output:
@@ -25,7 +25,7 @@ out(length(iter_vec)).iter_vec = [];
     % initialize size of output structure
 
 out(1).iter_vec = iter_vec(1);
-out(1).x = invert.twomey(A,b,x0,iter_vec(1));
+out(1).x = invert.twomey(A,b,xi,iter_vec(1));
 out(1).chi = norm(out(1).x-x_ex);
 tools.textbar(1/length(iter_vec));
 
