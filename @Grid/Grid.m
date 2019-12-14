@@ -137,7 +137,7 @@ classdef Grid
 
 
         %== PROJECT =========================================================%
-        %   Project x onto current grid. Uses simple linear
+        %   Project x onto current grid. Uses simple linear.
         %   interpolation for this purpose. The parameter 'grid_old'
         %   contains the original grid.
         function x = project(obj,grid_old,x)
