@@ -28,8 +28,8 @@ classdef Grid
         ne = [];    % number of pixels/elements in each dimenion
         Ne = [];    % total number of pixels/elements, i.e. prod(ne)
 
-        edges = []; % vector containing edge points of pixel/element centers
-                    % one cell per dimension
+        edges = []; % cell of vectors containing edge points of pixel/element
+                    % centers, with one cell entry per dimension
 
         elements = []; % contains position of pixel/element centers as a (ne x 2) vector
         nodes = []; % contains position of nodes surrounding elements for each dimension
@@ -82,7 +82,7 @@ classdef Grid
 
 
         %== MESH =========================================================%
-        %   Responsible for generating a mesh represented by a series of nodes.
+        %   Responsible for generating a mesh represented by a series of elements.
         %   Author:	Timothy Sipkens, 2019-02-03
         %-----------------------------------------------------------------%
         %   Currently setup to do simple linear or logarithmic spaced
@@ -128,9 +128,9 @@ classdef Grid
 
             %-- Generate vectorized list of elements ---------------------%
             %   One column per dimension
-            [grid{1},grid{2}] = ndgrid(obj.edges{1},obj.edges{2});
-            obj.elements(:,1) = grid{1}(:); % vectorize output
-            obj.elements(:,2) = grid{2}(:);
+            [vec1{1},vec1{2}] = ndgrid(obj.edges{1},obj.edges{2});
+            obj.elements(:,1) = vec1{1}(:); % vectorize output
+            obj.elements(:,2) = vec1{2}(:);
 
         end
         %=================================================================%
@@ -139,7 +139,7 @@ classdef Grid
         %== PROJECT =========================================================%
         %   Project x onto current grid. Uses simple linear.
         %   interpolation for this purpose. The parameter 'grid_old'
-        %   contains the original grid.
+        %   contains the original grid for the input data x.
         function x = project(obj,grid_old,x)
 
             n1 = length(grid_old.edges{1});
@@ -152,6 +152,39 @@ classdef Grid
 
             x = F(edges1,edges2);
             x = x(:);
+
+        end
+        %=================================================================%
+
+
+        %== REBASE =======================================================%
+        %   Function to evaluate uniform basis functions. Outputs matrix
+        %   to be multiplied by original A, that is to transform the kernel.
+        function B = rebase(obj,obj_old)
+
+            for ii=1:obj.dim
+                dr_inv = 1./(obj_old.nodes{ii}(2:end)-obj_old.nodes{ii}(1:(end-1)));
+
+                t0 = min(1,max(0,...
+                    bsxfun(@times,...
+                    obj_old.nodes{ii}(2:end)-obj.nodes{ii}(1:(end-1))',dr_inv)...
+                    ));
+                t1 = min(1,max(0,...
+                    bsxfun(@times,...
+                    obj.nodes{ii}(2:end)'-obj_old.nodes{ii}(1:(end-1)),dr_inv)...
+                    ));
+                t2{ii} = sparse(min(t0,t1));
+            end
+
+            ind_old_tot = 1:obj_old.Ne;
+            ind1_old = mod(ind_old_tot-1,obj_old.ne(1))+1;
+            ind2_old = ceil(ind_old_tot./obj_old.ne(1));
+
+            ind_tot = 1:obj.Ne;
+            ind1 = mod(ind_tot-1,obj.ne(1))+1;
+            ind2 = ceil(ind_tot./obj.ne(1));
+
+            B = (t2{1}(ind1,ind1_old).*t2{2}(ind2,ind2_old))';
 
         end
         %=================================================================%
@@ -212,39 +245,6 @@ classdef Grid
 
             marg{1} = sum(dr2.*x,2); % integrate over diameter
             marg{2} = sum(dr1.*x,1); % integrate over mass
-
-        end
-        %=================================================================%
-
-
-        %== REBASE =======================================================%
-        %   Function to evaluate uniform basis functions. Outputs matrix
-        %   to be multiplied by original A, that is to transform the kernel.
-        function B = rebase(obj,obj_old)
-
-            for ii=1:obj.dim
-                dr_inv = 1./(obj_old.nodes{ii}(2:end)-obj_old.nodes{ii}(1:(end-1)));
-
-                t0 = min(1,max(0,...
-                    bsxfun(@times,...
-                    obj_old.nodes{ii}(2:end)-obj.nodes{ii}(1:(end-1))',dr_inv)...
-                    ));
-                t1 = min(1,max(0,...
-                    bsxfun(@times,...
-                    obj.nodes{ii}(2:end)'-obj_old.nodes{ii}(1:(end-1)),dr_inv)...
-                    ));
-                t2{ii} = sparse(min(t0,t1));
-            end
-
-            ind_old_tot = 1:obj_old.Ne;
-            ind1_old = mod(ind_old_tot-1,obj_old.ne(1))+1;
-            ind2_old = ceil(ind_old_tot./obj_old.ne(1));
-
-            ind_tot = 1:obj.Ne;
-            ind1 = mod(ind_tot-1,obj.ne(1))+1;
-            ind2 = ceil(ind_tot./obj.ne(1));
-
-            B = (t2{1}(ind1,ind1_old).*t2{2}(ind2,ind2_old))';
 
         end
         %=================================================================%

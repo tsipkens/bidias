@@ -24,7 +24,7 @@ classdef Phantom
                     % parameters relevant to mass-mobility distributions
                     % fields include mg, sm, sd, rho_100, etc.
     end
-
+    
 
 
     methods
