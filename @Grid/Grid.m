@@ -469,7 +469,7 @@ classdef Grid
         set(gca,'ColorOrder',cmap2,'NextPlot','replacechildren');
         x = reshape(x,grid.ne);
         h = semilogx(grid.edges{2},x(1:n1:end,:));
-
+        
         if nargout==0; clear h; end
 
         end

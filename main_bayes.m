@@ -20,7 +20,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('4',span_t);
+phantom = Phantom('2',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -130,8 +130,13 @@ grid_x.plot2d_sweep(x_plot,cm);
 
 
 %-- Plot posterior uncertainties ---------%
-% [~,spo] = tools.get_posterior(...
-%     A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
+[~,spo] = tools.get_posterior(...
+    A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
+figure(12);
+colormap(gcf,cm_alt);
+grid_x.plot2d(spo);
+colorbar;
+
 
 % out = out_ed_par(ind);
 % y = [out.lambda,out.ratio,...
