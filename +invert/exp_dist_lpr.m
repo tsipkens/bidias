@@ -24,9 +24,9 @@ Gpr = exp(-D);
 Gpr_inv = pinv(Gpr);
 [Lpr,~] = chol(Gpr_inv);
 clear Gpr_inv; % to save memory
-Lpr = lambda.*Lpr./max(max(Lpr));
+Lpr = lambda.*Lpr; % ./max(max(Lpr));
 
-Lpr(D>1.5) = 0;
+Lpr(D>1.75) = 0;
 Lpr = sparse(Lpr);
 
 

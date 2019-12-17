@@ -14,8 +14,10 @@ end
 disp('Process complete.');
 disp(' ');
 
+chi.ed = norm(x_ed_lam-x0);
 
 
+%{
 guess = [1.3,1/4,log10(1.8),0.84]; % [lambda, ratio, ld, corr]
 disp('Optimizing exponential distance regularization (least-sqaures)...');
 [x_ed_opt,lambda_ed_opt,out_ed_opt] = optimize.exp_dist_opx(...
@@ -23,6 +25,7 @@ disp('Optimizing exponential distance regularization (least-sqaures)...');
     guess,x0); 
 disp('Inversion complete.');
 disp(' ');
+%}
 
 %{
 disp('Parametric study of exponential distance regularization (brute force)...');
@@ -32,16 +35,16 @@ disp('Parametric study of exponential distance regularization (brute force)...')
 disp('Inversion complete.');
 disp(' ');
 %}
-chi.ed = norm(x_ed_lam-x0);
 
 
 %%
+
 if iscell(phantom.Sigma)
     Gd = phantom.Sigma{1};
 else
     Gd = phantom.Sigma;
 end
-Gd_alt = Gd.*1e-2;
+Gd_alt = 1e2.*Gd;
 x_ed_alt = invert.exp_dist(...
     Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
     lambda_ed_lam,Gd_alt); 
@@ -54,3 +57,4 @@ caxis([0,cmax*(1+1/256)]);
 tools.overlay_ellipse(phantom.mu{1},Gd_alt);
 
 norm(x_ed_alt-x0)
+

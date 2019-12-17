@@ -20,7 +20,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('2',span_t);
+phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
