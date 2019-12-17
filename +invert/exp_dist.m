@@ -5,8 +5,8 @@
 % Inputs:
 %   A        Model matrix
 %   b        Data
-%   d_vec    Position of elements in mobility space
-%   m_vec    Position of elements in mass space
+%   grid_d   Position of elements in mobility space
+%   m        Position of elements in mass space
 %   lambda   Regularization parameter
 %   Gd       Mass-mobility covariance matrix, used to calculate
 %            Mahalanobis distance (Optional, default: identity matrix)
@@ -20,7 +20,7 @@
 %   Gpo_inv  Inverse of the posterior covariance
 %=========================================================================%
 
-function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,d_vec,m_vec,lambda,Gd,xi,solver)
+function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,grid_d,m,lambda,Gd,xi,solver)
 
 
 x_length = length(A(1,:));
@@ -40,7 +40,7 @@ if ~exist('xi','var'); xi = []; end % if no initial x is given
 %--------------------------------------------------------------%
 
 
-Lpr = invert.exp_dist_lpr(d_vec,m_vec,lambda,Gd);
+Lpr = invert.exp_dist_lpr(grid_d,m,lambda,Gd);
     % use external function to evaluate prior covariance
 
 

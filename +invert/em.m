@@ -1,9 +1,7 @@
 
-% EM  Performs expetation-maximization routine on data.
+% EM  Performs expetation-maximization algorithm. 
+% Assumes Poisson-distributed data.
 % Author:  Timothy Sipkens, 2019-12-06
-%=========================================================================%
-
-function [x] = em(A,b,xi,n,x_ex)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -13,12 +11,13 @@ function [x] = em(A,b,xi,n,x_ex)
 %
 % Outputs:
 %   x       Regularized estimate
-%   D       Inverse operator (x = D*[b;0])
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x] = em(A,b,xi,n,x_ex)
 
 
 if ~exist('n','var'); n = []; end
-if isempty(n); n = 10; end
+if isempty(n); n = 4; end
 
 x_length = length(A(1,:));
 x = xi;
