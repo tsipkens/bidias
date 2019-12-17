@@ -1,9 +1,6 @@
 
 % TIKHONOV_OP  Finds optimal lambda for Tikhonov solver using known distribution, x.
 % Author: Timothy Sipkens, 2019-07-17
-%=========================================================================%
-
-function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,xi,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -20,7 +17,9 @@ function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,xi,solver)
 %   x       Regularized estimate
 %   D       Inverse operator (x = D*[b;0])
 %   Lx      Tikhonov matrix
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,xi,solver)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end

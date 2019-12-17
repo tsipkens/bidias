@@ -1,8 +1,5 @@
 
 % EXP_DIST_OPBF  Approximates optimal lambda for exponential distance solver by brute force method.
-%=========================================================================%
-
-function [x,lambda,out] = exp_dist_opbf(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -17,7 +14,9 @@ function [x,lambda,out] = exp_dist_opbf(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 %
 % Outputs:
 %   x       Regularized estimate
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x,lambda,out] = exp_dist_opbf(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 
 
 %-- Parse inputs ---------------------------------------------%

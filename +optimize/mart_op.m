@@ -1,9 +1,6 @@
 
 % MART_OP  Finds optimal number of iterations for MART solver.
 % Author:  Timothy Sipkens, 2019-02-13
-%=========================================================================%
-
-function [x,iter,out] = mart_op(A,b,xi,iter_vec,x_ex)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
@@ -16,7 +13,9 @@ function [x,iter,out] = mart_op(A,b,xi,iter_vec,x_ex)
 %   x           MART estimate
 %   iter        Optimized number of iterations
 %   out         Struct containing other information
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x,iter,out] = mart_op(A,b,xi,iter_vec,x_ex)
 
 disp(' ');
 disp('Optimizing MART:');

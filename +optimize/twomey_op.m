@@ -1,8 +1,5 @@
 
 % TWOMEY_OP  Finds optimal number of iterations for MART solver.
-%=========================================================================%
-
-function [x,iter,out] = twomey_op(A,b,xi,iter_vec,x_ex)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
@@ -14,7 +11,9 @@ function [x,iter,out] = twomey_op(A,b,xi,iter_vec,x_ex)
 %   x           MART estimate
 %   iter        Optimized number of iterations
 %   out         Struct containing other information
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x,iter,out] = twomey_op(A,b,xi,iter_vec,x_ex)
 
 disp(' ');
 disp('Optimizing Twomey:');

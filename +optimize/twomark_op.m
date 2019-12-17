@@ -1,9 +1,6 @@
 
 % TWOMARK_OP  Finds optimal smoothing for Twomey-Markowski solver using known distribution, x.
 % Author:	  Timothy Sipkens, 2018-12-20
-%=========================================================================%
-
-function [x,Sf,out] = twomark_op(A,b,Lb,n,xi,iter,span,x_ex,opt_smooth)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
@@ -20,7 +17,9 @@ function [x,Sf,out] = twomark_op(A,b,Lb,n,xi,iter,span,x_ex,opt_smooth)
 %   x           Estimate
 %   Sf          Estimate of optimized value of Sf
 %   out         Struct containing detailed information about optimization
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x,Sf,out] = twomark_op(A,b,Lb,n,xi,iter,span,x_ex,opt_smooth)
 
 
 %-- Parse inputs ---------------------------------------------------------%

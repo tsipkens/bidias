@@ -1,14 +1,13 @@
 
-function textbar(pct,opt_backspace)
-% TEXTBAR           Print out a text-based progress bar.
-% Original author:  Samuel Grauer, 2017-11-16
-% Modified by:      Timothy Sipkens, 2018-11-26
-%
+% TEXTBAR   Print out a text-based progress bar.
+% Author:   Samuel Grauer, 2017-11-16
+% Modified: Timothy Sipkens, 2018-11-26
 %-------------------------------------------------------------------------%
 % Input:
 %   pct     Progress complete, as a fraction
-%-------------------------------------------------------------------------%
+%=========================================================================%
 
+function textbar(pct,opt_backspace)
 
 %--- Initialization ------------------------------------------------------%
 %-- Parameters ----%
