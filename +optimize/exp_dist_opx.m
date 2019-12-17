@@ -1,8 +1,5 @@
 
 % EXP_DIST_OPX  Finds optimal lambda for exponential distance solver.
-%=========================================================================%
-
-function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -17,8 +14,9 @@ function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 %
 % Outputs:
 %   x       Regularized estimate
-%-------------------------------------------------------------------------%
+%=========================================================================%
 
+function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 
 %-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end

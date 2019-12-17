@@ -9,16 +9,15 @@
 %   allow for the use of sparse matrices, which is necessary to 
 %   store information on higher resolutions grids
 %   (such as those used for phantoms).
-%=========================================================================%
-
-function [A,sp] = gen_A_grid(grid_b,grid_i,prop_pma,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
 %   grid_i      Grid on which to perform integration
 %   prop_pma    Structure defining the properties of the PMA
 %   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [A,sp] = gen_A_grid(grid_b,grid_i,prop_pma,varargin)
 
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
