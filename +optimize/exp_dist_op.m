@@ -1,5 +1,6 @@
 
 % EXP_DIST_OP  Finds optimal lambda for exponential distance solver.
+% Author: Timothy Sipkens, 2019-12-19
 %=========================================================================%
 
 function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Gd,xi,solver)
@@ -38,13 +39,25 @@ lambda = logspace(log10(span(1)),log10(span(2)),30);
 disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
+    %-- Store case parameters --%
     out(ii).lambda = lambda(ii);
+    out(ii).lm = sqrt(Gd(1,1));
+    out(ii).ld = sqrt(Gd(2,2));
+    out(ii).R12 = Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2));
     
+    %-- Perform inversion --%
     [out(ii).x,~,Lpr] = invert.exp_dist(...
         A,b,d_vec,m_vec,lambda(ii),Gd,xi,solver);
     
+    %-- Store ||Ax-b|| and Euclidean error --%
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
+    
+    %-- Compute credence, fit, and Bayes factor --%
+    out(ii).F = -1/2*(out(ii).Axb^2 + norm(Lpr*out(ii).x)^2);
+    Gpo_inv = (A')*A+(Lpr')*Lpr;
+    out(ii).C = tools.logdet(Lpr'*Lpr)/2 - tools.logdet(Gpo_inv)/2;
+    out(ii).B = out(ii).F+out(ii).C;
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end
@@ -56,11 +69,6 @@ else
 end
 lambda = out(ind_min).lambda;
 x = out(ind_min).x;
-
-out(1).Lpr = Lpr./lambda(end); % store Lpr structure
-    % to save memory, only output Lpr and Gd structure for first entry
-    % Lpr for any lambda can be found using scalar multiplication
-    % Gpo_inv = A'*A+Lpr'*Lpr; <- can be done in post-process
 
 end
 

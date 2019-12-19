@@ -6,7 +6,7 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath('cmap');
-cm_alt = load_cmap('tempo',255);
+cm_alt = load_cmap('BuPu',255);
 cm_b = load_cmap('inferno',255);
 cm_b = cm_b(40:end,:);
 cm_div = load_cmap('RdBu',200);
@@ -20,7 +20,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('1',span_t);
+phantom = Phantom('3',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -169,7 +169,7 @@ colorbar;
 
 
 % disp('Computing Bayes factor...');
-% [B,F,C] = tools.get_f_tk(A,b,Lb,out_tk0);
+% [B,F,C] = tools.get_bayes_factor_tk(A,b,Lb,out_tk0);
 % figure(13);
 % semilogx([out.lambda],F+C.*grid_b.Ne/grid_x.Ne);
     % extra factor accounts for rank of A

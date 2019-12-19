@@ -33,13 +33,21 @@ lambda = logspace(log10(span(1)),log10(span(2)),70);
 disp('Optimizing Tikhonov regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
-    out(ii).lambda = lambda(ii);
+    out(ii).lambda = lambda(ii); % store regularization parameter
     
+    %-- Perform inversion --%
     [out(ii).x,~,Lpr] = invert.tikhonov(...
         A,b,n,lambda(ii),order,xi,solver);
     
+    %-- Store ||Ax-b|| and Euclidean error --%
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
+    
+    %-- Compute credence, fit, and Bayes factor --%
+    out(ii).F = -1/2.*(out(ii).Axb^2 + norm(lambda(ii).*Lpr*out(ii).x)^2);
+    Gpo_inv = (A)'*A+lambda(ii)^2.*(Lpr')*Lpr;
+    out(ii).C = length(out(ii).x)*log(lambda(ii)) - tools.logdet(Gpo_inv)/2;
+    out(ii).B = out(ii).F+out(ii).C;
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

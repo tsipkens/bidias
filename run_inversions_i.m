@@ -3,11 +3,15 @@
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
-if iscell(phantom.Sigma)
-    Gd = phantom.Sigma{1};
-else
-    Gd = phantom.Sigma;
-end
+% if iscell(phantom.Sigma)
+%     Gd = phantom.Sigma{1};
+% else
+%     Gd = phantom.Sigma;
+% end
+
+[~,Gd] = phantom.p2cov(phantom.p,phantom.modes);
+Gd = Gd{2};
+
 [x_ed_lam,lambda_ed_lam,out_ed_lam] = ...
     optimize.exp_dist_op(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
     [0.1,10],x0,Gd);
@@ -31,30 +35,26 @@ disp(' ');
 disp('Parametric study of exponential distance regularization (brute force)...');
 [x_ed_par,lambda_ed_par,out_ed_par] = optimize.exp_dist_opbf(...
     Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    guess,x0); 
+    x0); 
 disp('Inversion complete.');
 disp(' ');
 %}
 
 
-%%
-
+%{
 if iscell(phantom.Sigma)
     Gd = phantom.Sigma{1};
 else
     Gd = phantom.Sigma;
 end
-Gd_alt = 1e2.*Gd;
-x_ed_alt = invert.exp_dist(...
-    Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    lambda_ed_lam,Gd_alt); 
+[out_ed_corr] = ...
+    optimize.exp_dist_1d(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
+    lambda_ed_lam,x0,Gd);
+%}
 
-figure(10);
-colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d(x_ed_alt);
-caxis([0,cmax*(1+1/256)]);
-
-tools.overlay_ellipse(phantom.mu{1},Gd_alt);
-
-norm(x_ed_alt-x0)
-
+%{
+%-- Zeroth-order Tikhonov regularization --%
+%   Lower limit for correlation lengths.
+[x_tk0,D_tk0,L_tk0,Gpo_tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),...
+    lambda_ed_lam,0);
+%}

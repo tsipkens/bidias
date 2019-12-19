@@ -348,21 +348,19 @@ classdef Phantom
         function [mu,Sigma] = p2cov(p,modes)
 
             for ll=length(p):-1:1
-                mu{ll} = [p(ll).mg,p(ll).dg];
+                mu{ll} = log10([p(ll).mg,p(ll).dg]);
+                    % use geometric mean
 
                 if strcmp(modes{ll},'logn')
                     Sigma{ll} = inv([(1/log10(p(ll).smd))^2,...
                         -p(ll).Dm/log10(p(ll).smd)^2;...
                         -p(ll).Dm/log10(p(ll).smd)^2,...
                         1/log10(p(ll).sg)^2+p(ll).Dm^2/log10(p(ll).smd)^2]);
-                    mu{ll} = log10(mu{ll});
-                        % if lognormal distribution, convert from geometric mean
                 else
                     Sigma{ll} = inv([(1/p(ll).smd)^2,...
                         -p(ll).Dm/p(ll).smd^2;...
                         -p(ll).Dm/p(ll).smd^2,...
                         1/log10(p(ll).sg)^2+p(ll).Dm^2/p(ll).smd^2]);
-                    mu{ll}(2) = log10(mu{ll}(2));
                 end
             end
 

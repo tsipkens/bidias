@@ -212,7 +212,19 @@ least-squares, Tikhonov regularization, Twomey, Twomey-Markowski (including usin
 the method of [Buckley et al. (2017)][3_Buck]), and the multiplicative algebraic
 reconstruction technique (MART).
 
-Details on these approaches to inversion are provided in the
+An important note in connection with these methods is that they do not have the
+matrix `Lb` as an input. This is done for two reasons:
+
+1. to allow for the case where the data noise is entirely unknown, thereby
+considering a traditional, unweighted least-squares analysis
+(though, this is not recommended) and
+
+2. to avoid unnecessary repeat computation of the products `Lb*A` and `Lb*b`.
+
+To incorporate `Lb`, use `Lb*A` and `Lb*b` when calling the inversion
+functions for the input `A` and `b` arguments.
+
+Details on the available approaches to inversion are provided in the
 associated paper, [Sipkens et al. (2020a)][1_JAS1].
 
 Development is underway on the use of an exponential
@@ -224,7 +236,8 @@ reconstruction errors [Sipkens et al. (Under preparation)][4].
 This package mirrors the content of the +inver package but,
 given the true distribution, aims to determine the optimal number of
 iterations for the Twomey and MART schemes or the optimal regularization
-parameter for the Twomey-Markowski and Tikhonov methods.
+parameter for the Twomey-Markowski and Tikhonov methods. These were mostly
+created for internal use but may be of limited to use to the practitioner. 
 
 ### 3.5 +tools
 

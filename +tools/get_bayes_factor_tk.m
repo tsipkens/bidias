@@ -1,11 +1,11 @@
 
-% GET_F_TK Compute fit and approx. credence terms for Bayesian model selection.
+% GET_BAYES_FACTOR_TK Compute fit and approx. credence terms for Bayesian model selection.
 % Also outputs index of optimal reconstruction based on this scheme.
 % Applies to Tikhonov regularization output structure.
 % Author: Timothy Sipkens, 2019-12-10
 %=========================================================================%
 
-function [Bapx,F,C] = get_f_tk(A,b,Lb,out)
+function [Bapx,F,C] = get_bayes_factor_tk(A,b,Lb,out)
 
 disp('Computing fit and credence:');
 

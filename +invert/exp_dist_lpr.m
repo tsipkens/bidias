@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2019-12-11
 %=========================================================================%
 
-function [Lpr,D] = exp_dist_lpr(grid_d,m,lambda,Gd)
+function [Lpr,D,Gpr] = exp_dist_lpr(grid_d,m,lambda,Gd)
 
 
 %-- Compute distances between elements -----------------------------------%
