@@ -107,12 +107,11 @@ run_inversions_i;
 
 %%
 %== STEP 5: Visualize the results ========================================%
-% ind = 69; %out_tk1.ind_min;
-% x_plot = out_tk1(ind).x;
+ind = out_tk1.ind_min;
+x_plot = out_tk1(ind).x;
 
-[~,ind] = min([out_ed_lam.chi]);
-% ind = 40;
-x_plot = out_ed_lam(ind).x; %out_ed_par(ind).x;
+% [~,ind] = min([out_ed_lam.chi]);
+% x_plot = out_ed_lam(ind).x;
 
 
 %-- Plot retrieved solution --------------%
@@ -130,6 +129,7 @@ grid_x.plot2d_sweep(x_plot,cm);
 
 
 %-- Plot posterior uncertainties ---------%
+%   Tikhonov
 [~,spo] = tools.get_posterior(...
     A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
 figure(12);
@@ -138,41 +138,22 @@ grid_x.plot2d(spo);
 colorbar;
 
 
-% out = out_ed_par(ind);
-% y = [out.lambda,out.ratio,...
-%     out.ld,out.corr];
-% Gd = [(y(3)/y(2))^2,y(4)*y(3)^2/y(2);y(4)*y(3)^2/y(2),y(3)^2];
-%     % y(2) = ratio, y(3) = ld, y(4) = corr
-% Lpr = invert.exp_dist_lpr(grid_x.elements(:,2),...
-%     grid_x.elements(:,1),out_ed_par(ind).lambda,Gd);
-
-% Lpr = invert.exp_dist_lpr(grid_x.elements(:,2),...
-%     grid_x.elements(:,1),out_ed_opt.lambda,out_ed_opt.Gd);
-% [~,spo] = tools.get_posterior(...
-%     A,Lb,out_ed_opt.lambda.*Lpr);
-
+Gd = phantom.Sigma{1};
 Lpr = invert.exp_dist_lpr(grid_x.elements(:,2),...
     grid_x.elements(:,1),lambda_ed_lam,Gd);
-
 [~,spo] = tools.get_posterior(...
     A,Lb,lambda_ed_lam.*Lpr);
-
 figure(12);
 colormap(gcf,cm_alt);
 grid_x.plot2d(spo);
+% caxis([0,cmax.*0.3]);
+
+% colorbar;
 % hold on;
 % plot(log10(grid_b.elements(:,2)),...
 %     log10(grid_b.elements(:,1)),'.w');
 % hold off;
-colorbar;
-% caxis([0,cmax.*0.3]);
 
-
-% disp('Computing Bayes factor...');
-% [B,F,C] = tools.get_bayes_factor_tk(A,b,Lb,out_tk0);
-% figure(13);
-% semilogx([out.lambda],F+C.*grid_b.Ne/grid_x.Ne);
-    % extra factor accounts for rank of A
 
 
 %-- Plot difference to true phantom ------%

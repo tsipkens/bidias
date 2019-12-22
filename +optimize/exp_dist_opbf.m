@@ -56,6 +56,9 @@ for ii=1:length(vec_lambda)
     out(ii).ld = vec_ld(ii);
     out(ii).corr = vec_corr(ii);
     
+    [out(ii).B,out(ii).F,out(ii).C] = ...
+        optimize.exp_dist_bayesf(A,b,out(ii).x,Lpr);
+    
     tools.textbar(ii/length(vec_lambda));
 end
 

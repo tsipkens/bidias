@@ -44,10 +44,8 @@ for ii=length(lambda):-1:1
     out(ii).Axb = norm(A*out(ii).x-b);
     
     %-- Compute credence, fit, and Bayes factor --%
-    out(ii).F = -1/2.*(out(ii).Axb^2 + norm(lambda(ii).*Lpr*out(ii).x)^2);
-    Gpo_inv = (A)'*A+lambda(ii)^2.*(Lpr')*Lpr;
-    out(ii).C = length(out(ii).x)*log(lambda(ii)) - tools.logdet(Gpo_inv)/2;
-    out(ii).B = out(ii).F+out(ii).C;
+    [out(ii).B,out(ii).F,out(ii).C] = ...
+        optimize.tikhonov_bayesf(A,b,out(ii).x,Lpr,lambda(ii),order);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

@@ -1,9 +1,6 @@
 
 % EXP_DIST_OP  Finds optimal lambda for exponential distance solver.
 % Author: Timothy Sipkens, 2019-12-19
-%=========================================================================%
-
-function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Gd,xi,solver)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
@@ -18,7 +15,9 @@ function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Gd,xi,solver)
 %
 % Outputs:
 %   x       Regularized estimate
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Gd,xi,solver)
 
 
 %-- Parse inputs ---------------------------------------------%
@@ -54,10 +53,8 @@ for ii=length(lambda):-1:1
     out(ii).Axb = norm(A*out(ii).x-b);
     
     %-- Compute credence, fit, and Bayes factor --%
-    out(ii).F = -1/2*(out(ii).Axb^2 + norm(Lpr*out(ii).x)^2);
-    Gpo_inv = (A')*A+(Lpr')*Lpr;
-    out(ii).C = tools.logdet(Lpr'*Lpr)/2 - tools.logdet(Gpo_inv)/2;
-    out(ii).B = out(ii).F+out(ii).C;
+    [out(ii).B,out(ii).F,out(ii).C] = ...
+        optimize.exp_dist_bayesf(A,b,out(ii).x,Lpr);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

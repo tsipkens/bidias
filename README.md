@@ -172,7 +172,7 @@ above.
 Transfer function evaluation can proceed using two inputs: a `sp` structure
 or a instance of the `Grid` class defined for the data.
 
-##### sp
+##### 3.1.1 sp
 
 The `sp` or setpoint structure is a structured array containing the information
 necessary to define the device setpoints. For a DMA, the setpoint mobility diameter,
@@ -185,7 +185,7 @@ relevant parameters that could be used to specify that setpoint, including
 mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
 the voltage, `V`; and the electrode speeds, `omega*`.
 
-##### grid_b
+##### 3.1.2 grid_b
 
 Alternatively, one can generate a grid corresponding to the data points. This can
 speed transfer function evaluation be exploiting the structure of the setpoints
@@ -237,7 +237,7 @@ This package mirrors the content of the +inver package but,
 given the true distribution, aims to determine the optimal number of
 iterations for the Twomey and MART schemes or the optimal regularization
 parameter for the Twomey-Markowski and Tikhonov methods. These were mostly
-created for internal use but may be of limited to use to the practitioner. 
+created for internal use but may be of limited to use to the practitioner.
 
 ### 3.5 +tools
 
