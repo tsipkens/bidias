@@ -1,5 +1,6 @@
 
 % EXP_DIST_OPBF  Approximates optimal lambda for exponential distance solver by brute force method.
+% Author: Timothy Sipkens, 2019-12
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
