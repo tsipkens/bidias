@@ -38,7 +38,6 @@ else
     mass_mob_pref = prop.mass_mob_pref;
     mass_mob_exp = prop.mass_mob_exp;
 end
-% if isempty(prop); mass_mob_pref = 524; mass_mob_exp = 3; end
 %-------------------------------------------------------------------------%
 
 

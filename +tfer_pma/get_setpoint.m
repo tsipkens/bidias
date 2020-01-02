@@ -51,9 +51,11 @@ if isempty(sp.m_star)
     % requires that voltage, 'V', and speed, 'omega' are specified
     
     %-- Evaluate angular speed of inner electrode ------------------------%
-    sp.omega1 = sp.omega./...
-        ((prop.r_hat^2-prop.omega_hat)/(prop.r_hat^2-1)+...
-        prop.r1^2*(prop.omega_hat-1)/(prop.r_hat^2-1)/prop.rc^2);
+    if isempty(sp.omega1)
+        sp.omega1 = sp.omega./...
+            ((prop.r_hat^2-prop.omega_hat)/(prop.r_hat^2-1)+...
+            prop.r1^2*(prop.omega_hat-1)/(prop.r_hat^2-1)/prop.rc^2);
+    end
     
     %-- Azimuth velocity distribution and voltage ------------------------%
     sp.alpha = sp.omega1.*(prop.r_hat.^2-prop.omega_hat)./(prop.r_hat.^2-1);
@@ -63,7 +65,7 @@ if isempty(sp.m_star)
         (sp.alpha.*prop.rc+sp.beta./prop.rc).^2);
         % q = e, z = 1 for setpoint
     
-    sp.omega1 = sp.alpha+sp.beta./(prop.r1.^2);
+    sp.omega = sp.alpha+sp.beta./(prop.rc.^2);
     sp.omega2 = sp.alpha+sp.beta./(prop.r2.^2);
     
     
@@ -153,7 +155,7 @@ if isempty(sp.Rm) % if resolution is not specified
         sp.omega^2*prop.rc^2);
     m_rat = @(Rm) 1/Rm+1;
     fun = @(Rm) (m_rat(Rm))^(n_B+1)-(m_rat(Rm))^n_B;
-    sp.Rm = fminsearch(@(Rm) (t0-fun(Rm))^2,10);
+    sp.Rm = fminsearch(@(Rm) (t0-fun(Rm))^2,5);
     sp.m_max = sp.m_star*(1/sp.Rm+1);
 end
 
