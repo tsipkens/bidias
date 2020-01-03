@@ -62,6 +62,7 @@ classdef Phantom
 
                     obj.mu = mu_p;
                     obj.Sigma = Sigma_modes;
+                    obj.R = obj.sigma2r(obj.Sigma);
 
                     [obj.modes{1:n_modes}] = 'logn';
 
@@ -78,8 +79,9 @@ classdef Phantom
 
                     if ~any(strcmp('cond-norm',Sigma_modes))
                         [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
+                        obj.R = obj.sigma2r(obj.Sigma);
                     end
-
+                
                 %-- OPTION 3: Use a preset or sample distribution --------%
                 otherwise % check if type is a preset phantom
                     [p,modes,type] = obj.preset_phantoms(type);
@@ -92,11 +94,12 @@ classdef Phantom
 
                     if ~any(strcmp('cond-norm',modes))
                         [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
+                        obj.R = obj.sigma2r(obj.Sigma);
                     end
             end
 
             obj.n_modes = length(obj.modes); % get number of modes
-
+            
 
             %-- Generate a grid to evaluate phantom on -------------------%
             if isa(span_grid,'Grid') % if grid is specified
@@ -317,13 +320,15 @@ classdef Phantom
                 if strcmp(modes{ll},'logn') % if lognormal distribution, convert to geometric mean
                     p(ll).mg = 10.^p(ll).mg;
                 end
-
+                
                 p(ll).sg = 10^sqrt(Sigma{ll}(2,2));
                 p(ll).sm = 10^sqrt(Sigma{ll}(1,1));
-
-                Sigma_inv = inv(Sigma{ll});
-                p(ll).smd = 10^sqrt(1/Sigma_inv(1,1));
-
+                
+                R12 = Sigma{1}(1,2)/...
+                    sqrt(Sigma{1}(1,1)*Sigma{1}(2,2));
+                p(ll).smd = 10^sqrt(Sigma{1}(1,1)*(1-R12^2));
+                    % conditional distribution width
+                
                 p(ll).Dm = Sigma{ll}(1,2)/Sigma{ll}(2,2);
                     % corresponds to slope of "locus of vertical"
                     % (Friendly, Monette, and Fox, 2013)
@@ -370,7 +375,27 @@ classdef Phantom
             end
         end
         %=================================================================%
-
+        
+        
+        
+        %== SIGMA2R ========================================================%
+        %   Function to convert covariance matrix to correlation matrix.
+        %   Author:  Timothy Sipkens, 2019-10-29
+        function R = sigma2r(Sigma)
+            if ~iscell(Sigma); Sigma = {Sigma}; end
+            
+            R = {};
+            for ll=length(Sigma):-1:1
+                R12 = Sigma{ll}(1,2)/...
+                    sqrt(Sigma{ll}(1,1)*Sigma{ll}(2,2));
+                    % off-diagonal correlation
+                    
+                R{ll} = diag([1,1])+rot90(diag([R12,R12]));
+                    % form correlation matrix
+            end
+        end
+        %=================================================================%
+        
 
 
         %== FIT ==========================================================%
