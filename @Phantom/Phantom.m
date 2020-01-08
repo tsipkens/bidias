@@ -355,8 +355,11 @@ classdef Phantom
             for ll=length(p):-1:1
                 mu{ll} = log10([p(ll).mg,p(ll).dg]);
                     % use geometric mean
-
+                
                 if strcmp(modes{ll},'logn')
+                    % R12 = (1+1/(p(ll).Dm^2)*...
+                    %     (log10(p(ll).smd)/log10(p(ll).sg))...
+                    %     ^2)^(-1/2);
                     Sigma{ll} = inv([(1/log10(p(ll).smd))^2,...
                         -p(ll).Dm/log10(p(ll).smd)^2;...
                         -p(ll).Dm/log10(p(ll).smd)^2,...
@@ -368,7 +371,7 @@ classdef Phantom
                         1/log10(p(ll).sg)^2+p(ll).Dm^2/p(ll).smd^2]);
                 end
             end
-
+            
             if length(mu)==1
                 mu = mu{1};
                 Sigma = Sigma{1};

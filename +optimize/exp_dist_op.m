@@ -38,23 +38,23 @@ lambda = logspace(log10(span(1)),log10(span(2)),30);
 disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
-    %-- Store case parameters --%
+    %-- Store case parameters ----------------------%
     out(ii).lambda = lambda(ii);
     out(ii).lm = sqrt(Gd(1,1));
     out(ii).ld = sqrt(Gd(2,2));
     out(ii).R12 = Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2));
     
-    %-- Perform inversion --%
+    %-- Perform inversion --------------------------%
     [out(ii).x,~,Lpr] = invert.exp_dist(...
         A,b,d_vec,m_vec,lambda(ii),Gd,xi,solver);
     
-    %-- Store ||Ax-b|| and Euclidean error --%
+    %-- Store ||Ax-b|| and Euclidean error ---------%
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
     out(ii).Axb = norm(A*out(ii).x-b);
     
-    %-- Compute credence, fit, and Bayes factor --%
+    %-- Compute credence, fit, and Bayes factor ----%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.exp_dist_bayesf(A,b,out(ii).x,Lpr);
+        optimize.exp_dist_bayesf(A,b,out(ii).x,Lpr,lambda(ii));
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

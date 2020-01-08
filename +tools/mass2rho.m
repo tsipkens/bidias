@@ -3,14 +3,18 @@
 % Author:   Timothy Sipkens, 2019-05-17
 %=========================================================================%
 
-function [y,grid_rho] = mass2rho(x,grid_x,n_rho)
+function [y,grid_rho] = mass2rho(x,grid_x,span_rho,n_rho)
 
 %-- Parse inputs -----------------------------------%
 if ~exist('n_rho','var'); n_rho = []; end
 if isempty(n_rho); n_rho = 600; end
 
-rho_min = 10^1.5;
-rho_max = 10000;
+if ~exist('span_rho','var'); span_rho = []; end
+if isempty(span_rho); span_rho = [10^1.5,10000]; end
+%---------------------------------------------------%
+
+rho_min = span_rho(1);
+rho_max = span_rho(2);
 rho_n = logspace(log10(rho_min),log10(rho_max),n_rho);
 grid_rho = Grid([rho_min,rho_max;grid_x.span(2,:)],...
     [n_rho,length(grid_x.edges{2})],'logarithmic'); % should be uniform basis

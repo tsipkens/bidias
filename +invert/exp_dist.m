@@ -16,11 +16,11 @@
 % Outputs:
 %   x        Regularized estimate
 %   D        Inverse operator (x = D*[b;0])
-%   Lpr      Cholesky factorization of prior covariance
+%   Lpr0     Cholesky factorization of prior covariance
 %   Gpo_inv  Inverse of the posterior covariance
 %=========================================================================%
 
-function [x,D,Lpr,Gpo_inv] = exp_dist(A,b,grid_d,m,lambda,Gd,xi,solver)
+function [x,D,Lpr0,Gpo_inv] = exp_dist(A,b,grid_d,m,lambda,Gd,xi,solver)
 
 
 x_length = length(A(1,:));
@@ -40,9 +40,9 @@ if ~exist('xi','var'); xi = []; end % if no initial x is given
 %--------------------------------------------------------------%
 
 
-Lpr = invert.exp_dist_lpr(grid_d,m,lambda,Gd);
+Lpr0 = invert.exp_dist_lpr(grid_d,m,Gd);
     % use external function to evaluate prior covariance
-
+Lpr = lambda.*Lpr0;
 
 %-- Choose and execute solver --------------------------------------------%
 [x,D] = invert.lsq(...

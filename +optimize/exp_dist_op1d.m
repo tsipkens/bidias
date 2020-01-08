@@ -1,8 +1,8 @@
 
-% EXP_DIST_1D  Single parameter sensitivity study for exponential distance regularization.
+% EXP_DIST_OP1D  Single parameter sensitivity study for exponential distance regularization.
 %=========================================================================%
 
-function [out] = exp_dist_1d(A,b,d_vec,m_vec,lambda,x_ex,Gd,xi,solver)
+function [out] = exp_dist_op1d(A,b,d_vec,m_vec,lambda,x_ex,Gd,xi,solver)
 
 %-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end
@@ -18,23 +18,23 @@ if ~exist('x_ex','var'); x_ex = []; end
 
 
 %-- For lm/ld scaling --%
-param = logspace(log10(0.01),log10(100),42);
+% param = logspace(log10(0.01),log10(100),42);
 
 %-- For corr. scaling --%
-% param = 1-[logspace(log10(1e-3),log10(1.5),26),1.85,1.95,1.97,1.99,1.999];
+param = 1-[logspace(log10(1e-3),log10(1.5),26),1.85,1.95,1.97,1.99,1.999];
 
 disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
 for ii=length(param):-1:1
     
     %-- For lm/ld scaling --%
-    out(ii).alpha = param(ii);
-    Gd_alt = Gd.*param(ii);
+    % out(ii).alpha = param(ii);
+    % Gd_alt = Gd.*param(ii);
     
     %-- For corr. scaling --%
-    % out(ii).omR12 = 1-param(ii);
-    % Gd_12_alt = sqrt(Gd(1,1)*Gd(2,2))*param(ii);
-    % Gd_alt = diag(diag(Gd))+[0,Gd_12_alt;Gd_12_alt,0];
+    out(ii).R12 = 1-param(ii);
+    Gd_12_alt = sqrt(Gd(1,1)*Gd(2,2))*param(ii);
+    Gd_alt = diag(diag(Gd))+[0,Gd_12_alt;Gd_12_alt,0];
     
     %-- Store other case parameters --%
     out(ii).lambda = lambda;
@@ -52,7 +52,7 @@ for ii=length(param):-1:1
     
     %-- Compute credence, fit, and Bayes factor --%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.exp_dist_bayesf(A,b,out(ii).x,Lpr);
+        optimize.exp_dist_bayesf(A,b,out(ii).x,Lpr,lambda);
     
     tools.textbar((length(param)-ii+1)/length(param));
 end

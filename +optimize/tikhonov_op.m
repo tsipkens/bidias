@@ -30,6 +30,11 @@ if ~exist('solver','var'); solver = []; end
 
 lambda = logspace(log10(span(1)),log10(span(2)),70);
 
+[~,~,Lpr] = invert.tikhonov(...
+    A,b,n,lambda(end),order,xi,solver); % just used to get Lpr
+[~,~,~,S1,S2] = gsvd(full(A),full(Lpr));
+    % pre-compute gsvd for Bayes factor calculation
+
 disp('Optimizing Tikhonov regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
@@ -45,7 +50,8 @@ for ii=length(lambda):-1:1
     
     %-- Compute credence, fit, and Bayes factor --%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.tikhonov_bayesf(A,b,out(ii).x,Lpr,lambda(ii),order);
+        optimize.tikhonov_bayesf(A,b,out(ii).x,Lpr,lambda(ii),order,...
+        S1,S2);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2019-12-11
 %=========================================================================%
 
-function [Lpr,D,Gpr] = exp_dist_lpr(grid_d,m,lambda,Gd)
+function [Lpr,D,Gpr] = exp_dist_lpr(grid_d,m,Gd)
 
 
 %-- Compute distances between elements -----------------------------------%
@@ -24,7 +24,6 @@ Gpr = exp(-D);
 Gpr_inv = pinv(Gpr);
 [Lpr,~] = chol(Gpr_inv);
 clear Gpr_inv; % to save memory
-Lpr = lambda.*Lpr; % ./max(max(Lpr));
 
 Lpr(D>1.75) = 0;
 Lpr = sparse(Lpr);
