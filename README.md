@@ -133,10 +133,7 @@ for the phantom distributions that are used in testing the different inversion
 methods. Currently, the phantom class is programmed to primarily produce
 bivariate lognormal distributions and secondarily distributions
 that are lognormal with mobility and conditional normal for mass
-following [Buckley et al. (2017)][3_Buck]. The four sample phantoms from
-[Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing
-the distribution numbers or names from that work (e.g. the demonstration phantom
-can be generated using `'1'`).
+following [Buckley et al. (2017)][3_Buck].
 
 The Phantom class parameterizes the aerosol distribution in two
 possible ways:
@@ -156,8 +153,10 @@ mass-mobility exponent, `Dm`; and the effective density of particles
 with a mobility diameter of 100 nm `rho_100`.
 
 - **OPTION 3**: Use a preset or sample distribution, which are loaded using
-a string and the `preset_phantoms` function. For example, one can use `'1'` or
-`'demonstration'` to load the demonstration phantom from [Sipkens et al. (2020a)][1_JAS1].
+a string and the `preset_phantoms` function. For example, the four sample phantoms from
+[Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing
+the distribution numbers or names from that work (e.g. the demonstration phantom
+can be generated using `'1'` or `'demonstration'`).
 
 Conversion between the `mu` and `Sigma` parameterization and the
 `p` structure parameterization can be accomplished using the `cov2p`
