@@ -205,17 +205,21 @@ Alternatively, one can generate a grid corresponding to the data points. This ca
 speed transfer function evaluation be exploiting the structure of the setpoints
 to minimize the number of function evaluations (using the `gen_A_grid` function).
 
-### 3.2 +tfer_PMA
+### 3.2 +tfer_pma
+
+This package is used in evaluating the transfer function of the particle mass
+analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
+particle mass analyzer (CPMA). PMA transfer functions are evaluated using the 
+analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including 
+different approximations for the particle migration velocity and options for transfer 
+functions that include diffusion. For more details on the theory, one is referred to 
+the referenced work. The package also contains some standard reference
+functions used in evaluating the DMA transfer function, i.e. in `tfer_dma.m`.
 
 This is imported from a package distributed with [Sipkens et al. (2020b)][2_AST]
 and is available in a parallel repository
 [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma)
-with the associated archive [Sipkens et al.][5_code].
-
-This package is used in evaluating the transfer function of the particle mass
-analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
-particle mass analyzer (CPMA). The package also contains some standard reference
-functions used in `tfer_dma.m`.
+and the associated archive [(Sipkens et al., 2019)][5_code].
 
 The current implementation corresponds to v1.3 of that code.
 
