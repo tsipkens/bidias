@@ -68,7 +68,7 @@ by calling the `plot2d_marg` method of this class (see image below). This plots 
 retrieved distribution as well as the marginalized distribution on each of
 the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
-![distr](docs/distr.png)
+<img src="docs/distr.png" width="400px">
 
 ##### 1.1.2 Script associated with J. Aerosol Sci. paper
 
