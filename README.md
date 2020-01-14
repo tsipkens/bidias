@@ -156,8 +156,8 @@ mass-mobility exponent, `Dm`; and the effective density of particles
 with a mobility diameter of 100 nm `rho_100`.
 
 - **OPTION 3**: Use a preset or sample distribution, which are loaded using
-a string and the `preset_phantoms` function. For example, one can use `1` or
-`demonstration` to load the demonstration phantom from [Sipkens et al. (2020a)][1_JAS1].
+a string and the `preset_phantoms` function. For example, one can use `'1'` or
+`'demonstration'` to load the demonstration phantom from [Sipkens et al. (2020a)][1_JAS1].
 
 Conversion between the `mu` and `Sigma` parameterization and the
 `p` structure parameterization can be accomplished using the `cov2p`
