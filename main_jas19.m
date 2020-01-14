@@ -48,7 +48,7 @@ hold off;
 
 
 %%
-%== STEP 2: Generate A matrix ============================================%
+%== STEP 2a: Generate A matrix ===========================================%
 n_b = [14,50]; %[12,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
@@ -73,7 +73,7 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %%
-%== STEP 3: Generate data ===============================================%
+%== STEP 2b: Generate data ==============================================%
 b0 = A_t*x_t; % forward evaluate kernel
 
 
@@ -99,7 +99,7 @@ semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
 
 
 %%
-%== STEP 4: Perform inversions ============================================%
+%== STEP 3: Perform inversions ============================================%
 run_inversions_a; % optimize regularization parameter
 run_inversions_b;
 % run_inversions_c;
@@ -107,26 +107,13 @@ run_inversions_b;
 
 
 %%
-%== STEP 5: Plot solution =================================================%
+%== STEP 4: Plot solution =================================================%
 x_plot = x_tk1;
 
 figure(10); % plot reconstruction and marginal distributions
 colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x_plot,grid_t,x_t);
 caxis([0,cmax*(1+1/256)]);
-
-%{
-figure(13);
-n1 = ceil(grid_x.ne(1)./20);
-n2 = floor(grid_x.ne(1)/n1);
-n3 = floor(240/n2);
-cm_x = cm(10:n3:250,:);
-set(gca,'ColorOrder',cm_x,'NextPlot','replacechildren');
-x_plot_rs = reshape(x_plot,grid_x.ne);
-semilogx(grid_x.edges{2},x_plot_rs(1:n1:end,:));
-
-figure(10);
-%}
 
 
 %%

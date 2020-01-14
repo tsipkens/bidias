@@ -4,7 +4,7 @@ clc;
 close all;
 
 
-%-- Load colour schemes --------------------------------------------------%
+%-- Load colour maps -----------------------------------------------------%
 addpath('cmap');
 cm_alt = load_cmap('BuPu',255);
 cm_b = load_cmap('inferno',255);
@@ -48,7 +48,9 @@ hold off;
 
 
 %%
-%== STEP 2: Generate A matrix ============================================%
+%== STEP 2a: Generate A matrix ===========================================%
+%   Note that here a dense kernel is computed for
+%   data synthesis in Step 3. 
 n_b = [14,50]; %[14,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
@@ -58,12 +60,6 @@ prop_pma = kernel.prop_pma;
 [A_t,sp] = kernel.gen_A_grid(grid_b,grid_t,prop_pma,'Rm',3);
     % generate A matrix based on grid for x_t and b
 
-% sp = kernel.grid2sp(...
-%     prop_pma,grid_b,'Rm',3);
-% A_alt = kernel.gen_A(sp,grid_b.elements(:,2),...
-%     grid_t,prop_pma);
-
-%%
 disp('Transform to discretization in x...');
 B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
@@ -79,7 +75,7 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %%
-%== STEP 3: Generate data ================================================%
+%== STEP 2b: Generate data ===============================================%
 b0 = A_t*x_t; % forward evaluate kernel
 
 
@@ -99,14 +95,14 @@ grid_b.plot2d_sweep(b,cm_b);
 
 
 %%
-%== STEP 4: Perform inversions ===========================================%
+%== STEP 3: Perform inversions ===========================================%
 run_inversions_g;
 run_inversions_i;
 
 
 
 %%
-%== STEP 5: Visualize the results ========================================%
+%== STEP 4: Visualize the results ========================================%
 ind = out_tk1.ind_min;
 x_plot = out_tk1(ind).x;
 
@@ -146,14 +142,6 @@ Lpr = invert.exp_dist_lpr(grid_x.elements(:,2),...
 figure(12);
 colormap(gcf,cm_alt);
 grid_x.plot2d(spo);
-% caxis([0,cmax.*0.3]);
-
-% colorbar;
-% hold on;
-% plot(log10(grid_b.elements(:,2)),...
-%     log10(grid_b.elements(:,1)),'.w');
-% hold off;
-
 
 
 %-- Plot difference to true phantom ------%
@@ -190,58 +178,3 @@ colormap(cm);
 colorbar;
 caxis([-4,1]);
 
-%%
-%{
-%-- Bar plot of results --------------------------------------------------%
-figure(30);
-chi_names = fieldnames(chi);
-chi_vals = zeros(length(chi_names),1);
-for ii=1:length(chi_names)
-    chi_vals(ii) = chi.(chi_names{ii});
-end
-
-bar(chi_vals);
-% ylim([0,20]);
-% ylim([0,100]);
-set(gca,'xticklabel',chi_names);
-
-
-%%
-%{
-%-- Bar plot of times ----------------------------------------------------%
-figure(40);
-t_names = fieldnames(t);
-t_vals = zeros(length(t_names),1);
-for ii=1:length(t_names)
-    t_vals(ii) = mean(t.(t_names{ii}),2);
-end
-
-bar(t_vals);
-set(gca,'xticklabel',t_names);
-set(gca,'yscale','log');
-
-
-
-%%
-%-- Plot marginal distributions ------------------------------------------%
-figure(31);
-clf;
-dim = 2;
-
-grid_t.plot_marginal(x_t,dim);
-grid_x.plot_marginal(...
-    {x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,x0);
-
-
-
-%%
-%-- Plot conditional distributions ---------------------------------------%
-figure(31);
-clf;
-dim = 2;
-ind_plot = 25;
-
-grid_x.plot_conditional(...
-    {x0,x_Tk1,x_init,x_MART,x_Two,x_TwoMH},dim,ind_plot,x0);
-%}
-%}
