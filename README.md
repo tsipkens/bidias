@@ -66,11 +66,9 @@ Preset groupings on inversion approaches are available in the
 
 - **STEP 4**: Finally, one can post-process and visualize the results as desired. The
 `Grid` class allows for a simple visualization of the inferred distribution
-by calling the `plot2d_marg` method of this class (see image below). This plots both the
+by calling the `plot2d_marg` method of this class. This plots both the
 retrieved distribution as well as the marginalized distribution on each of
 the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
-
-<img src="docs/distr.png" width="400px">
 
 ##### 1.1.2 Script associated with the original J. Aerosol Sci. paper
 
@@ -158,7 +156,10 @@ with a mobility diameter of 100 nm `rho_100`.
 a string and the `preset_phantoms` function. For example, the four sample phantoms from
 [Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing
 the distribution numbers or names from that work (e.g. the demonstration phantom
-can be generated using `'1'` or `'demonstration'`).
+can be generated using `'1'` or `'demonstration'`). The demonstration phantom
+is indicated in the image below.
+
+<img src="docs/distr1.png" width="400px">
 
 Conversion between the `mu` and `Sigma` parameterization and the
 `p` structure parameterization can be accomplished using the `cov2p`
