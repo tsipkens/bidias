@@ -48,7 +48,7 @@ hold off;
 
 
 %%
-%== STEP 2a: Generate A matrix ===========================================%
+%== STEP 2A: Generate A matrix ===========================================%
 %   Note that here a dense kernel is computed for
 %   data synthesis in Step 3. 
 n_b = [14,50]; %[14,50]; %[17,35];

@@ -48,7 +48,7 @@ hold off;
 
 
 %%
-%== STEP 2a: Generate A matrix ===========================================%
+%== STEP 2A: Generate A matrix ===========================================%
 n_b = [14,50]; %[12,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
