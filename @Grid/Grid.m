@@ -35,7 +35,7 @@ properties
     nodes = []; % contains position of nodes surrounding elements for each dimension
                 % each cell has a vector of size (ne + 1).
                 
-    graph = []; % 
+    adj = [];   % adjacency matrix
 end
 
 
@@ -54,7 +54,7 @@ methods
     %               Possible values: 'linear' or 'logarithmic' (default)
     %-----------------------------------------------------------------%
     function obj = Grid(span_edges,ne,discrete)
-
+        
         if nargin==0; return; end % return empty grid
 
         if isa(span_edges,'cell') % consider case where edges are given
@@ -78,9 +78,11 @@ methods
         end
 
         obj = obj.mesh; % generates grid points
+        obj = obj.adjacency; % get adjacency matrix
     end
     %=================================================================%
-
+    
+    
 
     %== MESH =========================================================%
     %   Responsible for generating a mesh represented by a series of elements.
@@ -92,9 +94,8 @@ methods
     %   obj.nodes contains the position of each of the nodes as
     %   a matrix, with a row for each node and a column for each
     %   dimension.
-    %-----------------------------------------------------------------%
     function obj = mesh(obj)
-
+    
         %-- If required, generate edge discretization vectors --------%
         if isempty(obj.edges)
             for ii=1:obj.dim % loop through both dimensions
@@ -132,29 +133,79 @@ methods
         [vec1{1},vec1{2}] = ndgrid(obj.edges{1},obj.edges{2});
         obj.elements(:,1) = vec1{1}(:); % vectorize output
         obj.elements(:,2) = vec1{2}(:);
-
     end
     %=================================================================%
-
-
-
-    %== PROJECT =========================================================%
+    
+    
+    
+    %== ADJACENCY ====================================================%
+    %   Compute the adjacency matrix.
+    function [obj,adj] = adjacency(obj)
+        adj = zeros(obj.Ne,obj.Ne);
+        for jj=1:obj.Ne
+            if ~(mod(jj,obj.ne(1))==0)
+                adj(jj,jj+1) = 1;
+            end
+            
+            if ~(mod(jj-1,obj.ne(1))==0)
+                adj(jj,jj-1) = 1;
+            end
+            
+            if jj>obj.ne(1)
+                adj(jj,jj-obj.ne(1)) = 1;
+            end
+            
+            if jj<=(obj.Ne-obj.ne(1))
+                adj(jj,jj+obj.ne(1)) = 1;
+            end
+        end
+        adj = sparse(adj);
+        
+        obj.adj = adj;
+    end
+    %=================================================================%
+    
+    
+    
+    %== L1 ===================================================%
+    %   Compute the first-order Tikhonov operator.
+    function [div] = l1(obj)
+        div = -diag(sum(tril(obj.adj)))+...
+            triu(obj.adj);
+        div(obj.Ne,:) = [];
+    end
+    %=================================================================%
+    
+    
+    
+    %== L2 ===================================================%
+    %   Compute the second-order Tikhonov operator.
+    function [div] = l2(obj)
+        div = -diag(sum(obj.adj))+...
+            triu(obj.adj)+tril(obj.adj);
+        div(obj.Ne,:) = [];
+    end
+    %=================================================================%
+    
+    
+    
+    %== PROJECT ======================================================%
     %   Project x onto current grid. Uses simple linear.
     %   interpolation for this purpose. The parameter 'grid_old'
     %   contains the original grid for the input data x.
     function x = project(obj,grid_old,x)
-
+        
         n1 = length(grid_old.edges{1});
         n2 = length(grid_old.edges{2});
         x = reshape(x,[n1,n2]);
-
+        
         [edges1,edges2] = ndgrid(obj.edges{1},obj.edges{2});
         [edges_old1,edges_old2] = ndgrid(grid_old.edges{1},grid_old.edges{2});
         F = griddedInterpolant(edges_old1,edges_old2,x,'linear','linear');
-
+        
         x = F(edges1,edges2);
         x = x(:);
-
+        
     end
     %=================================================================%
 
