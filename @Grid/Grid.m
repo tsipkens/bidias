@@ -266,7 +266,7 @@ methods
     %== DR ===========================================================%
     %   Calculates the differential area of the elements in the grid.
     function [dr,dr1,dr2] = dr(obj)
-
+        
         dr_0 = cell(obj.dim,1);
         for ii=1:obj.dim
             if strcmp(obj.discrete,'logarithmic')
@@ -278,12 +278,12 @@ methods
                     obj.nodes{ii}(1:(end-1));
             end
         end
-
+        
         [dr1,dr2] = ndgrid(dr_0{1},dr_0{2});
         dr1 = abs(dr1); % in case edges vector is reversed
         dr2 = abs(dr2);
         dr = dr2(:).*dr1(:);
-
+        
     end
     %=================================================================%
 
@@ -293,13 +293,13 @@ methods
     %   Marginalized for distribution in each dimension.
     %   Uses Euler's method to integrate over domain.
     function [marg,tot] = marginalize(obj,x)
-
+        
         [dr,dr1,dr2] = obj.dr; % generate differential area of elements
-
+        
         tot = sum(x.*dr); % integrated total
-
+        
         x = obj.reshape(x);
-
+        
         marg{1} = sum(dr2.*x,2); % integrate over diameter
         marg{2} = sum(dr1.*x,1); % integrate over mass
 
@@ -404,7 +404,11 @@ methods
     end
     %=================================================================%
 
-
+    
+    
+%=====================================================================%
+%-- VISUALIZATION METHODS --------------------------------------------%
+%=====================================================================%
     
     %== PLOT2D =======================================================%
     %   Plots x as a 2D function on the grid.
