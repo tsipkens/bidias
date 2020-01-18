@@ -1,13 +1,13 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
 % Author:  Timothy Sipkens, 2019-02-03
-%-------------------------------------------------------------------------%
-%   The grid class is currently used when a simple discretization of
-%   two-dimensional space is required. It then takes either the span
-%   of spcae to be covered or pre-defined edge vectors to form a grid.
+% 
+% The grid class is currently used when a simple discretization of
+% two-dimensional space is required. It then takes either the span
+% of spcae to be covered or pre-defined edge vectors to form a grid.
 %
-%   See constructor method for list of other variables required
-%   for creation.
+% See constructor method for list of other variables required
+% for creation.
 %=========================================================================%
 
 classdef Grid
@@ -34,6 +34,8 @@ properties
     elements = []; % contains position of pixel/element centers as a (ne x 2) vector
     nodes = []; % contains position of nodes surrounding elements for each dimension
                 % each cell has a vector of size (ne + 1).
+                
+    graph = []; % 
 end
 
 
@@ -83,7 +85,7 @@ methods
     %== MESH =========================================================%
     %   Responsible for generating a mesh represented by a series of elements.
     %   Author:	Timothy Sipkens, 2019-02-03
-    %-----------------------------------------------------------------%
+    %   
     %   Currently setup to do simple linear or logarithmic spaced
     %   quadrilateral mesh.
     %
@@ -584,41 +586,6 @@ methods
         hold off;
 
         if nargout==0; clear h; end
-
-    end
-    %=================================================================%
-    
-    
-    
-    %== FIT_MASS_MOB =================================================%
-    %   Fits the mass-mobility relation to the returned distribution.
-    %   Author: Timothy Sipkens, 2019-07-15
-    function [Dm,k,rho_100] = fit_mass_mob(obj,x,slope,opt_plot)
-
-        if ~exist('slope','var'); slope = []; end
-        if ~exist('opt_plot','var'); opt_plot = []; end
-
-        if isempty(slope); slope = 3; end
-        if isempty(opt_plot); opt_plot = 1; end
-
-        %-- Get location of maximum pixel ----------------------------%
-        t0 = obj.reshape(x);
-        [t1,t2] = find(t0==max(max(t0)));
-        v0 = log10([obj.edges{2}(t2),obj.edges{1}(t1)]);
-
-        %-- Proceed with fitting -------------------------------------%
-        y0 = [v0(2),slope];
-        B_fun = @(y) -obj.ray_sum([v0(1),y(1)],y(2),0)*x;
-
-        y1 = fminsearch(B_fun,y0);
-        Dm = y1(2);
-        k = 10.^(y1(1)-Dm*v0(1));
-
-        rho_100 = 6/pi*k*(100^(Dm-3))*1e9;
-            % expected effective density at dm = 100 nm
-            % 1e9 converts from fg/nm^3 to kg/m^3
-
-        if opt_plot; obj.overlay_line([v0(1),y1(1)],y1(2),'r'); end
 
     end
     %=================================================================%
