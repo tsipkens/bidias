@@ -202,7 +202,7 @@ methods
     function [l1] = l1(obj)
         l1 = -diag(sum(tril(obj.adj)))+...
             triu(obj.adj);
-        l1(obj.Ne,:) = [];
+        l1(size(obj.adj,1),:) = [];
     end
     %=================================================================%
     
@@ -647,9 +647,9 @@ methods
         xlim([min(obj.edges{dim}),max(obj.edges{dim})]);
     end
     %=================================================================%
-
-
-
+    
+    
+    
     %== OVERLAY_LINE =================================================%
     %   Plots a line on top of the current grid
     %   Author:	Timothy Sipkens, 2019-07-15
@@ -698,6 +698,23 @@ methods
                 shift = shift+1; % skip entry
             end
         end
+    end
+    %=================================================================%
+    
+    %== PADJACENCY ===================================================%
+    %   Convert x defined on a partial grid to the full grid equivalent, 
+    %   using zeros to fill the removed grid points.
+    function [obj,adj] = padjacency(obj)
+        [~,adj] = obj.adjacency;
+        
+        idx_miss = sort(obj.missing,'descend');
+        
+        for ii=1:length(idx_miss) % remove row and column in adjacency matrix
+            adj(idx_miss(ii),:) = [];
+            adj(:,idx_miss(ii)) = [];
+        end
+        
+        obj.adj = adj;
     end
     %=================================================================%
     
