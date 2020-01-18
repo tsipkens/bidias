@@ -189,6 +189,24 @@ methods
     
     
     
+    %== GRAD =========================================================%
+    %   Calculates the gradient in x. Uses simple first order
+    %   differences.
+    function out = grad(obj,x)
+
+        [~,dr1,dr2] = obj.dr;
+
+        [grad2,grad1] = gradient(reshape(x,obj.ne));
+        grad1 = grad1.*dr1;
+        grad2 = grad2.*dr2;
+
+        out = [grad1(:),grad2(:)];
+
+    end
+    %=================================================================%
+    
+    
+    
     %== PROJECT ======================================================%
     %   Project x onto current grid. Uses simple linear.
     %   interpolation for this purpose. The parameter 'grid_old'
@@ -270,25 +288,7 @@ methods
     %=================================================================%
 
 
-
-    %== GRAD =========================================================%
-    %   Calculates the gradient in x. Uses simple first order
-    %   differences.
-    function out = grad(obj,x)
-
-        [~,dr1,dr2] = obj.dr;
-
-        [grad2,grad1] = gradient(reshape(x,obj.ne));
-        grad1 = grad1.*dr1;
-        grad2 = grad2.*dr2;
-
-        out = [grad1(:),grad2(:)];
-
-    end
-    %=================================================================%
-
-
-
+    
     %== MARGINALIZE ==================================================%
     %   Marginalized for distribution in each dimension.
     %   Uses Euler's method to integrate over domain.
