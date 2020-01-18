@@ -17,9 +17,6 @@ properties
     discrete = 'logarithmic';
                 % type discretization to be applied to the edges
                 % ('logarithmic' or 'linear')
-                
-    partial = 0; % toggle of whether the grid is 'partial' or sparse,
-                 % that is having some grid points missing
     
     dim = 2;    % number of dimensions of mesh
     
@@ -39,6 +36,10 @@ properties
                 % each cell has a vector of size (ne + 1).
                 
     adj = [];   % adjacency matrix
+    
+    partial = 0; % toggle of whether the grid is 'partial' or sparse,
+                 % that is having some grid points missing
+    missing = []; % global indices of missing grid points for partial grids
 end
 
 
@@ -165,6 +166,31 @@ methods
         adj = sparse(adj);
         
         obj.adj = adj;
+    end
+    %=================================================================%
+    
+    
+    
+    %== GLOBAL_IDX ===================================================%
+    %   Convert 2D grid coordinate to a global coordinate in the grid.
+    %   For mass-mobiltiy grids, for example, idx1 is the mass index and 
+    %   idx2 is the mobility index.
+    function k = global_idx(obj,idx1,idx2)
+        k = idx1+(idx2-1)*obj.ne(1);
+    end
+    %=================================================================%
+    
+    
+    
+    %== TWO_IDX ======================================================%
+    %   Convert global grid coordinate to 2D index on grid.
+    %   For mass-mobiltiy grids, for example, idx1 is the mass index and 
+    %   idx2 is the mobility index.
+    function [idx1,idx2] = two_idx(obj,k)
+        idx1 = mod(k,obj.ne(1));
+        idx1(idx1==0) = obj.ne(1);
+        
+        idx2 = floor((k-1)./obj.ne(1))+1;
     end
     %=================================================================%
     
@@ -298,9 +324,8 @@ methods
     %   Uses Euler's method to integrate over domain.
     function [marg,tot] = marginalize(obj,x)
         
-        if obj.partial==1 % if sparse grid
-            [marg,tot] = obj.smarginalize(x);
-            return;
+        if obj.partial==1 % if partial grid
+            x = obj.partial2full(x);
         end
         
         [dr,dr1,dr2] = obj.dr; % generate differential area of elements
@@ -312,34 +337,6 @@ methods
         marg{1} = sum(dr2.*x,2); % integrate over diameter
         marg{2} = sum(dr1.*x,1); % integrate over mass
         
-    end
-    %=================================================================%
-    
-    
-    
-    %== SMARGINALIZE =================================================%
-    %   Marginalized over a sparse grid in each dimension.
-    %   Uses Euler's method to integrate over domain.
-    function [marg,tot] = smarginalize(obj,x)
-        
-        [dr,dr1,dr2] = obj.dr; % generate differential area of elements
-        
-        tot = sum(x.*dr); % integrated total
-        
-        marg{1} = zeros(obj.ne(1),1);
-        t1 = x.*dr2(:);
-        for ii=1:obj.ne(1)
-            marg{1}(ii) = sum(t1(obj.edges{1}(ii)==...
-                obj.elements(:,1)));
-        end
-        
-        marg{2} = zeros(1,obj.ne(2));
-        t2 = x.*dr1(:);
-        for ii=1:obj.ne(2)
-            marg{2}(ii) = sum(t2(obj.edges{2}(ii)==...
-                obj.elements(:,2)));
-        end
-
     end
     %=================================================================%
     
@@ -681,6 +678,29 @@ methods
 
     end
     %=================================================================%
+    
+    
+    
+%=====================================================================%
+%-- SUPPORT FOR PARTIAL GRIDS ----------------------------------------%
+%=====================================================================%
+    
+    %== PARTIAL2FULL =================================================%
+    %   Convert x defined on a partial grid to the full grid equivalent, 
+    %   using zeros to fill the removed grid points.
+    function x_full = partial2full(obj,x)
+        x_full = zeros(obj.Ne,1);
+        shift = 0;
+        for ii=1:obj.Ne
+            if ~any(find(ii==obj.missing))
+                x_full(ii) = x(ii-shift);
+            else
+                shift = shift+1; % skip entry
+            end
+        end
+    end
+    %=================================================================%
+    
 end
 
 
