@@ -17,6 +17,9 @@ properties
     discrete = 'logarithmic';
                 % type discretization to be applied to the edges
                 % ('logarithmic' or 'linear')
+                
+    partial = 0; % toggle of whether the grid is 'partial' or sparse,
+                 % that is having some grid points missing
     
     dim = 2;    % number of dimensions of mesh
     
@@ -167,23 +170,24 @@ methods
     
     
     
-    %== L1 ===================================================%
+    %== L1 ===========================================================%
     %   Compute the first-order Tikhonov operator.
-    function [div] = l1(obj)
-        div = -diag(sum(tril(obj.adj)))+...
+    %   Form is equiavalent to applying no slope at high-high boundary.
+    function [l1] = l1(obj)
+        l1 = -diag(sum(tril(obj.adj)))+...
             triu(obj.adj);
-        div(obj.Ne,:) = [];
+        l1(obj.Ne,:) = [];
     end
     %=================================================================%
     
     
     
-    %== L2 ===================================================%
+    %== L2 ===========================================================%
     %   Compute the second-order Tikhonov operator.
-    function [div] = l2(obj)
-        div = -diag(sum(obj.adj))+...
+    %   Form is equiavalent to applying no slope at grid boundary.
+    function [l2] = l2(obj)
+        l2 = -diag(sum(obj.adj))+...
             triu(obj.adj)+tril(obj.adj);
-        div(obj.Ne,:) = [];
     end
     %=================================================================%
     
@@ -290,24 +294,57 @@ methods
 
     
     %== MARGINALIZE ==================================================%
-    %   Marginalized for distribution in each dimension.
+    %   Marginalizes over the grid in each dimension.
     %   Uses Euler's method to integrate over domain.
     function [marg,tot] = marginalize(obj,x)
+        
+        if obj.partial==1 % if sparse grid
+            [marg,tot] = obj.smarginalize(x);
+            return;
+        end
+        
+        [dr,dr1,dr2] = obj.dr; % generate differential area of elements
+
+        tot = sum(x.*dr); % integrated total
+
+        x = obj.reshape(x);
+
+        marg{1} = sum(dr2.*x,2); % integrate over diameter
+        marg{2} = sum(dr1.*x,1); % integrate over mass
+        
+    end
+    %=================================================================%
+    
+    
+    
+    %== SMARGINALIZE =================================================%
+    %   Marginalized over a sparse grid in each dimension.
+    %   Uses Euler's method to integrate over domain.
+    function [marg,tot] = smarginalize(obj,x)
         
         [dr,dr1,dr2] = obj.dr; % generate differential area of elements
         
         tot = sum(x.*dr); % integrated total
         
-        x = obj.reshape(x);
+        marg{1} = zeros(obj.ne(1),1);
+        t1 = x.*dr2(:);
+        for ii=1:obj.ne(1)
+            marg{1}(ii) = sum(t1(obj.edges{1}(ii)==...
+                obj.elements(:,1)));
+        end
         
-        marg{1} = sum(dr2.*x,2); % integrate over diameter
-        marg{2} = sum(dr1.*x,1); % integrate over mass
+        marg{2} = zeros(1,obj.ne(2));
+        t2 = x.*dr1(:);
+        for ii=1:obj.ne(2)
+            marg{2}(ii) = sum(t2(obj.edges{2}(ii)==...
+                obj.elements(:,2)));
+        end
 
     end
     %=================================================================%
-
-
-
+    
+    
+    
     %== RESHAPE ======================================================%
     %   A simple function to reshape a vector based on the grid.
     function x = reshape(obj,x)
@@ -648,23 +685,22 @@ end
 
 
 methods(Static)
-    %== EFF_IND ======================================================%
-    %   Returns the effective index between two grids, that is the
-    %   index including fraction.
-    function ind = eff_ind(edges,r)
+    %== CLOSEST_IDX =================================================%
+    %   Returns the effective index closest to r position.
+    function idx = closest_idx(edges,r)
 
         dim = length(edges); % will be number of dimensions
 
         for ii=1:dim
-            ind_bool = and(...
+            idx_bool = and(...
                 r(:,ii)>=edges{ii}(1:(end-1)),...
                 r(:,ii)<edges{ii}(2:end));
-
-            ind_temp = sum(cumprod(ind_bool==0,2),2)+1;
-            ind_temp(r(:,ii)==edges{ii}(end)) = ...
-                ind_temp(r(:,ii)==edges{ii}(end))-1;
+            
+            idx_temp = sum(cumprod(idx_bool==0,2),2)+1;
+            idx_temp(r(:,ii)==edges{ii}(end)) = ...
+                idx_temp(r(:,ii)==edges{ii}(end))-1;
                     % condition for points at end of domain
-            ind(:,ii) = ind_temp;
+            idx(:,ii) = idx_temp;
         end
     end
     %=================================================================%
