@@ -145,8 +145,8 @@ methods
     %== ADJACENCY ====================================================%
     %   Compute the adjacency matrix for the full grid.
     function [obj,adj] = adjacency(obj)
-        adj = zeros(obj.Ne,obj.Ne);
-        for jj=1:obj.Ne
+        adj = zeros(prod(obj.ne),prod(obj.ne));
+        for jj=1:prod(obj.ne)
             if ~(mod(jj,obj.ne(1))==0)
                 adj(jj,jj+1) = 1;
             end
@@ -707,7 +707,7 @@ methods
         obj.missing = t1(bool_above);
         obj.elements = obj.elements(~bool_above,:);
         obj.Ne = size(obj.elements,1);
-        obj.adj = obj.padjacency;
+        obj = obj.padjacency;
         
     end
     %=================================================================%
