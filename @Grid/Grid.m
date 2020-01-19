@@ -37,9 +37,9 @@ properties
                 
     adj = [];   % adjacency matrix
     
-    partial = 0; % toggle of whether the grid is 'partial' or sparse,
-                 % that is having some grid points missing
-    missing = []; % global indices of missing grid points for partial grids
+    ispartial = 0; % toggle of whether the grid is 'partial' or sparse,
+                   % that is having some grid points missing
+    missing = [];  % global indices of missing grid points for partial grids
 end
 
 
@@ -143,7 +143,7 @@ methods
     
     
     %== ADJACENCY ====================================================%
-    %   Compute the adjacency matrix.
+    %   Compute the adjacency matrix for the full grid.
     function [obj,adj] = adjacency(obj)
         adj = zeros(obj.Ne,obj.Ne);
         for jj=1:obj.Ne
@@ -324,7 +324,7 @@ methods
     %   Uses Euler's method to integrate over domain.
     function [marg,tot] = marginalize(obj,x)
         
-        if obj.partial==1 % if partial grid
+        if obj.ispartial==1 % if partial grid
             x = obj.partial2full(x);
         end
         
@@ -685,11 +685,40 @@ methods
 %-- SUPPORT FOR PARTIAL GRIDS ----------------------------------------%
 %=====================================================================%
     
+    %== PARTIAL =====================================================%
+    %   Convert to a partial grid. Currently take a y-intercept, b, 
+    %   and slope, m, as arguements and cuts upper triangle.
+    function obj = partial(obj,b,m)
+        
+        if ~exist('m','var'); m = []; end
+        if isempty(m); m = 0; end
+        
+        if strcmp(obj.discrete,'logarithmic')
+            t0 = log10(obj.elements);
+        else
+            t0 = obj.elements;
+        end
+        
+        bool_above = t0(:,1)>(t0(:,2).*m+b);
+        t1 = 1:length(bool_above);
+        
+        %-- Update grid properties -----------------%
+        obj.ispartial = 1;
+        obj.missing = t1(bool_above);
+        obj.elements = obj.elements(~bool_above,:);
+        obj.Ne = size(obj.elements,1);
+        obj.adj = obj.padjacency;
+        
+    end
+    %=================================================================%
+    
+    
+    
     %== PARTIAL2FULL =================================================%
     %   Convert x defined on a partial grid to the full grid equivalent, 
     %   using zeros to fill the removed grid points.
     function x_full = partial2full(obj,x)
-        x_full = zeros(obj.Ne,1);
+        x_full = zeros(prod(obj.ne),1);
         shift = 0;
         for ii=1:obj.Ne
             if ~any(find(ii==obj.missing))
@@ -700,6 +729,8 @@ methods
         end
     end
     %=================================================================%
+    
+    
     
     %== PADJACENCY ===================================================%
     %   Convert x defined on a partial grid to the full grid equivalent, 
