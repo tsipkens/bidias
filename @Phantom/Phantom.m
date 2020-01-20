@@ -410,23 +410,23 @@ methods (Static)
     %   grid - 'Grid' object on which input data is evaluated
     %-----------------------------------------------------------------%
     function phantom = fit(x,grid)
-
+        
         [~,vec1,vec2] = grid.vectorize();
-
+        
         corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
-
+        
         fun_pha = @(y) y(1).*mvnpdf(log10([vec1,vec2]),[y(2),y(3)],...
             corr2cov([y(4),y(5)],[1,y(6);y(6),1]));
-        y0 = [max(x),0,2.3,0.3,0.2,0.99];
-            % [C,mg,dg,sm,sg,corr]
-
+        y0 = [max(x),0,2.3,0.6,0.25,0.97];
+            % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
+        
         y1 = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
             [0,-10,-10,0,0,-1],[inf,10,10,10,3,1]);
-
+        
         mu = [y1(2),y1(3)];
         sigma = [y1(4),y1(5)];
         Sigma = corr2cov(sigma,[1,y1(6);y1(6),1]);
-
+        
         phantom = Phantom('standard',grid,mu,Sigma);
         phantom.type = 'standard-fit';
     end
