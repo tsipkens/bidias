@@ -145,25 +145,44 @@ methods
     %== ADJACENCY ====================================================%
     %   Compute the adjacency matrix for the full grid.
     function [obj,adj] = adjacency(obj)
-        adj = zeros(prod(obj.ne),prod(obj.ne));
+        
+        ind1 = zeros(3*prod(obj.ne),1);
+        ind2 = ones(3*prod(obj.ne),1);
+        vec = zeros(3*prod(obj.ne),1);
+        ll = 0;
+        
         for jj=1:prod(obj.ne)
             if ~(mod(jj,obj.ne(1))==0)
-                adj(jj,jj+1) = 1;
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj+1;
+                vec(ll) = 1;
             end
             
             if ~(mod(jj-1,obj.ne(1))==0)
-                adj(jj,jj-1) = 1;
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj-1;
+                vec(ll) = 1;
             end
             
             if jj>obj.ne(1)
-                adj(jj,jj-obj.ne(1)) = 1;
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj-obj.ne(1);
+                vec(ll) = 1;
             end
             
             if jj<=(obj.Ne-obj.ne(1))
-                adj(jj,jj+obj.ne(1)) = 1;
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj+obj.ne(1);
+                vec(ll) = 1;
             end
         end
-        adj = sparse(adj);
+        
+        adj = sparse(ind1,ind2,vec,...
+            prod(obj.ne),prod(obj.ne));
         
         obj.adj = adj;
     end

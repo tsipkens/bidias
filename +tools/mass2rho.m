@@ -10,7 +10,7 @@ if ~exist('n_rho','var'); n_rho = []; end
 if isempty(n_rho); n_rho = 600; end
 
 if ~exist('span_rho','var'); span_rho = []; end
-if isempty(span_rho); span_rho = [10^1.5,10000]; end
+if isempty(span_rho); span_rho = [10^2,10^3.5]; end
 %---------------------------------------------------%
 
 rho_min = span_rho(1);
