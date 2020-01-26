@@ -1,9 +1,9 @@
 
-% PRESET_PHANTOMS Parameter sets for preset/sample phantoms.
+% PRESETS  Parameter sets for preset/sample phantoms.
 % Author: Timothy Sipkens, 2019-10-31
 %=========================================================================%
 
-function [p,type,name] = preset_phantoms(name)
+function [p,type,name] = presets(name)
 
 switch name
     case {'demonstration','1'}
@@ -58,6 +58,16 @@ switch name
         p.rhog = 1000;
         p.smd = 1.05;
         p.Dm = 3;
+        type{1} = 'logn';
+        
+    case {'distr-sp2'}
+        name = 'SP2 Distribution';
+        
+        p.dg = 1;
+        p.sg = 1.5;
+        p.rhog = 1e9*6/pi;
+        p.smd = 1.5;
+        p.Dm = 1;
         type{1} = 'logn';
         
     otherwise

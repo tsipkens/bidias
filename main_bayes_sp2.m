@@ -18,11 +18,14 @@ load('viridis.mat');
 %== STEP 1: Generate phantom (x_t) =======================================%
 %   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
-span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
+span_t = [10^-1.5,10^1.5;...
+    10^-1.5,10^1.5]; % range of mobility and mass
 
-phantom = Phantom('4',span_t);
+grid_t = Grid(span_t,...
+    [540,550],'logarithmic');
+grid_t = grid_t.partial(0,1);
+phantom = Phantom('distr-sp2',grid_t);
 x_t = phantom.x;
-grid_t = phantom.grid;
 nmax = max(x_t);
 cmax = nmax;
 
@@ -55,6 +58,7 @@ n_b = [14,50]; %[14,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % grid for data
+% grid_b = grid_b.partial(0,1);
 
 prop_pma = kernel.prop_pma;
 [A_t,sp] = kernel.gen_kernel_grid(grid_b,grid_t,prop_pma,'Rm',3);

@@ -1,5 +1,5 @@
 
-% PHANTOM  Class containing properties and methods for storing phantoms.
+% PHANTOM  Class containing the properties and methods for bivariate lognormal phantoms.
 % Author:  Timothy Sipkens, 2019-07-08
 %=========================================================================%
 
@@ -44,14 +44,14 @@ methods
     %               (e.g. 'logn','cond-norm')
     %-----------------------------------------------------------------%
     function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
-
+        
         %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty phantom
-
+        
         if ~exist('span_grid','var'); span_grid = []; end
         if isempty(span_grid); span_grid = [10^-1.5,10^1.5;20,10^3]; end
         %-------------------------------------------------------------%
-
+        
         %== Assign parameter values - 3 options ======================%
         switch type
             
@@ -84,23 +84,23 @@ methods
                 
             %-- OPTION 3: Use a preset or sample distribution --------%
             otherwise % check if type is a preset phantom
-                [p,modes,type] = obj.preset_phantoms(type);
+                [p,modes,type] = obj.presets(type);
                 if isempty(p); error('Invalid phantom call.'); end
-
+                
                 obj.type = type;
                 obj.modes = modes;
-
+                
                 obj.p = obj.fill_p(p);
-
+                
                 if ~any(strcmp('cond-norm',modes))
                     [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
                     obj.R = obj.sigma2r(obj.Sigma);
                 end
         end
-
+        
         obj.n_modes = length(obj.modes); % get number of modes
-
-
+        
+        
         %-- Generate a grid to evaluate phantom on -------------------%
         if isa(span_grid,'Grid') % if grid is specified
             obj.grid = span_grid;
@@ -182,7 +182,8 @@ methods
         if ~iscell(mu); mu = {mu}; end
         if ~iscell(Sigma); Sigma = {Sigma}; end
 
-        [~,m_vec,d_vec] = obj.grid.vectorize();
+        m_vec = obj.grid.elements(:,1);
+        d_vec = obj.grid.elements(:,2);
 
         %-- Assign other parameters of distribution ------------------%
         x = zeros(size(m_vec));
@@ -202,12 +203,13 @@ methods
     %   normal modes.
     %   Author:  Timothy Sipkens, 2019-10-29
     function [x] = eval_p(obj,p)
-
-        [~,m_vec,d_vec] = obj.grid.vectorize();
-
+        
+        m_vec = obj.grid.elements(:,1);
+        d_vec = obj.grid.elements(:,2);
+        
         m_fun = @(d,ll) log(p(ll).m_100.*((d./100).^p(ll).Dm));
             % geometric mean mass in fg as a function of d
-
+        
         %-- Evaluate phantom mass-mobility distribution ---------------%
         x = zeros(length(m_vec),1); % initialize distribution parameter
         for ll=1:obj.n_modes % loop over different modes
@@ -218,11 +220,11 @@ methods
                     exp(m_fun(d_vec,ll)),p(ll).smd.*...
                     exp(m_fun(d_vec,ll)));
             end
-
+            
             p_temp = lognpdf(d_vec,log(p(ll).dg),log(p(ll).sg)).*p_m;
             x = x+p_temp;
         end
-
+        
         %-- Reweight modes and transform to log-log space ------------%
         x = x./obj.n_modes;
         x = x.*(d_vec.*m_vec).*log(10).^2;
@@ -255,7 +257,7 @@ methods (Static)
     %== PRESET_PHANTOMS ==============================================%
     % Returns a set of parameters for preset/sample phantoms.
     % Definition is in an external function.
-    [p,modes,type] = preset_phantoms(obj,type);
+    [p,modes,type] = presets(obj,type);
     %=================================================================%
 
 
@@ -263,9 +265,9 @@ methods (Static)
     %   Generates the remainder of the components of p.
     %   Author:  Timothy Sipkens, 2019-10-30
     function p = fill_p(p)
-
+        
         n_modes = length(p);
-
+        
         %-- Assign other parameters of distribution ------------------%
         for ll=1:n_modes % loop through distribution modes
             p(ll).mg = 1e-9*p(ll).rhog*pi/6*...
@@ -281,7 +283,7 @@ methods (Static)
             p(ll).rhog = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
             p(ll).k = p(ll).m_100/(100^p(ll).Dm);
         end
-
+        
     end
     %=================================================================%
 

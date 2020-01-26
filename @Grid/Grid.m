@@ -262,6 +262,10 @@ methods
     %   contains the original grid for the input data x.
     function x = project(obj,grid_old,x)
         
+        if grid_old.ispartial==1 % if partial grid
+            x = grid_old.partial2full(x);
+        end
+        
         n1 = length(grid_old.edges{1});
         n2 = length(grid_old.edges{2});
         x = reshape(x,[n1,n2]);
@@ -333,6 +337,8 @@ methods
         dr2 = abs(dr2);
         dr = dr2(:).*dr1(:);
         
+        dr = obj.full2partial(dr);
+        
     end
     %=================================================================%
 
@@ -347,12 +353,13 @@ methods
             x = obj.partial2full(x);
         end
         
-        [dr,dr1,dr2] = obj.dr; % generate differential area of elements
-
+        [~,dr1,dr2] = obj.dr; % generate differential area of elements
+        dr = dr2(:).*dr1(:);
+        
         tot = sum(x.*dr); % integrated total
-
+        
         x = obj.reshape(x);
-
+        
         marg{1} = sum(dr2.*x,2); % integrate over diameter
         marg{2} = sum(dr1.*x,1); % integrate over mass
         
@@ -381,11 +388,8 @@ methods
     function [x,t1,t2] = vectorize(obj,x)
         if exist('x','var'); x = x(:); else; x = []; end
 
-        if nargout>1; t1 = repmat(obj.edges{1}',[obj.ne(2),1]); end
-        if nargout>2
-            t2 = repmat(obj.edges{2},[obj.ne(1),1]);
-            t2 = t2(:);
-        end
+        if nargout>1; t1 = obj.elements(:,1); end
+        if nargout>2; t2 = obj.elements(:,2); end
     end
     %=================================================================%
 
@@ -467,26 +471,30 @@ methods
     %   Plots x as a 2D function on the grid.
     %   Author: Timothy Sipkens, 2018-11-21
     function [h,x] = plot2d(obj,x)
-
+        
+        if obj.ispartial==1 % if partial grid
+            x = obj.partial2full(x);
+        end
+        
         x = obj.reshape(x);
-
+        
         if strcmp('linear',obj.discrete)
             imagesc(obj.edges{2},obj.edges{1},x);
             set(gca,'YDir','normal');
-
+            
             xlim(obj.span(2,:));
             ylim(obj.span(1,:));
-
+            
         elseif strcmp('logarithmic',obj.discrete)
             imagesc(log10(obj.edges{2}),log10(obj.edges{1}),x);
             set(gca,'YDir','normal');
-
+            
             xlim(log10(obj.span(2,:)));
             ylim(log10(obj.span(1,:)));
         end
-
+        
         if nargout>0; h = gca; end
-
+        
     end
     %=================================================================%
 
@@ -496,12 +504,12 @@ methods
     %   Plots x as a 2D function on the grid, with marginalized distributions.
     %   Author: Timothy Sipkens, 2018-11-21
     function [h,x_m] = plot2d_marg(obj,x,obj_t,x_t)
-
+        
         subplot(4,4,[5,15]);
         obj.plot2d(x);
-
+        
         x_m = obj.marginalize(x);
-
+        
         %-- Plot marginal distribution (dim 2) -----------------------%
         subplot(4,4,[1,3]);
         marg_dim = 2;
@@ -509,16 +517,16 @@ methods
             [x_m{marg_dim},0],'k');
         xlim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
         set(gca,'XScale','log');
-
+        
         if nargin>2 % also plot marginal of the true distribution
             x_m_t = obj_t.marginalize(x_t);
-
+            
             hold on;
             plot(obj_t.nodes{marg_dim},...
                 [x_m_t{marg_dim},0],'color',[0.6,0.6,0.6]);
             hold off;
         end
-
+        
         %-- Plot marginal distribution (dim 1) -----------------------%
         subplot(4,4,[8,16]);
         marg_dim = 1;
@@ -526,17 +534,17 @@ methods
             obj.nodes{marg_dim},'k');
         ylim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
         set(gca,'YScale','log');
-
+        
         if nargin>2 % also plot marginal of the true distribution
             hold on;
             plot([0;x_m_t{marg_dim}],...
                 obj_t.nodes{marg_dim},'color',[0.6,0.6,0.6]);
             hold off;
         end
-
+        
         subplot(4,4,[5,15]);
         if nargout>0; h = gca; end
-
+        
     end
     %=================================================================%
 
@@ -709,6 +717,9 @@ methods
     %   and slope, m, as arguements and cuts upper triangle.
     function obj = partial(obj,b,m)
         
+        if ~exist('b','var'); b = []; end
+        if isempty(b); b = 0; end
+        
         if ~exist('m','var'); m = []; end
         if isempty(m); m = 0; end
         
@@ -738,14 +749,19 @@ methods
     %   using zeros to fill the removed grid points.
     function x_full = partial2full(obj,x)
         x_full = zeros(prod(obj.ne),1);
-        shift = 0;
-        for ii=1:obj.Ne
-            if ~any(find(ii==obj.missing))
-                x_full(ii) = x(ii-shift);
-            else
-                shift = shift+1; % skip entry
-            end
-        end
+        t0 = setdiff((1:prod(obj.ne))',obj.missing);
+        x_full(t0) = x;
+    end
+    %=================================================================%
+    
+    
+    
+    %== FULL2PARTIAL =================================================%
+    %   Convert x defined on a full grid to the partial grid equivalent, 
+    %   removing entries for missing indices.
+    function x = full2partial(obj,x)
+        idx_miss = sort(obj.missing,'descend');
+        x(idx_miss,:) = [];
     end
     %=================================================================%
     
@@ -759,10 +775,8 @@ methods
         
         idx_miss = sort(obj.missing,'descend');
         
-        for ii=1:length(idx_miss) % remove row and column in adjacency matrix
-            adj(idx_miss(ii),:) = [];
-            adj(:,idx_miss(ii)) = [];
-        end
+        adj(idx_miss,:) = [];
+        adj(:,idx_miss) = [];
         
         obj.adj = adj;
     end

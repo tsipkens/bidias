@@ -16,17 +16,38 @@ of this README for more details.
 
 This program is organized into several: classes (folders starting with the `@` symbol),
 packages (folders starting with the `+` symbol), and scripts that form the
-base of the program.
+base of the program and will be detailed in this README.
+
+## 1. General description and problem definition
+
+Size characterization is critical to understanding the role of aerosols in various
+roles, ranging from climate change to novel nanotechnologies. Aerosol size
+distributions have typically been resolved only with respect to a single quantity
+or variable. With the increasing frequency of tandem measurements, this program
+is designed to move towards inferring two-dimensional distributions of aerosol
+particle size. This kind of analysis requires a double deconvolution, that is
+the inversion of a double integral. While this may complicate the process, the
+information gained is quite valuable, including the distribution of aerosol
+quantities and the identification of multiple particle types which may be challenging
+from one-dimensional analyses or when simply computing summary parameters.
+
+Mathematically, the problem to be solved here is of the form
 
 
-## 1. Scripts in upper directory
 
-### 1.1 Main scripts (main*.m)
+where *N<sub>i</sub>* is some measurement, most often a number of counts of
+particles, at some *i*<sup>th</sup> measurement setpoint or location; K() is a
+kernel containing device transfer functions or other discretization information;
+and p() is a two-dimensional size distribution.
+
+## 2. Scripts in upper directory
+
+### 2.1 Main scripts (main*.m)
 
 The `main*` scripts in the top directory of the code can be called to
 demonstrate use of the code.
 
-##### 1.1.1 General structure
+##### 2.1.1 General structure
 
 Scripts to execute this program should be structured as follows:
 
@@ -70,7 +91,7 @@ by calling the `plot2d_marg` method of this class. This plots both the
 retrieved distribution as well as the marginalized distribution on each of
 the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
-##### 1.1.2 Script associated with the original J. Aerosol Sci. paper
+##### 2.1.2 Script associated with the original J. Aerosol Sci. paper
 
 Of particular note, the `main_jas19.m` script is designed to replicate the results
 in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor
@@ -79,7 +100,7 @@ optimizing the regularization parameter for Tikhonov regularization. The narrowe
 range in the updated code provides a better optimized regularization parameter
 and thus a slightly smaller Euclidean error.
 
-### 1.2 Scripts to run a series of inversion methods (run_inversions*.m)
+### 2.2 Scripts to run a series of inversion methods (run_inversions*.m)
 
 As noted above, these scripts are intend to bundle a series of
 inversion methods into a single line of code in the `main*` scripts.
@@ -104,11 +125,11 @@ length of time required to produce a reconstruction.
 
 - ...
 
-## 2. Classes
+## 3. Classes
 
 Classes are contained in folders starting with the `@` symbol.
 
-### 2.1 Grid class
+### 3.1 Grid class
 
 Grid is a class developed to discretize a parameter space (e.g. mass-mobility space).
 This is done using a simple rectangular grid that can have linear, logarithmic
@@ -126,7 +147,7 @@ increasing mass and then with increasing mobility diameter. Vectorizing the
 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
 the `vectorize` method.
 
-### 2.2 Phantom class
+### 3.2 Phantom class
 
 Phantom is a class developed to contain the parameters and other information
 for the phantom distributions that are used in testing the different inversion
@@ -175,9 +196,9 @@ analysis. The `p` properties of the Phantom class then contains many of the
 morphological parameters of interest to practitioners measuring
 mass-mobility distributions.
 
-## 3. Packages
+## 4. Packages
 
-### 3.1 +kernel
+### 4.1 +kernel
 
 This package is used to evaluate the transfer function of the DMA and
 particle mass analyzer (such as the CPMA or APM). The primary function
@@ -189,7 +210,7 @@ As per Step 2 in Section 1.1.1, the transfer function evaluation can
 proceed using two inputs either (i) a `sp` structure or (ii) an instance
 of the `Grid` class defined for the data setpoints.
 
-##### 3.1.1 sp
+##### 4.1.1 sp
 
 The `sp` or setpoint structure is a structured array containing the information
 necessary to define the device setpoints. For a DMA, the setpoint mobility diameter,
@@ -202,13 +223,13 @@ relevant parameters that could be used to specify that setpoint, including
 mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
 the voltage, `V`; and the electrode speeds, `omega*`.
 
-##### 3.1.2 grid_b
+##### 4.1.2 grid_b
 
 Alternatively, one can generate a grid corresponding to the data points. This can
 speed transfer function evaluation be exploiting the structure of the setpoints
 to minimize the number of function evaluations (using the `gen_A_grid` function).
 
-### 3.2 +tfer_pma
+### 4.2 +tfer_pma
 
 This package is used in evaluating the transfer function of the particle mass
 analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal
@@ -226,7 +247,7 @@ and the associated archive [(Sipkens et al., 2019)][5_code].
 
 The current implementation corresponds to v1.3 of that code.
 
-### 3.3 +invert
+### 4.3 +invert
 
 The invert package contains various functions used to invert the measured data
 for the desired two-dimensional distribution. This includes implementations of
@@ -253,7 +274,7 @@ Development is underway on the use of an exponential
 distance covariance function to correlate pixel values and reduce
 reconstruction errors [Sipkens et al. (Under preparation)][4].
 
-### 3.4 +optimize
+### 4.4 +optimize
 
 This package mirrors the content of the +inver package but,
 given the true distribution, aims to determine the optimal number of
@@ -261,7 +282,7 @@ iterations for the Twomey and MART schemes or the optimal regularization
 parameter for the Twomey-Markowski and Tikhonov methods. These were mostly
 created for internal use but may be of limited to use to the practitioner.
 
-### 3.5 +tools
+### 4.5 +tools
 
 A series of utility functions that serve various purposes, including printing
 a text-based progress bar (based on code from
@@ -316,9 +337,9 @@ the transfer function of particle mass analyzers (e.g. APM, CPMA) by
 parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma)
 for more details.  
 
-The authors would also like to thank
-[Samuel Grauer](https://www.researchgate.net/profile/Samuel_Grauer)
-for consulting on small pieces of this code (such as the MART code).
+The authors would also like to thank @sgrauer
+for consulting on small pieces of this code (such as the MART code
+and the `textbar` function).
 
 Information on the provided colormaps can be found in an associated
 README in the `cmap` folder.
