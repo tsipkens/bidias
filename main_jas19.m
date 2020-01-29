@@ -59,7 +59,7 @@ A_t = kernel.gen_kernel_grid(grid_b,grid_t,prop_pma,'Rm',3);
     % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in x...');
-B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
+B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
 disp('Complete.');

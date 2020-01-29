@@ -22,7 +22,7 @@ span_t = [10^-1.5,10^1.5;...
     10^-1.5,10^1.5]; % range of mobility and mass
 
 grid_t = Grid(span_t,...
-    [540,550],'logarithmic');
+    [540,540],'logarithmic');
 grid_t = grid_t.partial(0,1);
 phantom = Phantom('distr-sp2',grid_t);
 x_t = phantom.x;
@@ -30,12 +30,11 @@ nmax = max(x_t);
 cmax = nmax;
 
 %--  Generate x vector on coarser grid -----------------------------------%
-n_x = [50,64]; % number of elements per dimension in x
-    % [20,32]; % used for plotting projections of basis functions
-    % [40,64]; % used in evaluating previous versions of regularization
+n_x = [75,75]; % number of elements per dimension in x
 
 grid_x = Grid([grid_t.span],...
     n_x,'logarithmic');
+grid_x = grid_x.partial(0,1);
 x0 = grid_x.project(grid_t,x_t); % project into basis for x
 
 figure(1);
@@ -54,18 +53,18 @@ hold off;
 %== STEP 2A: Generate A matrix ===========================================%
 %   Note that here a dense kernel is computed for
 %   data synthesis in Step 3. 
-n_b = [14,50]; %[14,50]; %[17,35];
+n_b = [60,10]; %[14,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % grid for data
 % grid_b = grid_b.partial(0,1);
 
 prop_pma = kernel.prop_pma;
-[A_t,sp] = kernel.gen_kernel_grid(grid_b,grid_t,prop_pma,'Rm',3);
+[A_t,sp] = kernel.gen_kernel_grid_c2(grid_b,grid_t,prop_pma,'Rm',3);
     % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in x...');
-B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
+B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
 disp('Complete.');
@@ -100,18 +99,13 @@ grid_b.plot2d_sweep(b,cm_b);
 
 %%
 %== STEP 3: Perform inversions ===========================================%
-run_inversions_g;
-run_inversions_i;
+run_inversions_h;
 
 
 
 %%
 %== STEP 4: Visualize the results ========================================%
-ind = out_tk1.ind_min;
-x_plot = out_tk1(ind).x;
-
-% [~,ind] = min([out_ed_lam.chi]);
-% x_plot = out_ed_lam(ind).x;
+x_plot = x_tk1_a;
 
 
 %-- Plot retrieved solution --------------%
@@ -127,7 +121,7 @@ figure(13);
 grid_x.plot2d_sweep(x_plot,cm);
 %}
 
-
+%{
 %-- Plot posterior uncertainties ---------%
 %   Tikhonov
 [~,spo] = tools.get_posterior(...
@@ -181,4 +175,4 @@ grid_x.plot2d(log10(x0));
 colormap(cm);
 colorbar;
 caxis([-4,1]);
-
+%}

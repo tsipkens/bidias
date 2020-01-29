@@ -221,7 +221,10 @@ methods
     function [l1] = l1(obj)
         l1 = -diag(sum(tril(obj.adj)))+...
             triu(obj.adj);
-        l1(size(obj.adj,1),:) = [];
+        l1(size(obj.adj,1),end) = -1;
+            % unity on diagonal in final row for stability in square matrix
+            % alternatively, this row can be deleted, however this causes
+            % issues during Tikhonov inversion using this method
     end
     %=================================================================%
     
@@ -262,7 +265,7 @@ methods
     %   contains the original grid for the input data x.
     function x = project(obj,grid_old,x)
         
-        if grid_old.ispartial==1 % if partial grid
+        if grid_old.ispartial==1 % added processing for partial grids
             x = grid_old.partial2full(x);
         end
         
@@ -277,40 +280,49 @@ methods
         x = F(edges1,edges2);
         x = x(:);
         
+        if obj.ispartial==1 % added processing for partial grids
+            x = obj.full2partial(x);
+        end
+        
     end
     %=================================================================%
 
 
 
-    %== REBASE =======================================================%
-    %   Function to evaluate uniform basis functions. Outputs matrix
-    %   to be multiplied by original A, that is to transform the kernel.
-    function B = rebase(obj,obj_old)
-
-        for ii=1:obj.dim
-            dr_inv = 1./(obj_old.nodes{ii}(2:end)-obj_old.nodes{ii}(1:(end-1)));
+    %== TRANSFORM ====================================================%
+    %   Function to integrate over uniform basis functions to transform 
+    %   kernel functions. Output is a matrix to be multiplied by original
+    %   kernel, A.
+    function B = transform(obj,grid_old)
+        
+        for ii=1:obj.dim % loop over both dimensions
+            dr_inv = 1./(grid_old.nodes{ii}(2:end)-grid_old.nodes{ii}(1:(end-1)));
 
             t0 = min(1,max(0,...
                 bsxfun(@times,...
-                obj_old.nodes{ii}(2:end)-obj.nodes{ii}(1:(end-1))',dr_inv)...
-                ));
+                grid_old.nodes{ii}(2:end)-obj.nodes{ii}(1:(end-1))',dr_inv)...
+                )); % upper matrix of overlap
             t1 = min(1,max(0,...
                 bsxfun(@times,...
-                obj.nodes{ii}(2:end)'-obj_old.nodes{ii}(1:(end-1)),dr_inv)...
-                ));
+                obj.nodes{ii}(2:end)'-grid_old.nodes{ii}(1:(end-1)),dr_inv)...
+                )); % lower matrix of overlap
             t2{ii} = sparse(min(t0,t1));
-        end
+        end % end loop over both dimensions
 
-        ind_old_tot = 1:obj_old.Ne;
-        ind1_old = mod(ind_old_tot-1,obj_old.ne(1))+1;
-        ind2_old = ceil(ind_old_tot./obj_old.ne(1));
-
-        ind_tot = 1:obj.Ne;
+        ind_old_tot = 1:prod(grid_old.ne);
+        ind1_old = mod(ind_old_tot-1,grid_old.ne(1))+1;
+        ind2_old = ceil(ind_old_tot./grid_old.ne(1));
+        
+        ind_tot = 1:prod(obj.ne);
         ind1 = mod(ind_tot-1,obj.ne(1))+1;
         ind2 = ceil(ind_tot./obj.ne(1));
-
+        
         B = (t2{1}(ind1,ind1_old).*t2{2}(ind2,ind2_old))';
-
+        
+        %-- Added processing for partial grids -----------------------%
+        if obj.ispartial==1; B(:,obj.missing) = []; end
+        if grid_old.ispartial==1; B(grid_old.missing,:) = []; end
+        %-------------------------------------------------------------%
     end
     %=================================================================%
 
@@ -337,7 +349,7 @@ methods
         dr2 = abs(dr2);
         dr = dr2(:).*dr1(:);
         
-        dr = obj.full2partial(dr);
+        dr = obj.full2partial(dr); % added processing for partial grids
         
     end
     %=================================================================%
@@ -349,16 +361,12 @@ methods
     %   Uses Euler's method to integrate over domain.
     function [marg,tot] = marginalize(obj,x)
         
-        if obj.ispartial==1 % if partial grid
-            x = obj.partial2full(x);
-        end
+        x = obj.reshape(x);
         
         [~,dr1,dr2] = obj.dr; % generate differential area of elements
         dr = dr2(:).*dr1(:);
         
-        tot = sum(x.*dr); % integrated total
-        
-        x = obj.reshape(x);
+        tot = sum(x(:).*dr); % integrated total
         
         marg{1} = sum(dr2.*x,2); % integrate over diameter
         marg{2} = sum(dr1.*x,1); % integrate over mass
@@ -370,7 +378,14 @@ methods
     
     %== RESHAPE ======================================================%
     %   A simple function to reshape a vector based on the grid.
+    %   Note: If the grid is partial, missing grid points are 
+    %           filled with zeros. 
     function x = reshape(obj,x)
+        
+        if obj.ispartial==1 % if partial grid
+            x = obj.partial2full(x);
+        end
+        
         x = reshape(x,obj.ne);
     end
     %=================================================================%
@@ -471,10 +486,6 @@ methods
     %   Plots x as a 2D function on the grid.
     %   Author: Timothy Sipkens, 2018-11-21
     function [h,x] = plot2d(obj,x)
-        
-        if obj.ispartial==1 % if partial grid
-            x = obj.partial2full(x);
-        end
         
         x = obj.reshape(x);
         

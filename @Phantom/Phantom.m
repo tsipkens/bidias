@@ -177,13 +177,17 @@ methods
     %   Author:  Timothy Sipkens, 2019-10-29
     %   NOTE: Does not work for conditionally-normal distributions
     %         (which cannot be defined with mu and Sigma).
-    function [x] = eval(obj,mu,Sigma)
-
+    function [x] = eval(obj,mu,Sigma,grid)
+        
+        if ~exist('grid','var'); grid = []; end
+        if isempty(grid); grid = obj.grid; end
+        
         if ~iscell(mu); mu = {mu}; end
         if ~iscell(Sigma); Sigma = {Sigma}; end
-
-        m_vec = obj.grid.elements(:,1);
-        d_vec = obj.grid.elements(:,2);
+        
+        
+        m_vec = grid.elements(:,1);
+        d_vec = grid.elements(:,2);
 
         %-- Assign other parameters of distribution ------------------%
         x = zeros(size(m_vec));

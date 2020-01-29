@@ -64,9 +64,9 @@ switch name
         name = 'SP2 Distribution';
         
         p.dg = 1;
-        p.sg = 1.5;
+        p.sg = 2.2;
         p.rhog = 1e9*6/pi;
-        p.smd = 1.5;
+        p.smd = 1.2;
         p.Dm = 1;
         type{1} = 'logn';
         

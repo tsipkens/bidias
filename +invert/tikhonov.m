@@ -5,7 +5,8 @@
 % Inputs:
 %   A        Model matrix
 %   b        Data
-%   n        Length of first dimension of solution
+%   n_grid   Either (i) the length of first dimension of solution or
+%            (ii) a grid, so as to support partial grids.
 %   lambda   Regularization parameter
 %   order    Order of regularization     (Optional, default is 1)
 %   xi       Initial guess for solver    (Optional, default is zeros)
@@ -18,7 +19,7 @@
 %   Gpo_inv  Inverse of posterior covariance
 %=========================================================================%
 
-function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n,lambda,order,xi,solver)
+function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n_grid,lambda,order,xi,solver)
 
 x_length = length(A(1,:));
 
@@ -37,9 +38,17 @@ switch order
     case 0 % 0th order Tikhonov
         Lpr0 = -speye(x_length);
     case 1 % 1st order Tikhonov
-        Lpr0 = genL1(n,x_length);
+        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = n_grid.l1;
+        else
+            Lpr0 = genL1(n,x_length);
+        end
     case 2 % 2nd order Tikhonov
-        Lpr0 = genL2(n,x_length);
+        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = n_grid.l2;
+        else
+            Lpr0 = genL2(n,x_length);
+        end
     otherwise
         disp('The specified order of Tikhonov is not available.');
         disp(' ');

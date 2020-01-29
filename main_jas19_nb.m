@@ -62,7 +62,7 @@ for ii=1:length(n_b_vec)
     x0 = grid_x.project(grid_t,x_t); % project into basis for x
 
     disp('Transform to discretization in x...');
-    B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
+    B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
     A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
     A = sparse(A);
     disp('Complete.');
