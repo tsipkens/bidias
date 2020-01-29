@@ -37,9 +37,14 @@ properties
                 
     adj = [];   % adjacency matrix
     
+    
+    %-- Partial grid properties --------------------------------------%
     ispartial = 0; % toggle of whether the grid is 'partial' or sparse,
                    % that is having some grid points missing
+                   
     missing = [];  % global indices of missing grid points for partial grids
+    cut = [];      % [y-intercept,slope] used to cut partial grid
+    %-----------------------------------------------------------------%
 end
 
 
@@ -196,6 +201,16 @@ methods
     %   idx2 is the mobility index.
     function k = global_idx(obj,idx1,idx2)
         k = idx1+(idx2-1)*obj.ne(1);
+        
+        if obj.ispartial
+            b0 = ismember((1:prod(obj.ne))',obj.missing);
+            t0 = cumsum(b0); % number of entries missing prior to current index
+            
+            [~,i0] = intersect(k,obj.missing); % find indices in k that are missing
+            
+            k = k-t0(k); % reduce indices based on missing indices
+            k(i0) = NaN; % return NaN for indices that are missing
+        end
     end
     %=================================================================%
     
@@ -290,9 +305,8 @@ methods
 
 
     %== TRANSFORM ====================================================%
-    %   Function to integrate over uniform basis functions to transform 
-    %   kernel functions. Output is a matrix to be multiplied by original
-    %   kernel, A.
+    %   Function to transform kernel functions. Output is a matrix to 
+    %   be multiplied by the original kernel, A.
     function B = transform(obj,grid_old)
         
         for ii=1:obj.dim % loop over both dimensions
@@ -337,7 +351,7 @@ methods
             if strcmp(obj.discrete,'logarithmic')
                 dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
                     log10(obj.nodes{ii}(1:(end-1)));
-
+            
             elseif strcmp(obj.discrete,'linear')
                 dr_0{ii} = obj.nodes{ii}(2:end)-...
                     obj.nodes{ii}(1:(end-1));
@@ -349,7 +363,9 @@ methods
         dr2 = abs(dr2);
         dr = dr2(:).*dr1(:);
         
-        dr = obj.full2partial(dr); % added processing for partial grids
+        if obj.ispartial==1 % added processing for partial grids
+            dr = obj.full2partial(dr);
+        end
         
     end
     %=================================================================%
@@ -379,7 +395,7 @@ methods
     %== RESHAPE ======================================================%
     %   A simple function to reshape a vector based on the grid.
     %   Note: If the grid is partial, missing grid points are 
-    %           filled with zeros. 
+    %   filled with zeros. 
     function x = reshape(obj,x)
         
         if obj.ispartial==1 % if partial grid
@@ -412,67 +428,113 @@ methods
 
     %== RAY_SUM ======================================================%
     %   Perfrom a ray sum for a given ray and the current grid.
+    %   Currently assumes uniform, logarithmic grid 
+    %   and can accommodate partial grids.
     %   Based on:	Code from Samuel Grauer
     %   Author:     Timothy Sipkens, 2019-07-14
     %-----------------------------------------------------------------%
     % Inputs:
-    %   v0      A single point on the line
+    %   logr0   A single point on the line in log-log space, r0 = log10([dim1,dim2])
     %	slope   Slope of the line
     %   f_bar   Flag for progress bar
     % Outputs:
-    %   A       Ray-sum matrix
+    %   R       Ray-sum matrix
     %-----------------------------------------------------------------%
-    function A = ray_sum(obj,v0,slope,opt_bar)
-
+    function R = ray_sum(obj,logr0,slope,f_bar)
+        
+        if ~exist('f_bar','var'); f_bar = []; end
+        if isempty(f_bar); f_bar = 1; end
+        
         %-- Preallocate arrays ---------------------------------------%
         m = size(slope,1);
-        A = spalloc(m,obj.Ne,0.1*m*obj.Ne); % assume 10% full
+        R = spalloc(m,obj.Ne,0.1*m*obj.Ne); % assume 10% full
+        
+        
+        %-- Compute ray-sum matrix -----------------------------------%
+        if f_bar; tools.textbar(); end
+        for ii=1:m % loop over multiple rays
 
-        %-- Compute ray-sums -----------------------------------------%
-        if opt_bar, tools.textbar(); end
-        for ii=1:m
-
-            %-- Ray vector --%
+            %-- Ray vector -------------%
             dv = [1,slope]; % convert slope to step vector along line
             dv = dv/norm(dv);
-            dv(dv == 0) = 1e-10; % for stability
-            v0(v0 == 0) = 1e-10; % for stability
-
-
-            %-- Line intersections --%
+            dv(dv == 0) = 1e-10; % for stability during division
+            
+            
+            %-- Line intersections -----%
             %   Use parametric representation of the line and find two
-            %   intersections or each element at a time
+            %   intersections or each element.
             [~,drx,dry] = obj.dr;
             dr = [drx(:),dry(:)];
+            dr(obj.missing,:) = []; % remove any missing pixels
+            
             ttmp = (log10(obj.elements(:,[2,1]))-...
-                dr./2-v0)./dv; % minimum of element
+                dr./2-logr0)./dv; % minimum of element
             tmax = (log10(obj.elements(:,[2,1]))+...
-                dr./2-v0)./dv; % maximum of element
-
-
-            %-- Corrections --%
+                dr./2-logr0)./dv; % maximum of element
+            % Note: assumes equal distance on either side of element.
+            % Also assumes a logarithmic grid.
+            
+            
+            %-- Corrections ------------%
             %   Decide which points would correspond to transecting the
-            %   pixel
+            %   pixel.
             tmin = max(min(ttmp,tmax),[],2);
             tmax = min(max(ttmp,tmax),[],2);
             tmax(tmax<tmin) = tmin(tmax<tmin); % check if crosses pixel
-
-
+            
+            
             %-- Convert back to [x,y] --%
-            rmin  = v0+tmin.*dv; % location of intersect with min. of pixel
-            rmax = v0+tmax.*dv; % location of intersect with max. of pixel
+            rmin  = logr0+tmin.*dv; % location of intersect with min. of pixel
+            rmax = logr0+tmax.*dv; % location of intersect with max. of pixel
             chord = sqrt(sum((rmax-rmin).^2,2)); % chord length
-
-
-            %-- Ray-sum matrix --%
+            chord(chord<1e-15) = 0; % truncate small values
+            
+            
+            %-- Ray-sum matrix ---------%
             [~,jj,a] = find(chord');
             if ~isempty(a)
-                A(ii,:) = sparse(1,jj,a,1,obj.Ne,0.1*obj.Ne);
+                R(ii,:) = sparse(1,jj,a,1,obj.Ne,0.1*obj.Ne);
             end
-            if opt_bar, tools.textbar(ii/m); end
+            if f_bar, tools.textbar(ii/m); end
 
+        end % end loop over multiple rays
+
+    end
+    %=================================================================%
+    
+    
+    
+    %== CLOSEST_IDX =================================================%
+    %   Returns the pixel in which r0 is located.
+    %   This function uses vector operations to find multiple points.
+    %-----------------------------------------------------------------%
+    % Inputs:
+    %   r0      Coordinates in grid space, r0 = [dim1,dim2]
+    %           Can form N x 2 vector, where N is the number of points
+    %           to be found.
+    % Outputs:
+    %   idx     Global index on the grid, incorporating missing pixels
+    %   idx_2d  Pair of indices of pixel location
+    %-----------------------------------------------------------------%
+    function [k,idx_2d] = closest_idx(obj,r0)
+        
+        idx_2d = zeros(size(r0,1),2); % pre-allocate
+        
+        for ii=1:obj.dim
+            idx_bool = and(...
+                r0(:,ii)>=obj.nodes{ii}(1:(end-1)),...
+                r0(:,ii)<obj.nodes{ii}(2:end));
+                % if on border, place in higher pixel
+            
+            [~,idx_2d(:,ii)] = max(idx_bool,[],2);
+            
+            idx_2d(~any(idx_bool,2),ii) = NaN;
+                % if point is outside of grid, return NaN
         end
-
+        
+        f_nan = or(isnan(idx_2d(:,1)),isnan(idx_2d(:,2)));
+        k = NaN(size(r0,1),1);
+        k(~f_nan) = obj.global_idx(idx_2d(~f_nan,1),idx_2d(~f_nan,2));
     end
     %=================================================================%
 
@@ -716,23 +778,23 @@ methods
     %   Author:	Timothy Sipkens, 2019-07-15
     %-----------------------------------------------------------------%
     % Inputs:
-    %   r0      A single point on the line
+    %   logr0   A single point on the line
     %	slope   Slope of the line
     %   c_spec  Color specification string, e.g. 'k' for a black line
     % Outputs:
     %   h       Line object
     %-----------------------------------------------------------------%
-    function h = overlay_line(obj,r0,slope,cspec)
+    function h = overlay_line(obj,logr0,slope,cspec)
 
         if ~exist('cspec','var'); cspec = 'w'; end
-
+        
         rmin = log10(min([obj.edges{:}]));
         rmax = log10(max([obj.edges{:}]));
 
         hold on;
         h = plot([rmin,rmax],...
-            [r0(2)+slope*(rmin-r0(1)),...
-            r0(2)+slope*(rmax-r0(1))],cspec);
+            [logr0(2)+slope*(rmin-logr0(1)),...
+            logr0(2)+slope*(rmax-logr0(1))],cspec);
         hold off;
 
         if nargout==0; clear h; end
@@ -746,16 +808,19 @@ methods
 %-- SUPPORT FOR PARTIAL GRIDS ----------------------------------------%
 %=====================================================================%
     
-    %== PARTIAL =====================================================%
-    %   Convert to a partial grid. Currently take a y-intercept, b, 
-    %   and slope, m, as arguements and cuts upper triangle.
-    function obj = partial(obj,b,m)
+    %== PARTIAL ======================================================%
+    %   Convert to a partial grid. Currently take a y-intercept, r0, 
+    %   and slope as arguements and cuts upper triangle.
+    function obj = partial(obj,r0,slope)
         
-        if ~exist('b','var'); b = []; end
-        if isempty(b); b = 0; end
+        if ~exist('slope','var'); slope = []; end
+        if isempty(slope); slope = 1; end
         
-        if ~exist('m','var'); m = []; end
-        if isempty(m); m = 0; end
+        if ~exist('r0','var'); r0 = []; end
+        if length(r0)==1; b = r0; end % if scalar, use as y-intercept
+        if length(r0)==2; b = r0(1)-slope*r0(2); end
+            % if coordinates, find y-intercept
+        if isempty(r0); b = 0; end % if not specified, use b = 0
         
         if strcmp(obj.discrete,'logarithmic')
             t0 = log10(obj.elements);
@@ -763,13 +828,15 @@ methods
             t0 = obj.elements;
         end
         
-        bool_above = t0(:,1)>(t0(:,2).*m+b);
-        t1 = 1:length(bool_above);
+        f_above = t0(:,1)>(t0(:,2).*slope+b);
+        t1 = 1:length(f_above);
         
         %-- Update grid properties -----------------%
         obj.ispartial = 1;
-        obj.missing = t1(bool_above);
-        obj.elements = obj.elements(~bool_above,:);
+        obj.missing = t1(f_above);
+        obj.cut = [b,slope];
+        
+        obj.elements = obj.elements(~f_above,:);
         obj.Ne = size(obj.elements,1);
         obj = obj.padjacency;
         
@@ -794,8 +861,7 @@ methods
     %   Convert x defined on a full grid to the partial grid equivalent, 
     %   removing entries for missing indices.
     function x = full2partial(obj,x)
-        idx_miss = sort(obj.missing,'descend');
-        x(idx_miss,:) = [];
+        x(obj.missing,:) = [];
     end
     %=================================================================%
     
@@ -818,26 +884,4 @@ methods
     
 end
 
-
-methods(Static)
-    %== CLOSEST_IDX =================================================%
-    %   Returns the effective index closest to r position.
-    function idx = closest_idx(edges,r)
-
-        dim = length(edges); % will be number of dimensions
-
-        for ii=1:dim
-            idx_bool = and(...
-                r(:,ii)>=edges{ii}(1:(end-1)),...
-                r(:,ii)<edges{ii}(2:end));
-            
-            idx_temp = sum(cumprod(idx_bool==0,2),2)+1;
-            idx_temp(r(:,ii)==edges{ii}(end)) = ...
-                idx_temp(r(:,ii)==edges{ii}(end))-1;
-                    % condition for points at end of domain
-            idx(:,ii) = idx_temp;
-        end
-    end
-    %=================================================================%
-end
 end
