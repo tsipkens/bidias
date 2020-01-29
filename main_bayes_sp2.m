@@ -18,8 +18,8 @@ load('viridis.mat');
 %== STEP 1: Generate phantom (x_t) =======================================%
 %   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
-span_t = [10^-1.5,10^1.5;...
-    10^-1.5,10^1.5]; % range of mobility and mass
+span_t = [10^-1,10^1;...
+    10^-1,10^1]; % range of mobility and mass
 
 grid_t = Grid(span_t,...
     [540,540],'logarithmic');
@@ -30,12 +30,15 @@ nmax = max(x_t);
 cmax = nmax;
 
 %--  Generate x vector on coarser grid -----------------------------------%
-n_x = [75,75]; % number of elements per dimension in x
+n_x = [60,60]; % number of elements per dimension in x
 
 grid_x = Grid([grid_t.span],...
     n_x,'logarithmic');
 grid_x = grid_x.partial(0,1);
 x0 = grid_x.project(grid_t,x_t); % project into basis for x
+
+phantom_a = Phantom('distr-sp2',grid_x);
+x_a = phantom_a.x;
 
 figure(1);
 phantom.plot;
@@ -85,15 +88,19 @@ b0 = A_t*x_t; % forward evaluate kernel
 %-- Corrupt data with noise ----------------------------------------------%
 b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
-Ntot = 1e5;
+% Note: The total number of particles, Ntot, scales the pdf to equal the 
+% number distribution, d2N/dlogA*dlogB. It is also equal to the 
+% concentration of particles reduced by the product of the flow 
+% rate and overall collection time, that is Ntot = N*Q*t. 
+Ntot = 1e5; % converts pdf to counts
 [b,Lb] = tools.add_noise(b0,Ntot);
 
 figure(5);
 colormap(gcf,cm_b);
-grid_b.plot2d_marg(b);
+grid_b.plot2d(b);
 
 figure(20);
-grid_b.plot2d_sweep(b,cm_b);
+grid_b.plot2d_sweept(b,cm_b);
 
 
 
@@ -112,6 +119,7 @@ x_plot = x_tk1_a;
 figure(10);
 colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x_plot,grid_t,x_t);
+grid_x.overlay_line([0,0],1,'w:');
 % colorbar;
 caxis([0,cmax*(1+1/256)]);
 

@@ -1,8 +1,9 @@
 
 % ADD_NOISE Simulates Poisson-Gaussian noise in signals.
 % Author: Timothy Sipkens, 2019-12-08
+% 
 % Modeled after Sipkens et al., Appl. Opt. (2017).
-%   DOI: https://doi.org/10.1364/AO.56.008436
+% DOI: https://doi.org/10.1364/AO.56.008436
 %-------------------------------------------------------------------------%
 % Inputs:
 %   b0          Uncorrupted data vector
