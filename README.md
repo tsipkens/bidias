@@ -33,7 +33,7 @@ from one-dimensional analyses or when simply computing summary parameters.
 
 Mathematically, the problem to be solved here is of the form
 
-
+[N/A]
 
 where *N<sub>i</sub>* is some measurement, most often a number of counts of
 particles, at some *i*<sup>th</sup> measurement setpoint or location; K() is a
@@ -123,7 +123,7 @@ schemes.
 - `run_inversions_d` - Run the inversion methods multiple times and time the
 length of time required to produce a reconstruction.
 
-- ...
+Other methods are available to combine other sets of inversion techniques.
 
 ## 3. Classes
 
@@ -146,6 +146,20 @@ to the smallest mass and mobility diameter. The vector proceeds, first with
 increasing mass and then with increasing mobility diameter. Vectorizing the
 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
 the `vectorize` method.
+
+##### 3.1.1 Support for partial grids
+
+The current program also supports creating partial grids, made up of a regular
+grid where certain elements are ignored or missing. This allows practitioners
+to ignore certain regions in the grid that may have higher uncertainties or
+are otherwise unphysical. Quantities defined on partial grids have a
+reduced dimension, often speeding inversion.
+
+For mass-mobility measurements, this can be used to
+block out particles with extraordinarily high densities.
+
+These partial grids are also useful for PMA-SP2 inversion, where part of the
+grid will be unphysical.
 
 ### 3.2 Phantom class
 
