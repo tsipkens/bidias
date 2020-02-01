@@ -6,7 +6,8 @@
 [![Version](https://img.shields.io/badge/Version-1.1+-blue.svg)]()
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1],
-is designed to invert tandem particle mass analyzer-differential mobility analyzer
+is designed to invert tandem measurements of aerosol size distributions. 
+This includes the inversion of particle mass analyzer-differential mobility analyzer
 (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
 The results of the aforementioned paper can be produced by running `main_jas19`
@@ -52,7 +53,7 @@ demonstrate use of the code.
 Scripts to execute this program should be structured as follows:
 
 - **STEP 1**: Optionally, one can define a phantom used to generate synthetic data and a
-ground truth. The `Phantom` class, described below, is designed to
+ground truth. The `Phantom` class, described in Section [3.2](32-phantom-class), is designed to
 perform this task. The results is an instance of the `Grid` class, which is
 also described below, and a vector, `x_t`, that contains a vectorized form of
 the phantom distribution, defined on the output grid.
@@ -74,8 +75,11 @@ the data may first be imported prior to Step 2A.
 Also in this step, one should include some definition of the
 expected uncertainties in each point in `b`, encoded in the matrix
 `Lb`. For those cases involving counting noise, this can be
-approximated as `Lb = theta*diag(sqrt(b));`, where `theta` is
-related to the total number of particle counts as described in
+approximated as 
+
+    `Lb = theta*diag(sqrt(b));`
+
+    where `theta` is related to the total number of particle counts as described in
 [Sipkens et al. (2020a)][1_JAS1]. The function `add_noise` is
 included in the `+tools` package to help with noise creation, and more
 information on the noise model is provided in [Sipkens et al. (2017)][6_AO17].
