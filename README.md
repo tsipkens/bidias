@@ -53,9 +53,9 @@ demonstrate use of the code.
 Scripts to execute this program should be structured as follows:
 
 - **STEP 1**: Optionally, one can define a phantom used to generate synthetic data and a
-ground truth. The `Phantom` class, described in Section [3.2](32-phantom-class), is designed to
+ground truth. The `Phantom` class, described in Section [3.2](#32-phantom-class), is designed to
 perform this task. The results is an instance of the `Grid` class, which is
-also described below, and a vector, `x_t`, that contains a vectorized form of
+described in Section [3.1](#31-grid-class), and a vector, `x_t`, that contains a vectorized form of
 the phantom distribution, defined on the output grid.
 
 - **STEP 2A**: One must now generate a model matrix, `A`, which relates the distribution,
