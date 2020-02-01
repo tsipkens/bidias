@@ -11,7 +11,7 @@ is designed to invert tandem particle mass analyzer-differential mobility analyz
 
 The results of the aforementioned paper can be produced by running `main_jas19`
 in [v1.1][code_v11] of this code. See Section
-[1.1.2](#1.1.2-script-associated-with-j.-aerosol-sci.-paper)
+[2.1.2](#2.1.2-script-associated-with-the-original-j.-aerosol-sci.-paper)
 of this README for more details.
 
 This program is organized into several: classes (folders starting with the `@` symbol),
