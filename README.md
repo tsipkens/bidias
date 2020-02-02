@@ -34,12 +34,14 @@ from one-dimensional analyses or when simply computing summary parameters.
 
 Mathematically, the problem to be solved here is of the form
 
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b})
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
 
 where *a* and *b* are two aerosol properties (e.g. the particle mass and mobility diameter); 
 *N<sub>i</sub>* is some measurement, most often a number of counts of
-particles, at some *i*<sup>th</sup> measurement setpoint or location; K(*a**,*b**,*a*,*b*) is a
-kernel containing device transfer functions or other discretization information;
+particles, at some *i*<sup>th</sup> measurement setpoint or location; 
+*N*<sub>tot</sub> is the total number of particles in the measured volume of 
+aerosol; *K*(*a**,*b**,*a*,*b*) is a kernel containing 
+device transfer functions or other discretization information;
 and *p*(*a*,*b*) is a two-dimensional size distribution. Inversion refers to 
 finding *p*(*a*,*b*) from some set of measurements, *N<sub>i</sub>*. 
 
