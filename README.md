@@ -34,7 +34,7 @@ from one-dimensional analyses or when simply computing summary parameters.
 
 Mathematically, the problem to be solved here is of the form
 
-[N/A]
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b})
 
 where *N<sub>i</sub>* is some measurement, most often a number of counts of
 particles, at some *i*<sup>th</sup> measurement setpoint or location; K() is a
