@@ -26,14 +26,17 @@ properties
                 % first dimension.
     
     ne = [];    % number of pixels/elements in each dimenion
-    Ne = [];    % total number of pixels/elements, i.e. prod(ne)
+    Ne = [];    % total number of pixels/elements, initially Ne = prod(ne)
+                % reduced for partial grids
     
     edges = []; % cell of vectors containing edge points of pixel/element
                 % centers, with one cell entry per dimension
-    
-    elements = []; % contains position of pixel/element centers as a (ne x 2) vector
     nodes = []; % contains position of nodes surrounding elements for each dimension
                 % each cell has a vector of size (ne + 1).
+    
+    elements = [];  % contains position of pixel/element centers as a (ne x 2) vector
+    nelements = []; % position of pixel/elements edges as a (ne x 4) vector
+                    % [dim1_low,dim1_high,dim2_low,dim2_high]
                 
     adj = [];   % adjacency matrix
     
@@ -137,11 +140,17 @@ methods
             end
         end
 
-        %-- Generate vectorized list of elements ---------------------%
+        %-- Generate vectorized lists of elements --------------------%
         %   One column per dimension
         [vec1{1},vec1{2}] = ndgrid(obj.edges{1},obj.edges{2});
         obj.elements(:,1) = vec1{1}(:); % vectorize output
         obj.elements(:,2) = vec1{2}(:);
+        
+        [vec1{1},vec1{2}] = ndgrid(obj.nodes{1}(1:(end-1)),...
+            obj.nodes{2}(1:(end-1)));
+        [vec2{1},vec2{2}] = ndgrid(obj.nodes{1}(2:end),...
+            obj.nodes{2}(2:end));
+        obj.nelements = [vec1{1}(:),vec2{1}(:),vec1{2}(:),vec2{2}(:)];
     end
     %=================================================================%
     
@@ -361,12 +370,24 @@ methods
         [dr1,dr2] = ndgrid(dr_0{1},dr_0{2});
         dr1 = abs(dr1); % in case edges vector is reversed
         dr2 = abs(dr2);
-        dr = dr2(:).*dr1(:);
+        dr = dr1(:).*dr2(:);
         
-        if obj.ispartial==1 % added processing for partial grids
-            dr = obj.full2partial(dr);
+        %-- Added processing for partial grids -----------------------%
+        if obj.ispartial==1
+            [~,r_min,r_max] = obj.ray_sum([0,obj.cut(1)],obj.cut(2),0);
+            t0 = (r_min(:,1)-log10(obj.nelements(:,1))).*...
+                (log10(obj.nelements(:,2))-log10(obj.nelements(:,1)));
+                    % lower rectangle
+            t1 = (log10(obj.nelements(:,4))-r_max(:,2)).*...
+                (log10(obj.nelements(:,2))-r_min(:,1));
+                    % right rectangle
+            t2 = 1/2.*(r_max(:,1)-r_min(:,1)).*...
+                (r_max(:,2)-r_min(:,2));
+                    % upper, left triangle
+            dr = t0+t1+t2;
+            
         end
-        
+        %-------------------------------------------------------------%
     end
     %=================================================================%
 
@@ -379,13 +400,13 @@ methods
         
         x = obj.reshape(x);
         
-        [~,dr1,dr2] = obj.dr; % generate differential area of elements
-        dr = dr2(:).*dr1(:);
+        [dr,dr1,dr2] = obj.dr; % generate differential area of elements
+        dr = obj.reshape(dr);
         
-        tot = sum(x(:).*dr); % integrated total
+        tot = sum(x(:).*dr(:)); % integrated total
         
-        marg{1} = sum(dr2.*x,2); % integrate over diameter
-        marg{2} = sum(dr1.*x,1); % integrate over mass
+        marg{1} = sum(dr.*x,2)./dr1(:,1); % integrate over diameter
+        marg{2} = sum(dr.*x,1)./dr2(1,:); % integrate over mass
         
     end
     %=================================================================%
@@ -438,16 +459,16 @@ methods
     %	slope   Slope of the line
     %   f_bar   Flag for progress bar
     % Outputs:
-    %   R       Ray-sum matrix
+    %   C       Ray-sum matrix
     %-----------------------------------------------------------------%
-    function R = ray_sum(obj,logr0,slope,f_bar)
+    function [C,rmin,rmax] = ray_sum(obj,logr0,slope,f_bar)
         
         if ~exist('f_bar','var'); f_bar = []; end
-        if isempty(f_bar); f_bar = 1; end
+        if isempty(f_bar); f_bar = 0; end
         
         %-- Preallocate arrays ---------------------------------------%
         m = size(slope,1);
-        R = spalloc(m,obj.Ne,0.1*m*obj.Ne); % assume 10% full
+        C = spalloc(m,obj.Ne,ceil(0.1*m*obj.Ne)); % assume 10% full
         
         
         %-- Compute ray-sum matrix -----------------------------------%
@@ -455,7 +476,7 @@ methods
         for ii=1:m % loop over multiple rays
 
             %-- Ray vector -------------%
-            dv = [1,slope]; % convert slope to step vector along line
+            dv = [slope,1]; % convert slope to step vector along line
             dv = dv/norm(dv);
             dv(dv == 0) = 1e-10; % for stability during division
             
@@ -463,16 +484,11 @@ methods
             %-- Line intersections -----%
             %   Use parametric representation of the line and find two
             %   intersections or each element.
-            [~,drx,dry] = obj.dr;
-            dr = [drx(:),dry(:)];
-            dr(obj.missing,:) = []; % remove any missing pixels
-            
-            ttmp = (log10(obj.elements(:,[2,1]))-...
-                dr./2-logr0)./dv; % minimum of element
-            tmax = (log10(obj.elements(:,[2,1]))+...
-                dr./2-logr0)./dv; % maximum of element
-            % Note: assumes equal distance on either side of element.
-            % Also assumes a logarithmic grid.
+            %   Note: Assumes a logarithmic grid.
+            ttmp = (log10(obj.nelements(:,[1,3]))-...
+                logr0)./dv; % minimum of element
+            tmax = (log10(obj.nelements(:,[2,4]))-...
+                logr0)./dv; % maximum of element
             
             
             %-- Corrections ------------%
@@ -484,8 +500,8 @@ methods
             
             
             %-- Convert back to [x,y] --%
-            rmin  = logr0+tmin.*dv; % location of intersect with min. of pixel
-            rmax = logr0+tmax.*dv; % location of intersect with max. of pixel
+            rmin  = logr0+tmin.*[dv(2),dv(1)]; % location of intersect with min. of pixel
+            rmax = logr0+tmax.*[dv(2),dv(1)]; % location of intersect with max. of pixel
             chord = sqrt(sum((rmax-rmin).^2,2)); % chord length
             chord(chord<1e-15) = 0; % truncate small values
             
@@ -493,7 +509,7 @@ methods
             %-- Ray-sum matrix ---------%
             [~,jj,a] = find(chord');
             if ~isempty(a)
-                R(ii,:) = sparse(1,jj,a,1,obj.Ne,0.1*obj.Ne);
+                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.1*obj.Ne));
             end
             if f_bar, tools.textbar(ii/m); end
 
@@ -809,7 +825,7 @@ methods
 %=====================================================================%
     
     %== PARTIAL ======================================================%
-    %   Convert to a partial grid. Currently take a y-intercept, r0, 
+    %   Convert to a partial grid. Currently takes a y-intercept, r0, 
     %   and slope as arguements and cuts upper triangle.
     function obj = partial(obj,r0,slope)
         
@@ -837,6 +853,7 @@ methods
         obj.cut = [b,slope];
         
         obj.elements = obj.elements(~f_above,:);
+        obj.nelements = obj.nelements(~f_above,:);
         obj.Ne = size(obj.elements,1);
         obj = obj.padjacency;
         

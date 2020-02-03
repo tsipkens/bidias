@@ -6,7 +6,7 @@
 [![Version](https://img.shields.io/badge/Version-1.1+-blue.svg)]()
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1],
-is designed to invert tandem measurements of aerosol size distributions. 
+is designed to invert tandem measurements of aerosol size distributions.
 This includes the inversion of particle mass analyzer-differential mobility analyzer
 (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
@@ -36,14 +36,16 @@ Mathematically, the problem to be solved here is of the form
 
 ![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
 
-where *a* and *b* are two aerosol properties (e.g. the particle mass and mobility diameter); 
+where *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
+mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and
+*b* = log<sub>10</sub>*d*<sub>m</sub>); 
 *N<sub>i</sub>* is some measurement, most often a number of counts of
-particles, at some *i*<sup>th</sup> measurement setpoint or location; 
-*N*<sub>tot</sub> is the total number of particles in the measured volume of 
-aerosol; *K*(*a**,*b**,*a*,*b*) is a kernel containing 
+particles, at some *i*<sup>th</sup> measurement setpoint or location;
+*N*<sub>tot</sub> is the total number of particles in the measured volume of
+aerosol; *K*(*a**,*b**,*a*,*b*) is a kernel containing
 device transfer functions or other discretization information;
-and *p*(*a*,*b*) is a two-dimensional size distribution. Inversion refers to 
-finding *p*(*a*,*b*) from some set of measurements, *N<sub>i</sub>*. 
+and *p*(*a*,*b*) is a two-dimensional size distribution. Inversion refers to
+finding *p*(*a*,*b*) from some set of measurements, *N<sub>i</sub>*.
 
 ## 2. Scripts in upper directory
 
@@ -79,7 +81,7 @@ the data may first be imported prior to Step 2A.
 Also in this step, one should include some definition of the
 expected uncertainties in each point in `b`, encoded in the matrix
 `Lb`. For those cases involving counting noise, this can be
-approximated as 
+approximated as
 
     `Lb = theta*diag(sqrt(b));`
 

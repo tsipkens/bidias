@@ -61,7 +61,7 @@ prop_pma = kernel.prop_pma;
     % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in x...');
-B = grid_x.rebase(grid_t); % evaluate matrix modifier to transform kernel
+B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
 disp('Complete.');
@@ -87,7 +87,7 @@ Ntot = 1e5;
 
 figure(5);
 colormap(gcf,cm_b);
-grid_b.plot2d_marg(b);
+grid_b.plot2d_marg(b.*Ntot);
 
 figure(20);
 grid_b.plot2d_sweep(b,cm_b);

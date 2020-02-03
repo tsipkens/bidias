@@ -41,13 +41,13 @@ switch order
         if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
             Lpr0 = n_grid.l1;
         else
-            Lpr0 = genL1(n,x_length);
+            Lpr0 = genL1(n_grid,x_length);
         end
     case 2 % 2nd order Tikhonov
         if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
             Lpr0 = n_grid.l2;
         else
-            Lpr0 = genL2(n,x_length);
+            Lpr0 = genL2(n_grid,x_length);
         end
     otherwise
         disp('The specified order of Tikhonov is not available.');

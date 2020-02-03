@@ -18,7 +18,7 @@
 %   x           Estimate
 %=========================================================================%
 
-function x = twomark(A,b,Lb,n,xi,iter,opt_smooth,Sf)
+function x = twomark(A,b,Lb,n_grid,xi,iter,opt_smooth,Sf)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -42,18 +42,18 @@ iter_2m = iter; % max number of iterations of Twomey_Markowski algorithm
 x = xi;
 x = invert.twomey(A,b,x,iter_two); % initial Towmey procedure
 SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % average square error for cases where b~= 0
-R = roughness(x,n); % roughness vector
+R = roughness(x,n_grid); % roughness vector
 
 iter_two = 150; % max number of iterations in Twomey pass
 for kk=1:iter_2m % iterate Twomey and smoothing procedure
     x_temp = x; % store temporarily for the case that roughness increases
-    x = smooth_markowski(A,b,Lb,x,n,10,opt_smooth,Sf,SIGMA); % perform smoothing
+    x = smooth_markowski(A,b,Lb,x,n_grid,10,opt_smooth,Sf,SIGMA); % perform smoothing
 
     SIGMA_fun = @(x) calc_mean_sq_error(Lb*A,x,Lb*b);
     x = invert.twomey(A,b,x,iter_two,SIGMA_fun,SIGMA); % perform Twomey
 
     %-- Check roughness of solution ------------------%
-    R(kk+1) = roughness(x,n);
+    R(kk+1) = roughness(x,n_grid);
     if R(kk+1)>1.03*R(kk) % exit if roughness has stopped decreasing
         disp(['Exited Twomey-Markowski loop after ',num2str(kk),...
             ' iterations because roughness increased by more than 3%.']);
@@ -74,14 +74,14 @@ end
 
 %== SMOOTH_MARKOWSKI =====================================================%
 %   Sub-funtion to perform smoothing required for Twomey-Markowski algorithm.
-function [x,G_smooth,SIGMA] = smooth_markowski(A,b,Lb,x,n,iter,opt_smooth,Sf,SIGMA_end)
+function [x,G_smooth,SIGMA] = smooth_markowski(A,b,Lb,x,n_grid,iter,opt_smooth,Sf,SIGMA_end)
 
 x_length = length(x);
 
 if strcmp('Buckley',opt_smooth)
-    G_smooth = G_Buckley(n,x_length,Sf);
+    G_smooth = G_Buckley(n_grid,x_length,Sf);
 else
-    G_smooth = G_Markowski(n,x_length);
+    G_smooth = G_Markowski(n_grid,x_length);
 end
 
 %-- Perform smoothing over multiple iterations ---------------------------%
@@ -107,6 +107,8 @@ end
 %== G_MARKOWSKI ==========================================================%
 % Generates a smoothing matrix of the form based on original work of Markowski
 function G_smooth = G_Markowski(n,x_length)
+
+if isa(n,'Grid'); n = n.ne(1); end
 
 G_smooth = 0.5.*eye(x_length);
 for jj=1:x_length
@@ -143,9 +145,10 @@ end
 % Generates the smoothing matrix suggested by Buckley et al. (2017)
 function G_smooth = G_Buckley(n,x_length,Sf)
 
+if isa(n,'Grid'); n = n.ne(1); end
+
 norm_factor = 0.5+8*Sf;
 G_smooth = 0.5/norm_factor.*eye(x_length);
-
 for jj=1:x_length
     if mod(jj,n)==0 % right side
         if jj>(x_length-n) % bottom, right corner
@@ -201,9 +204,14 @@ end
 %   Computes an estimate of the roughness of the solution.
 %   This function is used for convergence in the Twomey-Markowski loop and
 %   is based on the average, absolute value of the second derivative.
-function R = roughness(x,n)
+function R = roughness(x,n_grid)
 
-x = reshape(x,[n,length(x)/n]);
+if isa(n_grid,'Grid')
+    x = n_grid.reshape(x);
+else
+    x = reshape(x,[n_grid,length(x)/n_grid]);
+end
+
 R = abs((x(3:end,:)+x(1:(end-2),:)-2.*x(2:(end-1),:)));
 R = mean(mean(R));
 

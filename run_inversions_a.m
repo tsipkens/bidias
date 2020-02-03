@@ -29,7 +29,7 @@ chi.lsq = norm(x0-x_lsq);
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
 tic;
-[x_tk0,lambda_tk0,out_tk0] = optimize.tikhonov_op(Lb*A,Lb*b,n_x(1),...
+[x_tk0,lambda_tk0,out_tk0] = optimize.tikhonov_op(Lb*A,Lb*b,grid_x,...
     [1e-2,1e2],x0,0,[],'interior-point');
 t.tk0 = toc;
 disp('Inversion complete.');
@@ -41,7 +41,7 @@ chi.tk0 = norm(x0-x_tk0);
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
 tic;
-[x_tk1,lambda_tk1,out_tk1] = optimize.tikhonov_op(Lb*A,Lb*b,n_x(1),...
+[x_tk1,lambda_tk1,out_tk1] = optimize.tikhonov_op(Lb*A,Lb*b,grid_x,...
     [1e-2,1e2],x0,1,[],'interior-point');
 t.tk1 = toc;
 disp('Inversion complete.');
@@ -53,7 +53,7 @@ chi.tk1 = norm(x0-x_tk1);
 %% Tikhonov (2nd) implementation
 disp('Performing Tikhonov (2nd) regularization...');
 tic;
-[x_tk2,lambda_tk2,out_tk2] = optimize.tikhonov_op(Lb*A,Lb*b,n_x(1),...
+[x_tk2,lambda_tk2,out_tk2] = optimize.tikhonov_op(Lb*A,Lb*b,grid_x,...
     [1e-2,1e2],x0,2,[],'interior-point');
 t.tk2 = toc;
 disp('Inversion complete.');
