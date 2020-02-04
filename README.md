@@ -38,7 +38,7 @@ Mathematically, the problem to be solved here is of the form
 
 where *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
 mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and
-*b* = log<sub>10</sub>*d*<sub>m</sub>); 
+*b* = log<sub>10</sub>*d*<sub>m</sub>);
 *N<sub>i</sub>* is some measurement, most often a number of counts of
 particles, at some *i*<sup>th</sup> measurement setpoint or location;
 *N*<sub>tot</sub> is the total number of particles in the measured volume of
@@ -171,6 +171,34 @@ block out particles with extraordinarily high densities.
 These partial grids are also useful for PMA-SP2 inversion, where part of the
 grid will be unphysical.
 
+Partial grids can be created using the `Grid.partial`, which cuts the grid
+about a line specified by a y-intercept and slope. All of the grid points with
+a center above this line is removed from the grid. For example, if one wanted
+to create a grid where all of the points above the 1-1 line shoudl be removed
+(as is relevant for PMA-SP2 inversion), one can call
+
+`grid = grid.partial(0,1);`
+
+For partial grids:
+
+1. `Grid.ispartial` will be one (i.e. true),
+2. `Grid.missing` contains a list of the global indices for the missing pixels,
+3. `Grid.cut` contains the y-intercept and slope of the line used in making the cut (which is used in marginalization to only partially weight points that are cut off),
+4.	`Grid.elements` is updated to only list the center of the elements that
+are left in the grid (i.e. have indices that are not listed in `Grid.ismissing`),
+5.	`Grid.nelements` similarly only lists the edges of pixels that remain in the partial grid, and
+6.	`Grid.adj` is updated to only list the elements/pixels that are adjacent on the partial grid.
+
+The `Grid.edges` and `Grid.nodes` properties remain unchanged and refer to the
+underlying grid structure prior to any of the grid points being removed.
+
+Methods specific to partial grids include:
+1.	`Grid.partial2full(x)` will convert a partial x (resolved with only the remaining points on the grid) to one resolved on the original grid, filling the missing points with zeros. I use this to plot and marginalize the distributions (i.e. plots will have zeros in all of the missing elements/pixels) and
+2.	`Grid.full2partial(x)` will do the reverse of above, converting a full x (with all of the points from the original grid) to one resolved on the partial grid.
+
+Most other Grid methods will operate on partial grids. For example, the `Grid.marginalization` method will only sum the pixels that are still on the grid (exploiting the fact that the other pixels are necessarily zero), including accounting for the fact that pixels on the diagonal are only half pixels (i.e. they are triangles rather than rectangular elements). The `Grid.plot2d` method, equally, will plot zeros in the upper left triangle. The `Grid.l1` method will generate the first-order Tikhonov L matrix for the modified grid (only considering pixels that are adjacent on the partial grid). The `Grid.ray_sum` method will sum the distribution along some ray (i.e. along some line), assuming missing pixels are zero and do not contribute to the ray-sum. The list goes on.
+
+
 ### 3.2 Phantom class
 
 Phantom is a class developed to contain the parameters and other information
@@ -298,15 +326,23 @@ Development is underway on the use of an exponential
 distance covariance function to correlate pixel values and reduce
 reconstruction errors [Sipkens et al. (Under preparation)][4].
 
-### 4.4 +optimize
+### 4.4 +optimize_a
 
-This package mirrors the content of the +inver package but,
+This package mirrors the content of the +invert package but,
 given the true distribution, aims to determine the optimal number of
 iterations for the Twomey and MART schemes or the optimal regularization
 parameter for the Twomey-Markowski and Tikhonov methods. These were mostly
 created for internal use but may be of limited to use to the practitioner.
 
-### 4.5 +tools
+### 4.5 +optimize_b
+
+Similar to `optimize_a`, this package contains a set of method aimed to
+optimize the regularization parameters used in the reconstructions. This
+includes functions to Bayes factor over a range of regularization parameters.
+These methods are also used in certain `optimize_a` functions to gauge the
+accuracy of these methods when the true solution is known.
+
+### 4.6 +tools
 
 A series of utility functions that serve various purposes, including printing
 a text-based progress bar (based on code from

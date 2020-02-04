@@ -52,7 +52,7 @@ for ii=length(param):-1:1
     
     %-- Compute credence, fit, and Bayes factor --%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.exp_dist_bayesf(A,b,out(ii).x,Lpr,lambda);
+        optimize_b.exp_dist_bayesf(A,b,out(ii).x,Lpr,lambda);
     
     tools.textbar((length(param)-ii+1)/length(param));
 end
