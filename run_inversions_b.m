@@ -120,7 +120,7 @@ chi.two = norm(x0-x_Two);
 
 %% Twomey-Markowski-Buckley
 disp('Performing Twomey-Markowski...');
-x_two_mh = invert.twomark(A,b,Lb,n_x(1),...
+x_two_mh = invert.twomark(A,b,Lb,grid_x,...
     x_init,35,'Buckley',Sf_two_mh);
 disp('Completed Twomey-Markowski.');
 

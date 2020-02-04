@@ -33,6 +33,14 @@ if ~exist('opt_smooth','var')
 elseif isempty(opt_smooth)
     opt_smooth = 'Buckley';
 end
+
+if isa(n_grid,'Grid') % handling of grid input
+    if n_grid.ispartial==1
+        opt_smooth = 'Grid';
+    elseif ~strcmp(opt_smooth,'Grid')
+        n_grid = n_grid.ne(1);
+    end
+end
 %-------------------------------------------------------------------------%
 
 
@@ -80,6 +88,8 @@ x_length = length(x);
 
 if strcmp('Buckley',opt_smooth)
     G_smooth = G_Buckley(n_grid,x_length,Sf);
+elseif strcmp('Grid',opt_smooth)
+    G_smooth = G_grid(n_grid,x_length,Sf);
 else
     G_smooth = G_Markowski(n_grid,x_length);
 end
@@ -105,10 +115,8 @@ end
 
 
 %== G_MARKOWSKI ==========================================================%
-% Generates a smoothing matrix of the form based on original work of Markowski
+%   Generates a smoothing matrix of the form based on original work of Markowski
 function G_smooth = G_Markowski(n,x_length)
-
-if isa(n,'Grid'); n = n.ne(1); end
 
 G_smooth = 0.5.*eye(x_length);
 for jj=1:x_length
@@ -142,10 +150,8 @@ end
 
 
 %== G_BUCKLEY ============================================================%
-% Generates the smoothing matrix suggested by Buckley et al. (2017)
+%   Generates the smoothing matrix suggested by Buckley et al. (2017)
 function G_smooth = G_Buckley(n,x_length,Sf)
-
-if isa(n,'Grid'); n = n.ne(1); end
 
 norm_factor = 0.5+8*Sf;
 G_smooth = 0.5/norm_factor.*eye(x_length);
@@ -195,6 +201,20 @@ for jj=1:x_length
         end
     end
 end
+
+end
+%=========================================================================%
+
+
+%== G_GRID ===============================================================%
+%   Generates the smoothing matrix when a partial grid is provided.
+%   Uses a four-point stencil. 
+function G_smooth = G_grid(grid,~,Sf)
+
+g1 = grid.adj; % off-diagonal components
+norm_factor = 0.5+sum(g1,2).*Sf;
+
+G_smooth = (0.5.*speye(size(g1))+Sf.*g1)./norm_factor;
 
 end
 %=========================================================================%

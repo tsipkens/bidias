@@ -157,7 +157,8 @@ methods
     
     
     %== ADJACENCY ====================================================%
-    %   Compute the adjacency matrix for the full grid.
+    %   Compute the adjacency matrix for the full grid,
+    %   using a four-point stencil.
     function [obj,adj] = adjacency(obj)
         
         ind1 = zeros(3*prod(obj.ne),1);
@@ -890,10 +891,8 @@ methods
     function [obj,adj] = padjacency(obj)
         [~,adj] = obj.adjacency;
         
-        idx_miss = sort(obj.missing,'descend');
-        
-        adj(idx_miss,:) = [];
-        adj(:,idx_miss) = [];
+        adj(obj.missing,:) = [];
+        adj(:,obj.missing) = [];
         
         obj.adj = adj;
     end
