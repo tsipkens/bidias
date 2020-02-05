@@ -12,12 +12,9 @@
 
 function [prop] = prop_pma(opts)
 
+if ~exist('opts','var'); opts = []; end
+if isempty(opts); opts = 'Olfert'; end
 
-if ~exist('opts','var') % if properties set is not specified
-    opts = 'Olfert';
-elseif isempty(opts)
-    opts = 'Olfert';
-end
 
 prop.mass_mob_pref = 524;
 prop.mass_mob_exp = 3;
@@ -29,7 +26,7 @@ prop.mass_mob_exp = 3;
 switch opts
     
     %-- CPMA parameters from Olfert lab ----------------------------------%
-    case 'Olfert'
+    case {'Olfert','cpma',' CPMA'}
         prop.r1 = 0.06; % inner electrode radius [m]
         prop.r2 = 0.061; % outer electrode radius [m]
         prop.L = 0.2; % length of chamber [m]

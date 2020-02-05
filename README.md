@@ -181,7 +181,7 @@ to create a grid where all of the points above the 1-1 line shoudl be removed
 
 For partial grids:
 
-1. `Grid.ispartial` will be one (i.e. true),
+1. `Grid.ispartial` will be 1 (i.e. true),
 2. `Grid.missing` contains a list of the global indices for the missing pixels,
 3. `Grid.cut` contains the y-intercept and slope of the line used in making the cut (which is used in marginalization to only partially weight points that are cut off),
 4.	`Grid.elements` is updated to only list the center of the elements that
@@ -383,7 +383,7 @@ should also be considered as per above.
 
 This program was largely written and compiled by Timothy Sipkens
 ([tsipkens@mail.ubc.ca](mailto:tsipkens@mail.ubc.ca)) while at the
-University of British Columbia.
+University of British Columbia. 
 
 This distribution includes code snippets from the code provided with
 the work of [Buckley et al. (2017)][3_Buck],

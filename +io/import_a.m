@@ -1,5 +1,5 @@
 
-% IMPORT_A Read tandem CPMA-SMPS data using SMPS data export and a CPMA log file.
+% IMPORT_A (EXPERIMENTAL) Read tandem CPMA-SMPS data using SMPS data export and a CPMA log file.
 % Author: Timothy Sipkens, Arash Naseri, 2019-12-17
 %=========================================================================%
 
