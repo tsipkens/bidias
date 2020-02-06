@@ -21,7 +21,7 @@
 
 function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,n_grid,lambda,order,xi,solver)
 
-x_length = length(A(1,:));
+x_length = size(A,2);
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
@@ -34,7 +34,7 @@ if ~exist('solver','var'); solver = []; end
 
 
 %-- Generate Tikhonov smoothing matrix -----------------------------------%
-Lpr0 = invert.tikhonov_lpr(A,n_grid,order);
+Lpr0 = invert.tikhonov_lpr(x_length,n_grid,order);
 Lpr = lambda.*Lpr0;
 
 

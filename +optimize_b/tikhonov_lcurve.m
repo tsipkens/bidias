@@ -40,7 +40,7 @@ while n>epsilon
             % determine new pt. 2
         
         [p(2,1),p(2,2),x] = ...
-            l_curve_p(A,b,Lpr,lam_log(2),x_length);
+            l_curve_p(A,b,Lpr,10^lam_log(2),x_length);
             % solve Tikhonov at new point
         
         c3 = menger(p(2,:),p(3,:),p(4,:));  
@@ -76,7 +76,7 @@ while n>epsilon
             % only p(3,:) is recalculated
     end
     
-    n = (lam_log(4)-lam_log(1))/lam_log(4); % recalculate n
+    n = (10^lam_log(4)-10^lam_log(1))/(10^lam_log(4)); % recalculate n
 end
 
 end
@@ -125,5 +125,6 @@ zeta = norm(residual(:),2); % residual norm
 eta = norm(x(:),2); % solution norm
 
 end
+%=========================================================================%
 
 

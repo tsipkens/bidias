@@ -11,9 +11,7 @@
 %   Lpr0        Tikhonov matrix
 %=========================================================================%
 
-function Lpr0 = tikhonov_lpr(A,n_grid,order)
-
-x_length = length(A(1,:));
+function Lpr0 = tikhonov_lpr(x_length,n_grid,order)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
@@ -24,7 +22,11 @@ if isempty(order); order = 1; end
 %-- Generate Tikhonov smoothing matrix -----------------------------------%
 switch order
     case 0 % 0th order Tikhonov
-        Lpr0 = -speye(x_length);
+        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = -speye(n_grid.Ne);
+        else
+            Lpr0 = -speye(x_length);
+        end
     case 1 % 1st order Tikhonov
         if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
             Lpr0 = n_grid.l1;
