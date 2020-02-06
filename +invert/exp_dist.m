@@ -1,5 +1,5 @@
 
-% EXP_DIST  Regularization based on the exponential of the distance between elements.
+% EXP_DIST  Regularization based on the exponential of the distance between elements/pixels.
 % Author:   Timothy Sipkens, 2018-10-22
 %-------------------------------------------------------------------------%
 % Inputs:
