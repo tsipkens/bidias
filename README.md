@@ -10,7 +10,7 @@ is designed to invert tandem measurements of aerosol size distributions.
 This includes the inversion of particle mass analyzer-differential mobility analyzer
 (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
-The results of the aforementioned paper can be produced by running `main_jas19`
+The results of the aforementioned paper can be produced by running `main_jas20a`
 in [v1.1][code_v11] of this code. See Section
 [2.1.2](#212-script-associated-with-the-original-j-aerosol-sci-paper)
 of this README for more details.
@@ -42,7 +42,8 @@ mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and
 *N<sub>i</sub>* is some measurement, most often a number of counts of
 particles, at some *i*<sup>th</sup> measurement setpoint or location;
 *N*<sub>tot</sub> is the total number of particles in the measured volume of
-aerosol; *K*(*a**,*b**,*a*,*b*) is a kernel containing
+aerosol, that is the product of the particle number concentration, the flow rate,
+and the total sampling time; *K*(*a**,*b**,*a*,*b*) is a kernel containing
 device transfer functions or other discretization information;
 and *p*(*a*,*b*) is a two-dimensional size distribution. Inversion refers to
 finding *p*(*a*,*b*) from some set of measurements, *N<sub>i</sub>*.
@@ -103,7 +104,7 @@ the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
 ##### 2.1.2 Script associated with the original J. Aerosol Sci. paper
 
-Of particular note, the `main_jas19.m` script is designed to replicate the results
+Of particular note, the `main_jas20a.m` script is designed to replicate the results
 in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor
 differences in the Euclidean error stem from using a smaller search space when
 optimizing the regularization parameter for Tikhonov regularization. The narrower

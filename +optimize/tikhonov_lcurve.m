@@ -16,7 +16,7 @@
 %   lambda  Optimal regularization parameter
 %=========================================================================%
 
-function [x,lambda,eta,zeta] = tikhonov_lcurve(A,b,span,Lpr)
+function [x,lambda,res_norm,x_norm] = tikhonov_lcurve(A,b,span,Lpr)
 
 epsilon = 1e-4; %termination threshold
 phi=(1+sqrt(5))/2; % golden section
@@ -34,8 +34,8 @@ for ii=1:4
 end
 
 
-eta = [];
-zeta = [];
+x_norm = []; % intialize storage of solution norm
+res_norm = []; % intialize storage of residual norm
 while n>epsilon % main loop to refine lambda
     c2 = menger(p(1,:),p(2,:),p(3,:)); % curvature about pt. 2
     c3 = menger(p(2,:),p(3,:),p(4,:)); % curvature about pt. 3
@@ -49,12 +49,15 @@ while n>epsilon % main loop to refine lambda
         lam_log(2) = (lam_log(4)+phi*lam_log(1))/(phi+1);
             % determine new pt. 2
         
-        [p(2,1),p(2,2),x] = ...
+        [p(2,1),p(2,2),~] = ...
             l_curve_p(A,b,10^lam_log(2),Lpr);
             % solve Tikhonov at new point
         
         c3 = menger(p(2,:),p(3,:),p(4,:));  
     end  
+    
+    x_norm = [x_norm;p(2,1);p(3,1);p(4,1)]; % store solution norm
+    res_norm = [res_norm;p(2,2);p(3,2);p(4,2)]; % store residual norm
     
     if c2>c3
         lambda = 10^lam_log(2); % store lambda for output
@@ -85,9 +88,6 @@ while n>epsilon % main loop to refine lambda
             l_curve_p(A,b,10^lam_log(3),Lpr);
             % only p(3,:) is recalculated
     end
-    
-    eta = [eta;p(3,1)]; % store solution norm
-    zeta = [zeta;p(3,2)]; % store residual norm
     
     n = (10^lam_log(4)-10^lam_log(1))/(10^lam_log(4)); % recalculate n
 end % end main loop

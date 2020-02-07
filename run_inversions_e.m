@@ -81,7 +81,8 @@ chi.tk0_lcurve = 100*norm(x0-x_tk0_lc)/norm(x0);
 disp('L-curve optimization of Tikhonov (1st) regularization...');
 tic;
 Lpr0 = invert.tikhonov_lpr(1,grid_x);
-[x_tk1_lc,lambda_tk1_lc] = optimize.tikhonov_lcurve(...
+[x_tk1_lc,lambda_tk1_lc,res_norm,x_norm] = ...
+    optimize.tikhonov_lcurve(...
     Lb*A,Lb*b,[10^-3,100],Lpr0);
 t.tk1_lc = toc;
 disp('Inversion complete.');

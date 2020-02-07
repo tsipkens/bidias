@@ -110,7 +110,7 @@ ylabel('{d{\itN}/dlog {\itm}_{p}}');
 
 %%
 %== STEP 3: Perform inversions ===========================================%
-run_inversions_a;
+run_inversions_e;
 run_inversions_h;
 
 
