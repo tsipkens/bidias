@@ -1,6 +1,6 @@
 
-% TWOMARK  Performs inversion using the iterative Twomey approach with intermediate smoothing.
-% Author:  Timothy Sipkens, 2018-12-20
+% MARTMARK  Performs inversion using the iterative MART approach with intermediate smoothing.
+% Author: Arash Naseri, Timothy Sipkens, 2020-02-06
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
@@ -8,7 +8,7 @@
 %   Lb          Cholesky factorization of inverse covariance matrix
 %   n           Length of first dimension of solution, used in smoothing
 %   xi          Initial guess
-%   iter        Max. number of iterations of Twomey_Markowski algorithm
+%   iter        Max. number of iterations of MART_Markowski algorithm
 %   opt_smooth  Type of smoothing to apply      (Optional, default is 'Buckley')
 %   Sf          Smoothing parameter             (Optional, default is 1/300)
 %   SIGMA_end   Mean square error for exit      (Optional, default is 1)
@@ -17,7 +17,7 @@
 %   x           Estimate
 %=========================================================================%
 
-function x = twomark(A,b,Lb,n_grid,xi,iter,opt_smooth,Sf)
+function x = martmark(A,b,Lb,n_grid,xi,iter,opt_smooth,Sf)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -43,35 +43,35 @@ end
 %-------------------------------------------------------------------------%
 
 
-iter_two = 150; % max number of iterations in Twomey pass
-iter_2m = iter; % max number of iterations of Twomey_Markowski algorithm
+iter_two = 150; % max number of iterations in MART pass
+iter_2m = iter; % max number of iterations of MART-Markowski algorithm
 
 x = xi;
 x = invert.twomey(A,b,x,iter_two); % initial Towmey procedure
 SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % average square error for cases where b~= 0
 R = roughness(x,n_grid); % roughness vector
 
-iter_two = 150; % max number of iterations in Twomey pass
-for kk=1:iter_2m % iterate Twomey and smoothing procedure
+iter_two = 150; % max number of iterations in MART pass
+for kk=1:iter_2m % iterate MART and smoothing procedure
     x_temp = x; % store temporarily for the case that roughness increases
     x = invert.markowski(A,b,Lb,x,n_grid,10,opt_smooth,Sf,SIGMA); % perform smoothing
 
     SIGMA_fun = @(x) calc_mean_sq_error(Lb*A,x,Lb*b);
-    x = invert.twomey(A,b,x,iter_two,SIGMA_fun,SIGMA); % perform Twomey
+    x = invert.mart(A,b,x,iter_two,SIGMA_fun,SIGMA); % perform MART
 
     %-- Check roughness of solution ------------------%
     R(kk+1) = roughness(x,n_grid);
     if R(kk+1)>1.03*R(kk) % exit if roughness has stopped decreasing
-        disp(['Exited Twomey-Markowski loop after ',num2str(kk),...
+        disp(['Exited MART-Markowski loop after ',num2str(kk),...
             ' iterations because roughness increased by more than 3%.']);
         x = x_temp; % restore previous iteration
         break;
     end
 
-    disp(['Completed iteration ',num2str(kk),' of the Twomey-Markowski loop.']);
+    disp(['Completed iteration ',num2str(kk),' of the MART-Markowski loop.']);
     disp(' ');
 end
-disp('Completed Twomey-Markowski procedure.');
+disp('Completed MART-Markowski procedure.');
 disp(' ');
 disp(' ');
 
@@ -82,7 +82,7 @@ end
 
 %== ROUGHNESS ============================================================%
 %   Computes an estimate of the roughness of the solution.
-%   This function is used for convergence in the Twomey-Markowski loop and
+%   This function is used for convergence in the MART-Markowski loop and
 %   is based on the average, absolute value of the second derivative.
 function R = roughness(x,n_grid)
 

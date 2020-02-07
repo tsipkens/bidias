@@ -21,13 +21,12 @@ end
 jj = 1;
 while jj<=iter
     x = G_smooth*x; % apply smoothing
-
+    
     SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % calculate mean square error
     if SIGMA>SIGMA_end % exit smoothing if mean square error exceeds end position
-        disp(['SMOOTHING: Completed smoothing algorithm after ',num2str(jj),' iteration(s).']);
         return
     end
-
+    
     jj = jj+1;
 end
 

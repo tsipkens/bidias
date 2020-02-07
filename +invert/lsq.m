@@ -33,40 +33,41 @@ if ~isempty(xi)
     xi = max(xi,x_lb); % modify to accommodate bound
 end
 
+%== Choose a solver and evaluate =========================================%
 switch solver
     case 'non-neg' % constrained, iterative linear least squares
         options = optimset('Display','off','TolX',eps*norm(A,1)*length(A));
         x = lsqnonneg(A,b,options);
         D = []; % not specified when using this method
-
+        
     case 'interior-point' % constrained, iterative linear least squares
         options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
         x = lsqlin(A,b,...
             [],[],[],[],x_lb,[],xi,options);
         D = []; % not specified when using this method
-
+        
     case 'trust-region-reflective'
         D = (A'*A)\A'; % invert combined matrices to get first guess
         x_lb = D*b; % Note: previously, [b;Lx*zeros(x_length,1)]
-
+        
         options = optimoptions('lsqlin','Algorithm','trust-region-reflective');
         x = lsqlin(A,b,...
             [],[],[],[],x_lb,[],xi,options);
-
+        
     case 'interior-point-neg'
         options = optimoptions('lsqlin','Algorithm','interior-point','Display','none');
         x = lsqlin(A,b,...
             [],[],[],[],[],[],xi,options);
         D = []; % not specified when using this method
-
+        
     case 'algebraic' % matrix multiplication least squares (not non-negative constrained)
         D = (A'*A)\A'; % invert combined matrices
         x = D*b;
-
+        
     case 'algebraic-inv' % alternate algebraic least squares (less stable than previous option)
         D = inv(A'*A)*A'; % invert combined matrices
         x = D*b;
-
+        
 end
 %-------------------------------------------------------------------------%
 

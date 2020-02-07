@@ -4,29 +4,39 @@
 % Note: This code is written based on the methodology proposed in 
 %   "A simple algorithm to find the L-curve corner" by Alessandro Cultrera 
 %   and Luca Callegaro
+%-------------------------------------------------------------------------%
+% Inputs:
+%   A       Model matrix
+%   b       Data
+%   span    Span of lambda values to consider
+%   Lpr     Tikhonov matrix
+%
+% Ouputs:
+%   x       Optimal solution
+%   lambda  Optimal regularization parameter
 %=========================================================================%
 
-function [x,lambda] = tikhonov_lcurve(A,b,Lpr,span_lambda)
-
-x_length = size(A,2);
+function [x,lambda,eta,zeta] = tikhonov_lcurve(A,b,span,Lpr)
 
 epsilon = 1e-4; %termination threshold
 phi=(1+sqrt(5))/2; % golden section
 
-
 %-- Set extremes -------%
-lam_log(1) = log10(min(span_lambda)); % xi=10^(lambda(i))
-lam_log(4) = log10(max(span_lambda));
+lam_log(1) = log10(min(span)); % xi=10^(lambda(i))
+lam_log(4) = log10(max(span));
 lam_log(2) = (lam_log(4)+phi*lam_log(1))/(phi+1);
 lam_log(3) = lam_log(1)+lam_log(4)-lam_log(2);
 n = (10^lam_log(4)-10^lam_log(1))/(10^lam_log(4));
 
 for ii=1:4               
     [p(ii,1),p(ii,2),x] = ...
-        l_curve_p(A,b,Lpr,10^lam_log(ii),x_length);
+        l_curve_p(A,b,10^lam_log(ii),Lpr);
 end
 
-while n>epsilon
+
+eta = [];
+zeta = [];
+while n>epsilon % main loop to refine lambda
     c2 = menger(p(1,:),p(2,:),p(3,:)); % curvature about pt. 2
     c3 = menger(p(2,:),p(3,:),p(4,:)); % curvature about pt. 3
     
@@ -40,7 +50,7 @@ while n>epsilon
             % determine new pt. 2
         
         [p(2,1),p(2,2),x] = ...
-            l_curve_p(A,b,Lpr,10^lam_log(2),x_length);
+            l_curve_p(A,b,10^lam_log(2),Lpr);
             % solve Tikhonov at new point
         
         c3 = menger(p(2,:),p(3,:),p(4,:));  
@@ -58,7 +68,7 @@ while n>epsilon
             % determine new pt. 3
         
         [p(2,1),p(2,2),x] = ...
-            l_curve_p(A,b,Lpr,10^lam_log(2),x_length);
+            l_curve_p(A,b,10^lam_log(2),Lpr);
             % only p(2,:) is recalculated
     else
         lambda = 10^lam_log(3); % store lambda for output
@@ -72,12 +82,15 @@ while n>epsilon
             % determine new pt. 2
         
         [p(3,1),p(3,2),x] = ...
-            l_curve_p(A,b,Lpr,10^lam_log(3),x_length);
+            l_curve_p(A,b,10^lam_log(3),Lpr);
             % only p(3,:) is recalculated
     end
     
+    eta = [eta;p(3,1)]; % store solution norm
+    zeta = [zeta;p(3,2)]; % store residual norm
+    
     n = (10^lam_log(4)-10^lam_log(1))/(10^lam_log(4)); % recalculate n
-end
+end % end main loop
 
 end
 
@@ -110,18 +123,10 @@ end
 
 
 %== L_CURVE_P ============================================================%
-function [zeta,eta,x] = l_curve_p(A,b,Lpr,lambda,x_length)
+function [zeta,eta,x] = l_curve_p(A,b,lambda,Lpr0)
 
-opts = optimoptions('lsqlin','Algorithm',...
-    'interior-point','Display','none');
-lb = sparse(x_length,1);
-
-x = lsqlin([A;lambda.*Lpr],...
-    [b;sparse(x_length,1)],...
-    [],[],[],[],lb,[],sparse(x_length,1),opts); 
-
-residual = A*x-b; % residual
-zeta = norm(residual(:),2); % residual norm
+x = invert.tikhonov(A,b,lambda,Lpr0);
+zeta = norm(A*x-b,2); % residual norm
 eta = norm(x(:),2); % solution norm
 
 end

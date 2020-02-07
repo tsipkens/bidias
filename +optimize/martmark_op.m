@@ -1,6 +1,6 @@
 
-% TWOMARK_OP  Finds optimal smoothing for Twomey-Markowski solver using known distribution, x.
-% Author:	  Timothy Sipkens, 2018-12-20
+% MARTMARK_OP  Finds optimal smoothing for MART with Markowski-type smoothing.
+% Author: Arash Naseri, Timothy Sipkens, 2030-02-06
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
@@ -19,7 +19,7 @@
 %   out         Struct containing detailed information about optimization
 %=========================================================================%
 
-function [x,Sf,out] = twomark_op(A,b,Lb,n_grid,xi,iter,span,x_ex,opt_smooth)
+function [x,Sf,out] = martmark_op(A,b,Lb,n_grid,xi,iter,span,x_ex,opt_smooth)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -30,12 +30,12 @@ if ~exist('x_ex','var'); x_ex = []; end
 %-------------------------------------------------------------------------%
 
 
-x_fun = @(Sf) invert.twomark(A,b,Lb,n_grid,xi,iter,opt_smooth,Sf);
+x_fun = @(Sf) invert.martmark(A,b,Lb,n_grid,xi,iter,opt_smooth,Sf);
 
 Sf = logspace(log10(span(1)),log10(span(2)),35);
 
 disp(' ');
-disp('Optimizing Twomey-Markowski smoothing:');
+disp('Optimizing MART-Markowski smoothing:');
 tools.textbar(0);
 disp(' ');
 for ii=length(Sf):-1:1 % loop through values of Sf
@@ -45,7 +45,7 @@ for ii=length(Sf):-1:1 % loop through values of Sf
     out(ii).Axb = norm(A*out(ii).x-b);
     
     disp(' ');
-    disp('Optimizing Twomey-Markowski smoothing:');
+    disp('Optimizing MART-Markowski smoothing:');
     tools.textbar(0); % reinitialize textbar
     tools.textbar((length(Sf)-ii+1)/length(Sf));
     disp(' ');

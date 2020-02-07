@@ -8,31 +8,42 @@
 %   Lb            Cholesky factorization of inverse covariance matrix
 %   xi            Initial guess
 %   iter          Max. number of iterations
-%   SIGMA_fun     Function of x to be evaluated to determine convergence
-%                 (Optional, default: ignore)
-%   SIGMA         Value to which SIGMA_fun is compared to determine convergence
-%                 (Optional, default: ignore)
-%   bool_textbar  Boolean to determine whether or not to show textbar
-%                 (Optional, default: 0)
+%   sigma_fun     Function of x to be evaluated to determine convergence
+%                   (Optional, default: ignore)
+%   sigma         Value to which sigma_fun is compared to determine convergence
+%                   (Optional, default: ignore)
+%   f_bar         Boolean to determine whether or not to show textbar
+%                   (Optional, default: 0)
 %
 % Outputs:
 %   x             Twomey estimate
 %=========================================================================%
 
-function [x] = twomey(A,b,xi,iter,SIGMA_fun,SIGMA,bool_textbar)
-
+function [x] = twomey(A,b,xi,iter,sigma_fun,sigma,f_bar)
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('bool_textbar','var'); bool_textbar = []; end
-if isempty(bool_textbar); bool_textbar = 0; end
+if ~exist('iter','var'); iter = []; end
+if isempty(iter); iter = 100; end % default of 100 iterations
 
-if or(~exist('SIGMA','var'),~exist('SIGMA_fun','var')) % controls exit conditions
-    bool_SIGMA = 0;
-elseif or(isempty(SIGMA),isempty(SIGMA_fun))
-    bool_SIGMA = 0;
+if exist('xi','var')
+    x = xi;
 else
-    bool_SIGMA = 1;
+    x = ones(size(A,2),1); % intiate vector of ones if xi is not specified
 end
+
+% whether to display text-based progress bar
+if ~exist('f_bar','var'); f_bar = []; end
+if isempty(f_bar); f_bar = 0; end
+
+% controls exit conditions
+if or(~exist('sigma','var'),~exist('sigma_fun','var'))
+    f_sigma = 0;
+elseif or(isempty(sigma),isempty(sigma_fun))
+    f_sigma = 0;
+else
+    f_sigma = 1;
+end
+%-------------------------------------------------------------------------%
 
 
 %-- Start evaluation -----------------------------------------------------%
@@ -42,12 +53,9 @@ s(max(A,[],2)<s_min) = 0;
 A = bsxfun(@times,s,A); % scale model matrix
 b = max(b.*s,0); % remove any negative data, scale data
 
-if bool_textbar
-    disp('Twomey progress:');
-    tools.textbar(0); % outputs progresss
-end
+if f_bar; disp('Twomey progress:'); tools.textbar(0); end
+    % output textbar for progress
 
-x = xi;
 factor = 1; % factor, allows one to decrease step size in Twomey
 
 
@@ -64,13 +72,11 @@ for kk=1:iter % perform multiple Twomey passes
         end
     end
 
-    if bool_textbar; tools.textbar(kk/iter); end % outputs progresss
+    if f_bar; tools.textbar(kk/iter); end % outputs progresss
 
-    %-- Exit conditions if SIGMA is specific (e.g. Twomey-Markowski) ----%
-    if bool_SIGMA
-        if SIGMA_fun(x)<SIGMA %calc_mean_sq_error(Lb*A0,x,Lb*b0)<SIGMA % average square error for cases where b~= 0
-            disp(['TWOMEY: SIGMA dropped below value specified after ',num2str(kk),...
-                ' iteration(s). Exiting Twomey loop.']);
+    % exit conditions if sigma is specific (e.g. Twomey-Markowski)
+    if f_sigma
+        if sigma_fun(x)<sigma
             break;
         end
     end
