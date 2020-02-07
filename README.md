@@ -326,23 +326,18 @@ Development is underway on the use of an exponential
 distance covariance function to correlate pixel values and reduce
 reconstruction errors [Sipkens et al. (Under preparation)][4].
 
-### 4.4 +optimize_a
+### 4.4 +optimize
 
-This package mirrors the content of the +invert package but,
-given the true distribution, aims to determine the optimal number of
-iterations for the Twomey and MART schemes or the optimal regularization
-parameter for the Twomey-Markowski and Tikhonov methods. These were mostly
-created for internal use but may be of limited to use to the practitioner.
+This package mirrors the content of the +invert package but
+aims to determine the optimal number of
+iterations for the Twomey and MART schemes or the optimal prior
+parameter set for the other methods.
 
-### 4.5 +optimize_b
-
-Similar to `optimize_a`, this package contains a set of method aimed to
-optimize the regularization parameters used in the reconstructions. This
+This includes some methods aimed to optimize the prior/regularization
+parameters used in the reconstructions, without knowledge of the data. This
 includes functions to Bayes factor over a range of regularization parameters.
-These methods are also used in certain `optimize_a` functions to gauge the
-accuracy of these methods when the true solution is known.
 
-### 4.6 +tools
+### 4.5 +tools
 
 A series of utility functions that serve various purposes, including printing
 a text-based progress bar (based on code from
@@ -383,7 +378,7 @@ should also be considered as per above.
 
 This program was largely written and compiled by Timothy Sipkens
 ([tsipkens@mail.ubc.ca](mailto:tsipkens@mail.ubc.ca)) while at the
-University of British Columbia. 
+University of British Columbia.
 
 This distribution includes code snippets from the code provided with
 the work of [Buckley et al. (2017)][3_Buck],
