@@ -34,10 +34,14 @@ for ii=2:length(iter_vec)
     out(ii).iter_vec = ii;
     out(ii).x = invert.mart(A,b,out(ii-1).x,iter_vec(ii)-iter_vec(ii-1));
     out(ii).chi = norm(out(ii).x-x_ex);
+    
+    if any(isnan(out(ii).x)); break; end
+        % if NaN is encountered exit function (warning thrown my MART)
+    
     tools.textbar(ii/length(iter_vec));
 end
 
-iter = length(iter_vec);
+iter = ii;
 x = out(end).x;
 
 end

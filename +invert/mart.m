@@ -101,8 +101,11 @@ for kk = 1:iter
         end
     end
     
-    if sum(isnan(x))~=0
-        disp(' ');
+    if any(isnan(x))
+        warning(['NaN values encountered in MART algorithm. ',...
+            'This is likely a result of the algorithm diverging. ',...
+            'Exiting MART evaluation with result from the last iteration.']);
+        break;
     end
 end
 

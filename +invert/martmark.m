@@ -43,21 +43,21 @@ end
 %-------------------------------------------------------------------------%
 
 
-iter_two = 150; % max number of iterations in MART pass
-iter_2m = iter; % max number of iterations of MART-Markowski algorithm
+iter_mart = 150; % max number of iterations in MART pass
+iter_mh = iter; % max number of iterations of MART-Markowski algorithm
 
 x = xi;
-x = invert.twomey(A,b,x,iter_two); % initial Towmey procedure
+x = invert.mart(A,b,x,iter_mart); % initial Towmey procedure
 SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % average square error for cases where b~= 0
 R = roughness(x,n_grid); % roughness vector
 
-iter_two = 150; % max number of iterations in MART pass
-for kk=1:iter_2m % iterate MART and smoothing procedure
+iter_mart = 150; % max number of iterations in MART pass
+for kk=1:iter_mh % iterate MART and smoothing procedure
     x_temp = x; % store temporarily for the case that roughness increases
     x = invert.markowski(A,b,Lb,x,n_grid,10,opt_smooth,Sf,SIGMA); % perform smoothing
 
     SIGMA_fun = @(x) calc_mean_sq_error(Lb*A,x,Lb*b);
-    x = invert.mart(A,b,x,iter_two,SIGMA_fun,SIGMA); % perform MART
+    x = invert.mart(A,b,x,iter_mart,SIGMA_fun,SIGMA); % perform MART
 
     %-- Check roughness of solution ------------------%
     R(kk+1) = roughness(x,n_grid);
@@ -67,12 +67,9 @@ for kk=1:iter_2m % iterate MART and smoothing procedure
         x = x_temp; % restore previous iteration
         break;
     end
-
-    disp(['Completed iteration ',num2str(kk),' of the MART-Markowski loop.']);
-    disp(' ');
 end
 disp('Completed MART-Markowski procedure.');
-disp(' ');
+disp(['iter = ',num2str(iter_mh)]);
 disp(' ');
 
 end

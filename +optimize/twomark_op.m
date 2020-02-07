@@ -59,6 +59,10 @@ end
 Sf = out(ind_min).Sf;
 x = out(ind_min).x;
 
+if or(ind_min==1,ind_min==length(out))
+    disp('Minimum occured at the edge of specified span for Sf.');
+end
+
 end
 
 

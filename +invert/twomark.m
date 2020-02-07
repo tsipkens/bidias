@@ -44,7 +44,7 @@ end
 
 
 iter_two = 150; % max number of iterations in Twomey pass
-iter_2m = iter; % max number of iterations of Twomey_Markowski algorithm
+iter_mh = iter; % max number of iterations of Twomey_Markowski algorithm
 
 x = xi;
 x = invert.twomey(A,b,x,iter_two); % initial Towmey procedure
@@ -52,7 +52,7 @@ SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % average square error for cases where 
 R = roughness(x,n_grid); % roughness vector
 
 iter_two = 150; % max number of iterations in Twomey pass
-for kk=1:iter_2m % iterate Twomey and smoothing procedure
+for kk=1:iter_mh % iterate Twomey and smoothing procedure
     x_temp = x; % store temporarily for the case that roughness increases
     x = invert.markowski(A,b,Lb,x,n_grid,10,opt_smooth,Sf,SIGMA); % perform smoothing
 
@@ -67,12 +67,9 @@ for kk=1:iter_2m % iterate Twomey and smoothing procedure
         x = x_temp; % restore previous iteration
         break;
     end
-
-    disp(['Completed iteration ',num2str(kk),' of the Twomey-Markowski loop.']);
-    disp(' ');
 end
-disp('Completed Twomey-Markowski procedure.');
-disp(' ');
+disp('Completed Twomey-Markowski procedure:');
+disp(['iter = ',num2str(iter_mh)]);
 disp(' ');
 
 end
