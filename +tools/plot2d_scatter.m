@@ -7,7 +7,8 @@ function [] = plot2d_scatter(m,d,b,cmap)
 
 b = b./max(b);
 
-corder = min(1-1/3.*(log10([b])+3),1);
+marker_size = max((log10(b)+8),1);
+corder = min(1-1/3.*(log10([b])+3),1); % color is logscale
 
 if ~exist('cmap','var'); cmap = []; end
 if isempty(cmap)
@@ -23,7 +24,8 @@ hold on;
 for ii=1:length(m)
     plot(log10(d(ii)),log10(m(ii)),'.',...
         'Color',color(ii,:),...
-        'MarkerSize',max((log10(b(ii))+8),1));
+        'MarkerSize',marker_size(ii));
+        % marker_size is also logscale
 end
 hold off;
 
