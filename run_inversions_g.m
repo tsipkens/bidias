@@ -7,7 +7,7 @@
 disp('Performing Tikhonov (1st) regularization...');
 tic;
 [x_tk1,lambda_tk1,out_tk1] = optimize_a.tikhonov_op(...
-    Lb*A,Lb*b,n_x(1),[1e-2,1e1],x0,1);
+    Lb*A,Lb*b,[1e-2,1e1],1,n_x(1),x0);
 t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');

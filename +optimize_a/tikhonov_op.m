@@ -19,7 +19,7 @@
 %   Lx      Tikhonov matrix
 %=========================================================================%
 
-function [x,lambda,out] = tikhonov_op(A,b,n,span,x_ex,order,xi,solver)
+function [x,lambda,out] = tikhonov_op(A,b,span,order,n,x_ex,xi,solver)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
@@ -29,11 +29,15 @@ if ~exist('solver','var'); solver = []; end
 %-------------------------------------------------------------------------%
 
 lambda = logspace(log10(span(1)),log10(span(2)),70);
+x_length = size(A,2);
 
-[~,~,Lpr] = invert.tikhonov(...
-    A,b,n,lambda(end),order,xi,solver); % just used to get Lpr
-[~,~,~,S1,S2] = gsvd(full(A),full(Lpr));
+Lpr0 = invert.tikhonov_lpr(order,n,x_length); % get Tikhonov matrix
+
+disp('Pre-computing GSV...');
+[~,~,~,S1,S2] = gsvd(full(A),full(Lpr0));
     % pre-compute gsvd for Bayes factor calculation
+disp('Complete.');
+disp(' ');
 
 disp('Optimizing Tikhonov regularization:');
 tools.textbar(0);
@@ -41,8 +45,8 @@ for ii=length(lambda):-1:1
     out(ii).lambda = lambda(ii); % store regularization parameter
     
     %-- Perform inversion --%
-    [out(ii).x,~,Lpr] = invert.tikhonov(...
-        A,b,n,lambda(ii),order,xi,solver);
+    [out(ii).x,~,Lpr0] = invert.tikhonov(...
+        A,b,lambda(ii),Lpr0,[],xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error --%
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
@@ -50,13 +54,13 @@ for ii=length(lambda):-1:1
     
     %-- Compute credence, fit, and Bayes factor --%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize_b.tikhonov_bayesf(A,b,out(ii).x,Lpr,lambda(ii),order,...
-        S1,S2);
+        optimize_b.tikhonov_bayesf(...
+        A,b,out(ii).x,Lpr0,lambda(ii),order,S1,S2);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end
 
-if ~isempty(x_ex)
+if ~isempty(x_ex) % if exact solution is supplied
     [~,ind_min] = min([out.chi]);
 else
     ind_min = [];
@@ -65,7 +69,7 @@ lambda = out(ind_min).lambda;
 x = out(ind_min).x;
 out(1).ind_min = ind_min;
 
-out(1).Lpr = Lpr; % store Lpr structure
+out(1).Lpr = Lpr0; % store Lpr structure
     % to save memory, only output Lpr structure
     % Lpr for any lambda can be found using scalar multiplication
     % Gpo_inv = A'*A+Lpr'*Lpr; <- can be done is post-process

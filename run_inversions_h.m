@@ -9,7 +9,7 @@ lambda_tk1 = 1.4;
 disp('Performing Tikhonov (1st) regularization...');
 tic;
 x_tk1_a = invert.tikhonov(...
-    Lb*A,Lb*b,grid_x,lambda_tk1,1,[],'non-neg');
+    Lb*A,Lb*b,lambda_tk1,1,grid_x,[],'non-neg');
 t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -29,8 +29,8 @@ the = atan(V(1,2)/V(2,2))/pi*180;
 
 disp('Performing exponential distance regularization...');
 x_exp_rot_a = invert.exp_dist(...
-    Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    lambda_exp_rot,Gd2);
+    Lb*A,Lb*b,lambda_exp_rot,Gd2,...
+    grid_x.elements(:,2),grid_x.elements(:,1));
 disp('Inversion complete.');
 disp(' ');
 

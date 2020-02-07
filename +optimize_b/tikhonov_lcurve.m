@@ -8,7 +8,7 @@
 
 function [x,lambda] = tikhonov_lcurve(A,b,Lpr,span_lambda)
 
-x_length = length(A(1,:));
+x_length = size(A,2);
 
 epsilon = 1e-4; %termination threshold
 phi=(1+sqrt(5))/2; % golden section

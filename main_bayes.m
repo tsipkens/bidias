@@ -86,8 +86,12 @@ Ntot = 1e5;
 [b,Lb] = tools.add_noise(b0,Ntot);
 
 figure(5);
-colormap(gcf,cm_b);
-grid_b.plot2d_marg(b.*Ntot);
+tools.plot2d_scatter(...
+    grid_b.elements(:,1),grid_b.elements(:,2),b,cm_b);
+
+figure(6);
+colormap(cm_b);
+grid_b.plot2d_marg(b);
 
 figure(20);
 grid_b.plot2d_sweep(b,cm_b);

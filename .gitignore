@@ -17,7 +17,6 @@ main_jas19_noise.m
 test_import.m
 submodule_update.sh
 +uncertainty
-run_inversions_e.m
 run_inversions_f.m
 main_tfer.m
 CPMASP2KernelV0.m

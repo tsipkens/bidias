@@ -17,7 +17,7 @@
 %   x       Regularized estimate
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_op(A,b,d_vec,m_vec,span,x_ex,Gd,xi,solver)
+function [x,lambda,out] = exp_dist_op(A,b,span,Gd,d_vec,m_vec,x_ex,xi,solver)
 
 
 %-- Parse inputs ---------------------------------------------%
@@ -46,7 +46,7 @@ for ii=length(lambda):-1:1
     
     %-- Perform inversion --------------------------%
     [out(ii).x,~,Lpr] = invert.exp_dist(...
-        A,b,d_vec,m_vec,lambda(ii),Gd,xi,solver);
+        A,b,lambda(ii),Gd,d_vec,m_vec,xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error ---------%
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
@@ -54,7 +54,7 @@ for ii=length(lambda):-1:1
     
     %-- Compute credence, fit, and Bayes factor ----%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize_b.exp_dist_bayesf(A,b,out(ii).x,Lpr,lambda(ii));
+        optimize_b.exp_dist_bayesf(A,b,lambda(ii),Lpr,out(ii).x);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

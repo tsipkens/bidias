@@ -3,18 +3,19 @@
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
-% if iscell(phantom.Sigma)
-%     Gd = phantom.Sigma{1};
-% else
-%     Gd = phantom.Sigma;
-% end
+if iscell(phantom.Sigma)
+    Gd = phantom.Sigma{1};
+else
+    Gd = phantom.Sigma;
+end
 
-[~,Gd] = phantom.p2cov(phantom.p,phantom.modes);
-Gd = Gd{2};
+% [~,Gd] = phantom.p2cov(phantom.p,phantom.modes);
+% Gd = Gd{2};
 
 [x_ed_lam,lambda_ed_lam,out_ed_lam] = ...
-    optimize_a.exp_dist_op(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    [0.1,10],x0,Gd);
+    optimize_a.exp_dist_op(...
+    Lb*A,Lb*b,[0.1,10],Gd,...
+    grid_x.elements(:,2),grid_x.elements(:,1),x0);
 disp('Process complete.');
 disp(' ');
 
@@ -48,13 +49,13 @@ else
     Gd = phantom.Sigma;
 end
 [out_ed_corr] = ...
-    optimize_a.exp_dist_op1d(Lb*A,Lb*b,grid_x.elements(:,2),grid_x.elements(:,1),...
-    lambda_ed_lam,x0,Gd);
+    optimize_a.exp_dist_op1d(Lb*A,Lb*b,lambda_ed_lam,Gd,...
+    grid_x.elements(:,2),grid_x.elements(:,1),x0);
 %}
 
 %{
 %-- Zeroth-order Tikhonov regularization --%
 %   Lower limit for correlation lengths.
-[x_tk0,D_tk0,L_tk0,Gpo_tk0] = invert.tikhonov(Lb*A,Lb*b,n_x(1),...
-    lambda_ed_lam,0);
+[x_tk0,D_tk0,L_tk0,Gpo_tk0] = invert.tikhonov(...
+    Lb*A,Lb*b,lambda_ed_lam,0,n_x(1));
 %}

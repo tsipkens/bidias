@@ -74,7 +74,7 @@ caxis([0,cmax*(1+1/256)]);
 
 %%
 %== STEP 2b: Generate data ==============================================%
-b0 = A_t*x_t; % forward evaluate kernel
+b0 = A_t*x_t; % forward evaluate kernel (high dimension)
 
 
 %-- Corrupt data with noise ----------------------------------------------%

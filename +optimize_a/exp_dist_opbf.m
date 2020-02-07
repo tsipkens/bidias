@@ -49,7 +49,7 @@ for ii=1:length(vec_lambda)
     y = [vec_lambda(ii),vec_ratio(ii),vec_ld(ii),vec_corr(ii)];
     
     out(ii).x = invert.exp_dist(...
-        A,b,d_vec,m_vec,y(1),Gd_fun(y),xi,solver);
+        A,b,y(1),Gd_fun(y),d_vec,m_vec,xi,solver);
     out(ii).chi = norm(out(ii).x-x_ex);
     
     out(ii).lambda = vec_lambda(ii);
@@ -58,7 +58,7 @@ for ii=1:length(vec_lambda)
     out(ii).corr = vec_corr(ii);
     
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize_b.exp_dist_bayesf(A,b,out(ii).x,Lpr);
+        optimize_b.exp_dist_bayesf(A,b,out(ii).lambda,Lpr,out(ii).x);
     
     tools.textbar(ii/length(vec_lambda));
 end

@@ -20,7 +20,7 @@
 %   Gpo_inv  Inverse of the posterior covariance
 %=========================================================================%
 
-function [x,D,Lpr0,Gpo_inv] = exp_dist(A,b,grid_d,m,lambda,Gd,xi,solver)
+function [x,D,Lpr0,Gpo_inv] = exp_dist(A,b,lambda,Gd,grid_d,m,xi,solver)
 
 
 x_length = length(A(1,:));
@@ -40,7 +40,7 @@ if ~exist('xi','var'); xi = []; end % if no initial x is given
 %--------------------------------------------------------------%
 
 
-Lpr0 = invert.exp_dist_lpr(grid_d,m,Gd);
+Lpr0 = invert.exp_dist_lpr(Gd,grid_d,m);
     % use external function to evaluate prior covariance
 Lpr = lambda.*Lpr0;
 

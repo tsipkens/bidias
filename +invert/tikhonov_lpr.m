@@ -1,43 +1,38 @@
 
-% TIKHONOV_LPR Generates Tikhonov matrices. 
+% TIKHONOV_LPR Generates Tikhonov smoothing operators/matrix, L. 
 % Author:   Timothy Sipkens, 2020-02-05
 %-------------------------------------------------------------------------%
 % Inputs:
-%   A           Linear operator
-%   n           Length of first dimension of solution
-%   x_length    Length of x vector
+%   order       Order of the Tikhonov operator
+%   n           Length of first dimension of solution or Grid for x
+%   x_length    Length of x vector (only used if a Grid is not 
+%               specified for n_grid)
 %
 % Outputs:
 %   Lpr0        Tikhonov matrix
 %=========================================================================%
 
-function Lpr0 = tikhonov_lpr(x_length,n_grid,order)
-
-%-- Parse inputs ---------------------------------------------------------%
-if ~exist('order','var'); order = []; end
-if isempty(order); order = 1; end
-    % if order not specified
-%-------------------------------------------------------------------------%
+function Lpr0 = tikhonov_lpr(order,n,x_length)
 
 %-- Generate Tikhonov smoothing matrix -----------------------------------%
 switch order
     case 0 % 0th order Tikhonov
-        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
-            Lpr0 = -speye(n_grid.Ne);
+        if 	isa(n,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = -speye(n.Ne);
         else
             Lpr0 = -speye(x_length);
         end
     case 1 % 1st order Tikhonov
-        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
-            Lpr0 = n_grid.l1;
+        if 	isa(n,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = n.l1;
         else
-            Lpr0 = genL1(n_grid,x_length);
+            Lpr0 = genL1(n,x_length);
         end
     case 2 % 2nd order Tikhonov
-        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
-            Lpr0 = n_grid.l2;
+        if 	isa(n,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = n.l2;
         else
-            Lpr0 = genL2(n_grid,x_length);
+            Lpr0 = genL2(n,x_length);
         end
     otherwise
         disp('The specified order of Tikhonov is not available.');

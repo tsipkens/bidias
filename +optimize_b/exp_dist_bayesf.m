@@ -3,7 +3,7 @@
 % Author: Timothy Sipkens, 2019-12-21
 %=========================================================================%
 
-function [B,F,C] = exp_dist_bayesf(A,b,x,Lpr,lambda)
+function [B,F,C] = exp_dist_bayesf(A,b,lambda,Lpr,x)
 
 r = length(x);
 lx = size(A,2); % n in Thompson and Kay

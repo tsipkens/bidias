@@ -2,7 +2,7 @@
 % EXP_DIST_OP1D  Single parameter sensitivity study for exponential distance regularization.
 %=========================================================================%
 
-function [out] = exp_dist_op1d(A,b,d_vec,m_vec,lambda,x_ex,Gd,xi,solver)
+function [out] = exp_dist_op1d(A,b,lambda,Gd,d_vec,m_vec,x_ex,xi,solver)
 
 %-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end
@@ -44,7 +44,7 @@ for ii=length(param):-1:1
     
     %-- Perform inversion --%
     [out(ii).x,~,Lpr] = invert.exp_dist(...
-        A,b,d_vec,m_vec,lambda,Gd_alt,xi,solver);
+        A,b,lambda,Gd_alt,d_vec,m_vec,xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error --%
     if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
@@ -52,7 +52,7 @@ for ii=length(param):-1:1
     
     %-- Compute credence, fit, and Bayes factor --%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize_b.exp_dist_bayesf(A,b,out(ii).x,Lpr,lambda);
+        optimize_b.exp_dist_bayesf(A,b,lambda,Lpr,out(ii).x);
     
     tools.textbar((length(param)-ii+1)/length(param));
 end
