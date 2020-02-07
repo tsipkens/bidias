@@ -379,7 +379,9 @@ should also be considered as per above.
 
 This program was largely written and compiled by Timothy Sipkens
 ([tsipkens@mail.ubc.ca](mailto:tsipkens@mail.ubc.ca)) while at the
-University of British Columbia.
+University of British Columbia. Code excerpts were contributed by Arash
+Naseri from the University of Alberta, including implementation of the
+L-curve optimization method of [Cultrera and Callegaro (2016)][7_CC_Lcurve].
 
 This distribution includes code snippets from the code provided with
 the work of [Buckley et al. (2017)][3_Buck],
@@ -402,13 +404,15 @@ README in the `cmap` folder.
 
 #### References
 
-[Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., Hogan Jr, C. J. (2017). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. *J. Aerosol Sci.* 114, 157-168.][3_Buck]
+[Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., & Hogan Jr, C. J. (2017). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. *J. Aerosol Sci.* 114, 157-168.][3_Buck]
+
+[Cultrera, A., & Callegaro, L. (2016). A simple algorithm to find the L-curve corner in the regularization of inverse problems. arXiv preprint arXiv:1608.04571.][7_CC_Lcurve]
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). MATLAB tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. DOI: 10.5281/zenodo.3513259][5_code]
 
-[Sipkens, T. A., Hadwin, P. J., Grauer, S. J., Daun, K. J. (2017). General error model for analysis of laser-induced incandescence signals. *Appl. Opt.* 56, 8436-8445.][6_AO17]
+[Sipkens, T. A., Hadwin, P. J., Grauer, S. J., & Daun, K. J. (2017). General error model for analysis of laser-induced incandescence signals. *Appl. Opt.* 56, 8436-8445.][6_AO17]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020a). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: A critical comparison of established methods. *J. Aerosol Sci.* 140, 105484. DOI: 10.1016/j.jaerosci.2019.105484][1_JAS1]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020a). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: A critical comparison of established methods. *J. Aerosol Sci.* 140, 105484.][1_JAS1]
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020b). New approaches to calculate the transfer function of particle mass analyzers. *Aerosol Sci. Technol.* 54, 111-127.][2_AST]
 
@@ -420,4 +424,5 @@ README in the `cmap` folder.
 [4]: N/A
 [5_code]: https://10.5281/zenodo.3513259
 [6_AO17]: https://doi.org/10.1364/AO.56.008436
+[7_CC_Lcurve]: https://arxiv.org/abs/1608.04571
 [code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v1.1

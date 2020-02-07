@@ -1,6 +1,6 @@
 
 % MARTMARK  Performs inversion using the iterative MART approach with intermediate smoothing.
-% Author: Arash Naseri, Timothy Sipkens, 2020-02-06
+% Author: Timothy Sipkens, Arash Naseri, 2020-02-06
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A           Model matrix
