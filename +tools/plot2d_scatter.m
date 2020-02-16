@@ -7,8 +7,15 @@ function [] = plot2d_scatter(m,d,b,cmap)
 
 b = b./max(b);
 
-marker_size = max((log10(b)+8),1);
-corder = min(1-1/3.*(log10([b])+3),1); % color is logscale
+logb = log10(b); % scale data
+bmax = max(logb);
+bmin = min(logb(~isinf(logb)));
+bmin = max(bmin,bmax-5); % at most, span four orders of magnitude
+logb = max(logb,bmin);
+bscl = max((logb-bmin)/(bmax-bmin),bmin);
+
+marker_size = 12.*bscl+0.1;
+corder = 1-bscl; % color is logscale
 
 if ~exist('cmap','var'); cmap = []; end
 if isempty(cmap)
