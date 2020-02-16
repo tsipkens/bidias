@@ -133,7 +133,7 @@ end
 %   Uses a four-point stencil. 
 function G_smooth = G_grid(grid,~,Sf)
 
-g1 = grid.adj; % off-diagonal components
+g1 = grid.adjacency8; % off-diagonal components
 norm_factor = 0.5+sum(g1,2).*Sf;
 
 G_smooth = (0.5.*speye(size(g1))+Sf.*g1)./norm_factor;
