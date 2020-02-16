@@ -161,34 +161,34 @@ methods
     %   using a four-point stencil.
     function [obj,adj] = adjacency(obj)
         
-        ind1 = zeros(3*prod(obj.ne),1);
+        ind1 = ones(3*prod(obj.ne),1);
         ind2 = ones(3*prod(obj.ne),1);
         vec = zeros(3*prod(obj.ne),1);
         ll = 0;
         
         for jj=1:prod(obj.ne)
-            if ~(mod(jj,obj.ne(1))==0)
+            if ~(mod(jj,obj.ne(1))==0) % up pixels
                 ll = ll+1;
                 ind1(ll) = jj;
                 ind2(ll) = jj+1;
                 vec(ll) = 1;
             end
             
-            if ~(mod(jj-1,obj.ne(1))==0)
+            if ~(mod(jj-1,obj.ne(1))==0) % down pixels
                 ll = ll+1;
                 ind1(ll) = jj;
                 ind2(ll) = jj-1;
                 vec(ll) = 1;
             end
             
-            if jj>obj.ne(1)
+            if jj>obj.ne(1) % left pixels
                 ll = ll+1;
                 ind1(ll) = jj;
                 ind2(ll) = jj-obj.ne(1);
                 vec(ll) = 1;
             end
             
-            if jj<=(obj.Ne-obj.ne(1))
+            if jj<=(obj.Ne-obj.ne(1)) % right pixels
                 ll = ll+1;
                 ind1(ll) = jj;
                 ind2(ll) = jj+obj.ne(1);
@@ -200,6 +200,90 @@ methods
             prod(obj.ne),prod(obj.ne));
         
         obj.adj = adj;
+    end
+    %=================================================================%
+    
+    
+    
+    %== ADJACENCY8 ===================================================%
+    %   Compute the adjacency matrix for the full grid,
+    %   using an eight-point stencil.
+    function [adj] = adjacency8(obj)
+        
+        ind1 = ones(7*prod(obj.ne),1);
+        ind2 = ones(7*prod(obj.ne),1);
+        vec = zeros(7*prod(obj.ne),1);
+        ll = 0;
+        
+        for jj=1:prod(obj.ne)
+            if ~(mod(jj,obj.ne(1))==0) % up pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj+1;
+                vec(ll) = 1;
+            end
+            
+            if ~(mod(jj-1,obj.ne(1))==0) % down pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj-1;
+                vec(ll) = 1;
+            end
+            
+            if jj>obj.ne(1) % left pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj-obj.ne(1);
+                vec(ll) = 1;
+            end
+            
+            if jj<=(obj.Ne-obj.ne(1)) % right pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj+obj.ne(1);
+                vec(ll) = 1;
+            end
+            
+            if and(~(mod(jj,obj.ne(1))==0),...
+                    jj>obj.ne(1)) % up, left pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj+1-obj.ne(1);
+                vec(ll) = 1;
+            end
+            
+            if and(~(mod(jj,obj.ne(1))==0),...
+                    jj<=(obj.Ne-obj.ne(1))) % up, right pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj+1+obj.ne(1);
+                vec(ll) = 1;
+            end
+            
+            if and(~(mod(jj-1,obj.ne(1))==0),...
+                    jj>obj.ne(1)) % down, left pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj-1-obj.ne(1);
+                vec(ll) = 1;
+            end
+            
+            if and(~(mod(jj-1,obj.ne(1))==0),...
+                    jj<=(obj.Ne-obj.ne(1))) % down, right pixels
+                ll = ll+1;
+                ind1(ll) = jj;
+                ind2(ll) = jj-1+obj.ne(1);
+                vec(ll) = 1;
+            end
+        end
+        
+        adj = sparse(ind1,ind2,vec,...
+            prod(obj.ne),prod(obj.ne));
+        
+        if obj.ispartial==1
+            adj(obj.missing,:) = [];
+            adj(:,obj.missing) = [];
+        end
     end
     %=================================================================%
     
