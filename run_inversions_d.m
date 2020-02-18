@@ -32,7 +32,7 @@ chi.LSQ = norm(x0-x_LSQ);
 %% Tikhonov (0th) implementation
 disp('Performing Tikhonov (0th) regularization...');
 tic;
-x_tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0);
+x_tk0 = invert.tikhonov(Lb*A,Lb*b,lambda_tk0,0,n_x(1));
 t.tk0(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -43,7 +43,7 @@ chi.tk0(ii) = norm(x0-x_tk0);
 %% Tikhonov (1st) implementation
 disp('Performing Tikhonov (1st) regularization...');
 tic;
-x_tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
+x_tk1 = invert.tikhonov(Lb*A,Lb*b,lambda_tk1,1,n_x(1));
 t.tk1(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -55,7 +55,7 @@ chi.tk1(ii) = norm(x0-x_tk1);
 disp('Performing Tikhonov (2nd) regularization...');
 % lambda_tk2 = 8e1;
 tic;
-x_tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2);
+x_tk2 = invert.tikhonov(Lb*A,Lb*b,lambda_tk2,2,n_x(1));
 t.tk2(ii) = toc;
 disp('Inversion complete.');
 disp(' ');
@@ -89,7 +89,7 @@ chi.two = norm(x0-x_two);
 %% Twomey-Markowski-Buckley
 disp('Performing Twomey-Markowski...');
 tic;
-x_two_mh = invert.twomark(A,b,Lb,n_x(1),...
+x_two_mh = invert.twomark(A,b,Lb,grid_x,...
     x_init,35,'Buckley',1/Sf_two_mh);
 t.two_mh(ii) = toc;
 disp('Completed Twomey-Markowski.');

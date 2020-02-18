@@ -1,5 +1,5 @@
 
-% RUN_INVERSIONS_A  Single inversion of each technique using externally defined parameters.
+% RUN_INVERSIONS_B  Single inversion of each technique using externally defined parameters.
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
@@ -41,12 +41,13 @@ chi.lsq = norm(x0-x_lsq_nn);
 % disp(' ');
 
 disp('Performing Tikhonov (0th) regularization (int.-p.)...');
-x_tk0 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0);
+x_tk0 = invert.tikhonov(Lb*A,Lb*b,lambda_tk0,0,n_x(1));
 disp('Inversion complete.');
 disp(' ');
 
 disp('Performing Tikhonov (0th) regularization (non-neg)...');
-x_tk0_nn = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk0,0,[],'non-neg');
+x_tk0_nn = invert.tikhonov(Lb*A,Lb*b,lambda_tk0,0,n_x(1),...
+    [],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 
@@ -63,12 +64,13 @@ chi.tk0 = norm(x0-x_tk0_nn);
 % disp(' ');
 
 disp('Performing Tikhonov (1st) regularization (int.-p.)...');
-x_tk1 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1);
+x_tk1 = invert.tikhonov(Lb*A,Lb*b,lambda_tk1,1,n_x(1));
 disp('Inversion complete.');
 disp(' ');
 
 disp('Performing Tikhonov (1st) regularization (non-neg)...');
-x_tk1_nn = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk1,1,[],'non-neg');
+x_tk1_nn = invert.tikhonov(Lb*A,Lb*b,lambda_tk1,1,n_x(1),...
+    [],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 
@@ -85,12 +87,13 @@ chi.tk1 = norm(x0-x_tk1_nn);
 % disp(' ');
 
 disp('Performing Tikhonov (2nd) regularization (int.-p.)...');
-x_tk2 = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2);
+x_tk2 = invert.tikhonov(Lb*A,Lb*b,lambda_tk2,2,n_x(1));
 disp('Inversion complete.');
 disp(' ');
 
 disp('Performing Tikhonov (2nd) regularization (non-neg)...');
-x_tk2_nn = invert.tikhonov(Lb*A,Lb*b,n_x(1),lambda_tk2,2,[],'non-neg');
+x_tk2_nn = invert.tikhonov(Lb*A,Lb*b,lambda_tk2,2,n_x(1),...
+    [],'non-neg');
 disp('Inversion complete.');
 disp(' ');
 
@@ -120,7 +123,7 @@ chi.two = norm(x0-x_Two);
 
 %% Twomey-Markowski-Buckley
 disp('Performing Twomey-Markowski...');
-x_two_mh = invert.twomark(A,b,Lb,n_x(1),...
+x_two_mh = invert.twomark(A,b,Lb,grid_x,...
     x_init,35,'Buckley',Sf_two_mh);
 disp('Completed Twomey-Markowski.');
 

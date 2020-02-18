@@ -7,6 +7,7 @@ function [prop] = prop_dma(opts)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('opts','var'); opts = []; end
+if ~isstruct(opts); t0 = opts; opts = struct(); opts.param = t0; end
 if ~isfield(opts,'solver'); opts.solver = 'fullydeveloped'; end % if order not specified
 if ~isfield(opts,'params'); opts.params = 'Olfert'; end % if order not specified
 
@@ -15,17 +16,16 @@ switch opts.params
     
     %-- DMA parameters from Olfert lab (TSI 3081) ----------------------------%
     %-- +FlareNet 2018
-    case {'Olfert','FlareNet18','TSI 3018'}
+    case {'Olfert','FlareNet18',' Electrostatic Classifier Model 3018'}
         prop.Q_s = 0.3/60/1000; % Sample flow [m^3/s]
         prop.Q_a = 0.3/60/1000; % Aerosol flow [m^3/s]
         prop.Q_c = 3/60/1000; % Sheath flow [m^3/s]
         prop.Q_m = 3/60/1000; % Exhaust flow [m^3/s]
-        prop.L = 0.44369; %length, m
-        prop.R1 = 0.00937; %inner radius, m
-        prop.R2 = 0.01961; %outer radius, m
-        prop.T = 293; %temperature, K
+        prop.L = 0.44369; % length, m
+        prop.R1 = 0.00937; % inner radius, m
+        prop.R2 = 0.01961; % outer radius, m
+        prop.T = 293; % temperature, K
         prop.p = 1;
-        
         
     %-- DMA parameters from Buckley et al. (TSI 3081) ------------------------%
     case {'Buckley'}
@@ -38,6 +38,14 @@ switch opts.params
         prop.R1 = 0.00937; % inner electrode radius [m]
         prop.T = 294; % temperature [K]
         prop.p = 1;
+        
+    case{' Electrostatic Classifier Model 3080'}
+        prop.L = 0.44369; % length of chamber [m]
+        prop.R2 = 0.00937; % outer electrode radius [m]
+        prop.R1 = 0.01961; % inner electrode radius [m]
+        prop.T = 293; % default temperature [K]
+        prop.p = 1;
+        
 end
 
 

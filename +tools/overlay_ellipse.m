@@ -10,6 +10,10 @@ function h = overlay_ellipse(mu,Sigma,s,cspec)
 if ~exist('cspec','var'); cspec = []; end
 if isempty(cspec); cspec = 'w'; end
 
+if ~exist('s','var'); s = []; end
+if isempty(s); s = 1; end
+
+
 mu = fliplr(mu); % flip mean and covar.
 Sigma = rot90(Sigma,2);
 

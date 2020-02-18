@@ -1,47 +1,36 @@
 
 % TFER_1S_DIFF	Evaluates the transfer function for a PMA in Case A (w/ diffusion).
 % Author:       Timothy Sipkens, 2018-12-27
-%=========================================================================%
-
-function [Lambda,G0,sp] = tfer_1S_diff(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   m_star      Setpoint particle mass
+%   sp          Structure defining various setpoint parameters 
+%               (e.g. m_star, V). Use 'get_setpoint' method to generate 
+%               this structure.
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
 %   prop        Device properties (e.g. classifier length)
-%   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
-%                   ('Rm',double) - Resolution
-%                   ('omega1',double) - Angular speed of inner electrode
-%                   ('V',double) - Setpoint voltage
 %
 % Outputs:
 %   Lambda      Transfer function
 %   G0          Function mapping final to initial radial position
-%-------------------------------------------------------------------------%
+%=========================================================================%
 
+function [Lambda,G0] = tfer_1S_diff(sp,m,d,z,prop)
 
-%-- Evaluate mechanical mobility for diffusion calc. ---------------------%
-if ~exist('d','var')
-    B = tfer_pma.mp2zp(m,z,prop.T,prop.p,prop);
-        % if mobility is not specified, use mass-mobility relation to estimate
-else
-    B = tfer_pma.dm2zp(d,z,prop.T,prop.p);
-end
-
-D = prop.D(B).*z;
-    % diffusion coefficient is previously defined function multiplied by 
-    % integer charge state
+[~,~,D] = tfer_pma.parse_inputs(sp,m,d,z,prop); % get diffusion coeff.
 sig = sqrt(2.*prop.L.*D./prop.v_bar); % diffusive spreading parameter
 
-[~,G0] = tfer_pma.tfer_1S(m_star,m,d,z,prop,varargin{:});
+
+%-- Evaluate relevant functions ------------------------------------------%
+[~,G0] = tfer_pma.tfer_1S(sp,m,d,z,prop);
     % get G0 function for this case
 
-rho_fun = @(G,r) (G-r)./(sqrt(2).*sig); % reuccring quantity
+rho_fun = @(G,r) (G-r)./(sqrt(2).*sig); % recurring quantity
 kap_fun = @(G,r) ...
     (G-r).*erf(rho_fun(G,r))+...
     sig.*sqrt(2/pi).*exp(-rho_fun(G,r).^2); % define function for kappa
+
 
 %-- Evaluate the transfer function and its terms -------------------------%
 K22 = kap_fun(G0(prop.r2),prop.r2);

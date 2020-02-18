@@ -1,16 +1,23 @@
 
 archive/
 data/
+results/
 +buckley_program/
 +olfert/
+*.asv
+
 main_exper_fn18.m
 main_exper_ua19_salt.m
+main_exper_gra_test.m
+main_exper_gra.m
+main_exper_ua19_nov_a.m
+main_exper_ua19_nov_b.m
 main_jas19_noise.m
+main_bayes_sp2.m
+
+test_import.m
 submodule_update.sh
 +uncertainty
-run_inversions_e.m
 run_inversions_f.m
-run_inversions_g.m
 main_tfer.m
-main_bayes.m
-*.asv
+CPMASP2KernelV0.m

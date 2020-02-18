@@ -1,29 +1,25 @@
 
 % TFER_1C	Evaluates the transfer function for a PMA in Case B.
 % Author:	Timothy Sipkens, 2019-03-21
-%=========================================================================%
-
-function [Lambda,G0,sp] = tfer_1C(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   m_star      Setpoint particle mass
+%   sp          Structure defining various setpoint parameters 
+%               (e.g. m_star, V). Use 'get_setpoint' method to generate 
+%               this structure.
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
 %   prop        Device properties (e.g. classifier length)
-%   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
-%                   ('Rm',double) - Resolution
-%                   ('omega1',double) - Angular speed of inner electrode
-%                   ('V',double) - Setpoint voltage
 %
 % Outputs:
 %   Lambda      Transfer function
 %   G0          Function mapping final to initial radial position
-%-------------------------------------------------------------------------%
+%=========================================================================%
 
-[sp,tau,C0] = ...
-    tfer_pma.get_setpoint(m_star,m,d,z,prop,varargin{:});
-        % get setpoint (parses d and z)
+function [Lambda,G0] = tfer_1C(sp,m,d,z,prop)
+
+[tau,C0] = tfer_pma.parse_inputs(sp,m,d,z,prop);
+        % parse inputs for common parameters
 
 %-- Taylor series expansion constants ------------------------------------%
 C3 = tau.*(sp.alpha^2*prop.rc+2*sp.alpha*sp.beta/prop.rc+sp.beta^2/(prop.rc^3)-C0./(m.*prop.rc));

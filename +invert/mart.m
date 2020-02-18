@@ -3,31 +3,49 @@
 % Citation:     Gordon et al, J. Theor. Biol. 29(3), 471-481 (1970)
 % Author:       Timothy Sipkens, 2018-20-12
 % Adapted from: Samuel Grauer
-%=========================================================================%
-
-function [x] = mart(A,b,x0,iter)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   A       Model matrix
 %   b       Data
+%   xi      Initial guess       (Optional, default ones vector)
 %   iter    MART iterations     (Optional, default 10)
-%   x0      Initial guess       (Optional, default ones vector)
+%   sigma_fun     Function of x to be evaluated to determine convergence
+%                   (Optional, default: ignore)
+%   sigma         Value to which sigma_fun is compared to determine convergence
+%                   (Optional, default: ignore)
+%   f_bar         Boolean to determine whether or not to show textbar
+%                   (Optional, default: 0)
 %
 % Output:
 %   x       MART estimate
+%=========================================================================%
+
+function [x] = mart(A,b,xi,iter,sigma_fun,sigma,f_bar)
+
+%-- Parse inputs ---------------------------------------------------------%
+if ~exist('iter','var'); iter = []; end
+if isempty(iter); iter = 10; end % default of 10 iterations
+
+if exist('xi','var')
+    x = xi;
+else
+    x = ones(size(A,2),1); % intiate vector of ones if xi is not specified
+end
+
+% whether to display text-based progress bar
+if ~exist('f_bar','var'); f_bar = []; end
+if isempty(f_bar); f_bar = 0; end
+
+% controls exit conditions
+if or(~exist('sigma','var'),~exist('sigma_fun','var'))
+    f_sigma = 0;
+elseif or(isempty(sigma),isempty(sigma_fun))
+    f_sigma = 0;
+else
+    f_sigma = 1;
+end
 %-------------------------------------------------------------------------%
 
-
-%-- Parse inputs -------------%
-if ~exist('iter','var')
-    iter = 10; % default of 10 iterations
-end
-
-if exist('x0','var')
-    x = x0;
-else
-    x = ones(size(A,2),1); % intiate vector of ones if x0 is not specified
-end
 
 
 %-- Get ray weights -------------%
@@ -52,6 +70,17 @@ for kk=1:iter
             end
         end
     end
+
+    if f_bar; tools.textbar(kk/iter); end % outputs progresss
+
+    %-- Exit conditions if sigma is specific (e.g. MART-Markowski) ----%
+    if f_sigma
+        if sigma_fun(x)<sigma
+            disp(['MART: SIGMA dropped below value specified after ',num2str(kk),...
+                ' iteration(s). Exiting Twomey loop.']);
+            break;
+        end
+    end
 end
 %}
 
@@ -63,12 +92,22 @@ for kk = 1:iter
     lam = log(b(nz)./y(nz));
     x = x.*exp(w.*A(nz,:)'*lam);
     
-    if sum(isnan(x))~=0
-        disp(' ');
+    if f_bar; tools.textbar(kk/iter); end % outputs progresss
+
+    % exit conditions if sigma is specific (e.g. MART-Markowski)
+    if f_sigma
+        if sigma_fun(x)<sigma
+            break;
+        end
+    end
+    
+    if any(isnan(x))
+        warning(['NaN values encountered in MART algorithm. ',...
+            'This is likely a result of the algorithm diverging. ',...
+            'Exiting MART evaluation with result from the last iteration.']);
+        break;
     end
 end
 
 
 end
-
-

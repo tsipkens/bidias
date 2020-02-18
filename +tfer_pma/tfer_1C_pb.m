@@ -1,30 +1,25 @@
 
 % TFER_1C_PB    Evaluates the transfer function for a PMA in Case B (w/ parabolic flow).
 % Author:       Timothy Sipkens, 2019-03-21
-%=========================================================================%
-
-function [Lambda,G0,sp] = tfer_1C_pb(m_star,m,d,z,prop,varargin)
 %-------------------------------------------------------------------------%
 % Inputs:
-%   m_star      Setpoint particle mass
+%   sp          Structure defining various setpoint parameters 
+%               (e.g. m_star, V). Use 'get_setpoint' method to generate 
+%               this structure.
 %   m           Particle mass
 %   d           Particle mobility diameter
 %   z           Integer charge state
 %   prop        Device properties (e.g. classifier length)
-%   varargin    Name-value pairs for setpoint    (Optional, default Rm = 3)
-%                   ('Rm',double) - Resolution
-%                   ('omega1',double) - Angular speed of inner electrode
-%                   ('V',double) - Setpoint voltage
 %
 % Outputs:
 %   Lambda      Transfer function
 %   G0          Function mapping final to initial radial position
-%-------------------------------------------------------------------------%
+%=========================================================================%
 
+function [Lambda,G0] = tfer_1C_pb(sp,m,d,z,prop)
 
-[sp,tau,C0] = ...
-    tfer_pma.get_setpoint(m_star,m,d,z,prop,varargin{:});
-        % get setpoint (parses d and z)
+[tau,C0,~,rs] = tfer_pma.parse_inputs(sp,m,d,z,prop);
+        % parse inputs for common parameters
 
 %-- Taylor series expansion constants ------------------------------------%
 C3 = tau.*(sp.alpha^2*prop.rc+2*sp.alpha*sp.beta/prop.rc+sp.beta^2/(prop.rc^3)-C0./(m.*prop.rc));
@@ -33,14 +28,6 @@ C4 = tau.*(sp.alpha^2-2*sp.alpha*sp.beta/(prop.rc^2)-3*sp.beta^2/(prop.rc^4)+C0.
 A1 = -3*prop.v_bar./(4.*C4.^3.*prop.del^2);
 A2 = 2.*(C3.^2-C4.^2.*prop.del^2);
 A3 = @(r,ii) C4(ii).^2.*(r-prop.rc).^2-2.*C3(ii).*C4(ii).*(r-prop.rc);
-
-
-%-- Estimate equilibrium radius ------------------------------------------%
-if round((sqrt(C0./m_star)-sqrt(C0./m_star-4*sp.alpha*sp.beta))/(2*sp.alpha),15)==prop.rc
-    rs = real((sqrt(C0./m)-sqrt(C0./m-4*sp.alpha*sp.beta))./(2*sp.alpha)); % equiblirium radius for a given mass
-else
-    rs = real((sqrt(C0./m)+sqrt(C0./m-4*sp.alpha*sp.beta))./(2*sp.alpha)); % equiblirium radius for a given mass
-end
 
 
 %-- Set up F function for minimization -----------------------------------%

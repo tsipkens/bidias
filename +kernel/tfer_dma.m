@@ -2,9 +2,6 @@
 % TFER_DMA	Evaluates the transfer function of a differential mobility analyzer.
 % Author:	Timothy Sipkens, 2018-12-27
 % Adapted:	Buckley et al. (2017) and Olfert group
-%=========================================================================%
-
-function [Omega,Zp_tilde] = tfer_dma(d_star,d,z,prop,opts)
 %-------------------------------------------------------------------------%
 % Inputs:
 %   d_star          Particle diameter, measurement set point for DMA [m]
@@ -18,7 +15,9 @@ function [Omega,Zp_tilde] = tfer_dma(d_star,d,z,prop,opts)
 % Outputs:
 %   Omega           Transfer function
 %   Zp_tilde        Non-dimensional electrical mobility, vector
-%-------------------------------------------------------------------------%
+%=========================================================================%
+
+function [Omega,Zp_tilde] = tfer_dma(d_star,d,z,prop,opts)
 
 
 %-- Parse inputs ---------------------------------------------------------%
