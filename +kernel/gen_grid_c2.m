@@ -55,7 +55,7 @@ f_z = sparse(kernel.tfer_charge(d.*1e-9,z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
-%== STEP 1: Evaluate DMA transfer function ===============================%
+%== STEP 1: Evaluate SP2 transfer function ===============================%
 %   Note: The SP2 contribution is 1D and does not depend on the charge
 %   state. It is boxcar function that takes into account discretization
 %   only. 

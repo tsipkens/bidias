@@ -17,7 +17,7 @@
 %   x       Regularized estimate
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_op(A,b,span,Gd,d_vec,m_vec,x_ex,xi,solver)
+function [x,lambda,out] = exp_dist_op(A,b,span,Gd,d_vec,m_vec,x_ex,xi,solver,n)
 
 
 %-- Parse inputs ---------------------------------------------%
@@ -30,10 +30,13 @@ if isempty(Gd); Gd = speye(2); end
 
 if ~exist('xi','var'); xi = []; end % if no initial x is given
 if ~exist('x_ex','var'); x_ex = []; end
+
+if ~exist('n','var'); n = []; end
+if isempty(n); n = 30; end % default number of lambda entries to consider
 %--------------------------------------------------------------%
 
 
-lambda = logspace(log10(span(1)),log10(span(2)),30);
+lambda = logspace(log10(span(1)),log10(span(2)),n);
 
 disp('Optimizing exponential distance regularization:');
 tools.textbar(0);

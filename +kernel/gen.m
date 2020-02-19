@@ -1,6 +1,6 @@
 
 % GEN Generate A matrix describing kernel/transfer functions for DMA-PMA
-% Author:  Timothy Sipkens, 2018-11-27
+% Author:  Timothy Sipkens, 2020-02-04
 % 
 % Notes:
 %   Cell arrays are used for Omega_mat and Lambda_mat in order to 
@@ -8,15 +8,14 @@
 %   store information on higher resolutions grids
 %   (such as those used for phantoms).
 % 
-%-------------------------------------------------------------------------%
 % Inputs:
-%   grid_b      Grid on which the data exists
+%   sp          PMA setpoint structure
+%   d_star      DMA setpoints
 %   grid_i      Grid on which to perform integration
 %   prop_pma    Structure defining the properties of the PMA
-%   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
 %=========================================================================%
 
-function [A,sp] = gen(sp,d_star,grid_i,prop_pma)
+function A = gen(sp,d_star,grid_i,prop_pma)
 
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
@@ -31,7 +30,7 @@ N_b = length(sp); % length of data vector
 
 %-- Generate grid for intergration ---------------------------------------%
 n_i = grid_i.ne;
-N_i = prod(n_i); % length of integration vector
+N_i = grid_i.Ne; % length of integration vector
 
 r = grid_i.elements;
 m = r(:,1);
