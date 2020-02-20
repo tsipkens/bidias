@@ -34,19 +34,51 @@ from one-dimensional analyses or when simply computing summary parameters.
 
 Mathematically, the problem to be solved here is of the form
 
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}}),
 
-where *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
-mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and
-*b* = log<sub>10</sub>*d*<sub>m</sub>);
-*N<sub>i</sub>* is some measurement, most often a number of counts of
+where:
+
+* *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
+mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* =
+log<sub>10</sub>*d*<sub>m</sub>);
+* *N<sub>i</sub>* is some measurement, most often a number of counts of
 particles, at some *i*<sup>th</sup> measurement setpoint or location;
-*N*<sub>tot</sub> is the total number of particles in the measured volume of
+* *N*<sub>tot</sub> is the total number of particles in the measured volume of
 aerosol, that is the product of the particle number concentration, the flow rate,
-and the total sampling time; *K*(*a**,*b**,*a*,*b*) is a kernel containing
-device transfer functions or other discretization information;
-and *p*(*a*,*b*) is a two-dimensional size distribution. Inversion refers to
-finding *p*(*a*,*b*) from some set of measurements, *N<sub>i</sub>*.
+and the total sampling time;
+* *K*(*a<sub>i</sub>**,*b<sub>i</sub>**,*a*,*b*)
+is a kernel containing device transfer functions or other discretization information;
+and *p*(*a*,*b*) is a two-dimensional size distribution.
+
+Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N<sub>i</sub>*} for all *i*.
+
+For computation, the problem is discretized to form a set of linear equations.
+Specifically, the two-dimensional size distribution is discretized, mostly
+simply by representing the quantity on a regular rectangular grid (represented
+in the program by instances of the `Grid` class). In this case,
+we then define a global index for the grid, *j*, such that
+
+![](https://latex.codecogs.com/svg.latex?x_j=p(a_j,b_j)),
+
+where *x<sub>j</sub>* is a vectorized form of the mass-mobility distribution on
+the chosen grid. This results in a vector with *n*<sub>a</sub> x *n*<sub>b</sub>
+total entries, where *n*<sub>a</sub> is the number of grid points for the *a* variable
+and analogously for *b*. Here, the solution is assumed to be uniform within each
+element, in which case
+
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}}).
+
+This results is a linear system of equations of the form
+
+![](https://latex.codecogs.com/svg.latex?{\mathbf{b}}={\mathbf{Ax}}+{\mathbf{e}}).
+
+where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*);
+**A** is a discrete form of the kernel,
+
+![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}});
+
+and **e** is a vector of measurement errors that corrupt the results of **Ax**.
+
 
 ## 2. Scripts in upper directory
 
