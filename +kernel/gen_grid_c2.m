@@ -10,7 +10,6 @@
 %   store information on higher resolutions grids
 %   (such as those used for phantoms).
 % 
-%-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
 %   grid_i      Grid on which to perform integration
@@ -20,10 +19,17 @@
 
 function [A,sp] = gen_grid_c2(grid_b,grid_i,prop_pma,varargin)
 
+
+%-- Parse inputs ---------------------------------------------------------%
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
     % import properties of PMA
     % use default properties selected by prop_pma function
+    
+if or(isempty(varargin),length(varargin)~=2) % parse extra information for PMA
+    error('Invalid additional information for PMA setpoint.');
+end
+%-------------------------------------------------------------------------%
 
     
 %-- Parse measurement set points (b) -------------------------------------%
@@ -62,9 +68,10 @@ n_z = length(z_vec);
 disp('Computing SP2 contribution...');
 Omega_mat = sparse(n_b(1),n_i(1));% pre-allocate for speed
 for ii=1:n_b(1)
-    Omega_mat(ii,:) = ...
-        and(grid_b.nodes{1}(ii)<grid_i.edges{1},...
-        grid_b.nodes{1}(ii+1)>grid_i.edges{1});
+    Omega_mat(ii,:) = max(...
+        min(grid_i.nodes{1}(2:end),grid_b.nodes{1}(ii+1))-... % lower bound
+        max(grid_i.nodes{1}(1:(end-1)),grid_b.nodes{1}(ii))... % upper bound
+        ,0)./(grid_b.nodes{1}(ii+1)-grid_b.nodes{1}(ii)); % normalize by SP2 bin size
 end
 
 [~,jj] = max(mrbc==grid_i.edges{1},[],2);
@@ -85,8 +92,11 @@ for kk=1:n_z % loop over the charge state
     Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
     
     for ii=1:n_b(2) % loop over m_star
+        pname = varargin{1}; % name of field for additional PMA field
+        pval = varargin{2}(ii); % value of field for current setpoint
+        
         sp(ii) = tfer_pma.get_setpoint(...
-            prop_pma,'m_star',grid_b.edges{2}(ii).*1e-18,varargin{:});
+            prop_pma,'m_star',grid_b.edges{2}(ii).*1e-18,pname,pval);
         Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
             sp(ii),m.*1e-18,d.*1e-9,...
             z_vec(kk),prop_pma)';
@@ -112,6 +122,7 @@ for kk=1:n_z
 end
 disp('Completed kernel.');
 %=========================================================================%
+
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area

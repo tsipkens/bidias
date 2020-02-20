@@ -16,6 +16,7 @@ main_exper_ua19_nov_b.m
 main_jas19_noise.m
 main_bayes_sp2.m
 main_kernel_sp2.m
+main_exper_sp2.m
 
 test_import.m
 submodule_update.sh
