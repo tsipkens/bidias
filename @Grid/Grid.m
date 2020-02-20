@@ -188,7 +188,7 @@ methods
                 vec(ll) = 1;
             end
             
-            if jj<=(obj.Ne-obj.ne(1)) % right pixels
+            if jj<=(prod(obj.ne)-obj.ne(1)) % right pixels
                 ll = ll+1;
                 ind1(ll) = jj;
                 ind2(ll) = jj+obj.ne(1);

@@ -18,9 +18,11 @@ main_bayes_sp2.m
 main_kernel_sp2.m
 main_exper_sp2.m
 
+CPMASP2KernelV0.m
+ImportSP2.m
+
 test_import.m
 submodule_update.sh
 run_inversions_f.m
 main_tfer.m
-CPMASP2KernelV0.m
 +kernel/gen_c2.m

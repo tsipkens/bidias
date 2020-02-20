@@ -18,6 +18,7 @@ stairs(grid.nodes{marg_dim},...
 xlim([min(grid.edges{marg_dim}),max(grid.edges{marg_dim})]);
 set(gca,'XScale','log');
 
+ylabel({'d{\itN}/dlog {\itm}_{p}'},'Rotation',90)
 if nargin>2 % also plot marginal of the true distribution
     x_m_t = obj_t.marginalize(x_t);
 
@@ -35,6 +36,7 @@ stairs([0;x_m{marg_dim}],...
 ylim([min(grid.edges{marg_dim}),max(grid.edges{marg_dim})]);
 set(gca,'YScale','log');
 
+xlabel({'d{\itN}/dlog {\itm}_{rBC}'},'Rotation',0);
 if nargin>2 % also plot marginal of the true distribution
     hold on;
     plot([0;x_m_t{marg_dim}],...

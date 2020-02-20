@@ -85,6 +85,10 @@ disp(' ');
 
 %== STEP 2: Evaluate PMA transfer function ===============================%
 disp('Computing PMA contribution:');
+pname = varargin{1}; % name of field for additional PMA field
+pval = varargin{2}; % value of field for current setpoint
+if length(pval)==1; pval = pval.*ones(n_b(2),1); end % stretch if scalar
+
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
     % one cell entry per charge state
@@ -92,11 +96,8 @@ for kk=1:n_z % loop over the charge state
     Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
     
     for ii=1:n_b(2) % loop over m_star
-        pname = varargin{1}; % name of field for additional PMA field
-        pval = varargin{2}(ii); % value of field for current setpoint
-        
         sp(ii) = tfer_pma.get_setpoint(...
-            prop_pma,'m_star',grid_b.edges{2}(ii).*1e-18,pname,pval);
+            prop_pma,'m_star',grid_b.edges{2}(ii).*1e-18,pname,pval(ii));
         Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
             sp(ii),m.*1e-18,d.*1e-9,...
             z_vec(kk),prop_pma)';
