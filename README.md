@@ -195,18 +195,18 @@ For example, if one wanted to logarithmically discretize mass space between
 ```Matlab
 span = [0.01,100; 10,1000]; % span of space to be covered
 ne = [10,12]; % number of elements for each dimension
-grid = Grid(span,ne,'logarithmic'); % create instance of grid
+grid = Grid(span,ne,'logarithmic'); % create instance of Grid
 ```
 
-Second, one can supply a cell array of edges, where the first entry is the center
+Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center
 of the elements in the first dimension of parameter space and the second entry
 of the elements in the second dimension of parameter space. For example, to make
 a simple grid with elements at 0.1 and 1 fg in mass space and
 10, 200, and 1000 nm in mobility space, one would call:
 
 ```Matlab
-edges = {[0.1,1], [10,200,1000]}; % span of space to be covered
-grid = Grid(edges,[],'logarithmic'); % create instance of grid
+edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors
+grid = Grid(edges,[],'logarithmic'); % create instance of Grid
 ```
 
 Note that the number of elements is not required in this instance, as it is
