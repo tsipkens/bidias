@@ -37,16 +37,15 @@ Mathematically, the problem to be solved here is of the form
 ![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int_0^{\infty}{\int_0^{\infty}{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
 
 where:
-
-* *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
+- *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
 mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* =
 log<sub>10</sub>*d*<sub>m</sub>);
-* *N<sub>i</sub>* is some measurement, most often a number of counts of
+- *N<sub>i</sub>* is some measurement, most often a number of counts of
 particles, at some *i*<sup>th</sup> measurement setpoint or location;
-* *N*<sub>tot</sub> is the total number of particles in the measured volume of
+- *N*<sub>tot</sub> is the total number of particles in the measured volume of
 aerosol, that is the product of the particle number concentration, the flow rate,
 and the total sampling time;
-* *K*(*a<sub>i</sub>**,*b<sub>i</sub>**,*a*,*b*)
+- *K*(*a<sub>i</sub>**,*b<sub>i</sub>**,*a*,*b*)
 is a kernel containing device transfer functions or other discretization information;
 and *p*(*a*,*b*) is a two-dimensional size distribution.
 
@@ -185,10 +184,14 @@ methods allow for plotting the 2D representation of vector data (`plot2d` method
 calculate the gradient of vector data (`grad` method). More information is available
 in the class definition.
 
-Both the **b** and **x** vectors are defined with respect to an instance of
-this class. The vectors are arranged such that the first entry corresponds
-to the smallest mass and mobility diameter. The vector proceeds, first with
-increasing mass and then with increasing mobility diameter. Vectorizing the
+Both the data, **b**, and two-dimensional size distribution, **x**, vectors
+can be defined with respect to an instance of this class. Generally, the data
+will only rely on the center of the elements on the grid (the width of the grid
+elements has little meaning for data).
+The vectors are arranged such that the first entry corresponds
+to the smallest size in both dimensions. The vector proceeds, first with
+increasing the first size dimension (e.g. for mass-mobility distributions this is mass
+by default) and then with increasing the second size dimension. Vectorizing the
 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
 the `vectorize` method.
 
@@ -413,8 +416,8 @@ should also be considered as per above.
 
 This program was largely written and compiled by Timothy Sipkens
 ([tsipkens@mail.ubc.ca](mailto:tsipkens@mail.ubc.ca)) while at the
-University of British Columbia. Code excerpts were contributed by Arash
-Naseri from the University of Alberta, including implementation of the
+University of British Columbia. Code excerpts were contributed by @ArashNaseri
+from the University of Alberta, including implementation of the
 L-curve optimization method of [Cultrera and Callegaro (2016)][7_CC_Lcurve].
 
 This distribution includes code snippets from the code provided with
