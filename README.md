@@ -85,12 +85,11 @@ corrupt the results of **Ax**. This is the problem that the current code is desi
 
 ### 2.1 Main scripts (main*.m)
 
-The `main*` scripts in the top directory of the code can be called to
-demonstrate use of the code.
+The `main*` scripts in the top directory of the program constitute the primary code
+that can be called to demonstrate use of the code. The are generally composed of
+four parts.
 
-##### 2.1.1 General structure
-
-Scripts to execute this program should be structured as follows:
+#### 2.1.1 General structure: Four parts
 
 - **STEP 1**: Optionally, one can define a phantom used to generate synthetic data and a
 ground truth. The `Phantom` class, described in Section [3.2](#32-phantom-class), is designed to
@@ -135,7 +134,7 @@ by calling the `plot2d_marg` method of this class. This plots both the
 retrieved distribution as well as the marginalized distribution on each of
 the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
-##### 2.1.2 Script associated with the original J. Aerosol Sci. paper
+#### 2.1.2 Script associated with the original J. Aerosol Sci. paper
 
 Of particular note, the `main_jas20a.m` script is designed to replicate the results
 in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor
@@ -195,7 +194,7 @@ by default) and then with increasing the second size dimension. Vectorizing the
 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
 the `vectorize` method.
 
-##### 3.1.1 Support for partial grids
+#### 3.1.1 Support for partial grids
 
 The current program also supports creating partial grids, made up of a regular
 grid where certain elements are ignored or missing. This allows practitioners
@@ -300,7 +299,7 @@ As per Step 2 in Section 1.1.1, the transfer function evaluation can
 proceed using two inputs either (i) a `sp` structure or (ii) an instance
 of the `Grid` class defined for the data setpoints.
 
-##### 4.1.1 sp
+#### 4.1.1 sp
 
 The `sp` or setpoint structure is a structured array containing the information
 necessary to define the device setpoints. For a DMA, the setpoint mobility diameter,
@@ -315,7 +314,7 @@ the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown bel
 
 <img src="docs/sp_struct.png" width="500px">
 
-##### 4.1.2 grid_b
+#### 4.1.2 grid_b
 
 Alternatively, one can generate a grid corresponding to the data points. This can
 speed transfer function evaluation be exploiting the structure of the setpoints
