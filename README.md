@@ -50,20 +50,21 @@ and the total sampling time;
 is a kernel containing device transfer functions or other discretization information;
 and *p*(*a*,*b*) is a two-dimensional size distribution.
 
-Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N<sub>i</sub>*} for all *i*.
-For computation, the problem is discretized to form a set of linear equations.
-Specifically, the two-dimensional size distribution is discretized, mostly
-simply by representing the quantity on a regular rectangular grid (represented
-in the program by instances of the `Grid` class). In this case,
-we then define a global index for the grid, *j*, such that
+Inversion refers to finding *p*(*a*,*b*) from some set of measurements,
+{*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the
+two-dimensional size distribution is discretized, most
+simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub>
+discrete points for the first type of particle size (that is for *a*, e.g. particle mass)
+and *n*<sub>b</sub> for the second type of particle size (that is for *b*,
+e.g. particle mobility diameter). In this case, we define a global index for the grid,
+*j*, and vectorize the distribution, such that
 
 ![](https://latex.codecogs.com/svg.latex?x_j=p(a_j,b_j))
 
-where *x<sub>j</sub>* is a vectorized form of the mass-mobility distribution on
-the chosen grid. This results in a vector with *n*<sub>a</sub> x *n*<sub>b</sub>
-total entries, where *n*<sub>a</sub> is the number of grid points for the *a* variable
-and analogously for *b*. Here, the solution is assumed to be uniform within each
-element, in which case
+This results is a vector with *n*<sub>a</sub> x *n*<sub>b</sub> total entries.
+This vectorized form is chosen over a two-dimensional **x** so that the problem can be
+represented as a linear system of equations.
+Here, the solution is assumed to be uniform within each element, in which case
 
 ![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
 
@@ -76,8 +77,9 @@ where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*);
 
 ![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
 
-and **e** is a vector of measurement errors that corrupt the results of **Ax**.
-This is the problem that the current code is designed to solve. 
+(where the integrals are over the two-dimensional area of the *j*<sup>th</sup> element
+in [*a*,*b*]<sup>T</sup> space), and **e** is a vector of measurement errors that
+corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
 
 
 ## 2. Scripts in upper directory
