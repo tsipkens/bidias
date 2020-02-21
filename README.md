@@ -116,7 +116,9 @@ expected uncertainties in each point in `b`, encoded in the matrix
 `Lb`. For those cases involving counting noise, this can be
 approximated as
 
-    `Lb = theta*diag(sqrt(b));`
+    ```Matlab
+    Lb = theta*diag(sqrt(b));
+    ```
 
     where `theta` is related to the total number of particle counts as described in
 [Sipkens et al. (2020a)][1_JAS1]. The function `add_noise` is
@@ -180,8 +182,35 @@ or custom spaced elements along the edges. Methods are designed
 to make it easier to deal with gridded data, allowing users to reshape
 vectorized data back to a 2D grid (`reshape` method) or vice versa. Other
 methods allow for plotting the 2D representation of vector data (`plot2d` method) or
-calculate the gradient of vector data (`grad` method). More information is available
-in the class definition.
+calculate the gradient of vector data (`grad` method).
+
+Instances of the Grid class can primarily be constructed in two ways. First,
+one can specify a `span` for the grid to cover in the parameter space. The span
+is specified using a 2 x 2 matrix, where the first row corresponds to the
+span for the first dimension of the parameter space (e.g. mass) and the second
+row corresponds to the span for the second dimension of the parameter space (e.g. mobility).
+For example, if one wanted to logarithmically discretize mass space between
+0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call
+
+```Matlab
+span = [0.01,100; 10,1000]; % span of space to be covered
+ne = [10,12]; % number of elements for each dimension
+grid = Grid(span,ne,'logarithmic'); % create instance of grid
+```
+
+Second, one can supply a cell array of edges, where the first entry is the center
+of the elements in the first dimension of parameter space and the second entry
+of the elements in the second dimension of parameter space. For example, to make
+a simple grid with elements at 0.1 and 1 fg in mass space and
+10, 200, and 1000 nm in mobility space, one would call
+
+```Matlab
+edges = {[0.1,1], [10,200,1000]}; % span of space to be covered
+grid = Grid(edges,[],'logarithmic'); % create instance of grid
+```
+
+Note that the number of elements is not required in this instance, as it is
+implied by the length of the vectors given in `edges`.
 
 Both the data, **b**, and two-dimensional size distribution, **x**, vectors
 can be defined with respect to an instance of this class. Generally, the data
@@ -214,7 +243,9 @@ a center above this line is removed from the grid. For example, if one wanted
 to create a grid where all of the points above the 1-1 line shoudl be removed
 (as is relevant for PMA-SP2 inversion), one can call
 
-`grid = grid.partial(0,1);`
+```Matlab
+grid = grid.partial(0,1);
+```
 
 For partial grids:
 
@@ -313,6 +344,19 @@ mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `R
 the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
 <img src="docs/sp_struct.png" width="500px">
+
+Currently, creating arrays of setpoints requires a loop by the user. For example,
+the following code loops through a series of mass setpoints and generated
+setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
+in `prop_pma`:
+
+```Matlab
+sp(length(m_star)) = struct();
+for ii=1:length(m_star) % loop through mass setpoints
+    sp(ii) = tfer_pma.get_setpoint(prop_pma,...
+        'm_star',m_star(ii),'Rm',10); % generate iith setpoint
+end
+```
 
 #### 4.1.2 grid_b
 
