@@ -190,7 +190,7 @@ is specified using a 2 x 2 matrix, where the first row corresponds to the
 span for the first dimension of the parameter space (e.g. mass) and the second
 row corresponds to the span for the second dimension of the parameter space (e.g. mobility).
 For example, if one wanted to logarithmically discretize mass space between
-0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call
+0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
 
 ```Matlab
 span = [0.01,100; 10,1000]; % span of space to be covered
@@ -202,7 +202,7 @@ Second, one can supply a cell array of edges, where the first entry is the cente
 of the elements in the first dimension of parameter space and the second entry
 of the elements in the second dimension of parameter space. For example, to make
 a simple grid with elements at 0.1 and 1 fg in mass space and
-10, 200, and 1000 nm in mobility space, one would call
+10, 200, and 1000 nm in mobility space, one would call:
 
 ```Matlab
 edges = {[0.1,1], [10,200,1000]}; % span of space to be covered
@@ -210,7 +210,9 @@ grid = Grid(edges,[],'logarithmic'); % create instance of grid
 ```
 
 Note that the number of elements is not required in this instance, as it is
-implied by the length of the vectors given in `edges`.
+implied by the length of the vectors given in `edges`. The `'logarithmic'`
+argument is still required to specify where nodes would be placed between
+the elements.
 
 Both the data, **b**, and two-dimensional size distribution, **x**, vectors
 can be defined with respect to an instance of this class. Generally, the data

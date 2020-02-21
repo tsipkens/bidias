@@ -67,15 +67,20 @@ methods
     %-----------------------------------------------------------------%
     function obj = Grid(span_edges,ne,discrete)
         
+        %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty grid
-
+        
+        if ~exist('discrete','var'); discrete = []; end
+        if isempty(discrete); discrete = 'logarithmic'; end
+            % if discrete is not specified, use logarithmic
+        %-------------------------------------------------------------%
+        
         if isa(span_edges,'cell') % consider case where edges are given
             obj.edges = span_edges;
             obj.ne = [length(span_edges{1}),...
                 length(span_edges{2})];
             obj.span = [min(span_edges{1}),max(span_edges{1});...
                 min(span_edges{2}),max(span_edges{2})];
-            obj.discrete = 'custom';
 
         else % otherwise, consider case where span is given
             obj.span = span_edges;
