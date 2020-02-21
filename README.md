@@ -311,7 +311,9 @@ below. Generally, this function can be placed inside a loop that generates an en
 in `sp` for each available setpoint. The output structure will contain all of the
 relevant parameters that could be used to specify that setpoint, including
 mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
-the voltage, `V`; and the electrode speeds, `omega*`.
+the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
+
+<img src="docs/sp_struct.png" width="500px">
 
 ##### 4.1.2 grid_b
 
