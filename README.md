@@ -34,7 +34,7 @@ from one-dimensional analyses or when simply computing summary parameters.
 
 Mathematically, the problem to be solved here is of the form
 
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int_0^{\infty}{\int_0^{\infty}{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
 
 where:
 
@@ -66,9 +66,10 @@ This vectorized form is chosen over a two-dimensional **x** so that the problem 
 represented as a linear system of equations.
 Here, the solution is assumed to be uniform within each element, in which case
 
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum_{j=1}^{n_a\cdot{n_b}}{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
 
-This results is a linear system of equations of the form
+(where the integrals are over the two-dimensional area of the *j*<sup>th</sup> element
+in [*a*,*b*]<sup>T</sup> space). This results is a linear system of equations of the form
 
 ![](https://latex.codecogs.com/svg.latex?{\mathbf{b}}={\mathbf{Ax}}+{\mathbf{e}})
 
@@ -77,8 +78,7 @@ where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*);
 
 ![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
 
-(where the integrals are over the two-dimensional area of the *j*<sup>th</sup> element
-in [*a*,*b*]<sup>T</sup> space), and **e** is a vector of measurement errors that
+and **e** is a vector of measurement errors that
 corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
 
 
