@@ -270,7 +270,7 @@ the distribution numbers or names from that work (e.g. the demonstration phantom
 can be generated using `'1'` or `'demonstration'`). The demonstration phantom
 is indicated in the image below.
 
-<img src="docs/distr1.png" width="400px">
+<img src="docs/distr1.png" width="500px">
 
 Conversion between the `mu` and `Sigma` parameterization and the
 `p` structure parameterization can be accomplished using the `cov2p`
