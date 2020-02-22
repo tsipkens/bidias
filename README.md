@@ -328,9 +328,14 @@ within the larger program is to generate a matrix `A` that acts as the
 forward model. This package references the `tfer_pma` package, noted
 above.
 
-As per Step 2 in Section 1.1.1, the transfer function evaluation can
-proceed using two inputs either (i) a `sp` structure or (ii) an instance
+Transfer function evaluation for a PMA can
+proceed using one of two inputs either (i) a `sp` structure or (ii) an instance
 of the `Grid` class defined for the data setpoints.
+Evaluation proceeds using the analytical expressions 
+of Sipkens et al. (2020b) and the `tfer_pma` package. 
+
+The transfer function for the DMA uses the analytical 
+expressions of Stozenburg et al.
 
 #### 4.1.1 sp
 
