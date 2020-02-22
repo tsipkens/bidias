@@ -3,13 +3,14 @@
 % Author: Timothy Sipkens, 2019-10-31
 %=========================================================================%
 
-function [pha] = overlay_phantom(x_pha,grid,color)
+function [pha,N] = overlay_phantom(x_pha,grid,color)
 
 if isa(x_pha,'Phantom')
     pha = x_pha;
     grid = pha.grid;
+    N = [];
 else
-    pha = Phantom.fit(x_pha,grid);
+    [pha,N] = Phantom.fit(x_pha,grid);
 end
 
 if ~exist('color','var'); color = []; end
@@ -27,7 +28,7 @@ h1 = grid.overlay_line(fliplr(pha.mu),...
     pha.p.Dm);
 h1.Color = color;
 
-if nargout==0; clear pha; end % prevent unnecessary output
+if nargout==0; clear pha N; end % prevent unnecessary output
 
 end
 

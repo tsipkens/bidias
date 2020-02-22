@@ -13,6 +13,7 @@ if ~exist('span_rho','var'); span_rho = []; end
 if isempty(span_rho); span_rho = [10^2,10^3.5]; end
 %---------------------------------------------------%
 
+
 rho_min = span_rho(1);
 rho_max = span_rho(2);
 rho_n = logspace(log10(rho_min),log10(rho_max),n_rho);
@@ -24,6 +25,7 @@ x_rs = reshape(x,grid_x.ne);
 drho = log(rho_n(2))-log(rho_n(1));
 rho_n_low = exp(log(rho_n)-drho./2);
 rho_n_high = exp(log(rho_n)+drho./2);
+
 
 n_d = grid_x.ne(2);
 y = zeros(grid_x.ne(2),length(rho_n));

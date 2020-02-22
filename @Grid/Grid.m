@@ -495,8 +495,8 @@ methods
         
         tot = sum(x(:).*dr(:)); % integrated total
         
-        marg{1} = sum(dr.*x,2)./dr1(:,1); % integrate over diameter
-        marg{2} = sum(dr.*x,1)./dr2(1,:); % integrate over mass
+        marg{1} = sum(dr.*x,2)./dr2(:,1); % integrate over diameter
+        marg{2} = sum(dr.*x,1)./dr1(1,:); % integrate over mass
         
     end
     %=================================================================%
