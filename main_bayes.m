@@ -162,7 +162,8 @@ caxis([-scl,scl]);
 figure(10);
 
 
-%%
+%-- Plots of the log of the distributions -----%
+%{
 [~,ind_tk1] = min([out_tk1.chi]);
 [~,ind_ed] = min([out_ed_lam.chi]);
 
@@ -183,4 +184,5 @@ grid_x.plot2d(log10(x0));
 colormap(cm);
 colorbar;
 caxis([-4,1]);
+%}
 
