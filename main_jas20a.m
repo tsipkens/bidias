@@ -1,4 +1,9 @@
 
+% MAIN_JAS20A  Script associated with Sipkens et al., J. Aerosol Sci. (2020a).
+% Executes and compares deterministic inversions schemes.
+% Author: Timothy Sipkens
+%=========================================================================%
+
 clear;
 clc;
 close all;

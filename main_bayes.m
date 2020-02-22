@@ -1,4 +1,9 @@
 
+% MAIN_BAYES  Script associated with Sipkens et al., J. Aerosol Sci. (Submitted).
+% Executes and compares Bayesian inversions schemes.
+% Author: Timothy Sipkens
+%=========================================================================%
+
 clear;
 clc;
 close all;
@@ -103,12 +108,18 @@ grid_b.plot2d_sweep(b,cm_b);
 run_inversions_g;
 run_inversions_i;
 
+%%
+run_inversions_j;
+
 
 
 %%
 %== STEP 4: Visualize the results ========================================%
-ind = out_tk1.ind_min;
-x_plot = out_tk1(ind).x;
+% ind = out_tk1.ind_min;
+% x_plot = out_tk1(ind).x;
+
+[~,ind] = max([out_ed_lam.B]);
+x_plot = out_ed_lam(ind).x;
 
 
 

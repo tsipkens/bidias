@@ -1,10 +1,10 @@
 
 
-% RUN_INVERSIONS_I  Optimize exponential dist. reg. wrt a range of parameters.
-% Author:           Timothy Sipkens, 2019-05-28
+% RUN_INVERSIONS_J  Optimize exponential dist. reg. w.r.t. a range of parameters.
+% Author:           Timothy Sipkens, 2020-02-22
 %=========================================================================%
 
-
+%{
 guess = [1.3,1/4,log10(1.8),0.84]; % [lambda, ratio, ld, corr]
 disp('Optimizing exponential distance regularization (least-sqaures)...');
 [x_ed_opt,lambda_ed_opt,out_ed_opt] = optimize.exp_dist_opx(...
@@ -12,6 +12,7 @@ disp('Optimizing exponential distance regularization (least-sqaures)...');
     guess,x0); 
 disp('Inversion complete.');
 disp(' ');
+%}
 
 
 %{
@@ -24,7 +25,7 @@ disp(' ');
 %}
 
 
-
+%-{
 if iscell(phantom.Sigma)
     Gd = phantom.Sigma{1};
 else
@@ -32,7 +33,14 @@ else
 end
 [out_ed_corr] = ...
     optimize.exp_dist_op1d(Lb*A,Lb*b,lambda_ed_lam,Gd,...
-    grid_x.elements(:,2),grid_x.elements(:,1),x0);
+    grid_x.elements(:,2),grid_x.elements(:,1),x0,...
+    [],[],'corr');
+
+[out_ed_lmld] = ...
+    optimize.exp_dist_op1d(Lb*A,Lb*b,lambda_ed_lam,Gd,...
+    grid_x.elements(:,2),grid_x.elements(:,1),x0,...
+    [],[],'lmld');
+%}
 
 
 %{

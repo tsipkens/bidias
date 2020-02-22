@@ -38,6 +38,9 @@ if isempty(n); n = 30; end % default number of lambda entries to consider
 
 lambda = logspace(log10(span(1)),log10(span(2)),n);
 
+Lpr = invert.exp_dist_lpr(Gd,d_vec,m_vec); % same structure throughout
+[~,~,~,S1,S2] = gsvd(full(A),full(Lpr)); % pre-compute GSVD
+
 disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
@@ -48,7 +51,7 @@ for ii=length(lambda):-1:1
     out(ii).R12 = Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2));
     
     %-- Perform inversion --------------------------%
-    [out(ii).x,~,Lpr] = invert.exp_dist(...
+    out(ii).x = invert.exp_dist(...
         A,b,lambda(ii),Gd,d_vec,m_vec,xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error ---------%
@@ -57,7 +60,9 @@ for ii=length(lambda):-1:1
     
     %-- Compute credence, fit, and Bayes factor ----%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.exp_dist_bayesf(A,b,lambda(ii),Lpr,out(ii).x);
+        optimize.bayesf_precomp(A,b,out(ii).x,Lpr,out(ii).lambda,S1,S2,0);
+            % bypass exp_dist_bayesf, because GSVD is pre-computed
+        % optimize.exp_dist_bayesf(A,b,lambda(ii),Lpr,out(ii).x);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

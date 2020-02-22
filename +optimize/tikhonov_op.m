@@ -54,8 +54,8 @@ for ii=length(lambda):-1:1
     
     %-- Compute credence, fit, and Bayes factor --%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.tikhonov_bayesf(...
-        A,b,out(ii).x,Lpr0,lambda(ii),order,S1,S2);
+        optimize.bayesf_precomp(...
+        A,b,out(ii).x,Lpr0,lambda(ii),S1,S2,order);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end

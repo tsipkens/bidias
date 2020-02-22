@@ -2,7 +2,7 @@
 % EXP_DIST_OP1D  Single parameter sensitivity study for exponential distance regularization.
 %=========================================================================%
 
-function [out] = exp_dist_op1d(A,b,lambda,Gd,d_vec,m_vec,x_ex,xi,solver,param)
+function [out] = exp_dist_op1d(A,b,lambda,Gd,d_vec,m_vec,x_ex,xi,solver,type)
 
 %-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end
@@ -15,17 +15,17 @@ if isempty(Gd); Gd = speye(2); end
 if ~exist('xi','var'); xi = []; end % if no initial x is given
 if ~exist('x_ex','var'); x_ex = []; end
 
-if ~exist('param','var'); param = []; end % if parameter to study is not given
-if isempty(param); param = 'lmld'; end
+if ~exist('type','var'); type = []; end % if parameter to study is not given
+if isempty(type); type = 'lmld'; end
 %--------------------------------------------------------------%
 
 
 %-- Set up parameter vector ----------%
-if strcmp(param,'lmld') % lm/ld scaling
-    param = logspace(log10(0.01),log10(100),42);
+if strcmp(type,'lmld') % lm/ld scaling
+    beta_vec = logspace(log10(0.01),log10(100),42);
 
-elseif strcmp(param,'corr') % corr. scaling
-    param = 1-[logspace(log10(1e-3),log10(1.5),26),1.85,1.95,1.97,1.99,1.999];
+elseif strcmp(type,'corr') % corr. scaling
+    beta_vec = 1-[logspace(log10(1e-3),log10(1.5),26),1.85,1.95,1.97,1.99,1.999];
     
 else % if invalid parameter is specified
     error('Invalid parameter name.')
@@ -35,16 +35,16 @@ end
 
 disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
-for ii=length(param):-1:1
+for ii=length(beta_vec):-1:1
     
     %-- Evaluate Gd/parameters for current vector entry ------%
-    if strcmp(param,'lmld') % lm/ld scaling
-        out(ii).alpha = param(ii);
-        Gd_alt = Gd.*param(ii);
+    if strcmp(type,'lmld') % lm/ld scaling
+        out(ii).alpha = beta_vec(ii);
+        Gd_alt = Gd.*beta_vec(ii);
     
-    elseif strcmp(param,'corr') % corr. scaling
-        out(ii).R12 = 1-param(ii);
-        Gd_12_alt = sqrt(Gd(1,1)*Gd(2,2))*param(ii);
+    elseif strcmp(type,'corr') % corr. scaling
+        out(ii).R12 = 1-beta_vec(ii);
+        Gd_12_alt = sqrt(Gd(1,1)*Gd(2,2))*beta_vec(ii);
         Gd_alt = diag(diag(Gd))+[0,Gd_12_alt;Gd_12_alt,0];
     end
     %---------------------------------------------------------%
@@ -65,9 +65,9 @@ for ii=length(param):-1:1
     
     %-- Compute credence, fit, and Bayes factor --%
     [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.exp_dist_bayesf(A,b,lambda,Lpr,out(ii).x);
+        optimize.bayesf(A,b,out(ii).x,Lpr,lambda);
     
-    tools.textbar((length(param)-ii+1)/length(param));
+    tools.textbar((length(beta_vec)-ii+1)/length(beta_vec));
 end
 
 
