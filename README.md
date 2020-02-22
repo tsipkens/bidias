@@ -34,30 +34,62 @@ from one-dimensional analyses or when simply computing summary parameters.
 
 Mathematically, the problem to be solved here is of the form
 
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int{\int{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int_0^{\infty}{\int_0^{\infty}{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
 
-where *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
-mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and
-*b* = log<sub>10</sub>*d*<sub>m</sub>);
-*N<sub>i</sub>* is some measurement, most often a number of counts of
+where:
+- *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
+mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* =
+log<sub>10</sub>*d*<sub>m</sub>);
+- *N<sub>i</sub>* is some measurement, most often a number of counts of
 particles, at some *i*<sup>th</sup> measurement setpoint or location;
-*N*<sub>tot</sub> is the total number of particles in the measured volume of
+- *N*<sub>tot</sub> is the total number of particles in the measured volume of
 aerosol, that is the product of the particle number concentration, the flow rate,
-and the total sampling time; *K*(*a**,*b**,*a*,*b*) is a kernel containing
-device transfer functions or other discretization information;
-and *p*(*a*,*b*) is a two-dimensional size distribution. Inversion refers to
-finding *p*(*a*,*b*) from some set of measurements, *N<sub>i</sub>*.
+and the total sampling time;
+- *K*(*a<sub>i</sub>**,*b<sub>i</sub>**,*a*,*b*)
+is a kernel containing device transfer functions or other discretization information;
+and *p*(*a*,*b*) is a two-dimensional size distribution.
+
+Inversion refers to finding *p*(*a*,*b*) from some set of measurements,
+{*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the
+two-dimensional size distribution is discretized, most
+simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub>
+discrete points for the first type of particle size (that is for *a*, e.g. particle mass)
+and *n*<sub>b</sub> for the second type of particle size (that is for *b*,
+e.g. particle mobility diameter). In this case, we define a global index for the grid,
+*j*, and vectorize the distribution, such that
+
+![](https://latex.codecogs.com/svg.latex?x_j=p(a_j,b_j))
+
+This results is a vector with *n*<sub>a</sub> x *n*<sub>b</sub> total entries.
+This vectorized form is chosen over a two-dimensional **x** so that the problem can be
+represented as a linear system of equations.
+Here, the solution is assumed to be uniform within each element, in which case
+
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum_{j=1}^{n_a\cdot{n_b}}{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
+
+(where the integrals are over the two-dimensional area of the *j*<sup>th</sup> element
+in [*a*,*b*]<sup>T</sup> space). This results is a linear system of equations of the form
+
+![](https://latex.codecogs.com/svg.latex?{\mathbf{b}}={\mathbf{Ax}}+{\mathbf{e}})
+
+where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*);
+**A** is a discrete form of the kernel,
+
+![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
+
+and **e** is a vector of measurement errors that
+corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
+
 
 ## 2. Scripts in upper directory
 
 ### 2.1 Main scripts (main*.m)
 
-The `main*` scripts in the top directory of the code can be called to
-demonstrate use of the code.
+The `main*` scripts in the top directory of the program constitute the primary code
+that can be called to demonstrate use of the code. The are generally composed of
+four parts.
 
-##### 2.1.1 General structure
-
-Scripts to execute this program should be structured as follows:
+#### 2.1.1 General structure: Four parts
 
 - **STEP 1**: Optionally, one can define a phantom used to generate synthetic data and a
 ground truth. The `Phantom` class, described in Section [3.2](#32-phantom-class), is designed to
@@ -84,7 +116,9 @@ expected uncertainties in each point in `b`, encoded in the matrix
 `Lb`. For those cases involving counting noise, this can be
 approximated as
 
-    `Lb = theta*diag(sqrt(b));`
+    ```Matlab
+    Lb = theta*diag(sqrt(b));
+    ```
 
     where `theta` is related to the total number of particle counts as described in
 [Sipkens et al. (2020a)][1_JAS1]. The function `add_noise` is
@@ -102,7 +136,7 @@ by calling the `plot2d_marg` method of this class. This plots both the
 retrieved distribution as well as the marginalized distribution on each of
 the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
 
-##### 2.1.2 Script associated with the original J. Aerosol Sci. paper
+#### 2.1.2 Script associated with the original J. Aerosol Sci. paper
 
 Of particular note, the `main_jas20a.m` script is designed to replicate the results
 in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor
@@ -148,17 +182,50 @@ or custom spaced elements along the edges. Methods are designed
 to make it easier to deal with gridded data, allowing users to reshape
 vectorized data back to a 2D grid (`reshape` method) or vice versa. Other
 methods allow for plotting the 2D representation of vector data (`plot2d` method) or
-calculate the gradient of vector data (`grad` method). More information is available
-in the class definition.
+calculate the gradient of vector data (`grad` method).
 
-Both the **b** and **x** vectors are defined with respect to an instance of
-this class. The vectors are arranged such that the first entry corresponds
-to the smallest mass and mobility diameter. The vector proceeds, first with
-increasing mass and then with increasing mobility diameter. Vectorizing the
+Instances of the Grid class can primarily be constructed in two ways. First,
+one can specify a `span` for the grid to cover in the parameter space. The span
+is specified using a 2 x 2 matrix, where the first row corresponds to the
+span for the first dimension of the parameter space (e.g. mass) and the second
+row corresponds to the span for the second dimension of the parameter space (e.g. mobility).
+For example, if one wanted to logarithmically discretize mass space between
+0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
+
+```Matlab
+span = [0.01,100; 10,1000]; % span of space to be covered
+ne = [10,12]; % number of elements for each dimension
+grid = Grid(span,ne,'logarithmic'); % create instance of Grid
+```
+
+Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center
+of the elements in the first dimension of parameter space and the second entry
+of the elements in the second dimension of parameter space. For example, to make
+a simple grid with elements at 0.1 and 1 fg in mass space and
+10, 200, and 1000 nm in mobility space, one would call:
+
+```Matlab
+edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors
+grid = Grid(edges,[],'logarithmic'); % create instance of Grid
+```
+
+Note that the number of elements is not required in this instance, as it is
+implied by the length of the vectors given in `edges`. The `'logarithmic'`
+argument is still required to specify where nodes would be placed between
+the elements.
+
+Both the data, **b**, and two-dimensional size distribution, **x**, vectors
+can be defined with respect to an instance of this class. Generally, the data
+will only rely on the center of the elements on the grid (the width of the grid
+elements has little meaning for data).
+The vectors are arranged such that the first entry corresponds
+to the smallest size in both dimensions. The vector proceeds, first with
+increasing the first size dimension (e.g. for mass-mobility distributions this is mass
+by default) and then with increasing the second size dimension. Vectorizing the
 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
 the `vectorize` method.
 
-##### 3.1.1 Support for partial grids
+#### 3.1.1 Support for partial grids
 
 The current program also supports creating partial grids, made up of a regular
 grid where certain elements are ignored or missing. This allows practitioners
@@ -178,7 +245,9 @@ a center above this line is removed from the grid. For example, if one wanted
 to create a grid where all of the points above the 1-1 line shoudl be removed
 (as is relevant for PMA-SP2 inversion), one can call
 
-`grid = grid.partial(0,1);`
+```Matlab
+grid = grid.partial(0,1);
+```
 
 For partial grids:
 
@@ -233,7 +302,7 @@ the distribution numbers or names from that work (e.g. the demonstration phantom
 can be generated using `'1'` or `'demonstration'`). The demonstration phantom
 is indicated in the image below.
 
-<img src="docs/distr1.png" width="400px">
+<img src="docs/distr1.png" width="500px">
 
 Conversion between the `mu` and `Sigma` parameterization and the
 `p` structure parameterization can be accomplished using the `cov2p`
@@ -259,11 +328,16 @@ within the larger program is to generate a matrix `A` that acts as the
 forward model. This package references the `tfer_pma` package, noted
 above.
 
-As per Step 2 in Section 1.1.1, the transfer function evaluation can
-proceed using two inputs either (i) a `sp` structure or (ii) an instance
+Transfer function evaluation for a PMA can
+proceed using one of two inputs either (i) a `sp` structure or (ii) an instance
 of the `Grid` class defined for the data setpoints.
+Evaluation proceeds using the analytical expressions 
+of Sipkens et al. (2020b) and the `tfer_pma` package. 
 
-##### 4.1.1 sp
+The transfer function for the DMA uses the analytical 
+expressions of Stozenburg et al.
+
+#### 4.1.1 sp
 
 The `sp` or setpoint structure is a structured array containing the information
 necessary to define the device setpoints. For a DMA, the setpoint mobility diameter,
@@ -274,9 +348,24 @@ below. Generally, this function can be placed inside a loop that generates an en
 in `sp` for each available setpoint. The output structure will contain all of the
 relevant parameters that could be used to specify that setpoint, including
 mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
-the voltage, `V`; and the electrode speeds, `omega*`.
+the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
-##### 4.1.2 grid_b
+<img src="docs/sp_struct.png" width="500px">
+
+Currently, creating arrays of setpoints requires a loop by the user. For example,
+the following code loops through a series of mass setpoints and generated
+setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
+in `prop_pma`:
+
+```Matlab
+sp(length(m_star)) = struct();
+for ii=1:length(m_star) % loop through mass setpoints
+    sp(ii) = tfer_pma.get_setpoint(prop_pma,...
+        'm_star',m_star(ii),'Rm',10); % generate iith setpoint
+end
+```
+
+#### 4.1.2 grid_b
 
 Alternatively, one can generate a grid corresponding to the data points. This can
 speed transfer function evaluation be exploiting the structure of the setpoints
@@ -379,8 +468,8 @@ should also be considered as per above.
 
 This program was largely written and compiled by Timothy Sipkens
 ([tsipkens@mail.ubc.ca](mailto:tsipkens@mail.ubc.ca)) while at the
-University of British Columbia. Code excerpts were contributed by Arash
-Naseri from the University of Alberta, including implementation of the
+University of British Columbia. Code excerpts were contributed by @ArashNaseri
+from the University of Alberta, including implementation of the
 L-curve optimization method of [Cultrera and Callegaro (2016)][7_CC_Lcurve].
 
 This distribution includes code snippets from the code provided with

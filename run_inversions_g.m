@@ -1,5 +1,5 @@
 
-% RUN_INVERSIONS_G  Optimize exponential rotated and Tikhonov regularization
+% RUN_INVERSIONS_G  Optimize exponential rotated and Tikhonov regularization.
 % Author:           Timothy Sipkens, 2019-05-28
 %=========================================================================%
 

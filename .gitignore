@@ -4,6 +4,7 @@ data/
 results/
 +buckley_program/
 +olfert/
++uncertainty
 *.asv
 
 main_exper_fn18.m
@@ -14,10 +15,15 @@ main_exper_ua19_nov_a.m
 main_exper_ua19_nov_b.m
 main_jas19_noise.m
 main_bayes_sp2.m
+main_kernel_sp2.m
+main_exper_sp2.m
+main_tfer.m
+
+CPMASP2KernelV0.m
+ImportSP2.m
++kernel/gen_c2.m
+
+submodule_update.sh
 
 test_import.m
-submodule_update.sh
-+uncertainty
-run_inversions_f.m
-main_tfer.m
-CPMASP2KernelV0.m
+test_cred.m

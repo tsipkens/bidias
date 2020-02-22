@@ -1,4 +1,9 @@
 
+% MAIN_JAS20A  Script associated with Sipkens et al., J. Aerosol Sci. (2020a).
+% Executes and compares deterministic inversions schemes.
+% Author: Timothy Sipkens
+%=========================================================================%
+
 clear;
 clc;
 close all;
@@ -89,12 +94,7 @@ colormap(gcf,cm_b);
 grid_b.plot2d_marg(b);
 
 figure(20);
-n2 = floor(grid_b.ne(1));
-n3 = floor(length(cm_b(:,1))/n2);
-cm_b_mod = cm_b(10:n3:end,:);
-set(gca,'ColorOrder',cm_b_mod,'NextPlot','replacechildren');
-b_plot_rs = reshape(b,grid_b.ne);
-semilogx(grid_b.edges{2},b_plot_rs.*Ntot);
+grid_b.plot2d_sweep(b,cm_b);
 
 
 

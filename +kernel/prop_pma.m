@@ -56,6 +56,8 @@ switch opts
         prop.T = 293; % system temperature [K]
         prop.Q = 0.3/1000/60; % volume flow rate (m^3/s) (prev: ~1 lpm)
         prop.omega_hat = 32/33; % ratio of angular speed
+        prop.mass_mob_pref = 524;
+        prop.mass_mob_exp = 3;
         
     %-- APM parameters from Ehara et al. -------------%
     case 'Ehara'

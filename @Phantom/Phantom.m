@@ -415,7 +415,7 @@ methods (Static)
     %   x - input data (2D distribution data)
     %   grid - 'Grid' object on which input data is evaluated
     %-----------------------------------------------------------------%
-    function phantom = fit(x,grid)
+    function [phantom,N] = fit(x,grid)
         
         [~,vec1,vec2] = grid.vectorize();
         
@@ -435,6 +435,8 @@ methods (Static)
         
         phantom = Phantom('standard',grid,mu,Sigma);
         phantom.type = 'standard-fit';
+        
+        N = y1(1); % scaling parameter denoting total number of particles
     end
     %=================================================================%
 end

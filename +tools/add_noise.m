@@ -43,7 +43,8 @@ if isempty(f_apx); f_apx = 1; end
 n_b = length(b0); % length of the data vector
 
 
-%== Poisson noise ========================================================%
+
+%== POISSON NOISE ========================================================%
 %   Poisson noise is approximated as Gaussian, with a standard
 %   deviation of sqrt of the number of counts. If the data is unscaled
 %   norm_fact = 1. If the data is scaled, which generally improves
@@ -54,7 +55,8 @@ theta = 1/Ntot;
 sig_pois = sqrt(theta.*b0);
 
 
-%== Additive Gaussian noise ==============================================%
+
+%== ADDITIVE GAUSSIAN NOISE ==============================================%
 %   Take additive Gaussian noise as (per_gaus*100)% of peak signal.
 %   This represents the minimum noise level and is to model
 %   background source, such as electronic noise in the CPC
@@ -66,11 +68,12 @@ gamma = max(sig_pois)*gam0;
 sig_gaus = gamma;
 
 
-%== Calculate covariance information =====================================%
+
+%== CALCULATE COVARIANCE INFORMATION =====================================%
 %   Standard deviation of the combined noise.
 %   The standard deviation of the sum of two idependent, normal random
 %   variables is the sqrt of the sum of their squares.
-sig = sqrt(sig_pois.^2+sig_gaus^2); 
+sig = sqrt(sig_pois.^2+sig_gaus^2);
 
 Lb = sparse(1:n_b,1:n_b,1./sig,n_b,n_b);
     % Cholesky factorization of the inverse covariance matrix
@@ -78,7 +81,8 @@ Lb = sparse(1:n_b,1:n_b,1./sig,n_b,n_b);
     % 1/sigma on the diagonal.
 
 
-%== Generate noisy data ==================================================%
+    
+%== GENERATE NOISY DATA ==================================================%
 rng(0);
     % reset random number generator to make noise 
     % consistent between runs

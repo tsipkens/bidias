@@ -4,7 +4,7 @@
 %-------------------------------------------------------------------------%
 % Inputs:
 %   order       Order of the Tikhonov operator
-%   n           Length of first dimension of solution or Grid for x
+%   n_grid      Length of first dimension of solution or Grid for x
 %   x_length    Length of x vector (only used if a Grid is not 
 %               specified for n_grid)
 %
@@ -12,27 +12,27 @@
 %   Lpr0        Tikhonov matrix
 %=========================================================================%
 
-function Lpr0 = tikhonov_lpr(order,n,x_length)
+function Lpr0 = tikhonov_lpr(order,n_grid,x_length)
 
 %-- Generate Tikhonov smoothing matrix -----------------------------------%
 switch order
     case 0 % 0th order Tikhonov
-        if 	isa(n,'Grid') % use Grid method (for partial grid support)
-            Lpr0 = -speye(n.Ne);
+        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = -speye(n_grid.Ne);
         else
             Lpr0 = -speye(x_length);
         end
     case 1 % 1st order Tikhonov
-        if 	isa(n,'Grid') % use Grid method (for partial grid support)
-            Lpr0 = n.l1;
+        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = n_grid.l1;
         else
-            Lpr0 = genL1(n,x_length);
+            Lpr0 = genL1(n_grid,x_length);
         end
     case 2 % 2nd order Tikhonov
-        if 	isa(n,'Grid') % use Grid method (for partial grid support)
-            Lpr0 = n.l2;
+        if 	isa(n_grid,'Grid') % use Grid method (for partial grid support)
+            Lpr0 = n_grid.l2;
         else
-            Lpr0 = genL2(n,x_length);
+            Lpr0 = genL2(n_grid,x_length);
         end
     otherwise
         disp('The specified order of Tikhonov is not available.');
