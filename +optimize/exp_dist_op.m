@@ -65,7 +65,7 @@ end
 if ~isempty(x_ex)
     [~,ind_min] = min([out.chi]);
 else
-    ind_min = [];
+    [~,ind_min] = max([out.B]);
 end
 lambda = out(ind_min).lambda;
 x = out(ind_min).x;

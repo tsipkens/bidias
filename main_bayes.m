@@ -110,8 +110,6 @@ run_inversions_i;
 ind = out_tk1.ind_min;
 x_plot = out_tk1(ind).x;
 
-% [~,ind] = min([out_ed_lam.chi]);
-% x_plot = out_ed_lam(ind).x;
 
 
 %-- Plot retrieved solution --------------%
@@ -138,9 +136,13 @@ grid_x.plot2d(spo);
 colorbar;
 
 
-Gd = phantom.Sigma{1};
-Lpr = invert.exp_dist_lpr(grid_x.elements(:,2),...
-    grid_x.elements(:,1),lambda_ed_lam,Gd);
+if iscell(phantom.Sigma)
+    Gd = phantom.Sigma{1};
+else
+    Gd = phantom.Sigma;
+end
+Lpr = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),...
+    grid_x.elements(:,1));
 [~,spo] = tools.get_posterior(...
     A,Lb,lambda_ed_lam.*Lpr);
 figure(12);
