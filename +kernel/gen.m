@@ -107,7 +107,7 @@ dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 
-disp('Completed computing A matrix.');
+disp('Completed computing kernel matrix, <strong>A</strong>.');
 disp(' ');
 
 end

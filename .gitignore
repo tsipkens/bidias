@@ -23,7 +23,5 @@ CPMASP2KernelV0.m
 ImportSP2.m
 +kernel/gen_c2.m
 
-submodule_update.sh
-
 test_import.m
 test_cred.m

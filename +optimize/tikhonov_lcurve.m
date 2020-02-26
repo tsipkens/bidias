@@ -1,10 +1,11 @@
 
-% TIKHONOV_LCURVE Automated method to find L-curve corver for Tikhonov regularization.
-% Author: Arash Naseri, Timothy Sipkens, 2019-12-21
+% TIKHONOV_LCURVE  Automated method to find L-curve corver for Tikhonov regularization.
+% Author: Arash Naseri, Timothy Sipkens, 2019-12-21\
+% 
 % Note: This code is written based on the methodology proposed in 
 %   "A simple algorithm to find the L-curve corner" by Alessandro Cultrera 
 %   and Luca Callegaro
-%-------------------------------------------------------------------------%
+%
 % Inputs:
 %   A       Model matrix
 %   b       Data
@@ -16,7 +17,7 @@
 %   lambda  Optimal regularization parameter
 %=========================================================================%
 
-function [x,lambda,res_norm,x_norm] = tikhonov_lcurve(A,b,span,Lpr)
+function [x,lambda,res_norm,x_norm] = tikhonov_lcurve(A,b,span,Lpr0)
 
 epsilon = 1e-4; %termination threshold
 phi=(1+sqrt(5))/2; % golden section
@@ -30,7 +31,7 @@ n = (10^lam_log(4)-10^lam_log(1))/(10^lam_log(4));
 
 for ii=1:4               
     [p(ii,1),p(ii,2),x] = ...
-        l_curve_p(A,b,10^lam_log(ii),Lpr);
+        l_curve_p(A,b,10^lam_log(ii),Lpr0);
 end
 
 
@@ -50,7 +51,7 @@ while n>epsilon % main loop to refine lambda
             % determine new pt. 2
         
         [p(2,1),p(2,2),~] = ...
-            l_curve_p(A,b,10^lam_log(2),Lpr);
+            l_curve_p(A,b,10^lam_log(2),Lpr0);
             % solve Tikhonov at new point
         
         c3 = menger(p(2,:),p(3,:),p(4,:));  
@@ -71,7 +72,7 @@ while n>epsilon % main loop to refine lambda
             % determine new pt. 3
         
         [p(2,1),p(2,2),x] = ...
-            l_curve_p(A,b,10^lam_log(2),Lpr);
+            l_curve_p(A,b,10^lam_log(2),Lpr0);
             % only p(2,:) is recalculated
     else
         lambda = 10^lam_log(3); % store lambda for output
@@ -85,7 +86,7 @@ while n>epsilon % main loop to refine lambda
             % determine new pt. 2
         
         [p(3,1),p(3,2),x] = ...
-            l_curve_p(A,b,10^lam_log(3),Lpr);
+            l_curve_p(A,b,10^lam_log(3),Lpr0);
             % only p(3,:) is recalculated
     end
     
