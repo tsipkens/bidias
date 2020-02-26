@@ -4,18 +4,19 @@
 % 
 % Modeled after Sipkens et al., Appl. Opt. (2017).
 % DOI: https://doi.org/10.1364/AO.56.008436
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   b0      Uncorrupted data vector
 % 
 %   n_tot   Factor by which the data was normalized
-%           Note that get_noise(n_tot.*b0)./n_tot; and
-%           add_noise(b0,n_tot); should give identical results. 
+%           Note that `get_noise(n_tot.*b0)./n_tot;` and
+%           `get_noise(b0,n_tot);` should give identical results. 
 %               (Optional, dafault: n_tot = 1)
 % 
-%   gam0    Percentage of the maximum signal used for the background
+%   gam0    Percentage of the maximum noise used for the background
 %           Gaussian noise. 
-%               (Optional, default: gam0 = 1e-4, i.e. 0.01% of the peak)
+%               (Optional, default: gam0 = 1e-4, 
+%                i.e. 0.01% of the peak noise)
 % 
 %   f_apx   Flag for whether to use a Gaussian approximation for Poisson
 %           noise. Note that Lb is the Cholesky factorization of the
@@ -89,12 +90,13 @@ rng(0);
     % reset random number generator to make noise 
     % consistent between runs
 
-if f_apx==1
+if f_apx==1 % if using Gaussian approximation
     epsilon = sig.*randn(size(b0)); % noise vector (Gaussian approx.)
     b = sparse(b0+epsilon); % add noise to data
     b = max(round(b.*n_tot),0)./n_tot;
         % remove counts that would be below one and negative counts
-else
+
+else % if using Poisson distribution directly
     % Data vector generated using Poisson random numbers.
     % This will generally be similar to above.
     b = sig_gaus.*randn(size(b0))+...
