@@ -82,7 +82,7 @@ for ii=1:length(n_b_vec)
     b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
     Ntot = 1e5;
-    [b,Lb] = tools.add_noise(b0,Ntot);
+    [b,Lb] = tools.get_noise(b0,Ntot);
 
 
     figure(5);

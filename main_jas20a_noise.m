@@ -83,7 +83,7 @@ Ntot_vec = 10.^[3,4,5,6,7];
 x_vec = [];
 for ii=1:length(Ntot_vec)
     Ntot = Ntot_vec(ii);
-    [b,Lb] = tools.add_noise(b0,Ntot);
+    [b,Lb] = tools.get_noise(b0,Ntot);
 
 
     figure(5);

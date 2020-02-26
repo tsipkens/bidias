@@ -88,7 +88,7 @@ b0 = A_t*x_t; % forward evaluate kernel
 b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
 Ntot = 1e5;
-[b,Lb] = tools.add_noise(b0,Ntot);
+[b,Lb] = tools.get_noise(b0,Ntot);
 
 figure(5);
 tools.plot2d_scatter(...
