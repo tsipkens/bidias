@@ -5,13 +5,14 @@
 % Inputs:
 %   A       Model matrix
 %   b       Data
-%   n       Length of first dimension of solution
+%   n_grid  Length of first dimension of solution
 %   lambda  Regularization parameter
 %   span    Range for 1/Sf, two entry vector
 %   x_ex    Exact distribution project to current basis
 %   order   Order of regularization     (Optional, default is 1)
 %   xi      Initial guess for solver    (Optional, default is zeros)
 %   solver  Solver                      (Optional, default is interior-point)
+%   n       Number of lambda entries    (Optional, default is 70)
 %
 % Outputs:
 %   x       Regularized estimate
@@ -19,19 +20,22 @@
 %   Lx      Tikhonov matrix
 %=========================================================================%
 
-function [x,lambda,out] = tikhonov_op(A,b,span,order,n,x_ex,xi,solver)
+function [x,lambda,out] = tikhonov_op(A,b,span,order,n_grid,x_ex,xi,solver,n)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
 if ~exist('xi','var'); xi = []; end
 if ~exist('x_ex','var'); x_ex = []; end
 if ~exist('solver','var'); solver = []; end
+
+if ~exist('n','var'); n = []; end
+if isempty(n); n = 70; end % default number of lambda entries to consider
 %-------------------------------------------------------------------------%
 
-lambda = logspace(log10(span(1)),log10(span(2)),70);
+lambda = logspace(log10(span(1)),log10(span(2)),n);
 x_length = size(A,2);
 
-Lpr0 = invert.tikhonov_lpr(order,n,x_length); % get Tikhonov matrix
+Lpr0 = invert.tikhonov_lpr(order,n_grid,x_length); % get Tikhonov matrix
 
 disp('Pre-computing GSV...');
 [~,~,~,S1,S2] = gsvd(full(A),full(Lpr0));

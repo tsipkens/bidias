@@ -3,8 +3,8 @@
 % Author: Arash Naseri, Timothy Sipkens, 2019-12-21\
 % 
 % Note: This code is written based on the methodology proposed in 
-%   "A simple algorithm to find the L-curve corner" by Alessandro Cultrera 
-%   and Luca Callegaro
+%   "A simple algorithm to find the L-curve corner" by 
+%   Cultrera and Callegaro.
 %
 % Inputs:
 %   A       Model matrix
