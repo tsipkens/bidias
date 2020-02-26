@@ -1,7 +1,7 @@
 
 % TIKHONOV_OP  Finds optimal lambda for Tikhonov solver using known distribution, x.
 % Author: Timothy Sipkens, 2019-07-17
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   A       Model matrix
 %   b       Data
@@ -16,11 +16,12 @@
 %
 % Outputs:
 %   x       Regularized estimate
-%   D       Inverse operator (x = D*[b;0])
-%   Lx      Tikhonov matrix
+%   lambda  Semi-optimal regularization parameter
+%           (against exact solution if x_ex is specified or using Bayes factor)
+%   output  Output structure with information for a range of the regularization parameter
 %=========================================================================%
 
-function [x,lambda,out] = tikhonov_op(A,b,span,order,n_grid,x_ex,xi,solver,n)
+function [x,lambda,output] = tikhonov_op(A,b,span,order,n_grid,x_ex,xi,solver,n)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
@@ -46,34 +47,34 @@ disp(' ');
 disp('Optimizing Tikhonov regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
-    out(ii).lambda = lambda(ii); % store regularization parameter
+    output(ii).lambda = lambda(ii); % store regularization parameter
     
     %-- Perform inversion --%
-    [out(ii).x,~,Lpr0] = invert.tikhonov(...
+    [output(ii).x,~,Lpr0] = invert.tikhonov(...
         A,b,lambda(ii),Lpr0,[],xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error --%
-    if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
-    out(ii).Axb = norm(A*out(ii).x-b);
+    if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
+    output(ii).Axb = norm(A*output(ii).x-b);
     
     %-- Compute credence, fit, and Bayes factor --%
-    [out(ii).B,out(ii).F,out(ii).C] = ...
+    [output(ii).B,output(ii).F,output(ii).C] = ...
         optimize.bayesf_precomp(...
-        A,b,out(ii).x,Lpr0,lambda(ii),S1,S2,order);
+        A,b,output(ii).x,Lpr0,lambda(ii),S1,S2,order);
     
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end
 
 if ~isempty(x_ex) % if exact solution is supplied
-    [~,ind_min] = min([out.chi]);
+    [~,ind_min] = min([output.chi]);
 else
     ind_min = [];
 end
-lambda = out(ind_min).lambda;
-x = out(ind_min).x;
-out(1).ind_min = ind_min;
+lambda = output(ind_min).lambda;
+x = output(ind_min).x;
+output(1).ind_min = ind_min;
 
-out(1).Lpr = Lpr0; % store Lpr structure
+output(1).Lpr = Lpr0; % store Lpr structure
     % to save memory, only output Lpr structure
     % Lpr for any lambda can be found using scalar multiplication
     % Gpo_inv = A'*A+Lpr'*Lpr; <- can be done is post-process

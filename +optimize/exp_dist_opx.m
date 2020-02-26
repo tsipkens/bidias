@@ -1,6 +1,6 @@
 
-% EXP_DIST_OPX  Finds optimal lambda for exponential distance solver.
-%-------------------------------------------------------------------------%
+% EXP_DIST_OPX  Uses fminsearch to find optimal regularization parameters
+% 
 % Inputs:
 %   A       Model matrix
 %   b       Data
@@ -14,9 +14,11 @@
 %
 % Outputs:
 %   x       Regularized estimate
+%   lambda  Optimized regularization parameter
+%   output  Output structure containing other information
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
+function [x,lambda,output] = exp_dist_opx(A,b,d_vec,m_vec,guess,x_ex,xi,solver)
 
 %-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end
@@ -44,11 +46,11 @@ lambda = y1(1);
 x = invert.exp_dist(...
     A,b,y1(1),Gd_fun(y1),d_vec,m_vec,xi,solver);
 
-out.lambda = y1(1);
-out.ratio = y1(2);
-out.ld = y1(3);
-out.corr = y1(4);
-out.Gd = Gd_fun(y1);
+output.lambda = y1(1);
+output.ratio = y1(2);
+output.ld = y1(3);
+output.corr = y1(4);
+output.Gd = Gd_fun(y1);
 
 
 end

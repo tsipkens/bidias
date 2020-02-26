@@ -15,9 +15,12 @@
 %
 % Outputs:
 %   x       Regularized estimate
+%   lambda  Semi-optimal regularization parameter
+%           (against exact solution if x_ex is specified or using Bayes factor)
+%   output  Output structure with information for a range of the regularization parameter
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_op(A,b,span,Gd,d_vec,m_vec,x_ex,xi,solver,n)
+function [x,lambda,output] = exp_dist_op(A,b,span,Gd,d_vec,m_vec,x_ex,xi,solver,n)
 
 
 %-- Parse inputs ---------------------------------------------%
@@ -45,22 +48,22 @@ disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
 for ii=length(lambda):-1:1
     %-- Store case parameters ----------------------%
-    out(ii).lambda = lambda(ii);
-    out(ii).lm = sqrt(Gd(1,1));
-    out(ii).ld = sqrt(Gd(2,2));
-    out(ii).R12 = Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2));
+    output(ii).lambda = lambda(ii);
+    output(ii).lm = sqrt(Gd(1,1));
+    output(ii).ld = sqrt(Gd(2,2));
+    output(ii).R12 = Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2));
     
     %-- Perform inversion --------------------------%
-    out(ii).x = invert.exp_dist(...
+    output(ii).x = invert.exp_dist(...
         A,b,lambda(ii),Gd,d_vec,m_vec,xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error ---------%
-    if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
-    out(ii).Axb = norm(A*out(ii).x-b);
+    if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
+    output(ii).Axb = norm(A*output(ii).x-b);
     
     %-- Compute credence, fit, and Bayes factor ----%
-    [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.bayesf_precomp(A,b,out(ii).x,Lpr,out(ii).lambda,S1,S2,0);
+    [output(ii).B,output(ii).F,output(ii).C] = ...
+        optimize.bayesf_precomp(A,b,output(ii).x,Lpr,output(ii).lambda,S1,S2,0);
             % bypass exp_dist_bayesf, because GSVD is pre-computed
         % optimize.exp_dist_bayesf(A,b,lambda(ii),Lpr,out(ii).x);
     
@@ -68,12 +71,12 @@ for ii=length(lambda):-1:1
 end
 
 if ~isempty(x_ex)
-    [~,ind_min] = min([out.chi]);
+    [~,ind_min] = min([output.chi]);
 else
-    [~,ind_min] = max([out.B]);
+    [~,ind_min] = max([output.B]);
 end
-lambda = out(ind_min).lambda;
-x = out(ind_min).x;
+lambda = output(ind_min).lambda;
+x = output(ind_min).x;
 
 end
 
