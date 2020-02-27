@@ -491,12 +491,11 @@ methods
         x = obj.reshape(x);
         
         [dr,dr1,dr2] = obj.dr; % generate differential area of elements
-        dr = obj.reshape(dr);
         
-        tot = sum(x(:).*dr(:)); % integrated total
+        tot = sum(x(:).*dr); % integrated total
         
-        marg{1} = sum(dr.*x,2)./dr1(:,1); % integrate over diameter
-        marg{2} = sum(dr.*x,1)./dr2(1,:); % integrate over mass
+        marg{1} = sum(dr2.*x,2); % integrate over diameter
+        marg{2} = sum(dr1.*x,1); % integrate over mass
         
     end
     %=================================================================%
@@ -655,22 +654,27 @@ methods
     %   Author: Timothy Sipkens, 2018-11-21
     function [h,x] = plot2d(obj,x)
         
+        %-- Issue warning if grid edges are not be uniform -----------%
+        %   The imagesc function used here does not conserve proportions.
+        dr = obj.dr;
+        if ~all(abs(dr(2:end)-dr(1))<1e-10)
+            warning(['The plot2d method does not display ',...
+                'correct proportions for non-uniform grids.']);
+        end
+        
         x = obj.reshape(x);
         
-        if strcmp('linear',obj.discrete)
-            imagesc(obj.edges{2},obj.edges{1},x);
-            set(gca,'YDir','normal');
-            
-            xlim(obj.span(2,:));
-            ylim(obj.span(1,:));
-            
-        elseif strcmp('logarithmic',obj.discrete)
-            imagesc(log10(obj.edges{2}),log10(obj.edges{1}),x);
-            set(gca,'YDir','normal');
-            
-            xlim(log10(obj.span(2,:)));
-            ylim(log10(obj.span(1,:)));
+        imagesc(obj.edges{2},obj.edges{1},x);
+        set(gca,'YDir','normal');
+        
+        %-- Adjust tick marks for log scale ----%
+        if strcmp('logarithmic',obj.discrete)
+            set(gca,'XScale','log');
+            set(gca,'YScale','log');
         end
+        
+        xlim(obj.span(2,:));
+        ylim(obj.span(1,:));
         
         if nargout>0; h = gca; end
         
@@ -894,14 +898,28 @@ methods
 
         if ~exist('cspec','var'); cspec = 'w'; end
         
-        rmin = log10(min([obj.edges{:}]));
-        rmax = log10(max([obj.edges{:}]));
+        if strcmp(get(gca,'XScale'),'log') % for log-scale plots
+            rmin = log10(min([obj.edges{:}]));
+            rmax = log10(max([obj.edges{:}]));
+            
+            hold on;
+            h = loglog(10.^[rmin,rmax],...
+                10.^[logr0(2)+slope*(rmin-logr0(1)),...
+                logr0(2)+slope*(rmax-logr0(1))],cspec);
+            hold off;
+            
+        else % for linear scale plots
+            rmin = min([obj.edges{:}]);
+            rmax = max([obj.edges{:}]);
+            
+            hold on;
+            h = plot([rmin,rmax],...
+                [logr0(2)+slope*(rmin-logr0(1)),...
+                logr0(2)+slope*(rmax-logr0(1))],cspec);
+            hold off;
+        end
 
-        hold on;
-        h = plot([rmin,rmax],...
-            [logr0(2)+slope*(rmin-logr0(1)),...
-            logr0(2)+slope*(rmax-logr0(1))],cspec);
-        hold off;
+        
 
         if nargout==0; clear h; end
 

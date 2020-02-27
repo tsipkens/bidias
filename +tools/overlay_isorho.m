@@ -1,5 +1,5 @@
 
-% ISORHO Overlay effective density isolines on mass-mobility plots.
+% OVERLAY_ISORHO Overlay effective density isolines on mass-mobility plots.
 % Author: Timothy Sipkens, 2019-11-01
 %=========================================================================%
 

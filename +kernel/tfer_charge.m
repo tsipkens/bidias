@@ -3,7 +3,7 @@
 % Author: Timothy Sipkens, 2018-12-27
 % Based on code from Buckley et al., J. Aerosol Sci. (2008) and Olfert
 % laboratory at the University of Alberta.
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   d       Particle diameter [m]
 %   z       Integer particle charge state (optional, default = 0:6)
