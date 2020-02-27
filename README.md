@@ -322,20 +322,21 @@ mass-mobility distributions.
 
 ### 4.1 +kernel
 
-This package is used to evaluate the transfer function of the DMA and
-particle mass analyzer (such as the CPMA or APM). The primary function
-within the larger program is to generate a matrix `A` that acts as the
-forward model. This package references the `tfer_pma` package, noted
-above.
-
-Transfer function evaluation for a PMA can
-proceed using one of two inputs either (i) a `sp` structure or (ii) an instance
-of the `Grid` class defined for the data setpoints.
-Evaluation proceeds using the analytical expressions
-of [Sipkens et al. (2020b)][2_AST] and the `tfer_pma` package.
+This package is used to evaluate the transfer function of the different
+instruments, such as the differential mobility analyzer (DMA),
+particle mass analyzer (such as the CPMA or APM), and charging fractions.
+Various functions within this package can generate the matrix `A`
+that acts as the forward model.
 
 The transfer function for the DMA uses the analytical
 expressions of [Stozenburg et al. (2018)][Stolz18].
+
+Transfer function evaluation for a PMA can
+proceed using one of two inputs either (i) a `sp` structure or (ii) an
+instance of the `Grid` class defined for the data setpoints.
+Evaluation proceeds using the analytical expressions
+of [Sipkens et al. (2020b)][2_AST] and the `tfer_pma` package provided with
+that work. The package uses a `sp` structure to define the PMA setpoints.
 
 #### 4.1.1 sp
 
