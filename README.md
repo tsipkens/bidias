@@ -331,10 +331,10 @@ above.
 Transfer function evaluation for a PMA can
 proceed using one of two inputs either (i) a `sp` structure or (ii) an instance
 of the `Grid` class defined for the data setpoints.
-Evaluation proceeds using the analytical expressions 
-of Sipkens et al. (2020b) and the `tfer_pma` package. 
+Evaluation proceeds using the analytical expressions
+of Sipkens et al. (2020b) and the `tfer_pma` package.
 
-The transfer function for the DMA uses the analytical 
+The transfer function for the DMA uses the analytical
 expressions of Stozenburg et al.
 
 #### 4.1.1 sp
@@ -350,7 +350,12 @@ relevant parameters that could be used to specify that setpoint, including
 mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
 the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
-<img src="docs/sp_struct.png" width="500px">
+| Fields  | m_star    | V      | Rm | omega | omega1 | omega2 | alpha | beta  | m_max    |
+| ------- | --------- | ------ | -- | ----- | ------ | ------ | ----- | ----- | -------- |
+| 1       | 4.51e-19  |	81.638 | 3  |	692.6 |	703.4  | 682.0 |	47.91 |	2.359 |	6.01e-19 |
+| 2       | 7.67e-19  |	110.68 | 3  |	618.3 |	627.9  | 608.9 |	42.77 |	2.106 |	1.02e-18 |
+| 3       | 1.30e-18  |	148.76 | 3  |	549.5 |	558.1  | 541.2 |	38.01 |	1.872 |	1.74e-18 |
+| 4       | 2.22e-18  |	198.02 | 3  |	486.1 |	493.7  | 478.7 |	33.63 |	1.656 |	2.96e-18 |
 
 Currently, creating arrays of setpoints requires a loop by the user. For example,
 the following code loops through a series of mass setpoints and generated
