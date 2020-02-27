@@ -332,10 +332,10 @@ Transfer function evaluation for a PMA can
 proceed using one of two inputs either (i) a `sp` structure or (ii) an instance
 of the `Grid` class defined for the data setpoints.
 Evaluation proceeds using the analytical expressions
-of Sipkens et al. (2020b) and the `tfer_pma` package.
+of [Sipkens et al. (2020b)][2_AST] and the `tfer_pma` package.
 
 The transfer function for the DMA uses the analytical
-expressions of Stozenburg et al.
+expressions of [Stozenburg et al. (2018)][Stolz18].
 
 #### 4.1.1 sp
 
@@ -513,6 +513,8 @@ README in the `cmap` folder.
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (Under preparation). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: Existing and novel Bayesian methods.][4]
 
+[Stolzenburg, M. R. (2018). A review of transfer theory and characterization of measured performance for differential mobility analyzers. *Aerosol Sci. Technol.* 52, 1194-1218.][Stolz18]
+
 [1_JAS1]: https://doi.org/10.1016/j.jaerosci.2019.105484
 [2_AST]: https://doi.org/10.1080/02786826.2019.1680794
 [3_Buck]: https://doi.org/10.1016/j.jaerosci.2017.09.012
@@ -520,4 +522,5 @@ README in the `cmap` folder.
 [5_code]: https://10.5281/zenodo.3513259
 [6_AO17]: https://doi.org/10.1364/AO.56.008436
 [7_CC_Lcurve]: https://arxiv.org/abs/1608.04571
+[Stolz18]: https://www.tandfonline.com/doi/full/10.1080/02786826.2018.1514101
 [code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v1.1
