@@ -359,17 +359,13 @@ the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown bel
 | 4       | 2.22e-18  |	198.02 | 3  | 486.1 | 493.7  | 478.7 |	33.63 |	1.656 |	2.96e-18 |
 | ... |
 
-Currently, creating arrays of setpoints requires a loop by the user. For example,
-the following code loops through a series of mass setpoints and generated
-setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
-in `prop_pma`:
+As an example, the array can be generated from a vector of mass setpoints assuming 
+a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
+in `prop_pma` using:
 
 ```Matlab
-sp(length(m_star)) = struct();
-for ii=1:length(m_star) % loop through mass setpoints
-    sp(ii) = tfer_pma.get_setpoint(prop_pma,...
-        'm_star',m_star(ii),'Rm',10); % generate iith setpoint
-end
+sp(ii) = tfer_pma.get_setpoint(prop_pma,...
+    'm_star',m_star,'Rm',10); % generate iith setpoint
 ```
 
 #### 4.1.2 grid_b
