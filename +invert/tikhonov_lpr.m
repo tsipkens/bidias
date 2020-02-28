@@ -1,12 +1,12 @@
 
 % TIKHONOV_LPR Generates Tikhonov smoothing operators/matrix, L. 
 % Author:   Timothy Sipkens, 2020-02-05
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   order       Order of the Tikhonov operator
 %   n_grid      Length of first dimension of solution or Grid for x
-%   x_length    Length of x vector (only used if a Grid is not 
-%               specified for n_grid)
+%   x_length    Length of x vector
+%               (only used if a Grid is not specified for n_grid)
 %
 % Outputs:
 %   Lpr0        Tikhonov matrix
@@ -47,7 +47,7 @@ end
 
 %== GENL1 ================================================================%
 %   Generates Tikhonov matrix for 1st order Tikhonov regularization.
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   n           Length of first dimension of solution
 %   x_length    Length of x vector
@@ -84,7 +84,7 @@ end
 
 %== GENL2 ================================================================%
 %   Generates Tikhonov matrix for 2nd order Tikhonov regularization.
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   n           Length of first dimension of solution
 %   x_length    Length of x vector

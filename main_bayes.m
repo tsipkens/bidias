@@ -65,7 +65,7 @@ prop_pma = kernel.prop_pma;
 [A_t,sp] = kernel.gen_grid(grid_b,grid_t,prop_pma,'Rm',3);
     % generate A matrix based on grid for x_t and b
 
-disp('Transform to discretization in x...');
+disp('Transform to discretization in <strong>x</strong>...');
 B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
@@ -88,7 +88,7 @@ b0 = A_t*x_t; % forward evaluate kernel
 b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 
 Ntot = 1e5;
-[b,Lb] = tools.add_noise(b0,Ntot);
+[b,Lb] = tools.get_noise(b0,Ntot);
 
 figure(5);
 tools.plot2d_scatter(...
@@ -115,9 +115,11 @@ run_inversions_j;
 %== STEP 4: Visualize the results ========================================%
 % ind = out_tk1.ind_min;
 % x_plot = out_tk1(ind).x;
+% out = out_tk1;
 
 [~,ind] = max([out_ed_lam.B]);
 x_plot = out_ed_lam(ind).x;
+out = out_ed_lam;
 
 
 
@@ -129,22 +131,18 @@ grid_x.plot2d_marg(x_plot,grid_t,x_t);
 caxis([0,cmax*(1+1/256)]);
 
 
-%{
-figure(13);
-grid_x.plot2d_sweep(x_plot,cm);
-%}
 
-
+%-{
 %-- Plot posterior uncertainties ---------%
-%   Tikhonov
-[~,spo] = tools.get_posterior(...
-    A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
-figure(12);
-colormap(gcf,cm_alt);
-grid_x.plot2d(spo);
-colorbar;
+%-- Tikhonov --%
+% [~,spo] = tools.get_posterior(...
+%     A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
+% figure(12);
+% colormap(gcf,cm_alt);
+% grid_x.plot2d(spo);
+% colorbar;
 
-
+%-- Exponential distance --%
 if iscell(phantom.Sigma)
     Gd = phantom.Sigma{1};
 else
@@ -157,41 +155,23 @@ Lpr = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),...
 figure(12);
 colormap(gcf,cm_alt);
 grid_x.plot2d(spo);
+%}
 
 
-%-- Plot difference to true phantom ------%
-figure(11);
-diff_plot = (x_plot-x0);%./spo;
-scl = max(max(abs(diff_plot)));
-grid_x.plot2d(diff_plot);
-colormap(cm_div);
-caxis([-scl,scl]);
+
+%-{
+%-- Plot regularization parameter selection schemes ----------------------%
+figure(12);
+loglog([out.lambda],[out.chi]); % plot absolute Euclidean error
+hold on;
+loglog([out.lambda],-([out.B])); % plot Bayes factor
+loglog([out.lambda],-([out.F]),'--'); % plot fit
+loglog([out.lambda],-([out.C]),'--'); % plot credence
+hold off;
+%}
+
 
 
 figure(10);
 
-
-%-- Plots of the log of the distributions -----%
-%{
-[~,ind_tk1] = min([out_tk1.chi]);
-[~,ind_ed] = min([out_ed_lam.chi]);
-
-figure(14);
-grid_x.plot2d(log10(out_tk1(ind_tk1).x));
-colormap(cm);
-colorbar;
-caxis([-4,1]);
-
-figure(15);
-grid_x.plot2d(log10(out_ed_lam(ind_ed).x));
-colormap(cm);
-colorbar;
-caxis([-4,1]);
-
-figure(16);
-grid_x.plot2d(log10(x0));
-colormap(cm);
-colorbar;
-caxis([-4,1]);
-%}
 

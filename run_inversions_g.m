@@ -35,3 +35,4 @@ disp('Inversion complete.');
 disp(' ');
 
 chi.em = norm(x0-x_em);
+

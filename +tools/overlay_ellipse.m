@@ -26,7 +26,11 @@ t = linspace(0, 2*pi);
 a = (V*sqrt(D))*[cos(t(:))'; sin(t(:))'];
 
 hold on;
-h = plot(a(1, :)+mu(1), a(2, :)+mu(2), cspec);
+if strcmp(get(gca,'XScale'),'log')
+    h = loglog(10.^(a(1, :)+mu(1)), 10.^(a(2, :)+mu(2)), cspec);
+else
+    h = plot(a(1, :)+mu(1), a(2, :)+mu(2), cspec);
+end
 hold off;
 
 if nargout==0; clear h; end % remove output if none requested

@@ -10,38 +10,35 @@ if ~exist('n_rho','var'); n_rho = []; end
 if isempty(n_rho); n_rho = 600; end
 
 if ~exist('span_rho','var'); span_rho = []; end
-if isempty(span_rho); span_rho = [10^2,10^3.5]; end
+if isempty(span_rho); span_rho = [100,3000]; end
 %---------------------------------------------------%
 
 
-rho_min = span_rho(1);
+rho_min = span_rho(1); % get span for effective density
 rho_max = span_rho(2);
-rho_n = logspace(log10(rho_min),log10(rho_max),n_rho);
+rho_n = logspace(log10(rho_min),log10(rho_max),n_rho); % discretize rho space
 grid_rho = Grid([rho_min,rho_max;grid_x.span(2,:)],...
-    [n_rho,length(grid_x.edges{2})],'logarithmic'); % should be uniform basis
+    [n_rho,length(grid_x.edges{2})],'logarithmic');
+    % generate grid
 
 x_rs = reshape(x,grid_x.ne);
-
-drho = log(rho_n(2))-log(rho_n(1));
-rho_n_low = exp(log(rho_n)-drho./2);
-rho_n_high = exp(log(rho_n)+drho./2);
-
 
 n_d = grid_x.ne(2);
 y = zeros(grid_x.ne(2),length(rho_n));
 for ii=1:n_d % loop over mobility diameter
-    c3 = zeros(length(rho_n_high),grid_x.ne(1));
-    for jj=1:length(rho_n_high)
-        rho_old = 6.*grid_x.nodes{1}./(pi.*grid_x.edges{2}(ii).^3).*1e9;
-        
-        c0 = max(min(rho_old(2:end),rho_n_high(jj)),rho_n_low(jj));
-        c1 = max(min(rho_old(1:(end-1)),rho_n_high(jj)),rho_n_low(jj));
-        
-        c2 = (c0-c1)./(rho_old(2:end)-rho_old(1:(end-1)));
-        c3(jj,:) = c3(jj,:)+c2;
+    c4 = zeros(grid_rho.ne(1),grid_x.ne(1));
+    rho_old = log10(6.*grid_x.nodes{1}./(pi.*grid_x.edges{2}(ii).^3).*1e9);
+            % convert x nodes to effective density for iith mobility
+    
+    for jj=1:grid_x.ne(1)
+        c4(:,jj) = max(...
+            min(log10(grid_rho.nodes{1}(2:end)),rho_old(jj+1))-... % lower bound
+            max(log10(grid_rho.nodes{1}(1:(end-1))),rho_old(jj))... % upper bound
+            ,0)./...
+            (log10(grid_rho.nodes{1}(2:end))-log10(grid_rho.nodes{1}(1:(end-1)))); % normalize by rho_old bin size
     end
     
-    y(ii,:) = c3*x_rs(:,ii);
+    y(ii,:) = c4*x_rs(:,ii);
 end
 
 y = y';

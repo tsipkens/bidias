@@ -1,7 +1,7 @@
 
-% EXP_DIST_OPBF  Approximates optimal lambda for exponential distance solver by brute force method.
+% EXP_DIST_OPBF  Approximates optimal prior parameter set using the brute force method.
 % Author: Timothy Sipkens, 2019-12
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   A       Model matrix
 %   b       Data
@@ -15,9 +15,12 @@
 %
 % Outputs:
 %   x       Regularized estimate
+%   lambda  Semi-optimal regularization parameter
+%           (against exact solution if x_ex is specified or using Bayes factor)
+%   output  Output structure with information for a range of the prior parameters
 %=========================================================================%
 
-function [x,lambda,out] = exp_dist_opbf(A,b,d_vec,m_vec,x_ex,xi,solver)
+function [x,lambda,output] = exp_dist_opbf(A,b,d_vec,m_vec,x_ex,xi,solver)
 
 
 %-- Parse inputs ---------------------------------------------%
@@ -44,30 +47,30 @@ vec_ld = vec_ld(:);
 vec_corr = vec_corr(:);
 
 tools.textbar(0);
-out(length(vec_lambda)).chi = [];
+output(length(vec_lambda)).chi = [];
 for ii=1:length(vec_lambda)
     y = [vec_lambda(ii),vec_ratio(ii),vec_ld(ii),vec_corr(ii)];
     
-    out(ii).x = invert.exp_dist(...
+    output(ii).x = invert.exp_dist(...
         A,b,y(1),Gd_fun(y),d_vec,m_vec,xi,solver);
-    out(ii).chi = norm(out(ii).x-x_ex);
+    output(ii).chi = norm(output(ii).x-x_ex);
     
-    out(ii).lambda = vec_lambda(ii);
-    out(ii).ratio = vec_ratio(ii);
-    out(ii).ld = vec_ld(ii);
-    out(ii).corr = vec_corr(ii);
+    output(ii).lambda = vec_lambda(ii);
+    output(ii).ratio = vec_ratio(ii);
+    output(ii).ld = vec_ld(ii);
+    output(ii).corr = vec_corr(ii);
     
-    [out(ii).B,out(ii).F,out(ii).C] = ...
-        optimize.bayesf(A,b,out(ii).x,Lpr,out(ii).lambda);
+    [output(ii).B,output(ii).F,output(ii).C] = ...
+        optimize.bayesf(A,b,output(ii).x,Lpr,output(ii).lambda);
     
     tools.textbar(ii/length(vec_lambda));
 end
 
 tools.textbar(1);
 
-[~,ind_min] = min([out(ii).chi]);
-x = [];%out(ind_min).x;
-lambda = [];%out(ind_min).lambda;
+[~,ind_min] = min([output(ii).chi]);
+x = out(ind_min).x;
+lambda = out(ind_min).lambda;
 
 end
 

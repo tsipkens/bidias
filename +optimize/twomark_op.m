@@ -1,7 +1,7 @@
 
 % TWOMARK_OP  Finds optimal smoothing for Twomey-Markowski solver using known distribution, x.
 % Author:	  Timothy Sipkens, 2018-12-20
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   A           Model matrix
 %   b           Data
@@ -16,10 +16,10 @@
 % Outputs:
 %   x           Estimate
 %   Sf          Estimate of optimized value of Sf
-%   out         Struct containing detailed information about optimization
+%   output      Struct containing detailed information about optimization
 %=========================================================================%
 
-function [x,Sf,out] = twomark_op(A,b,Lb,n_grid,xi,iter,span,x_ex,opt_smooth)
+function [x,Sf,output] = twomark_op(A,b,Lb,n_grid,xi,iter,span,x_ex,opt_smooth)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -39,10 +39,10 @@ disp('Optimizing Twomey-Markowski smoothing:');
 tools.textbar(0);
 disp(' ');
 for ii=length(Sf):-1:1 % loop through values of Sf
-    out(ii).Sf = Sf(ii);
-    out(ii).x = x_fun(out(ii).Sf);
-    if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
-    out(ii).Axb = norm(A*out(ii).x-b);
+    output(ii).Sf = Sf(ii);
+    output(ii).x = x_fun(output(ii).Sf);
+    if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
+    output(ii).Axb = norm(A*output(ii).x-b);
     
     disp(' ');
     disp('Optimizing Twomey-Markowski smoothing:');
@@ -52,14 +52,14 @@ for ii=length(Sf):-1:1 % loop through values of Sf
 end
 
 if ~isempty(x_ex)
-    [~,ind_min] = min([out.chi]);
+    [~,ind_min] = min([output.chi]);
 else
     ind_min = [];
 end
-Sf = out(ind_min).Sf;
-x = out(ind_min).x;
+Sf = output(ind_min).Sf;
+x = output(ind_min).x;
 
-if or(ind_min==1,ind_min==length(out))
+if or(ind_min==1,ind_min==length(output))
     disp('Minimum occured at the edge of specified span for Sf.');
 end
 

@@ -322,20 +322,21 @@ mass-mobility distributions.
 
 ### 4.1 +kernel
 
-This package is used to evaluate the transfer function of the DMA and
-particle mass analyzer (such as the CPMA or APM). The primary function
-within the larger program is to generate a matrix `A` that acts as the
-forward model. This package references the `tfer_pma` package, noted
-above.
+This package is used to evaluate the transfer function of the different
+instruments, such as the differential mobility analyzer (DMA),
+particle mass analyzer (such as the CPMA or APM), and charging fractions.
+Various functions within this package can generate the matrix `A`
+that acts as the forward model.
+
+The transfer function for the DMA uses the analytical
+expressions of [Stozenburg et al. (2018)][Stolz18].
 
 Transfer function evaluation for a PMA can
-proceed using one of two inputs either (i) a `sp` structure or (ii) an instance
-of the `Grid` class defined for the data setpoints.
-Evaluation proceeds using the analytical expressions 
-of Sipkens et al. (2020b) and the `tfer_pma` package. 
-
-The transfer function for the DMA uses the analytical 
-expressions of Stozenburg et al.
+proceed using one of two inputs either (i) a `sp` structure or (ii) an
+instance of the `Grid` class defined for the data setpoints.
+Evaluation proceeds using the analytical expressions
+of [Sipkens et al. (2020b)][2_AST] and the `tfer_pma` package provided with
+that work. The package uses a `sp` structure to define the PMA setpoints.
 
 #### 4.1.1 sp
 
@@ -350,19 +351,21 @@ relevant parameters that could be used to specify that setpoint, including
 mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
 the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
-<img src="docs/sp_struct.png" width="500px">
+| Fields  | m_star    | V      | Rm | omega | omega1 | omega2 | alpha | beta  | m_max    |
+| ------- | --------- | ------ | -- | ----- | ------ | ------ | ----- | ----- | -------- |
+| 1       | 4.51e-19  |	81.638 | 3  | 692.6 | 703.4  | 682.0 |	47.91 |	2.359 |	6.01e-19 |
+| 2       | 7.67e-19  |	110.68 | 3  | 618.3 | 627.9  | 608.9 |	42.77 |	2.106 |	1.02e-18 |
+| 3       | 1.30e-18  |	148.76 | 3  | 549.5 | 558.1  | 541.2 |	38.01 |	1.872 |	1.74e-18 |
+| 4       | 2.22e-18  |	198.02 | 3  | 486.1 | 493.7  | 478.7 |	33.63 |	1.656 |	2.96e-18 |
+| ... |
 
-Currently, creating arrays of setpoints requires a loop by the user. For example,
-the following code loops through a series of mass setpoints and generated
-setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
-in `prop_pma`:
+As an example, the array can be generated from a vector of mass setpoints assuming
+a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
+in `prop_pma` using:
 
 ```Matlab
-sp(length(m_star)) = struct();
-for ii=1:length(m_star) % loop through mass setpoints
-    sp(ii) = tfer_pma.get_setpoint(prop_pma,...
-        'm_star',m_star(ii),'Rm',10); % generate iith setpoint
-end
+sp(ii) = tfer_pma.get_setpoint(prop_pma,...
+    'm_star',m_star,'Rm',10); % generate iith setpoint
 ```
 
 #### 4.1.2 grid_b
@@ -380,7 +383,7 @@ analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], includ
 different approximations for the particle migration velocity and options for transfer
 functions that include diffusion. For more details on the theory, one is referred to
 the referenced work. The package also contains some standard reference
-functions used in evaluating the DMA transfer function, i.e. in `tfer_dma.m`.
+functions used in evaluating the DMA transfer function, i.e. in `tfer_dma`.
 
 This is imported from a package distributed with [Sipkens et al. (2020b)][2_AST]
 and is available in a parallel repository
@@ -422,10 +425,16 @@ This package mirrors the content of the +invert package but
 aims to determine the optimal number of
 iterations for the Twomey and MART schemes or the optimal prior
 parameter set for the other methods.
-
 This includes some methods aimed to optimize the prior/regularization
-parameters used in the reconstructions, without knowledge of the data. This
-includes functions to Bayes factor over a range of regularization parameters.
+parameters used in the reconstructions, without knowledge of the data.
+
+Of particular note are a subset of the methods that implement
+evaluation of the Bayes factor for a range of methods, namely the
+`bayesf*.m` methods. The functions have inputs that mirror the functions
+in the `invert` package, this means that data uncertainties can be included
+in the procedure by giving `Lb*A` as an input to the program in the place of `A`.
+The methods general take `lambda` as a separate parameter, to promote the
+stability of the algorithm. 
 
 ### 4.5 +tools
 
@@ -507,6 +516,8 @@ README in the `cmap` folder.
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (Under preparation). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: Existing and novel Bayesian methods.][4]
 
+[Stolzenburg, M. R. (2018). A review of transfer theory and characterization of measured performance for differential mobility analyzers. *Aerosol Sci. Technol.* 52, 1194-1218.][Stolz18]
+
 [1_JAS1]: https://doi.org/10.1016/j.jaerosci.2019.105484
 [2_AST]: https://doi.org/10.1080/02786826.2019.1680794
 [3_Buck]: https://doi.org/10.1016/j.jaerosci.2017.09.012
@@ -514,4 +525,5 @@ README in the `cmap` folder.
 [5_code]: https://10.5281/zenodo.3513259
 [6_AO17]: https://doi.org/10.1364/AO.56.008436
 [7_CC_Lcurve]: https://arxiv.org/abs/1608.04571
+[Stolz18]: https://www.tandfonline.com/doi/full/10.1080/02786826.2018.1514101
 [code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v1.1

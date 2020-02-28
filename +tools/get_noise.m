@@ -1,21 +1,22 @@
 
-% ADD_NOISE Simulates Poisson-Gaussian noise in signals.
+% GET_NOISE Simulates Poisson-Gaussian noise in signals.
 % Author: Timothy Sipkens, 2019-12-08
 % 
 % Modeled after Sipkens et al., Appl. Opt. (2017).
 % DOI: https://doi.org/10.1364/AO.56.008436
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   b0      Uncorrupted data vector
 % 
-%   Ntot    Factor by which the data was normalized
-%           Note that add_noise(Ntot.*b0)./Ntot; and
-%           add_noise(b0,Ntot); should give identical results. 
-%               (Optional, dafault: Ntot = 1)
+%   n_tot   Factor by which the data was normalized
+%           Note that `get_noise(n_tot.*b0)./n_tot;` and
+%           `get_noise(b0,n_tot);` should give identical results. 
+%               (Optional, dafault: n_tot = 1)
 % 
-%   gam0    Percentage of the maximum signal used for the background
+%   gam0    Percentage of the maximum noise used for the background
 %           Gaussian noise. 
-%               (Optional, default: gam0 = 1e-4, i.e. 0.01% of the peak)
+%               (Optional, default: gam0 = 1e-4, 
+%                i.e. 0.01% of the peak noise)
 % 
 %   f_apx   Flag for whether to use a Gaussian approximation for Poisson
 %           noise. Note that Lb is the Cholesky factorization of the
@@ -23,14 +24,14 @@
 %           approximation. Though, this covariance will 
 %           well-approximates the covariance information for the
 %           true Poisson case. 
-%               (Optional, default: bool_gaus = true;)
+%               (Optional, default: f_apx = 1;)
 %=========================================================================%
 
-function [b,Lb] = add_noise(b0,Ntot,gam0,f_apx)
+function [b,Lb] = get_noise(b0,n_tot,gam0,f_apx)
 
 %-- Parse inputs ---------------------------------------------------------%
-if ~exist('Ntot','var'); Ntot = []; end
-if isempty(Ntot); Ntot = 1; end
+if ~exist('n_tot','var'); n_tot = []; end
+if isempty(n_tot); n_tot = 1; end
 
 if ~exist('gam0','var'); gam0 = []; end
 if isempty(gam0); gam0 = 1e-4; end
@@ -51,8 +52,10 @@ n_b = length(b0); % length of the data vector
 %   inference, theta accounts for the normalization factor. As norm_fact
 %   increases, the noise level drops, a consequence of their being more
 %   counts in the data than the scaled b0 indicates.
-theta = 1/Ntot;
+theta = 1/n_tot;
 sig_pois = sqrt(theta.*b0);
+% equivalent to: sig_pois = sqrt(n_tot.*b0)./n_tot;
+%     such that: b/n_tot = b0/n_tot + sig_pois0/n_tot
 
 
 
@@ -87,16 +90,17 @@ rng(0);
     % reset random number generator to make noise 
     % consistent between runs
 
-if f_apx==1
+if f_apx==1 % if using Gaussian approximation
     epsilon = sig.*randn(size(b0)); % noise vector (Gaussian approx.)
     b = sparse(b0+epsilon); % add noise to data
-    b = max(round(b.*Ntot),0)./Ntot;
+    b = max(round(b.*n_tot),0)./n_tot;
         % remove counts that would be below one and negative counts
-else
+
+else % if using Poisson distribution directly
     % Data vector generated using Poisson random numbers.
     % This will generally be similar to above.
     b = sig_gaus.*randn(size(b0))+...
-        poissrnd(b0.*Ntot)./Ntot;
+        poissrnd(b0.*n_tot)./n_tot;
     b = max(b,0); % remove negative Gaussian noise
 end
 

@@ -417,6 +417,7 @@ methods (Static)
     %-----------------------------------------------------------------%
     function [phantom,N] = fit(x,grid)
         
+        disp('Fitting phantom object...');
         [~,vec1,vec2] = grid.vectorize();
         
         corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
@@ -437,6 +438,7 @@ methods (Static)
         phantom.type = 'standard-fit';
         
         N = y1(1); % scaling parameter denoting total number of particles
+        disp('Complete.');
     end
     %=================================================================%
 end
