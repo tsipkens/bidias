@@ -16,7 +16,7 @@ F = -1/2*(norm(A*x-b)^2 + norm(lambda.*Lpr0*x)^2); % fit
 % C = tools.logdet(Lpr'*Lpr)/2 - tools.logdet(Gpo_inv)/2;
 %------------------------------------------%
 
-[~,~,~,S1,S2] = gsvd(full(A),full(Lpr0));
+[~,~,P,S1,S2] = gsvd(full(A),full(Lpr0));
 h = max(S1,[],2); % picks off diagonal elements of each row
 the = diag(S2);
 
