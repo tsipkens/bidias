@@ -359,7 +359,7 @@ the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown bel
 | 4       | 2.22e-18  |	198.02 | 3  | 486.1 | 493.7  | 478.7 |	33.63 |	1.656 |	2.96e-18 |
 | ... |
 
-As an example, the array can be generated from a vector of mass setpoints assuming 
+As an example, the array can be generated from a vector of mass setpoints assuming
 a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
 in `prop_pma` using:
 
@@ -383,7 +383,7 @@ analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], includ
 different approximations for the particle migration velocity and options for transfer
 functions that include diffusion. For more details on the theory, one is referred to
 the referenced work. The package also contains some standard reference
-functions used in evaluating the DMA transfer function, i.e. in `tfer_dma.m`.
+functions used in evaluating the DMA transfer function, i.e. in `tfer_dma`.
 
 This is imported from a package distributed with [Sipkens et al. (2020b)][2_AST]
 and is available in a parallel repository
@@ -425,10 +425,16 @@ This package mirrors the content of the +invert package but
 aims to determine the optimal number of
 iterations for the Twomey and MART schemes or the optimal prior
 parameter set for the other methods.
-
 This includes some methods aimed to optimize the prior/regularization
-parameters used in the reconstructions, without knowledge of the data. This
-includes functions to Bayes factor over a range of regularization parameters.
+parameters used in the reconstructions, without knowledge of the data.
+
+Of particular note are a subset of the methods that implement
+evaluation of the Bayes factor for a range of methods, namely the
+`bayesf*.m` methods. The functions have inputs that mirror the functions
+in the `invert` package, this means that data uncertainties can be included
+in the procedure by giving `Lb*A` as an input to the program in the place of `A`.
+The methods general take `lambda` as a separate parameter, to promote the
+stability of the algorithm. 
 
 ### 4.5 +tools
 
