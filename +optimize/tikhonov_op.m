@@ -46,7 +46,7 @@ disp(' ');
 
 disp('Optimizing Tikhonov regularization:');
 tools.textbar(0);
-for ii=length(lambda):-1:1
+for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     output(ii).lambda = lambda(ii); % store regularization parameter
     
     %-- Perform inversion --%
@@ -68,7 +68,7 @@ end
 if ~isempty(x_ex) % if exact solution is supplied
     [~,ind_min] = min([output.chi]);
 else
-    ind_min = [];
+    [~,ind_min] = max([output.B]);
 end
 lambda = output(ind_min).lambda;
 x = output(ind_min).x;
