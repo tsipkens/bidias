@@ -3,7 +3,7 @@
 
 [![DOI](https://zenodo.org/badge/190667091.svg)](https://zenodo.org/badge/latestdoi/190667091)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
-[![Version](https://img.shields.io/badge/Version-1.1+-blue.svg)]()
+[![Version](https://img.shields.io/badge/Version-2.1+-blue.svg)]()
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1],
 is designed to invert tandem measurements of aerosol size distributions.
@@ -434,7 +434,7 @@ evaluation of the Bayes factor for a range of methods, namely the
 in the `invert` package, this means that data uncertainties can be included
 in the procedure by giving `Lb*A` as an input to the program in the place of `A`.
 The methods general take `lambda` as a separate parameter, to promote the
-stability of the algorithm. 
+stability of the algorithm.
 
 ### 4.5 +tools
 
