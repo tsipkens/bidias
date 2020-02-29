@@ -7,7 +7,8 @@ results/
 +uncertainty
 *.asv
 
-main_exper_fn18.m
+main_exper_fn18_invert.m
+main_exper_fn18_post.m
 main_exper_ua19_salt.m
 main_exper_gra_test.m
 main_exper_gra.m
