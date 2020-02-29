@@ -46,7 +46,7 @@ Lpr = invert.exp_dist_lpr(Gd,d_vec,m_vec); % same structure throughout
 
 disp('Optimizing exponential distance regularization:');
 tools.textbar(0);
-for ii=length(lambda):-1:1
+for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     %-- Store case parameters ----------------------%
     output(ii).lambda = lambda(ii);
     output(ii).lm = sqrt(Gd(1,1));
