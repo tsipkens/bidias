@@ -27,9 +27,9 @@ else
 end
 
 clf;
-hold on;
 for ii=1:length(m)
-    plot(log10(d(ii)),log10(m(ii)),'.',...
+    if ii==2; hold on; end
+    loglog(d(ii),m(ii),'.',...
         'Color',color(ii,:),...
         'MarkerSize',marker_size(ii));
         % marker_size is also logscale

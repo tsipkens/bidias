@@ -16,7 +16,7 @@ end
 
 isorho_vec = 10.^(-1:1:7);
 for ii=1:length(isorho_vec)
-    hl = grid.overlay_line(...
+    hl = tools.overlay_line(grid,...
             [1,log10(isorho_vec(ii)*10^3./1e9)],3); % line for rho_eff = 0.1
     hl.Color = color;
 end

@@ -5,6 +5,9 @@
 
 function [pha,N] = overlay_phantom(x_pha,grid,color)
 
+ylim_st = ylim;
+xlim_st = xlim;
+
 if isa(x_pha,'Phantom')
     pha = x_pha;
     grid = pha.grid;
@@ -24,9 +27,12 @@ h1.Color = color;
 h1 = tools.overlay_ellipse(pha.mu,pha.Sigma,3);
 h1.Color = color;
 
-h1 = grid.overlay_line(fliplr(pha.mu),...
+h1 = tools.overlay_line(grid,fliplr(pha.mu),...
     pha.p.Dm);
 h1.Color = color;
+
+ylim(ylim_st); % restore original plot bounds
+xlim(xlim_st);
 
 if nargout==0; clear pha N; end % prevent unnecessary output
 

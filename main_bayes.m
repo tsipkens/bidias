@@ -113,13 +113,15 @@ run_inversions_j;
 
 %%
 %== STEP 4: Visualize the results ========================================%
-% ind = out_tk1.ind_min;
-% x_plot = out_tk1(ind).x;
-% out = out_tk1;
+ind = out_tk1.ind_min;
+x_plot = out_tk1(ind).x;
+out = out_tk1;
+lambda = out_tk1(ind).lambda;
 
-[~,ind] = max([out_ed_lam.B]);
-x_plot = out_ed_lam(ind).x;
-out = out_ed_lam;
+% [~,ind] = max([out_ed_lam.B]);
+% x_plot = out_ed_lam(ind).x;
+% out = out_ed_lam;
+% lambda = lambda_ed_lam;
 
 
 
@@ -142,6 +144,8 @@ caxis([0,cmax*(1+1/256)]);
 % grid_x.plot2d(spo);
 % colorbar;
 
+
+
 %-- Exponential distance --%
 if iscell(phantom.Sigma)
     Gd = phantom.Sigma{1};
@@ -151,7 +155,7 @@ end
 Lpr = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),...
     grid_x.elements(:,1));
 [~,spo] = tools.get_posterior(...
-    A,Lb,lambda_ed_lam.*Lpr);
+    A,Lb,lambda.*Lpr);
 figure(12);
 colormap(gcf,cm_alt);
 grid_x.plot2d(spo);
@@ -161,7 +165,7 @@ grid_x.plot2d(spo);
 
 %-{
 %-- Plot regularization parameter selection schemes ----------------------%
-figure(12);
+figure(13);
 loglog([out.lambda],[out.chi]); % plot absolute Euclidean error
 hold on;
 loglog([out.lambda],-([out.B])); % plot Bayes factor

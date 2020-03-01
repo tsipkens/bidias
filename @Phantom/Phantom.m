@@ -439,6 +439,7 @@ methods (Static)
         
         N = y1(1); % scaling parameter denoting total number of particles
         disp('Complete.');
+        disp(' ');
     end
     %=================================================================%
 end
