@@ -113,20 +113,20 @@ one must have knowledge of the setpoint before computing `A`. Accordingly,
 the data may first be imported prior to Step 2A.
 Also in this step, one should include some definition of the
 expected uncertainties in each point in `b`, encoded in the matrix
-`Lb`. For those cases involving counting noise, this can be
+`Lb`. For those cases involving simple counting noise, this can be
 approximated as
 
     ```Matlab
     Lb = theta*diag(sqrt(b));
     ```
 
-    where `theta` is related to the total number of particle counts as described in
-[Sipkens et al. (2020a)][1_JAS1]. The function `add_noise` is
+   where `theta` is related to the total number of particle counts as described in
+[Sipkens et al. (2020a)][1_JAS1]. The function `get_noise` is
 included in the `+tools` package to help with noise creation, and more
 information on the noise model is provided in [Sipkens et al. (2017)][6_AO17].
 
 - **STEP 3**: With this information, one can proceed to implement various inversion
-approaches, such as those available in the `+invert` package described below.
+approaches, such as those available in the `invert` package described below.
 Preset groupings on inversion approaches are available in the
 `run_inversions*` scripts, also described below.
 

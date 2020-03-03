@@ -528,7 +528,7 @@ methods
     %-----------------------------------------------------------------%
     function [x,t1,t2] = vectorize(obj,x)
         if exist('x','var'); x = x(:); else; x = []; end
-
+        
         if nargout>1; t1 = obj.elements(:,1); end
         if nargout>2; t2 = obj.elements(:,2); end
     end

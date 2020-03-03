@@ -415,10 +415,22 @@ methods (Static)
     %   x - input data (2D distribution data)
     %   grid - 'Grid' object on which input data is evaluated
     %-----------------------------------------------------------------%
-    function [phantom,N] = fit(x,grid)
+    function [phantom,N] = fit(x,vec1_grid,vec2)
         
         disp('Fitting phantom object...');
-        [~,vec1,vec2] = grid.vectorize();
+        
+        %-- Parse inputs ---------------------------------------------%
+        if isa(vec1_grid,'Grid')
+            grid = vec1_grid;
+            [~,vec1,vec2] = grid.vectorize();
+        else
+            vec1 = vec1_grid(:);
+            vec2 = vec2(:);
+            grid = [min(vec1),max(vec1);min(vec2),max(vec2)];
+                % specify a span for a grid
+        end
+        %-------------------------------------------------------------%
+        
         
         corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
         
