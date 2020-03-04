@@ -21,7 +21,7 @@ grid_rho = Grid([rho_min,rho_max;grid_x.span(2,:)],...
     [n_rho,length(grid_x.edges{2})],'logarithmic');
     % generate grid
 
-x_rs = reshape(x,grid_x.ne);
+x_rs = grid_x.reshape(x);
 
 n_d = grid_x.ne(2);
 y = zeros(grid_x.ne(2),length(rho_n));

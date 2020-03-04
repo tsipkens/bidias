@@ -491,8 +491,9 @@ methods
         x = obj.reshape(x);
         
         [dr,dr1,dr2] = obj.dr; % generate differential area of elements
+        dr = obj.reshape(dr); % fills out dr for partial grids
         
-        tot = sum(x(:).*dr); % integrated total
+        tot = sum(x(:).*dr(:)); % integrated total
         
         marg{1} = sum(dr2.*x,2); % integrate over diameter
         marg{2} = sum(dr1.*x,1); % integrate over mass
@@ -659,8 +660,9 @@ methods
         
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
-        dr = obj.dr;
-        if ~all(abs(dr(2:end)-dr(1))<1e-10)
+        [~,dr1,dr2] = obj.dr; % used to give warning below
+        dr0 = dr1(:).*dr2(:);
+        if ~all(abs(dr0(2:end)-dr0(1))<1e-10)
             warning(['The plot2d method does not display ',...
                 'correct proportions for non-uniform grids.']);
         end
@@ -734,6 +736,7 @@ methods
         
         %-- Also plot marginal of the true distribution --------------%
         if ~isempty(x_t)
+            hold on;
             plot([0;x_m_t{marg_dim}],...
                 obj_t.nodes{marg_dim},'color',[0.6,0.6,0.6]);
             hold off;
@@ -905,14 +908,14 @@ methods
     %== PARTIAL ======================================================%
     %   Convert to a partial grid. Currently takes a y-intercept, r0, 
     %   and slope as arguements and cuts upper triangle.
-    function obj = partial(obj,r0,slope)
+    function obj = partial(obj,r0,slope0)
         
-        if ~exist('slope','var'); slope = []; end
-        if isempty(slope); slope = 1; end
+        if ~exist('slope','var'); slope0 = []; end
+        if isempty(slope0); slope0 = 1; end
         
         if ~exist('r0','var'); r0 = []; end
         if length(r0)==1; b = r0; end % if scalar, use as y-intercept
-        if length(r0)==2; b = r0(1)-slope*r0(2); end
+        if length(r0)==2; b = r0(1)-slope0*r0(2); end
             % if coordinates, find y-intercept
         if isempty(r0); b = 0; end % if not specified, use b = 0
         
@@ -922,13 +925,13 @@ methods
             t0 = obj.elements;
         end
         
-        f_above = t0(:,1)>(t0(:,2).*slope+b);
+        f_above = t0(:,1)>(t0(:,2).*slope0+b);
         t1 = 1:length(f_above);
         
         %-- Update grid properties -----------------%
         obj.ispartial = 1;
         obj.missing = t1(f_above);
-        obj.cut = [b,slope];
+        obj.cut = [b,slope0];
         
         obj.elements = obj.elements(~f_above,:);
         obj.nelements = obj.nelements(~f_above,:);

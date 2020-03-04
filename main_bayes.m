@@ -147,6 +147,7 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %-- Exponential distance --%
+%{
 if iscell(phantom.Sigma)
     Gd = phantom.Sigma{1};
 else
@@ -163,8 +164,8 @@ grid_x.plot2d(spo);
 
 
 
-%-{
 %-- Plot regularization parameter selection schemes ----------------------%
+%-{
 figure(13);
 loglog([out.lambda],[out.chi]); % plot absolute Euclidean error
 hold on;
