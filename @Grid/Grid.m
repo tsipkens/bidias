@@ -476,6 +476,20 @@ methods
                     % upper, left triangle
             dr = t0+t1+t2;
             
+            if length(obj.cut)==4 % Note: Ignores if both rays pass through element
+                [~,r_min,r_max] = obj.ray_sum([0,obj.cut(3)],obj.cut(4),0);
+                t0 = (log10(obj.nelements(:,2))-r_max(:,1)).*...
+                    (log10(obj.nelements(:,2))-log10(obj.nelements(:,1)));
+                        % upper rectangle
+                t1 = (r_min(:,2)-log10(obj.nelements(:,3))).*...
+                    (r_max(:,1)-log10(obj.nelements(:,1)));
+                        % left rectangle
+                t2 = 1/2.*(r_max(:,1)-r_min(:,1)).*...
+                    (r_max(:,2)-r_min(:,2));
+                        % lower, right triangle
+                dr = t0+t1+t2;
+            end
+            
         end
         %-------------------------------------------------------------%
     end
@@ -599,7 +613,7 @@ methods
             %-- Ray-sum matrix ---------%
             [~,jj,a] = find(chord');
             if ~isempty(a)
-                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.1*obj.Ne));
+                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.5*obj.Ne));
             end
             if f_bar, tools.textbar(ii/m); end
 
@@ -907,17 +921,29 @@ methods
     
     %== PARTIAL ======================================================%
     %   Convert to a partial grid. Currently takes a y-intercept, r0, 
-    %   and slope as arguements and cuts upper triangle.
-    function obj = partial(obj,r0,slope0)
+    %   and slope0 as arguements and cuts upper triangle.
+    %   Added r1 and slope1 arguments will also cut a lower triangle.
+    function obj = partial(obj,r0,slope0,r1,slope1)
         
-        if ~exist('slope','var'); slope0 = []; end
+        %-- Parse inputs ----------------------------%
+        if ~exist('slope0','var'); slope0 = []; end
         if isempty(slope0); slope0 = 1; end
         
         if ~exist('r0','var'); r0 = []; end
-        if length(r0)==1; b = r0; end % if scalar, use as y-intercept
-        if length(r0)==2; b = r0(1)-slope0*r0(2); end
-            % if coordinates, find y-intercept
-        if isempty(r0); b = 0; end % if not specified, use b = 0
+        if length(r0)==1; b0 = r0; end % if scalar, use as y-intercept
+        if length(r0)==2; b0 = r0(1)-slope0*r0(2); end % if coordinates, find y-intercept
+        if isempty(r0); b0 = 0; end % if not specified, use b = 0
+        
+        %-- For bottom triangle --%
+        if ~exist('slope1','var'); slope1 = []; end
+        if isempty(slope1); slope1 = 0; end
+        
+        if ~exist('r1','var'); r1 = -inf; end
+        if length(r1)==1; b1 = r1; end % if scalar, use as y-intercept
+        if length(r1)==2; b1 = r1(1)-slope1*r1(2); end % if coordinates, find y-intercept
+        if isempty(r1); b1 = 0; end % if not specified, use b = 0
+        %--------------------------------------------%
+        
         
         if strcmp(obj.discrete,'logarithmic')
             t0 = log10(obj.elements);
@@ -925,16 +951,26 @@ methods
             t0 = obj.elements;
         end
         
-        f_above = t0(:,1)>(t0(:,2).*slope0+b);
-        t1 = 1:length(f_above);
+        %-- Cut upper triangle ---------------------%
+        f_missing = t0(:,1)>(t0(:,2).*slope0+b0);
+        t1 = 1:prod(obj.ne);
+        obj.cut = [b0,slope0];
+        
+        
+        %-- Consider cutting lower triangle --------%
+        if ~isinf(slope1)
+            f_missing1 = t0(:,1)<(t0(:,2).*slope1+b1);
+            f_missing = or(f_missing,f_missing1);
+            obj.cut = [obj.cut,b1,slope1];
+        end
+        
         
         %-- Update grid properties -----------------%
         obj.ispartial = 1;
-        obj.missing = t1(f_above);
-        obj.cut = [b,slope0];
+        obj.missing = t1(f_missing);
         
-        obj.elements = obj.elements(~f_above,:);
-        obj.nelements = obj.nelements(~f_above,:);
+        obj.elements = obj.elements(~f_missing,:);
+        obj.nelements = obj.nelements(~f_missing,:);
         obj.Ne = size(obj.elements,1);
         obj = obj.padjacency;
         
