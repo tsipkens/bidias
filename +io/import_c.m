@@ -56,6 +56,7 @@ for ff=1:N
     
     prop_pma.Q = mean(table2array(t(:,9)))/1000/60; % current averages over all setpoint
             % and does not support changing Q during measurements
+    prop_pma.v_bar = prop_pma.Q/prop_pma.A; % average flow velocity
     
     clear sp; % reset PMA setpoints
     for ii=1:length(V)
