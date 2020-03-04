@@ -652,7 +652,10 @@ methods
     %== PLOT2D =======================================================%
     %   Plots x as a 2D function on the grid.
     %   Author: Timothy Sipkens, 2018-11-21
-    function [h,x] = plot2d(obj,x)
+    function [h,x] = plot2d(obj,x,f_contf)
+        
+        if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
+        if isempty(f_contf); f_contf = 0; end % set contourf flag to false
         
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
@@ -664,8 +667,13 @@ methods
         
         x = obj.reshape(x);
         
-        imagesc(obj.edges{2},obj.edges{1},x);
-        set(gca,'YDir','normal');
+        %-- Plot -------------------------------%
+        if f_contf==0 % plot as image
+            imagesc(obj.edges{2},obj.edges{1},x);
+            set(gca,'YDir','normal');
+        else % plot as contourf
+            contourf(obj.edges{2},obj.edges{1},x,15,'EdgeColor','none');
+        end
         
         %-- Adjust tick marks for log scale ----%
         if strcmp('logarithmic',obj.discrete)
@@ -686,12 +694,16 @@ methods
     %== PLOT2D_MARG ==================================================%
     %   Plots x as a 2D function on the grid, with marginalized distributions.
     %   Author: Timothy Sipkens, 2018-11-21
-    function [h,x_m] = plot2d_marg(obj,x,obj_t,x_t)
+    function [h,x_m] = plot2d_marg(obj,x,obj_t,x_t,f_contf)
+        
+        if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
+        if ~exist('x_t','var'); x_t = []; end
         
         subplot(4,4,[5,15]);
-        obj.plot2d(x);
+        obj.plot2d(x,f_contf);
         
         x_m = obj.marginalize(x);
+        
         
         %-- Plot marginal distribution (dim 2) -----------------------%
         subplot(4,4,[1,3]);
@@ -701,7 +713,8 @@ methods
         xlim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
         set(gca,'XScale','log');
         
-        if nargin>2 % also plot marginal of the true distribution
+        %-- Also plot marginal of the true distribution --------------%
+        if ~isempty(x_t)
             x_m_t = obj_t.marginalize(x_t);
             
             hold on;
@@ -709,6 +722,7 @@ methods
                 [x_m_t{marg_dim},0],'color',[0.6,0.6,0.6]);
             hold off;
         end
+        
         
         %-- Plot marginal distribution (dim 1) -----------------------%
         subplot(4,4,[8,16]);
@@ -718,8 +732,8 @@ methods
         ylim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
         set(gca,'YScale','log');
         
-        if nargin>2 % also plot marginal of the true distribution
-            hold on;
+        %-- Also plot marginal of the true distribution --------------%
+        if ~isempty(x_t)
             plot([0;x_m_t{marg_dim}],...
                 obj_t.nodes{marg_dim},'color',[0.6,0.6,0.6]);
             hold off;

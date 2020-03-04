@@ -341,13 +341,7 @@ that work. The package uses a `sp` structure to define the PMA setpoints.
 #### 4.1.1 sp
 
 The `sp` or setpoint structure is a structured array containing the information
-necessary to define the device setpoints. For a DMA, the setpoint mobility diameter,
-`d_star`, is sufficient to accomplish this task. For a PMA, a pair of parameters
-is required to establish the setpoint. Pairings can be converted into a `sp` structured
-array using the `get_setpoint` function included with the `tfer_pma` package described
-below. Generally, this function can be placed inside a loop that generates an entry
-in `sp` for each available setpoint. The output structure will contain all of the
-relevant parameters that could be used to specify that setpoint, including
+necessary to define the PMA setpoints. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `get_setpoint` function included with the `tfer_pma` package described below. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including
 mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
 the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
@@ -360,12 +354,12 @@ the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown bel
 | ... |
 
 As an example, the array can be generated from a vector of mass setpoints assuming
-a resolution of *R*<sub>m</sub> = 10 and PMA properties specified
-in `prop_pma` using:
+a resolution of *R*<sub>m</sub> = 10 and PMA properties specified in `prop_pma` using:
 
 ```Matlab
-sp(ii) = tfer_pma.get_setpoint(prop_pma,...
-    'm_star',m_star,'Rm',10); % generate iith setpoint
+m_star = 1e-18.*logspace(log10(0.1),log10(100),25); % mass setpoints
+sp = tfer_pma.get_setpoint(prop_pma,...
+    'm_star',m_star,'Rm',10); % get PMA setpoints
 ```
 
 #### 4.1.2 grid_b

@@ -24,6 +24,7 @@ main_tfer.m
 CPMASP2KernelV0.m
 ImportSP2.m
 +kernel/gen_c2.m
+cmap/correct.m
 
 test_import.m
 test_cred.m

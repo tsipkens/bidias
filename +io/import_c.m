@@ -49,10 +49,10 @@ for ff=1:N
     T = table2array(t(:,8)); % PMA tempreature
 
     prop_pma = kernel.prop_pma(' CPMA');
-    prop_pma.mass_mob_pref = 0.0612; % assume CPMA uses soot properties
-    prop_pma.mass_mob_exp = 2.48;
-    % prop.mass_mob_pref = 524;
-    % prop.mass_mob_exp = 3;
+    % prop_pma.mass_mob_pref = 0.0612; % assume CPMA uses soot properties
+    % prop_pma.mass_mob_exp = 2.48;
+    prop.mass_mob_pref = 524;
+    prop.mass_mob_exp = 3;
     
     prop_pma.Q = mean(table2array(t(:,9)))/1000/60; % current averages over all setpoint
             % and does not support changing Q during measurements
@@ -61,8 +61,10 @@ for ff=1:N
     for ii=1:length(V)
         prop_pma.T = T(ii)+273.15; % pressure converted to Kelvin
         prop_pma.p = p(ii)/101325; % pressure converted to atm
+        % sp(ii,1) = tfer_pma.get_setpoint(prop_pma,...
+        %     'm_star',m_star(ii).*1e-18,'Rm',Rm(ii));
         sp(ii,1) = tfer_pma.get_setpoint(prop_pma,...
-            'm_star',m_star(ii).*1e-18,'Rm',Rm(ii));
+            'V',V(ii),'omega',omega(ii));
     end
     %----------------------------------------------------------------%
 
