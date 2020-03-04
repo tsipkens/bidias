@@ -613,7 +613,7 @@ methods
             %-- Ray-sum matrix ---------%
             [~,jj,a] = find(chord');
             if ~isempty(a)
-                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.5*obj.Ne));
+                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.6*obj.Ne));
             end
             if f_bar, tools.textbar(ii/m); end
 
@@ -958,7 +958,7 @@ methods
         
         
         %-- Consider cutting lower triangle --------%
-        if ~isinf(slope1)
+        if ~isinf(r1)
             f_missing1 = t0(:,1)<(t0(:,2).*slope1+b1);
             f_missing = or(f_missing,f_missing1);
             obj.cut = [obj.cut,b1,slope1];

@@ -1,16 +1,20 @@
 
 % IMPORT_C Read tandem CPMA-SMPS data from a list-format (newer format) CSV file.
 % Author: Timothy Sipkens, 2019-12-17
+% 
+% Note:
+%   The prop_pma input woudl override deriving some of the properties from
+%   the imported data file.
 %=========================================================================%
 
 function [data0,d_star0,sp0,prop_dma,prop_pma,out] = ...
-    import_c(fns)
+    import_c(fnames,prop_pma)
 
-if ~isstruct(fns)
-    t0 = fns;
-    fns = struct();
-    [fns.folder,fns.name,ext] = fileparts(t0);
-    fns.name = [fns.name,ext];
+if ~isstruct(fnames)
+    t0 = fnames;
+    fnames = struct();
+    [fnames.folder,fnames.name,ext] = fileparts(t0);
+    fnames.name = [fnames.name,ext];
 end
 
 data0 = [];
@@ -18,10 +22,10 @@ d_star0 = [];
 
 disp('Reading files...');
 
-N = length(fns); % number of files to read
+N = length(fnames); % number of files to read
 if N>1; tools.textbar(0); end
 for ff=1:N
-    fn = [fns(ff).folder,'\',fns(ff).name];
+    fn = [fnames(ff).folder,'\',fnames(ff).name];
     
     
     %== Open file and read data =========%
@@ -48,9 +52,8 @@ for ff=1:N
     p = table2array(t(:,7)); % PMA pressure
     T = table2array(t(:,8)); % PMA tempreature
 
-    prop_pma = kernel.prop_pma(' CPMA');
-    % prop_pma.mass_mob_pref = 0.0612; % assume CPMA uses soot properties
-    % prop_pma.mass_mob_exp = 2.48;
+    if ~exist('prop_pma','var'); prop_pma = []; end
+    if isempty(prop_pma); prop_pma = kernel.prop_pma(' CPMA'); end
     prop.mass_mob_pref = pi*1000/6;
     prop.mass_mob_exp = 3;
     

@@ -13,11 +13,11 @@
 function [prop] = prop_pma(opts)
 
 if ~exist('opts','var'); opts = []; end
-if isempty(opts); opts = 'Olfert'; end
+if isempty(opts); opts = 'olfert'; end
 
 
-prop.mass_mob_pref = 524;
-prop.mass_mob_exp = 3;
+prop.rho0 = pi*1000/6; % ~524;
+prop.Dm = 3;
 
 %-- For soot --%
 % prop.mass_mob_pref = 0.0612;
@@ -26,7 +26,7 @@ prop.mass_mob_exp = 3;
 switch opts
     
     %-- CPMA parameters from Olfert lab ----------------------------------%
-    case {'Olfert','cpma',' CPMA'}
+    case {'olfert','cpma',' CPMA'}
         prop.r1 = 0.06; % inner electrode radius [m]
         prop.r2 = 0.061; % outer electrode radius [m]
         prop.L = 0.2; % length of chamber [m]
@@ -36,7 +36,7 @@ switch opts
         prop.omega_hat = 32/33; % ratio of angular speeds
 
     %-- CPMA/APM parameters from Buckley et al. --------------------------%
-    case 'Buckley'
+    case 'buckley'
         prop.r2 = 0.025; % outer electrode radius [m]
         prop.r1 = 0.024; % inner electrode radius [m]
         prop.L = 0.1;    % length of APM [m]
@@ -48,7 +48,7 @@ switch opts
         prop.p = 1; % system pressure [atm]
     
     %-- CPMA parameters from Olfert lab ----------------------------------%
-    case {'FlareNet18','fn18'}
+    case {'flarenet18','fn18'}
         prop.r1 = 0.06; % inner electrode radius [m]
         prop.r2 = 0.061; % outer electrode radius [m]
         prop.L = 0.2; % length of chamber [m]
@@ -56,11 +56,11 @@ switch opts
         prop.T = 293; % system temperature [K]
         prop.Q = 0.3/1000/60; % volume flow rate (m^3/s) (prev: ~1 lpm)
         prop.omega_hat = 32/33; % ratio of angular speed
-        prop.mass_mob_pref = 524;
-        prop.mass_mob_exp = 3;
+        prop.rho0 = pi*1000/6; % ~524;
+        prop.Dm = 3;
         
     %-- APM parameters from Ehara et al. -------------%
-    case 'Ehara'
+    case 'ehara'
         prop.r2 = 0.103; % outer electrode radius [m]
         prop.r1 = 0.1; % inner electrode radius [m]
         prop.L = 0.2;    % length of APM [m]
@@ -71,7 +71,7 @@ switch opts
     
     %-- Parameters from Olfert and Collings -------------%
     %   Nearly identical to the Ehara et al. case
-    case 'Olfert-Collings'
+    case 'olfert-collings'
         prop.r2 = 0.103; % outer electrode radius [m]
         prop.r1 = 0.1; % inner electrode radius [m]
         prop.L = 0.2;
@@ -81,7 +81,7 @@ switch opts
         prop.p = 1; % system pressure [atm]
     
     %-- Parameters from Kuwata --------------------------%
-    case 'Kuwata'
+    case 'kuwata'
         prop.r2 = 0.052; % outer electrode radius [m]
         prop.r1 = 0.05; % inner electrode radius [m]
         prop.L = 0.25;
@@ -89,6 +89,17 @@ switch opts
         prop.Q = 1.67e-5; % aerosol flowrate [m^3/s]
         prop.T = 295; % system temperature [K]
         prop.p = 1; % system pressure [atm]
+        
+	case 'santavac'
+        prop.r1 = 0.06; % inner electrode radius [m]
+        prop.r2 = 0.061; % outer electrode radius [m]
+        prop.L = 0.2; % length of chamber [m]
+        prop.p = 1; % pressure [atm]
+        prop.T = 293; % system temperature [K]
+        prop.Q = 0.3/1000/60; % volume flow rate (m^3/s) (prev: ~1 lpm)
+        prop.omega_hat = 32/33; % ratio of angular speed
+        prop.rho0 = pi*1000/6; % ~524;
+        prop.Dm = 3;
 
 end
 
