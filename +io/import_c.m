@@ -54,8 +54,6 @@ for ff=1:N
 
     if ~exist('prop_pma','var'); prop_pma = []; end
     if isempty(prop_pma); prop_pma = kernel.prop_pma(' CPMA'); end
-    prop.mass_mob_pref = pi*1000/6;
-    prop.mass_mob_exp = 3;
     
     prop_pma.Q = mean(table2array(t(:,9)))/1000/60; % current averages over all setpoint
             % and does not support changing Q during measurements
