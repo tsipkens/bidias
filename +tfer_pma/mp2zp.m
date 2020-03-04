@@ -32,8 +32,8 @@ if ~exist('prop','var'); prop = []; end
 if or(isempty(prop),...
         ~and(isfield(prop,'mass_mob_pref'),...
         isfield(prop,'mass_mob_exp'))) % get parameters for the mass-mobility relation
-    mass_mob_pref = 0.0612;
-    mass_mob_exp = 2.48;
+    mass_mob_pref = 0.0612; % 524;
+    mass_mob_exp = 2.48; % 3;
 else
     mass_mob_pref = prop.mass_mob_pref;
     mass_mob_exp = prop.mass_mob_exp;

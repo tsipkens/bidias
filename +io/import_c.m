@@ -51,7 +51,7 @@ for ff=1:N
     prop_pma = kernel.prop_pma(' CPMA');
     % prop_pma.mass_mob_pref = 0.0612; % assume CPMA uses soot properties
     % prop_pma.mass_mob_exp = 2.48;
-    prop.mass_mob_pref = 524;
+    prop.mass_mob_pref = pi*1000/6;
     prop.mass_mob_exp = 3;
     
     prop_pma.Q = mean(table2array(t(:,9)))/1000/60; % current averages over all setpoint
