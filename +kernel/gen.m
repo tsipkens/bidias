@@ -1,12 +1,14 @@
 
-% GEN Generate A matrix describing kernel/transfer functions for DMA-PMA
+% GEN  Evaluate kernel/transfer functions for DMA-PMA to find A.
 % Author:  Timothy Sipkens, 2020-02-04
 % 
 % Notes:
-%   Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%   1. Cell arrays are used for Omega_mat and Lambda_mat in order to 
 %   allow for the use of sparse matrices, which is necessary to 
 %   store information on higher resolutions grids
 %   (such as those used for phantoms).
+%   2. By default, this function uses the analytical PMA transfer function 
+%   corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
 % 
 % Inputs:
 %   sp          PMA setpoint structure

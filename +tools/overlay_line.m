@@ -10,9 +10,10 @@
 %   h       Line object
 %=========================================================================%
 
-function h = overlay_line(grid,logr0,slope,cspec)
+function h = overlay_line(grid,logr0,slope,varargin)
 
-if ~exist('cspec','var'); cspec = 'w'; end
+if isempty(varargin); varargin = {'w'}; end
+    % specify line properties (default, white, solid line)
 
 if strcmp(get(gca,'XScale'),'log') % for log-scale plots
     rmin = log10(min([grid.edges{:}]));
@@ -21,7 +22,7 @@ if strcmp(get(gca,'XScale'),'log') % for log-scale plots
     hold on;
     h = loglog(10.^[rmin,rmax],...
         10.^[logr0(2)+slope*(rmin-logr0(1)),...
-        logr0(2)+slope*(rmax-logr0(1))],cspec);
+        logr0(2)+slope*(rmax-logr0(1))],varargin{:});
     hold off;
 
 else % for linear scale plots
@@ -31,7 +32,7 @@ else % for linear scale plots
     hold on;
     h = plot([rmin,rmax],...
         [logr0(2)+slope*(rmin-logr0(1)),...
-        logr0(2)+slope*(rmax-logr0(1))],cspec);
+        logr0(2)+slope*(rmax-logr0(1))],varargin{:});
     hold off;
 end
 

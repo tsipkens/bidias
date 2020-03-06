@@ -1,5 +1,5 @@
 
-% PROP_PMA  Generates the prop struct used to summarize CPMA parameters.
+% PROP_PMA  Generates the prop struct used to summarize PMA parameters.
 % Author:   Timothy Sipkens, 2019-06-26
 %-------------------------------------------------------------------------%
 % Input:
@@ -26,7 +26,7 @@ prop.Dm = 3;
 switch opts
     
     %-- CPMA parameters from Olfert lab ----------------------------------%
-    case {'olfert','cpma',' CPMA'}
+    case {'olfert','cpma',' CPMA'} % final entry associated with data import
         prop.r1 = 0.06; % inner electrode radius [m]
         prop.r2 = 0.061; % outer electrode radius [m]
         prop.L = 0.2; % length of chamber [m]

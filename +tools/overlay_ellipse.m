@@ -5,10 +5,10 @@
 %         is the minor axis
 %=========================================================================%
 
-function h = overlay_ellipse(mu,Sigma,s,cspec)
+function h = overlay_ellipse(mu,Sigma,s,varargin)
 
-if ~exist('cspec','var'); cspec = []; end
-if isempty(cspec); cspec = 'w'; end
+if isempty(varargin); varargin = {'w'}; end
+    % specify line properties
 
 if ~exist('s','var'); s = []; end
 if isempty(s); s = 1; end
@@ -27,9 +27,9 @@ a = (V*sqrt(D))*[cos(t(:))'; sin(t(:))'];
 
 hold on;
 if strcmp(get(gca,'XScale'),'log')
-    h = loglog(10.^(a(1, :)+mu(1)), 10.^(a(2, :)+mu(2)), cspec);
+    h = loglog(10.^(a(1, :)+mu(1)), 10.^(a(2, :)+mu(2)), varargin{:});
 else
-    h = plot(a(1, :)+mu(1), a(2, :)+mu(2), cspec);
+    h = plot(a(1, :)+mu(1), a(2, :)+mu(2), varargin{:});
 end
 hold off;
 

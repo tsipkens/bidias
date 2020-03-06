@@ -1,5 +1,5 @@
 
-% GENL_GRID  Generate A matrix describing kernel/transfer functions for DMA-PMA.
+% GEN_GRID  Evaluate kernel/transfer functions for DMA-PMA to find A, exploiting grid structure.
 % Author: Timothy Sipkens, 2018-11-27
 % 
 % Notes:
@@ -9,6 +9,9 @@
 %   allow for the use of sparse matrices, which is necessary to 
 %   store information on higher resolutions grids
 %   (such as those used for phantoms).
+%   3. By default, this function uses the analytical PMA transfer function 
+%   corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
+% 
 % 
 %-------------------------------------------------------------------------%
 % Inputs:
