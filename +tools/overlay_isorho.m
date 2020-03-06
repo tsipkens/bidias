@@ -5,10 +5,10 @@
 
 function [] = overlay_isorho(grid,varargin)
 
-isorho_vec = 10.^(-1:1:7);
+isorho_vec = 10.^(-1:1:9);
 for ii=1:length(isorho_vec)
     tools.overlay_line(grid,...
-    	[1,log10(isorho_vec(ii)*10^3./1e9)],3,varargin{:});
+    	[1,log10(pi/6*isorho_vec(ii)*10^3./1e9)],3,varargin{:});
 end
 
 end
