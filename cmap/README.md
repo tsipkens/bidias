@@ -14,7 +14,7 @@ http://dx.doi.org/10.5670/oceanog.2016.66 (More information is available at
 https://matplotlib.org/cmocean/).
 
 3. *colorbrewer2* - Colormaps by Cynthia Brewer and Mark Harrower. (More information
-  available at http://colorbrewer2.org/).
+    available at http://colorbrewer2.org/).
 
 4. *turbo* - A. Mikhailov. Turbo, An Improved Rainbow Colormap for Visualization.
 (More information is available at https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html).
@@ -29,7 +29,7 @@ It is also noted that the *deep*, *dense*, *matter*, and *tempo* colormaps
 are reversed from their original order, such that the darker color is
 always first.
 
-The colormaps, and swages indicating their color progression, are included below.
+The colormaps, and swages indicating their color progression, are included below. Custom colormaps are specific to this package. 
 
 ## Sequantial colormaps
 
@@ -68,6 +68,12 @@ The colormaps, and swages indicating their color progression, are included below
 ![BuPu](docs/BuPu.jpg) *BuPu*
 
 ![RdPu](docs/RdPu.jpg) *RdPu*
+
+#### Custom:
+
+![fblue](docs/fblue.jpg) *fblue*
+
+![fred](docs/fred.jpg) *fred*
 
 ## Divergent colormaps
 

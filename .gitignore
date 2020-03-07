@@ -10,6 +10,7 @@ results/
 main_x_fn18_invert.m
 main_x_fn18_post.m
 main_x_ua19_salt.m
+main_x_ua19_salt_post.m
 main_x_gra_test.m
 main_x_gra.m
 main_x_ua19_nov_a.m
@@ -27,6 +28,8 @@ CPMASP2KernelV0.m
 ImportSP2.m
 +kernel/gen_c2.m
 cmap/correct.m
+cmap/rgb2hsl.m
+cmap/hsl2rgb.m
 
 test_import.m
 test_cred.m
