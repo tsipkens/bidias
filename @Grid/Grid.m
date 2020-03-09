@@ -509,11 +509,49 @@ methods
         
         tot = sum(x(:).*dr(:)); % integrated total
         
+        t0 = dr2; % added processing for partial elements
+        dr2 = dr./dr1;
+        dr1 = dr./t0;
+        
         marg{1} = sum(dr2.*x,2); % integrate over diameter
         marg{2} = sum(dr1.*x,1); % integrate over mass
         
     end
     %=================================================================%
+    
+    
+    
+    %== MARGINALIZE_OP ===============================================%
+    %   A marginalizing operator, C1, to act on 2D distributions.
+    %   Author: Timothy Sipkens, Arash Naseri, 2020-03-09
+    function C1 = marginalize_op(obj,dim)
+        
+        if ~exist('dim','var'); dim = []; end
+        if isempty(dim); dim = 1; end
+            
+        switch dim % determine which dimension to sum over
+            case 2 % integrate in column direction
+                C1 = kron(speye(obj.ne(2)),ones(1,obj.ne(1)));
+
+            case 1 % integrate in row direction
+                C1 = repmat(speye(obj.ne(1),obj.ne(1)),[1,obj.ne(2)]);
+        end
+        
+        if obj.ispartial==1
+            C1(:,obj.missing) = []; % remove missing elements
+            
+            %-- Extra processing to account for partial elements -----%
+            [dr,dr1,dr2] = obj.dr;
+            switch dim % determine which dimension to sum over
+                case 2 % integrate in column direction
+                    dr1 = obj.full2partial(dr1(:));
+                    C1 = bsxfun(@times,C1,(dr./dr1)');
+                case 1 % integrate in row direction
+                    dr2 = obj.full2partial(dr2(:));
+                    C1 = bsxfun(@times,C1,(dr./dr2)');
+            end
+        end
+    end
     
     
     
