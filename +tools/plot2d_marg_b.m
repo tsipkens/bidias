@@ -38,10 +38,12 @@ set(gca,'YScale','log');
 
 
 %-- Plot marginal SP2 data ----------------------------%
-if and(nargin>2, exist('d','var'))
-    hold on;
-    stairs(d,grid.edges{1, 1},'b');
-    hold off;
+if nargin>2
+    if ~isempty(d)
+        hold on;
+        stairs(d,grid.edges{1, 1},'b');
+        hold off;
+    end
 end
 
 
