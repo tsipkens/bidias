@@ -27,9 +27,9 @@ a = (V*sqrt(D))*[cos(t(:))'; sin(t(:))'];
 
 hold on;
 if strcmp(get(gca,'XScale'),'log')
-    h = loglog(10.^(a(1, :)+mu(1)), 10.^(a(2, :)+mu(2)), varargin{:});
+    h = loglog(10.^(a(1,:)+mu(1)), 10.^(a(2,:)+mu(2)), varargin{:});
 else
-    h = plot(a(1, :)+mu(1), a(2, :)+mu(2), varargin{:});
+    h = plot(a(1,:)+mu(1), a(2,:)+mu(2), varargin{:});
 end
 hold off;
 
