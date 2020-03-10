@@ -466,28 +466,28 @@ methods
         if obj.ispartial==1
             dr0 = obj.full2partial(dr); % used if lower cut is employed
             
-            [~,r_min,r_max] = obj.ray_sum([0,obj.cut(1)],obj.cut(2),0);
-            t0 = (r_min(:,1)-log10(obj.nelements(:,1))).*...
-                (log10(obj.nelements(:,2))-log10(obj.nelements(:,1)));
+            [~,rmin,rmax] = obj.ray_sum([0,obj.cut(1)],obj.cut(2),0);
+            t0 = (rmin(:,1)-log10(obj.nelements(:,1))).*...
+                (log10(obj.nelements(:,4))-log10(obj.nelements(:,3)));
                     % lower rectangle
-            t1 = (log10(obj.nelements(:,4))-r_max(:,2)).*...
-                (log10(obj.nelements(:,2))-r_min(:,1));
+            t1 = (log10(obj.nelements(:,4))-rmax(:,2)).*...
+                (log10(obj.nelements(:,2))-rmin(:,1));
                     % right rectangle
-            t2 = 1/2.*(r_max(:,1)-r_min(:,1)).*...
-                (r_max(:,2)-r_min(:,2));
+            t2 = 1/2.*(rmax(:,1)-rmin(:,1)).*...
+                (rmax(:,2)-rmin(:,2));
                     % upper, left triangle
             dr = t0+t1+t2;
             
             if length(obj.cut)==4 % consider cutting lower triangle
-                [~,r_min,r_max] = obj.ray_sum([0,obj.cut(3)],obj.cut(4),0);
-                t0 = (log10(obj.nelements(:,2))-r_max(:,1)).*...
-                    (log10(obj.nelements(:,2))-log10(obj.nelements(:,1)));
+                [~,rmin,rmax] = obj.ray_sum([0,obj.cut(3)],obj.cut(4),0);
+                t0 = (log10(obj.nelements(:,2))-rmax(:,1)).*...
+                    (log10(obj.nelements(:,4))-log10(obj.nelements(:,3)));
                         % upper rectangle
-                t1 = (r_min(:,2)-log10(obj.nelements(:,3))).*...
-                    (r_max(:,1)-log10(obj.nelements(:,1)));
+                t1 = (rmin(:,2)-log10(obj.nelements(:,3))).*...
+                    (rmax(:,1)-log10(obj.nelements(:,1)));
                         % left rectangle
-                t2 = 1/2.*(r_max(:,1)-r_min(:,1)).*...
-                    (r_max(:,2)-r_min(:,2));
+                t2 = 1/2.*(rmax(:,1)-rmin(:,1)).*...
+                    (rmax(:,2)-rmin(:,2));
                         % lower, right triangle
                 dr = dr.*(t0+t1+t2)./dr0; % accounts for element that are discected twice
             end
@@ -732,7 +732,11 @@ methods
                 'correct proportions for non-uniform grids.']);
         end
         
-        x = obj.reshape(x.*dr./obj.full2partial(dr0));
+        mod = min(obj.full2partial(dr0)./dr,1e2);
+            % rewieght according to element size (for partial grids only)
+            % limit modification limit to 100x
+            
+        x = obj.reshape(x.*mod);
             % reshape, multiplied factor accounts for size of elements
         
         %-- Plot -------------------------------%
@@ -1003,7 +1007,7 @@ methods
         else
             tup = obj.nelements(:,[1,4]);
         end
-        tup = tup+1e-10.*tup.*[-1,1];
+        tup = tup+abs(1e-3.*mean(tup(2:end,:)-tup(1:(end-1),:))).*[1,0];
             % avoids minimially overlapping elements
         
         f_missing = tup(:,1)>(tup(:,2).*slope0+b0);
@@ -1017,7 +1021,7 @@ methods
         else
             tlow = obj.nelements(:,[2,3]);
         end
-        tlow = tlow+1e-10.*tlow.*[1,-1];
+        tlow = tlow+abs(1e-3.*mean(tlow(2:end,:)-tlow(1:(end-1),:))).*[-1,0];
             % avoids minimially overlapping elements
         
         if ~isinf(r1)
