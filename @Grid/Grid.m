@@ -732,8 +732,8 @@ methods
                 'correct proportions for non-uniform grids.']);
         end
         
-        mod = min(obj.full2partial(dr0)./dr,1e2);
-            % rewieght according to element size (for partial grids only)
+        mod = 1; % min(obj.full2partial(dr0)./dr,1e2);
+            % used to rewieght according to element size (for partial grids only)
             % limit modification limit to 100x
             
         x = obj.reshape(x.*mod);
