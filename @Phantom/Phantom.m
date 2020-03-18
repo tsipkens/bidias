@@ -30,7 +30,7 @@ end
 methods
     %== PHANTOM ======================================================%
     %   Intialize phantom object.
-    %-----------------------------------------------------------------%
+    % 
     % Inputs:
     %   type        The type of phantom specified as a string
     %               (e.g. 'standard', 'mass-mobility', '1')
@@ -59,13 +59,13 @@ methods
             case {'standard'}
                 n_modes = length(mu_p);
                 if ~iscell(mu_p); n_modes = 1; end
-
+                
                 obj.mu = mu_p;
                 obj.Sigma = Sigma_modes;
                 obj.R = obj.sigma2r(obj.Sigma);
-
-                [obj.modes{1:n_modes}] = 'logn';
-
+                
+                for ii=1:n_modes; obj.modes{ii} = 'logn'; end
+                
                 p = obj.cov2p(obj.mu,obj.Sigma,obj.modes);
                     % mass-mobility equivlanet params.
                 obj.p = obj.fill_p(p); % get mg as well
@@ -76,7 +76,7 @@ methods
                 obj.type = 'mass-mobility';
                 obj.modes = Sigma_modes;
                 obj.p = mu_p;
-
+                
                 if ~any(strcmp('cond-norm',Sigma_modes))
                     [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
                     obj.R = obj.sigma2r(obj.Sigma);
@@ -175,8 +175,9 @@ methods
     %== EVAL =========================================================%
     %   Generates a distribution from the phantom mean and covariance.
     %   Author:  Timothy Sipkens, 2019-10-29
-    %   NOTE: Does not work for conditionally-normal distributions
-    %         (which cannot be defined with mu and Sigma).
+    %
+    %   Note: This method does not work for conditionally-normal distributions
+    %       (which cannot be defined with mu and Sigma).
     function [x] = eval(obj,mu,Sigma,grid)
         
         if ~exist('grid','var'); grid = []; end
@@ -258,12 +259,24 @@ end
 
 
 methods (Static)
-    %== PRESET_PHANTOMS ==============================================%
+    %== PRESET_PHANTOMS (External definition) ========================%
     % Returns a set of parameters for preset/sample phantoms.
-    % Definition is in an external function.
     [p,modes,type] = presets(obj,type);
     %=================================================================%
-
+    
+    %== FIT (External definition) ====================================%
+    % Fits a phantom to a given set of data, x, defined on a given grid, 
+    % or vector of elements. Outputs a fit phantom object.
+    [phantom,N] = fit(x,vec_grid);
+    %=================================================================%
+    
+    %== FIT2 (External definition) ===================================%
+    % Fits a multimodal phantom object to a given set of data, x, 
+    % defined on a given grid or vector of elements. Outputs a fit phantom object.
+    [phantom,N] = fit2(x,vec_grid,nmodes,logr0);
+    %=================================================================%
+    
+    
 
     %== FILL_P =======================================================%
     %   Generates the remainder of the components of p.
@@ -404,56 +417,7 @@ methods (Static)
         end
     end
     %=================================================================%
-
-
-
-    %== FIT ==========================================================%
-    %   Fits a phantom to a given set of data, x, defined on a given
-    %   grid. Outputs a fit phantom object.
-    %-----------------------------------------------------------------%
-    % Inputs:
-    %   x - input data (2D distribution data)
-    %   grid - 'Grid' object on which input data is evaluated
-    %-----------------------------------------------------------------%
-    function [phantom,N] = fit(x,vec1_grid,vec2)
-        
-        disp('Fitting phantom object...');
-        
-        %-- Parse inputs ---------------------------------------------%
-        if isa(vec1_grid,'Grid')
-            grid = vec1_grid;
-            [~,vec1,vec2] = grid.vectorize();
-        else
-            vec1 = vec1_grid(:);
-            vec2 = vec2(:);
-            grid = [min(vec1),max(vec1);min(vec2),max(vec2)];
-                % specify a span for a grid
-        end
-        %-------------------------------------------------------------%
-        
-        
-        corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
-        
-        fun_pha = @(y) y(1).*mvnpdf(log10([vec1,vec2]),[y(2),y(3)],...
-            corr2cov([y(4),y(5)],[1,y(6);y(6),1]));
-        y0 = [max(x),0,2.3,0.6,0.25,0.97];
-            % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
-        
-        y1 = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
-            [0,-10,-10,0,0,-1],[inf,10,10,10,3,1]);
-        
-        mu = [y1(2),y1(3)];
-        sigma = [y1(4),y1(5)];
-        Sigma = corr2cov(sigma,[1,y1(6);y1(6),1]);
-        
-        phantom = Phantom('standard',grid,mu,Sigma);
-        phantom.type = 'standard-fit';
-        
-        N = y1(1); % scaling parameter denoting total number of particles
-        disp('Complete.');
-        disp(' ');
-    end
-    %=================================================================%
+    
 end
 
 end
