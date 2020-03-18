@@ -10,6 +10,8 @@ results/
 main_x_fn18_invert.m
 main_x_fn18_post.m
 main_x_ua19_salt.m
+main_x_ua19_salt_invert1.m
+main_x_ua19_salt_invert2.m
 main_x_ua19_salt_post.m
 main_x_gra_test.m
 main_x_gra.m

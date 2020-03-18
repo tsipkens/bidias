@@ -744,7 +744,7 @@ methods
             imagesc(obj.edges{2},obj.edges{1},x);
             set(gca,'YDir','normal');
         else % plot as contourf
-            contourf(obj.edges{2},obj.edges{1},x,15,'EdgeColor','none');
+            contourf(obj.edges{2},obj.edges{1},x,35,'EdgeColor','none');
         end
         
         %-- Adjust tick marks for log scale ----%

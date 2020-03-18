@@ -20,8 +20,8 @@ prop.rho0 = pi*1000/6; % ~524;
 prop.Dm = 3;
 
 %-- For soot --%
-% prop.mass_mob_pref = 0.0612;
-% prop.mass_mob_exp = 2.48;
+% prop.rho0 = 0.0612;
+% prop.Dm = 2.48;
 
 switch opts
     
@@ -58,6 +58,17 @@ switch opts
         prop.omega_hat = 32/33; % ratio of angular speed
         prop.rho0 = pi*1000/6; % ~524;
         prop.Dm = 3;
+        
+    case {'soot-salt'}
+        prop.r1 = 0.06; % inner electrode radius [m]
+        prop.r2 = 0.061; % outer electrode radius [m]
+        prop.L = 0.2; % length of chamber [m]
+        prop.p = 1; % pressure [atm]
+        prop.T = 293; % system temperature [K]
+        prop.Q = 0.3/1000/60; % volume flow rate (m^3/s) (prev: ~1 lpm)
+        prop.omega_hat = 32/33; % ratio of angular speed
+        prop.rho0 = 0.0612; % ~524;
+        prop.Dm = 2.48;
         
     %-- APM parameters from Ehara et al. -------------%
     case 'ehara'
