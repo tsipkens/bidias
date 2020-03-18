@@ -246,10 +246,17 @@ methods
     function [phantom] = mass2rho(obj,grid_rho)
 
         A = [1,-3;0,1]; % corresponds to mass-mobility relation
-
-        mu_rhod = (A*obj.mu'+[log10(6/pi)+9;0])';
-        Sigma_rhod = A*obj.Sigma*A';
-
+        
+        if obj.n_modes==1 % for unimodal phantom
+            mu_rhod = (A*obj.mu'+[log10(6/pi)+9;0])';
+            Sigma_rhod = A*obj.Sigma*A';
+        else% for a multimodal phantom
+            for ii=1:obj.n_modes
+                mu_rhod{ii} = (A*obj.mu{ii}'+[log10(6/pi)+9;0])';
+                Sigma_rhod{ii} = A*obj.Sigma{ii}*A';
+            end
+        end
+        
         phantom = Phantom('standard',grid_rho,mu_rhod,Sigma_rhod);
 
     end
