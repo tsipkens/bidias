@@ -274,13 +274,13 @@ methods (Static)
     %== FIT (External definition) ====================================%
     % Fits a phantom to a given set of data, x, defined on a given grid, 
     % or vector of elements. Outputs a fit phantom object.
-    [phantom,N] = fit(x,vec_grid);
+    [phantom,N] = fit(x,vec_grid,logr0);
     %=================================================================%
     
     %== FIT2 (External definition) ===================================%
     % Fits a multimodal phantom object to a given set of data, x, 
     % defined on a given grid or vector of elements. Outputs a fit phantom object.
-    [phantom,N] = fit2(x,vec_grid,nmodes,logr0);
+    [phantom,N] = fit2(x,vec_grid,n_modes,logr0);
     %=================================================================%
     
     
