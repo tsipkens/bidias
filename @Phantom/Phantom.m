@@ -75,7 +75,7 @@ methods
                                    % sepcified using a p structure
                 obj.type = 'mass-mobility';
                 obj.modes = Sigma_modes;
-                obj.p = mu_p;
+                obj.p = obj.fill_p(mu_p); % fill out p structure
                 
                 if ~any(strcmp('cond-norm',Sigma_modes))
                     [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
@@ -295,14 +295,25 @@ methods (Static)
         
         %-- Assign other parameters of distribution ------------------%
         for ll=1:n_modes % loop through distribution modes
+            
+            %-- Handle mg/rhog ------------%
             if ~isfield(p(ll),'rhog'); p(ll).rhog = []; end
             if isempty(p(ll).rhog)
                 p(ll).rhog = p(ll).mg/(1e-9*pi/6*p(ll).dg^3);
             end
-            
             p(ll).mg = 1e-9*p(ll).rhog*pi/6*...
                 (p(ll).dg^3); % geometric mean mass in fg
             
+            %-- Handle sm/smd -------------%
+            if ~isfield(p(ll),'smd'); p(ll).smd = []; end
+            if isempty(p(ll).smd)
+                p(ll).smd = 10^sqrt(log10(p(ll).sm)^2 - ...
+                    p(ll).Dm^2*log10(p(ll).sg)^2);
+            end
+            p(ll).sm = 10^sqrt(log10(p(ll).smd)^2+...
+                p(ll).Dm^2*log10(p(ll).sg)^2);
+            
+            %-- Other parameters ----------%
             p(ll).rho_100 = p(ll).rhog*(100/p(ll).dg)^(p(ll).Dm-3);
             p(ll).m_100 = 1e-9*p(ll).rho_100*pi/6*100^3;
             p(ll).rhog = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
