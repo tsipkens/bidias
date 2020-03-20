@@ -287,6 +287,7 @@ methods (Static)
 
     %== FILL_P =======================================================%
     %   Generates the remainder of the components of p.
+    %   Requires a minimum of: 
     %   Author:  Timothy Sipkens, 2019-10-30
     function p = fill_p(p)
         
@@ -294,15 +295,15 @@ methods (Static)
         
         %-- Assign other parameters of distribution ------------------%
         for ll=1:n_modes % loop through distribution modes
+            if ~isfield(p(ll),'rhog'); p(ll).rhog = []; end
+            if isempty(p(ll).rhog)
+                p(ll).rhog = p(ll).mg/(1e-9*pi/6*p(ll).dg^3);
+            end
+            
             p(ll).mg = 1e-9*p(ll).rhog*pi/6*...
                 (p(ll).dg^3); % geometric mean mass in fg
-
-            if ~isfield(p,'rhog'); p.rho = []; end
-
-            if ~isempty(p(ll).rhog) % use effective density at dg
-                p(ll).rho_100 = p(ll).rhog*(100/p(ll).dg)^(p(ll).Dm-3);
-            end
-
+            
+            p(ll).rho_100 = p(ll).rhog*(100/p(ll).dg)^(p(ll).Dm-3);
             p(ll).m_100 = 1e-9*p(ll).rho_100*pi/6*100^3;
             p(ll).rhog = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
             p(ll).k = p(ll).m_100/(100^p(ll).Dm);
