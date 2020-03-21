@@ -392,17 +392,15 @@ Transfer function evaluation for a PMA can proceed using one of two inputs eithe
 ##### 4.1.1 sp
 
 The `sp` or setpoint structure is a structured array containing the information
-necessary to define the PMA setpoints. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `get_setpoint` function included with the `tfer_pma` package described below. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including
-mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`;
-the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
+necessary to define the PMA setpoints. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `get_setpoint` function included with the `tfer_pma` package described below. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
-| Fields  | m_star    | V      | Rm | omega | omega1 | omega2 | alpha | beta  | m_max    |
-| ------- | --------- | ------ | -- | ----- | ------ | ------ | ----- | ----- | -------- |
-| 1       | 4.51e-19  |	81.638 | 3  | 692.6 | 703.4  | 682.0 |	47.91 |	2.359 |	6.01e-19 |
-| 2       | 7.67e-19  |	110.68 | 3  | 618.3 | 627.9  | 608.9 |	42.77 |	2.106 |	1.02e-18 |
-| 3       | 1.30e-18  |	148.76 | 3  | 549.5 | 558.1  | 541.2 |	38.01 |	1.872 |	1.74e-18 |
-| 4       | 2.22e-18  |	198.02 | 3  | 486.1 | 493.7  | 478.7 |	33.63 |	1.656 |	2.96e-18 |
-| ... |
+| Fields  | m_star    | V      | Rm  | omega | omega1 | omega2 | alpha | beta  | m_max    |
+| ------- | :-------: | :----: | :-: | :---: | :----: | :----: | :---: | :---: | :------: |
+| 1       | 4.51×10<sup>-19</sup> |	81.638 | 3  | 692.6 | 703.4  | 682.0 |	47.91 |	2.359 |	6.01×10<sup>-18</sup> |
+| 2       | 7.67×10<sup>-19</sup> |	110.68 | 3  | 618.3 | 627.9  | 608.9 |	42.77 |	2.106 |	1.02×10<sup>-18</sup> |
+| 3       | 1.30×10<sup>-18</sup> |	148.76 | 3  | 549.5 | 558.1  | 541.2 |	38.01 |	1.872 |	1.74×10<sup>-18</sup> |
+| 4       | 2.22×10<sup>-18</sup> |	198.02 | 3  | 486.1 | 493.7  | 478.7 |	33.63 |	1.656 |	2.96×10<sup>-18</sup> |
+| ... ||||||||||
 
 As an example, the array can be generated from a vector of mass setpoints assuming
 a resolution of *R*<sub>m</sub> = 10 and PMA properties specified in `prop_pma` using:
