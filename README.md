@@ -48,10 +48,7 @@ e.g. particle mobility diameter). In this case, we define a global index for the
 
 ![](https://latex.codecogs.com/svg.latex?x_j=p(a_j,b_j))
 
-This results is a vector with *n*<sub>a</sub> x *n*<sub>b</sub> total entries.
-This vectorized form is chosen over a two-dimensional **x** so that the problem can be
-represented as a linear system of equations.
-Here, the solution is assumed to be uniform within each element, in which case
+This results is a vector with *n*<sub>a</sub> x *n*<sub>b</sub> total entries. This vectorized form is chosen over a two-dimensional **x** so that the problem can be represented as a linear system of equations. Here, the solution is assumed to be uniform within each element, in which case
 
 ![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum_{j=1}^{n_a\cdot{n_b}}{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
 
@@ -60,13 +57,11 @@ in [*a*,*b*]<sup>T</sup> space). This results is a linear system of equations of
 
 ![](https://latex.codecogs.com/svg.latex?{\mathbf{b}}={\mathbf{Ax}}+{\mathbf{e}})
 
-where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*);
-**A** is a discrete form of the kernel,
+where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*); **A** is a discrete form of the kernel,
 
 ![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
 
-and **e** is a vector of measurement errors that
-corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
+and **e** is a vector of measurement errors that corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
 
 
 ## 2. Scripts in upper directory
@@ -530,18 +525,11 @@ who used a Twomey-type approach to derive two-dimensional mass-mobility
 distributions. Much of the code from that work has been significantly
 modified in this distribution.
 
-Also included is a reference to code designed to quickly evaluate
-the transfer function of particle mass analyzers (e.g. APM, CPMA) by
-[Sipkens et al. (2020b)][2_AST]. See the parallel repository
-parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma)
-for more details.  
+Also included is a reference to code designed to quickly evaluate the transfer function of particle mass analyzers (e.g. APM, CPMA) by [Sipkens et al. (2020b)][2_AST]. See the parallel repository parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) for more details.  
 
-The authors would also like to thank @sgrauer
-for consulting on small pieces of this code (such as the MART code
-and the `textbar` function).
+The authors would also like to thank [@sgrauer][https://github.com/sgrauer] for consulting on small pieces of this code (such as the MART code and the `tools.textbar` function).
 
-Information on the provided colormaps can be found in an associated
-README in the `cmap` folder.
+Information on the provided colormaps can be found in an associated README in the `cmap` folder.
 
 #### References
 
