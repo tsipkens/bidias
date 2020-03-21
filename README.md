@@ -527,7 +527,7 @@ modified in this distribution.
 
 Also included is a reference to code designed to quickly evaluate the transfer function of particle mass analyzers (e.g. APM, CPMA) by [Sipkens et al. (2020b)][2_AST]. See the parallel repository parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) for more details.  
 
-The authors would also like to thank [@sgrauer][https://github.com/sgrauer] for consulting on small pieces of this code (such as the MART code and the `tools.textbar` function).
+The authors would also like to thank [@sgrauer](https://github.com/sgrauer) for consulting on small pieces of this code (such as the MART code and the `tools.textbar` function).
 
 Information on the provided colormaps can be found in an associated README in the `cmap` folder.
 
