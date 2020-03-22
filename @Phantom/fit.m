@@ -6,13 +6,17 @@
 %   x           Input data (2D distribution data)
 %   vec_grid    A `Grid` object on which input data is defined or a vector
 %               of the coordiantes of the elements
+%   logr0       Initial guess for center of each mode, expressed as a vector:
+%               logr0 = [dim1_mode1,dim2_mode1,dim1_mode2,dim2_mode2,...]
 %
 % Outputs: 
-%   phantom     Output phantom object representing a fit bivariate lognormal.
-%   N           Scaling parameter that acts to scale the phantom to the data.
+%   phantom     Output phantom object representing a fit bivariate lognormal
+%   N           Scaling parameter that acts to scale the phantom to the data
+%   y_out       Direct output from the fitting procedure
+%   J           Jacobian of fitting procedure
 %=============================================================%
 
-function [phantom,N] = fit(x,vec_grid,logr0)
+function [phantom,N,y_out,J] = fit(x,vec_grid,logr0)
 
 disp('Fitting phantom object...');
 
@@ -41,7 +45,7 @@ if ~isempty(logr0) % update centers of distributions, if specified
     y0(2:3) = logr0;
 end
 
-y1 = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
+[y1,~,~,~,~,~,J] = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
     [0,-10,-10,0,0,-1],[inf,10,10,10,3,1]);
 
 mu = [y1(2),y1(3)];
@@ -52,6 +56,8 @@ phantom = Phantom('standard',grid,mu,Sigma);
 phantom.type = 'standard-fit';
 
 N = y1(1); % scaling parameter denoting total number of particles
+y_out = y1;
+
 disp('Complete.');
 disp(' ');
 

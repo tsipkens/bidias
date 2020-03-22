@@ -5,7 +5,7 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Version](https://img.shields.io/badge/Version-2.1+-blue.svg)]()
 
-This program, originally released with [Sipkens et al. (2020a)][1_JAS1],
+This program, originally released with [Sipkens et al. (2020a)][1_JAS1], 
 is designed to invert tandem measurements of aerosol size distributions.
 This includes the inversion of particle mass analyzer-differential mobility analyzer
 (PMA-DMA) data to find the two-dimensional mass-mobility distribution.

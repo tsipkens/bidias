@@ -3,17 +3,21 @@
 %       Outputs a fit phantom object.
 % 
 % Inputs:
-%   x         Input data (2D distribution data)
-%   vec_grid  A `Grid` object on which input data is defined or a vector
-%             of the coordiantes of the elements
-%   n_modes   Number of modes to fit to the data.
+%   x           Input data (2D distribution data)
+%   vec_grid    A `Grid` object on which input data is defined or a vector
+%               of the coordiantes of the elements
+%   n_modes     Number of modes to fit to the data
+%   logr0       Initial guess for center of each mode, expressed as a vector:
+%               logr0 = [dim1_mode1,dim2_mode1,dim1_mode2,dim2_mode2,...]
 %
 % Outputs: 
-%   phantom   Output phantom object representing a fit bivariate lognormal.
-%   N         Scaling parameter that acts to scale the phantom to the data.
+%   phantom     Output phantom object representing a fit bivariate lognormal
+%   N           Scaling parameter that acts to scale the phantom to the data
+%   y_out       Direct output from the fitting procedure
+%   J           Jacobian of fitting procedure
 %=============================================================%
 
-function [phantom,N] = fit2(x,vec_grid,n_modes,logr0)
+function [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0)
 
 disp('Fitting phantom object...');
 
@@ -35,7 +39,7 @@ if ~exist('logr0','var'); logr0 = []; end
 corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
 
 y0 = [];
-y1 = [];
+sy = [];
 yup = [];
 ylow = [];
 for ii=1:n_modes
@@ -50,27 +54,30 @@ if ~isempty(logr0) % update centers of distributions, if specified
     y0(3:6:end) = logr0(2:2:end);
 end
 for ii=1:n_modes % prior std. dev.
-    y1 = [y1,inf,1e-2.*y0(6*(ii-1)+[2,3]),y0(6*(ii-1)+[4,5]),10];
+    sy = [sy,inf,1e-2.*y0(6*(ii-1)+[2,3]),y0(6*(ii-1)+[4,5]),10];
         % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
 end
 
 % opts = optimoptions(@lsqnonlin,'MaxFunctionEvaluations',1e4,'MaxIterations',1e3);
-% y2 = lsqnonlin(@(y) fun_pha(y,vec1,vec2,n_modes,corr2cov)-...
+% y1 = lsqnonlin(@(y) fun_pha(y,vec1,vec2,n_modes,corr2cov)-...
 %     x, y0, ylow, yup);
-y2 = lsqnonlin(@(y) [max(log(fun_pha(y,vec1,vec2,n_modes,corr2cov)),max(log(x)-4))-...
+[y1,~,~,~,~,~,J] = ...
+    lsqnonlin(@(y) [max(log(fun_pha(y,vec1,vec2,n_modes,corr2cov)),max(log(x)-4))-...
     max(log(x),max(log(x)-4));...
-    (y-y0)'./y1'], y0, ylow, yup);
+    (y-y0)'./sy'], y0, ylow, yup);
 
 for ii=0:(n_modes-1)
-    mu{ii+1} = [y2(6*ii+2),y2(6*ii+3)];
-    sigma{ii+1} = [y2(6*ii+4),y2(6*ii+5)];
-    Sigma{ii+1} = corr2cov(sigma{ii+1},[1,sin(y2(6*ii+6));sin(y2(6*ii+6)),1]);
+    mu{ii+1} = [y1(6*ii+2),y1(6*ii+3)];
+    sigma{ii+1} = [y1(6*ii+4),y1(6*ii+5)];
+    Sigma{ii+1} = corr2cov(sigma{ii+1},[1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
 end
 
 phantom = Phantom('standard',grid,mu,Sigma);
 phantom.type = 'standard-fit';
 
-N = exp(y2(1:6:end)); % scaling parameter denoting total number of particles
+N = exp(y1(1:6:end)); % scaling parameter denoting total number of particles
+y_out = y1;
+
 disp('Complete.');
 disp(' ');
 
