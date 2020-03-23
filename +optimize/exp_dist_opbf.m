@@ -1,5 +1,6 @@
 
 % EXP_DIST_OPBF  Approximates optimal prior parameter set using the brute force method.
+% Brute force method is applied over multiple parameters.
 % Author: Timothy Sipkens, 2019-12
 % 
 % Inputs:

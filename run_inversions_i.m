@@ -1,6 +1,6 @@
 
-% RUN_INVERSIONS_I  Optimize exponential dist. reg. wrt lambda.
-% Author:           Timothy Sipkens, 2019-05-28
+% RUN_INVERSIONS_I  Optimize exponential distance regularization w.r.t. lambda.
+% Author: Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
 if iscell(phantom.Sigma)
@@ -8,9 +8,6 @@ if iscell(phantom.Sigma)
 else
     Gd = phantom.Sigma;
 end
-
-% [~,Gd] = phantom.p2cov(phantom.p,phantom.modes);
-% Gd = Gd{2};
 
 [x_ed_lam,lambda_ed_lam,out_ed_lam] = ...
     optimize.exp_dist_op(...

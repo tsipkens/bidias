@@ -1,8 +1,11 @@
 
 % EXP_DIST_OP1D  Single parameter sensitivity study for exponential distance regularization.
+% Optimized with respect to parameters other than lambda (which is
+% is optimized by 'exp_dist_op').
+% Author: Timothy Sipkens, 2019-12-20
 %=========================================================================%
 
-function [output] = exp_dist_op1d(A,b,lambda,Gd,d_vec,m_vec,x_ex,xi,solver,type)
+function [x,output] = exp_dist_op1d(A,b,lambda,Gd,grid_vec2,vec1,x_ex,xi,solver,type)
 
 %-- Parse inputs ---------------------------------------------%
 if ~exist('solver','var'); solver = []; end
@@ -33,7 +36,7 @@ end
 %-------------------------------------%
 
 
-disp('Optimizing exponential distance regularization:');
+disp(['Optimizing exp. dist. regularization for ',type,'...']);
 tools.textbar(0);
 for ii=length(beta_vec):-1:1
     
@@ -57,7 +60,7 @@ for ii=length(beta_vec):-1:1
     
     %-- Perform inversion --%
     [output(ii).x,~,Lpr] = invert.exp_dist(...
-        A,b,lambda,Gd_alt,d_vec,m_vec,xi,solver);
+        A,b,lambda,Gd_alt,grid_vec2,vec1,xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error --%
     if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
@@ -70,6 +73,13 @@ for ii=length(beta_vec):-1:1
     tools.textbar((length(beta_vec)-ii+1)/length(beta_vec));
 end
 
+
+if ~isempty(x_ex)
+    [~,ind_min] = min([output.chi]);
+else
+    [~,ind_min] = max([output.B]);
+end
+x = output(ind_min).x;
 
 end
 

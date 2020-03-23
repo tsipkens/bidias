@@ -1,26 +1,30 @@
 
-% EXP_DIST_OP  Finds optimal lambda for exponential distance solver.
+% EXP_DIST_OP  Approximates optimal lambda for exponential distance solver.
+% Uses a brute force / simple discretization method over the supplied 
+% 'span' for lambda.
 % Author: Timothy Sipkens, 2019-12-19
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
-%   A       Model matrix
-%   b       Data
-%   n       Length of first dimension of solution
-%   lambda  Regularization parameter
-%   span    Range for 1/Sf, two entry vector
-%   x_ex    Exact distribution project to current basis
-%   Lex     Transformation to rotate space (Optional, default is indentity matrix)
-%   xi      Initial guess for solver    (Optional, default is zeros)
-%   solver  Solver                      (Optional, default is interior-point)
+%   A           Model matrix or Lb*A
+%   b           Data or Lb*b
+%   lambda      Regularization parameter
+%   Gd          Mass-mobility covariance matrix, used to calculate
+%               Mahalanobis distance (Optional, default: identity matrix)
+%   grid_vec2	Position of elements in mobility space, grid.elements(:,2)
+%   vec1        Position of elements in mass space, grid.elements(:,1)
+%   x_ex        Exact distribution project to current basis (Optional, default is empty)
+%   xi          Initial guess for solver    (Optional, default is ones)
+%   solver      Solver                      (Optional, default is interior-point)
 %
 % Outputs:
-%   x       Regularized estimate
-%   lambda  Semi-optimal regularization parameter
-%           (against exact solution if x_ex is specified or using Bayes factor)
-%   output  Output structure with information for a range of the regularization parameter
+%   x           Regularized estimate
+%   lambda      Semi-optimal regularization parameter
+%               (against exact solution if x_ex is specified or using Bayes factor)
+%   output      Output structure with information for a range of the 
+%               regularization parameter
 %=========================================================================%
 
-function [x,lambda,output] = exp_dist_op(A,b,span,Gd,d_vec,m_vec,x_ex,xi,solver,n)
+function [x,lambda,output] = exp_dist_op(A,b,span,Gd,grid_vec2,vec1,x_ex,xi,solver,n)
 
 
 %-- Parse inputs ---------------------------------------------%
@@ -41,10 +45,10 @@ if isempty(n); n = 30; end % default number of lambda entries to consider
 
 lambda = logspace(log10(span(1)),log10(span(2)),n);
 
-Lpr = invert.exp_dist_lpr(Gd,d_vec,m_vec); % same structure throughout
+Lpr = invert.exp_dist_lpr(Gd,grid_vec2,vec1); % same structure throughout
 [~,~,~,S1,S2] = gsvd(full(A),full(Lpr)); % pre-compute GSVD
 
-disp('Optimizing exponential distance regularization:');
+disp('Optimizing exp. dist. regularization for lambda...');
 tools.textbar(0);
 for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     %-- Store case parameters ----------------------%
@@ -55,7 +59,7 @@ for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     
     %-- Perform inversion --------------------------%
     output(ii).x = invert.exp_dist(...
-        A,b,lambda(ii),Gd,d_vec,m_vec,xi,solver);
+        A,b,lambda(ii),Gd,grid_vec2,vec1,xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error ---------%
     if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
@@ -70,6 +74,8 @@ for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     tools.textbar((length(lambda)-ii+1)/length(lambda));
 end
 
+
+%-- Specify output ----------------------------------%
 if ~isempty(x_ex)
     [~,ind_min] = min([output.chi]);
 else

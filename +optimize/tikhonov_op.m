@@ -38,7 +38,7 @@ x_length = size(A,2);
 
 Lpr0 = invert.tikhonov_lpr(order,n_grid,x_length); % get Tikhonov matrix
 
-disp('Pre-computing GSV...');
+disp('Pre-computing generalized SVD...');
 [~,~,~,S1,S2] = gsvd(full(A),full(Lpr0));
     % pre-compute gsvd for Bayes factor calculation
 disp('Complete.');

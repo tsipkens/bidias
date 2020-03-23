@@ -1,6 +1,6 @@
 
-% RUN_INVERSIONS_G  Optimize exponential rotated and Tikhonov regularization.
-% Author:           Timothy Sipkens, 2019-05-28
+% RUN_INVERSIONS_G  Optimize exponential distance and 1st-order Tikhonov regularization.
+% Author: Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
 %-- Tikhonov (1st order) -----%

@@ -135,7 +135,7 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %-{
-%-- Plot posterior uncertainties ---------%
+%-- Plot posterior uncertainties ------------------------------------%
 %-- Tikhonov --%
 % [~,spo] = tools.get_posterior(...
 %     A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
@@ -143,7 +143,6 @@ caxis([0,cmax*(1+1/256)]);
 % colormap(gcf,cm_alt);
 % grid_x.plot2d(spo);
 % colorbar;
-
 
 
 %-- Exponential distance --%
