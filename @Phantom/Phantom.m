@@ -75,6 +75,7 @@ methods
                     % mass-mobility equivlanet params.
                 obj.p = obj.fill_p(p); % get mg as well
                 
+                
             %-- OPTION 2: Using a mass-mobility parameter set (p) ----%
             case {'mass-mobility'} % for custom mass-mobility phantom
                                    % sepcified using a p structure
@@ -86,6 +87,7 @@ methods
                     [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
                     obj.R = obj.sigma2r(obj.Sigma);
                 end
+                
                 
             %-- OPTION 3: Use a preset or sample distribution --------%
             otherwise % check if type is a preset phantom
@@ -193,6 +195,7 @@ methods
         
         %-- Parse inputs ---------------------------------------------%
         if ~exist('w','var'); w = []; end
+        if isempty(w); w = obj.w; end
         if isempty(w); w = ones(obj.n_modes,1)./obj.n_modes; end
             % weight modes evenly
             
@@ -237,7 +240,8 @@ methods
         
         %-- Parse inputs ---------------------------------------------%
         if ~exist('w','var'); w = []; end
-        if isempty(w); w = ones(length(p),1)./obj.n_modes; end
+        if isempty(w); w = obj.w; end
+        if isempty(w); w = ones(obj.n_modes,1)./obj.n_modes; end
             % weight modes evenly
         
         if ~exist('p','var'); p = []; end
@@ -283,7 +287,43 @@ methods
             % convert to [log10(m),log10(d)]T space
     end
     %=================================================================%
-
+    
+    
+    
+    %== PLUS =========================================================%
+    %   Adds two phantoms.
+    %   Author:  Timothy Sipkens, 2020-03-24
+    function objn = plus(obj1,obj2,w)
+        
+        if ~exist('w','var'); w = []; end
+        if isempty(w); w = [1,1]./2; else; w = w./sum(w); end
+        w = [w(1).*obj1.w(:);w(2).*obj2.w(:)];
+        
+        span = [min(obj1.grid.span(:,1),obj2.grid.span(:,1)),...
+                max(obj1.grid.span(:,2),obj2.grid.span(:,2))];
+                % update span to incorporate both Phantoms
+        
+                
+        if and(~isempty(obj1.mu),~isempty(obj2.mu)) % bivariate lognormal phantoms
+            if ~iscell(obj1.mu); obj1.mu = {obj1.mu}; end
+            if ~iscell(obj1.Sigma); obj1.Sigma = {obj1.Sigma}; end
+            if ~iscell(obj2.mu); obj2.mu = {obj2.mu}; end
+            if ~iscell(obj2.Sigma); obj2.Sigma = {obj2.Sigma}; end
+            
+            objn = Phantom('standard',span,...
+                [obj1.mu,obj2.mu],...
+                [obj1.Sigma,obj2.Sigma],...
+                w);
+            
+            
+        else % at least one mode is not bivariate lognormal
+            objn = Phantom('mass-mobility',span,...
+                [obj1.p(:);obj2.p(:)]',...
+                [obj1.modes,obj2.modes],...
+                w);
+        end
+    end
+    
     
     
     %== MASS2RHO =====================================================%
