@@ -104,8 +104,13 @@ methods
         end
         
         obj.n_modes = length(obj.modes); % get number of modes
-        if isempty(w); obj.w = ones(obj.n_modes,1); else; obj.w = w; end
-            % assign node weightings
+        
+        if isempty(w) % assign mode weightings
+            obj.w = ones(obj.n_modes,1)./obj.n_modes; % evely distribute modes
+        else
+            obj.w = w./sum(w); % normalize weights and assign
+        end
+            
         
         %-- Generate a grid to evaluate phantom on -------------------%
         if isa(span_grid,'Grid') % if grid is specified
@@ -184,10 +189,21 @@ methods
     %
     %   Note: This method does not work for conditionally-normal distributions
     %       (which cannot be defined with mu and Sigma).
-    function [x] = eval(obj,grid)
+    function [x] = eval(obj,grid_vec,w)
         
-        if ~exist('grid','var'); grid = []; end
-        if isempty(grid); grid = obj.grid; end
+        %-- Parse inputs ---------------------------------------------%
+        if ~exist('w','var'); w = []; end
+        if isempty(w); w = ones(obj.n_modes,1)./obj.n_modes; end
+            % weight modes evenly
+            
+        if ~exist('grid','var'); grid_vec = []; end
+        if isempty(grid_vec); grid_vec = obj.grid; end % use phantom grid
+        if isempty(grid_vec); error('For an empty Phantom, grid_vec is required.'); end
+            % if an empty phantom (e.g. Phantom.eval_p(p);)
+        
+        if isa(grid_vec,'Grid'); vec = grid_vec.elements; % get element centers from grid
+        else; vec = grid_vec; % if a set of element centers was provided directly
+        end
         
         if ~iscell(obj.mu); mu0 = {obj.mu};
         else; mu0 = obj.mu;
@@ -196,21 +212,18 @@ methods
         if ~iscell(obj.Sigma); Sigma0 = {obj.Sigma};
         else; Sigma0 = obj.Sigma;
         end
+        %-------------------------------------------------------------%
         
-        if ~exist('w','var'); end
         
-        
-        m_vec = grid.elements(:,1);
-        d_vec = grid.elements(:,2);
+        m_vec = vec(:,1); % element centers in mass
+        d_vec = vec(:,2); % element centers in mobility
 
         %-- Assign other parameters of distribution ------------------%
         x = zeros(size(m_vec));
         for ll=1:obj.n_modes % loop through distribution modes
-            x = x + mvnpdf(log10([m_vec,d_vec]),mu0{ll},Sigma0{ll});
+            x = x + w(ll).*... % add new mode, reweighting accordingly
+                mvnpdf(log10([m_vec,d_vec]),mu0{ll},Sigma0{ll});
         end
-
-        %-- Reweight modes -------------------------------------------%
-        x = x./obj.n_modes;
     end
     %=================================================================%
 
@@ -220,22 +233,31 @@ methods
     %   Generates a distribution from p as required for conditionally-
     %   normal modes.
     %   Author:  Timothy Sipkens, 2019-10-29
-    function [x] = eval_p(obj,p,grid_vec)
+    function [x] = eval_p(obj,p,grid_vec,w)
+        
+        %-- Parse inputs ---------------------------------------------%
+        if ~exist('w','var'); w = []; end
+        if isempty(w); w = ones(length(p),1)./obj.n_modes; end
+            % weight modes evenly
+        
+        if ~exist('p','var'); p = []; end
+        if isempty(p); p = obj.p; end % use p values from given phantom
+        if isempty(p); error('For an empty Phantom, p is required.'); end 
+            % if an empty phantom (e.g. Phantom.eval_p;)
         
         if ~exist('grid','var'); grid_vec = []; end
         if isempty(grid_vec); grid_vec = obj.grid; end % use phantom grid
-        if isempty(grid_vec) % if an empty phantom (e.g. Phantom.eval_p(p);)
-            error(['For an empty Phantom object, one must specify ',...
-                'a grid or set of element centers.']);
-        end
+        if isempty(grid_vec); error('For an empty Phantom, grid_vec is required.'); end
+            % if an empty phantom (e.g. Phantom.eval_p(p);)
         
         if isa(grid_vec,'Grid'); vec = grid_vec.elements; % get element centers from grid
         else; vec = grid_vec; % if a set of element centers was provided directly
         end
+        %-------------------------------------------------------------%
         
-        m_vec = vec(:,1);
-        d_vec = vec(:,2);
         
+        m_vec = vec(:,1); % element centers in mass
+        d_vec = vec(:,2); % element centers in mobility
         
         m_fun = @(d,ll) log(p(ll).m_100.*((d./100).^p(ll).Dm));
             % geometric mean mass in fg as a function of d
@@ -251,12 +273,12 @@ methods
                     exp(m_fun(d_vec,ll)));
             end
             
-            p_temp = lognpdf(d_vec,log(p(ll).dg),log(p(ll).sg)).*p_m;
-            x = x+p_temp;
+            x = x + ...
+                w(ll).*p_m.*...
+                lognpdf(d_vec,log(p(ll).dg),log(p(ll).sg));
         end
         
         %-- Reweight modes and transform to log-log space ------------%
-        x = x./obj.n_modes;
         x = x.*(d_vec.*m_vec).*log(10).^2;
             % convert to [log10(m),log10(d)]T space
     end

@@ -72,6 +72,8 @@ end
     lsqnonlin(@(y) [max(log(fun_pha(y,vec1,vec2,n_modes,corr2cov)),max(log(x)-4))-...
     max(log(x),max(log(x)-4));...
     (y-y0)'./sy'], y0, ylow, yup);
+N = exp(y1(1:6:end)); % scaling parameter denoting total number of particles
+y_out = y1;
 
 for ii=0:(n_modes-1)
     mu{ii+1} = [y1(6*ii+2),y1(6*ii+3)];
@@ -79,11 +81,8 @@ for ii=0:(n_modes-1)
     Sigma{ii+1} = corr2cov(sigma{ii+1},[1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
 end
 
-phantom = Phantom('standard',grid,mu,Sigma);
+phantom = Phantom('standard',grid,mu,Sigma,N);
 phantom.type = 'standard-fit';
-
-N = exp(y1(1:6:end)); % scaling parameter denoting total number of particles
-y_out = y1;
 
 disp('Complete.');
 disp(' ');
