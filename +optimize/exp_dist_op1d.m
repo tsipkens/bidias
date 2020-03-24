@@ -36,7 +36,7 @@ end
 %-------------------------------------%
 
 
-disp(['Optimizing exp. dist. regularization for ',type,'...']);
+disp(['Optimizing exp. dist. regularization w.r.t. ',type,'...']);
 tools.textbar(0);
 for ii=length(beta_vec):-1:1
     

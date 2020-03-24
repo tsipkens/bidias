@@ -7,18 +7,19 @@ classdef Phantom
 
 %-- Phantom properties -----------------------------------------------%
 properties
-    type = [];  % optional name for the phantom
-    modes = {}; % types of distribution for each mode
-    n_modes = []; % number of modes
+    type = [];      % optional name for the phantom
+    modes = {};     % types of distribution for each mode, e.g. {'logn','logn'}
+    n_modes = [];   % number of modes
+    w = [];         % weighting for each mode
 
-    mu = [];    % center of bivariate distribution
-    Sigma = []; % covariance of bivariate distribution
-    R = [];     % correlation matrix
+    mu = [];        % center of bivariate distribution
+    Sigma = [];     % covariance of bivariate distribution
+    R = [];         % correlation matrix
 
-    x = [];     % phantom evaluated on default grid
-    grid = [];  % default grid the phantom is to be represented
-                % on generally a high resolution instance of the
-                % Grid class
+    x = [];         % phantom evaluated on default grid
+    grid = [];      % default grid the phantom is to be represented
+                    % on generally a high resolution instance of the
+                    % Grid class
 
     p struct = struct();
                 % parameters relevant to mass-mobility distributions
@@ -42,14 +43,18 @@ methods
     %   Sigma_modes Either the covariance matrix for the distribution
     %               or the number of modes in the distribution
     %               (e.g. 'logn','cond-norm')
+    %   w           Weights for each mode 
+    %               (Optional: default is ones(n_modes,1);)
     %-----------------------------------------------------------------%
-    function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
+    function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes,w)
         
         %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty phantom
         
         if ~exist('span_grid','var'); span_grid = []; end
         if isempty(span_grid); span_grid = [10^-1.5,10^1.5;20,10^3]; end
+        
+        if ~exist('w','var'); w = []; end
         %-------------------------------------------------------------%
         
         %== Assign parameter values - 3 options ======================%
@@ -99,7 +104,8 @@ methods
         end
         
         obj.n_modes = length(obj.modes); % get number of modes
-        
+        if isempty(w); obj.w = ones(obj.n_modes,1); else; obj.w = w; end
+            % assign node weightings
         
         %-- Generate a grid to evaluate phantom on -------------------%
         if isa(span_grid,'Grid') % if grid is specified
@@ -116,7 +122,7 @@ methods
             obj.x = obj.eval_p(obj.p);
                 % special evaluation for conditional normal conditions
         else
-            obj.x = obj.eval(obj.mu,obj.Sigma);
+            obj.x = obj.eval;
         end
     end
     %=================================================================%
@@ -178,13 +184,20 @@ methods
     %
     %   Note: This method does not work for conditionally-normal distributions
     %       (which cannot be defined with mu and Sigma).
-    function [x] = eval(obj,mu,Sigma,grid)
+    function [x] = eval(obj,grid)
         
         if ~exist('grid','var'); grid = []; end
         if isempty(grid); grid = obj.grid; end
         
-        if ~iscell(mu); mu = {mu}; end
-        if ~iscell(Sigma); Sigma = {Sigma}; end
+        if ~iscell(obj.mu); mu0 = {obj.mu};
+        else; mu0 = obj.mu;
+        end
+        
+        if ~iscell(obj.Sigma); Sigma0 = {obj.Sigma};
+        else; Sigma0 = obj.Sigma;
+        end
+        
+        if ~exist('w','var'); end
         
         
         m_vec = grid.elements(:,1);
@@ -193,7 +206,7 @@ methods
         %-- Assign other parameters of distribution ------------------%
         x = zeros(size(m_vec));
         for ll=1:obj.n_modes % loop through distribution modes
-            x = x + mvnpdf(log10([m_vec,d_vec]),mu{ll},Sigma{ll});
+            x = x + mvnpdf(log10([m_vec,d_vec]),mu0{ll},Sigma0{ll});
         end
 
         %-- Reweight modes -------------------------------------------%
@@ -207,10 +220,22 @@ methods
     %   Generates a distribution from p as required for conditionally-
     %   normal modes.
     %   Author:  Timothy Sipkens, 2019-10-29
-    function [x] = eval_p(obj,p)
+    function [x] = eval_p(obj,p,grid_vec)
         
-        m_vec = obj.grid.elements(:,1);
-        d_vec = obj.grid.elements(:,2);
+        if ~exist('grid','var'); grid_vec = []; end
+        if isempty(grid_vec); grid_vec = obj.grid; end % use phantom grid
+        if isempty(grid_vec) % if an empty phantom (e.g. Phantom.eval_p(p);)
+            error(['For an empty Phantom object, one must specify ',...
+                'a grid or set of element centers.']);
+        end
+        
+        if isa(grid_vec,'Grid'); vec = grid_vec.elements; % get element centers from grid
+        else; vec = grid_vec; % if a set of element centers was provided directly
+        end
+        
+        m_vec = vec(:,1);
+        d_vec = vec(:,2);
+        
         
         m_fun = @(d,ll) log(p(ll).m_100.*((d./100).^p(ll).Dm));
             % geometric mean mass in fg as a function of d
@@ -237,8 +262,8 @@ methods
     end
     %=================================================================%
 
-
-
+    
+    
     %== MASS2RHO =====================================================%
     %   Convert a mass-mobility phantom to an effective density-mobility
     %   phanatom. Output is a new phantom in the transformed space.
@@ -273,14 +298,24 @@ methods (Static)
     
     %== FIT (External definition) ====================================%
     % Fits a phantom to a given set of data, x, defined on a given grid, 
-    % or vector of elements. Outputs a fit phantom object.
+    %   or vector of elements. Outputs a fit phantom object.
     [phantom,N,y_out,J] = fit(x,vec_grid,logr0);
     %=================================================================%
     
     %== FIT2 (External definition) ===================================%
     % Fits a multimodal phantom object to a given set of data, x, 
-    % defined on a given grid or vector of elements. Outputs a fit phantom object.
+    %   defined on a given grid or vector of elements.
+    % Outputs a fit phantom object.
     [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0);
+    %=================================================================%
+    
+    %== FIT2_RHO (External definition) ===============================%
+    % Fits a multimodal phantom object to a given set of data, x, 
+    %   defined on a given grid or vector of elements. 
+    % Outputs a fit phantom object.
+    % Tuned specifically for effective density-mobility distributions
+    %   (e.g. for negative or nearly zero correlation)
+    [phantom,N,y_out,J] = fit2_rho(x,vec_grid,n_modes,logr0);
     %=================================================================%
     
     

@@ -102,6 +102,9 @@ figure(20);
 grid_b.plot2d_sweep(b,cm_b);
 
 
+[pha_b,Nb] = Phantom.fit2(b,grid_b,2,[0,1.7,0.1,2.3]);
+
+
 
 %%
 %== STEP 3: Perform inversions ===========================================%

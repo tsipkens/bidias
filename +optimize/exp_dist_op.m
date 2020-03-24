@@ -48,7 +48,7 @@ lambda = logspace(log10(span(1)),log10(span(2)),n);
 Lpr = invert.exp_dist_lpr(Gd,grid_vec2,vec1); % same structure throughout
 [~,~,~,S1,S2] = gsvd(full(A),full(Lpr)); % pre-compute GSVD
 
-disp('Optimizing exp. dist. regularization for lambda...');
+disp('Optimizing exp. dist. regularization w.r.t. lambda...');
 tools.textbar(0);
 for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     %-- Store case parameters ----------------------%

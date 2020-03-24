@@ -1,5 +1,5 @@
 
-% FIT2  Fits a multimodal phantom to a given set of data, x, defined on a given grid. 
+% FIT2_RHO  Fits a multimodal phantom to a given set of data, x, defined on a given grid. 
 % Optimized for effective density-mobility distributions.
 % Outputs a fit phantom object.
 % Author: Timothy Sipkens, 2020-03-18
@@ -20,7 +20,7 @@
 %   J           Jacobian of fitting procedure
 %=============================================================%
 
-function [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0)
+function [phantom,N,y_out,J] = fit2_rho(x,vec_grid,n_modes,logr0)
 
 disp('Fitting phantom object...');
 
@@ -49,11 +49,11 @@ ylow = [];
 for ii=1:n_modes
     y0 = [y0,...
         log(max(x))-3*(ii-1)/n_modes-3.5,... % scaling of mode
-        0+ii/n_modes,... % center of mode, dim1
+        3+ii/n_modes,... % center of mode, dim1
         1.8+ii/n_modes,... % center of mode, dim2
-        0.4,0.15,0.9]; % std. devs. and correlation
+        0.15,0.15,-0.9]; % std. devs. and correlation
     ylow = [ylow,-inf,-3,-3,0,0,-pi];
-    yup = [yup,inf,5,5,0.8,0.3,pi];
+    yup = [yup,inf,5,5,0.2,0.3,pi];
         % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
 end
 if ~isempty(logr0) % update centers of distributions, if specified
@@ -61,7 +61,7 @@ if ~isempty(logr0) % update centers of distributions, if specified
     y0(3:6:end) = logr0(2:2:end);
 end
 for ii=1:n_modes % prior std. dev.
-    sy = [sy,inf,y0(6*(ii-1)+[4,5]),y0(6*(ii-1)+[4,5]),4];
+    sy = [sy,inf,y0(6*(ii-1)+[4,5]),y0(6*(ii-1)+[4,5]),10];
         % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
 end
 

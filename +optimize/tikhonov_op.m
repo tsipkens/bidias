@@ -44,7 +44,7 @@ disp('Pre-computing generalized SVD...');
 disp('Complete.');
 disp(' ');
 
-disp('Optimizing Tikhonov regularization:');
+disp('Optimizing Tikhonov regularization w.r.t lambda...');
 tools.textbar(0);
 for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     output(ii).lambda = lambda(ii); % store regularization parameter
