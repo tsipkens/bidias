@@ -12,7 +12,7 @@ t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk1 = norm(x0-x_tk1);
+err.tk1 = norm(x0-x_tk1);
 
 
 %%
@@ -26,7 +26,7 @@ x_init = interp2(grid_b.edges{2}',grid_b.edges{1}',...
 x_init(isnan(x_init)) = 0;
 x_init(isinf(x_init)) = 0;
 x_init = sparse(max(0,x_init));
-chi.init = norm(x0-x_init);
+err.init = norm(x0-x_init);
 x_init_m = grid_x.marginalize(x_init);
 
 disp('Performing expectation-maximization (attempt no. 1)...');
@@ -34,7 +34,7 @@ x_em = invert.em(Lb*A,Lb*b,x_init,3,x0);
 disp('Inversion complete.');
 disp(' ');
 
-chi.em = norm(x0-x_em);
+err.em = norm(x0-x_em);
 
 
 
@@ -53,14 +53,14 @@ x_init2 = interp2(grid_b.edges{2}',grid_b.edges{1}',...
 x_init2(isnan(x_init)) = 0;
 x_init2(isinf(x_init2)) = 0;
 x_init2 = sparse(max(0,x_init2));
-chi.init2 = norm(x02-x_init2);
+err.init2 = norm(x02-x_init2);
 
 disp('Performing expectation-maximization (attempt no. 2)...');
 x_em2 = invert.em(Lb*A2,Lb*b,x_init2,250);
 disp('Inversion complete.');
 disp(' ');
 
-chi.em2 = norm(x02-x_em2);
+err.em2 = norm(x02-x_em2);
 
 
 
@@ -74,7 +74,7 @@ x_em3 = invert.em(Lb*A2,Lb*b,x_init3,250);
 disp('Inversion complete.');
 disp(' ');
 
-chi.em3 = norm(x02-x_em3);
+err.em3 = norm(x02-x_em3);
 
 
 
@@ -84,7 +84,7 @@ x_em4 = invert.em(Lb*A,Lb*b,ones(size(x_init)),3,x0);
 disp('Inversion complete.');
 disp(' ');
 
-chi.em4 = norm(x0-x_em4);
+err.em4 = norm(x0-x_em4);
 
 
 

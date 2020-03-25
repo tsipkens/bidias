@@ -10,7 +10,7 @@ grid_x.elements(:,2),grid_x.elements(:,1));
 x_init(isnan(x_init)) = 0;
 x_init(isinf(x_init)) = 0;
 x_init = sparse(max(0,x_init));
-chi.init = norm(x0-x_init);
+err.init = norm(x0-x_init);
 
 
 %% Tikhonov (0th) implementation
@@ -21,7 +21,7 @@ lambda_tk0 = 0.419941123497942;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk0 = norm(x0-x_tk0);
+err.tk0 = norm(x0-x_tk0);
 
 
 %% Tikhonov (1st) implementation
@@ -32,7 +32,7 @@ lambda_tk1 = 0.935436889902617;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk1 = norm(x0-x_tk1);
+err.tk1 = norm(x0-x_tk1);
 
 
 %% Tikhonov (2nd) implementation
@@ -43,7 +43,7 @@ lambda_tk2 = 1.069019204603001;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk2 = norm(x0-x_tk2);
+err.tk2 = norm(x0-x_tk2);
 
 
 %% Twomey
@@ -54,5 +54,5 @@ x_two = invert.twomey(A,b,x_init,500,[],[],1);
 disp('Completed Twomey.');
 disp(' ');
 
-chi.two = norm(x0-x_two);
+err.two = norm(x0-x_two);
 

@@ -9,6 +9,13 @@ else
     Gd = phantom.Sigma;
 end
 
+%-- Gd properties -----------------%
+l1 = sqrt(Gd(1,1));
+l2 = sqrt(Gd(2,2));
+R12 = Gd(1,2)/(l1*l2);
+Dm = Gd(1,2)/Gd(2,2); % s1*R12/s2
+%----------------------------------%
+
 [x_ed_lam,lambda_ed_lam,out_ed_lam] = ...
     optimize.exp_dist_op(...
     Lb*A,Lb*b,[0.1,10],Gd,...
@@ -16,6 +23,6 @@ end
 disp('Process complete.');
 disp(' ');
 
-chi.ed = norm(x_ed_lam-x0);
+err.ed = norm(x_ed_lam-x0);
 
 

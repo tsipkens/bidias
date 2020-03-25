@@ -104,6 +104,13 @@ grid_b.plot2d_sweep(b,cm_b);
 
 [pha_b,Nb] = Phantom.fit2(b,grid_b,2,[0,1.7,0.1,2.3]);
 
+%-- pha_b.Sigma properties --------%
+s1b = sqrt(pha_b.Sigma{1}(1,1));
+s2b = sqrt(pha_b.Sigma{1}(2,2));
+R12b = pha_b.Sigma{1}(1,2)/(s1b*s2b);
+Dmb = pha_b.Sigma{1}(1,2)/pha_b.Sigma{1}(2,2); % also s1*R12/s2
+%----------------------------------%
+
 
 
 %%

@@ -14,7 +14,7 @@ t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-chi.tk1_nn = norm(x0-x_tk1_a);
+err.tk1_nn = norm(x0-x_tk1_a);
 
 
 %-- Exponential rotated ------%
@@ -34,6 +34,6 @@ x_exp_rot_a = invert.exp_dist(...
 disp('Inversion complete.');
 disp(' ');
 
-chi.exp_a = norm(x0-x_exp_rot_a);
+err.exp_a = norm(x0-x_exp_rot_a);
 
 
