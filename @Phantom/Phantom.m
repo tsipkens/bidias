@@ -442,10 +442,12 @@ methods (Static)
     %== COV2P ========================================================%
     %   Function to convert covariance matrix and mean to p.
     %   Author:  Timothy Sipkens, 2019-10-29
-    function [p] = cov2p(mu,Sigma,modes)
+    function [p,Dm,l1,l2] = cov2p(mu,Sigma,modes)
 
         if ~iscell(mu); mu = {mu}; end
         if ~iscell(Sigma); Sigma = {Sigma}; end
+        if ~exist('modes','var'); modes = [];end
+        if isempty(modes); modes = repmat({'logn'},[1,length(mu)]); end
 
         p = [];
         for ll=length(mu):-1:1 % loop through modes
@@ -475,8 +477,11 @@ methods (Static)
 
             p(ll).rhog = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
         end
-
+        
         p = Phantom.fill_p(p);
+        Dm = [p.Dm];
+        l1 = log10([p.sm]);
+        l2 = log10([p.sg]);
     end
     %=================================================================%
 
