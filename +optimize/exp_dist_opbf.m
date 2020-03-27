@@ -48,13 +48,13 @@ vec_ld = vec_ld(:);
 vec_corr = vec_corr(:);
 
 tools.textbar(0);
-output(length(vec_lambda)).chi = [];
+output(length(vec_lambda)).eps = [];
 for ii=1:length(vec_lambda)
     y = [vec_lambda(ii),vec_ratio(ii),vec_ld(ii),vec_corr(ii)];
     
     output(ii).x = invert.exp_dist(...
         A,b,y(1),Gd_fun(y),d_vec,m_vec,xi,solver);
-    output(ii).chi = norm(output(ii).x-x_ex);
+    output(ii).eps = norm(output(ii).x-x_ex); % Euclidean error
     
     output(ii).lambda = vec_lambda(ii);
     output(ii).ratio = vec_ratio(ii);
@@ -69,7 +69,7 @@ end
 
 tools.textbar(1);
 
-[~,ind_min] = min([output(ii).chi]);
+[~,ind_min] = min([output(ii).eps]);
 x = out(ind_min).x;
 lambda = out(ind_min).lambda;
 

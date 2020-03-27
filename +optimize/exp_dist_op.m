@@ -62,7 +62,7 @@ for ii=length(lambda):-1:1 % reverse loop to pre-allocate
         A,b,lambda(ii),Gd,grid_vec2,vec1,xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error ---------%
-    if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
+    if ~isempty(x_ex); output(ii).eps = norm(output(ii).x-x_ex); end
     output(ii).Axb = norm(A*output(ii).x-b);
     
     %-- Compute credence, fit, and Bayes factor ----%
@@ -77,7 +77,7 @@ end
 
 %-- Specify output ----------------------------------%
 if ~isempty(x_ex)
-    [~,ind_min] = min([output.chi]);
+    [~,ind_min] = min([output.eps]); % use Euclidean error
 else
     [~,ind_min] = max([output.B]);
 end

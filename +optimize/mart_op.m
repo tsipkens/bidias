@@ -27,13 +27,13 @@ output(length(iter_vec)).iter_vec = [];
 
 output(1).iter_vec = iter_vec(1);
 output(1).x = invert.mart(A,b,xi,iter_vec(1));
-output(1).chi = norm(output(1).x-x_ex);
+output(1).eps = norm(output(1).x-x_ex); % Euclidean error
 tools.textbar(1/length(iter_vec));
 
 for ii=2:length(iter_vec)
     output(ii).iter_vec = ii;
     output(ii).x = invert.mart(A,b,output(ii-1).x,iter_vec(ii)-iter_vec(ii-1));
-    output(ii).chi = norm(output(ii).x-x_ex);
+    output(ii).eps = norm(output(ii).x-x_ex); % Euclidean error
     
     if any(isnan(output(ii).x)); break; end
         % if NaN is encountered exit function (warning thrown my MART)

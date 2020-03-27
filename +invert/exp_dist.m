@@ -22,6 +22,7 @@
 
 function [x,D,Lpr0,Gpo_inv] = exp_dist(A,b,lambda,Gd,grid_vec2,vec1,xi,solver)
 
+if ~exist('vec1','var'); vec1 = []; end
 
 x_length = length(A(1,:));
 

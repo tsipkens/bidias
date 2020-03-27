@@ -12,7 +12,7 @@ x_init = interp2(grid_b.edges{2}',grid_b.edges{1}',...
 x_init(isnan(x_init)) = 0;
 x_init(isinf(x_init)) = 0;
 x_init = sparse(max(0,x_init));
-err.init = 100*norm(x0-x_init)/norm(x0);
+eps.init = 100*norm(x0-x_init)/norm(x0);
 x_init_m = grid_x.marginalize(x_init);
 
 
@@ -23,7 +23,7 @@ x_lsq = invert.lsq(Lb*A,Lb*b);
 disp('Inversion complete.');
 disp(' ');
 
-err.lsq = 100*norm(x0-x_lsq)/norm(x0);
+eps.lsq = 100*norm(x0-x_lsq)/norm(x0);
 
 
 %% Tikhonov (0th) implementation
@@ -36,7 +36,7 @@ t.tk0 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.tk0 = 100*norm(x0-x_tk0)/norm(x0);
+eps.tk0 = 100*norm(x0-x_tk0)/norm(x0);
 
 
 %% Tikhonov (1st) implementation
@@ -49,7 +49,7 @@ t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.tk1 = 100*norm(x0-x_tk1)/norm(x0);
+eps.tk1 = 100*norm(x0-x_tk1)/norm(x0);
 
 
 %% Tikhonov (2nd) implementation
@@ -62,7 +62,7 @@ t.tk2 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.tk2 = 100*norm(x0-x_tk2)/norm(x0);
+eps.tk2 = 100*norm(x0-x_tk2)/norm(x0);
 
 
 %% Tikhonov (0th) implementation L-curve
@@ -74,7 +74,7 @@ Lpr0 = invert.tikhonov_lpr(0,grid_x);
 t.tk0_lc = toc;
 disp('Inversion complete.');
 disp(' ');
-err.tk0_lcurve = 100*norm(x0-x_tk0_lc)/norm(x0);
+eps.tk0_lcurve = 100*norm(x0-x_tk0_lc)/norm(x0);
 
 
 %% Tikhonov (1st) implementation L-curve
@@ -87,7 +87,7 @@ Lpr0 = invert.tikhonov_lpr(1,grid_x);
 t.tk1_lc = toc;
 disp('Inversion complete.');
 disp(' ');
-err.tk1_lcurve = 100*norm(x0-x_tk1_lc)/norm(x0);
+eps.tk1_lcurve = 100*norm(x0-x_tk1_lc)/norm(x0);
 
 
 %% Tikhonov (2nd), L-curve
@@ -99,7 +99,7 @@ Lpr0 = invert.tikhonov_lpr(2,grid_x);
 t.tk2_lc = toc;
 disp('Inversion complete.');
 disp(' ');
-err.tk2_lc = 100*norm(x0-x_tk2_lc)/norm(x0);
+eps.tk2_lc = 100*norm(x0-x_tk2_lc)/norm(x0);
 
 
 %% MART, Maximum entropy regularized solution
@@ -112,7 +112,7 @@ t.MART = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.mart = 100*norm(x0-x_mart)/norm(x0);
+eps.mart = 100*norm(x0-x_mart)/norm(x0);
 
 
 %% MART with smoothing function
@@ -122,7 +122,7 @@ tic;
     A,b,Lb,grid_x,x_init,35,[1e2,1e-5],x0,'Buckley');
 t.mart_mh = toc;
 
-err.mart_mh = 100*norm(x0-x_mart_mh)/norm(x0);
+eps.mart_mh = 100*norm(x0-x_mart_mh)/norm(x0);
 
 disp('Completed MART with smoothing function.');
 disp(' ');
@@ -138,7 +138,7 @@ t.two = toc;
 disp('Completed Twomey.');
 disp(' ');
 
-err.two = 100*norm(x0-x_two)/norm(x0);
+eps.two = 100*norm(x0-x_two)/norm(x0);
 
 
 %% Twomey-Markowski-Buckley
@@ -148,7 +148,7 @@ tic;
     A,b,Lb,grid_x,x_init,35,[1e2,1e-5],x0,'Buckley');
 t.two_mh = toc;
 
-err.two_mh = 100*norm(x0-x_two_mh)/norm(x0);
+eps.two_mh = 100*norm(x0-x_two_mh)/norm(x0);
 
 
 

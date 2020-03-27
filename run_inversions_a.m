@@ -12,7 +12,7 @@ x_init = interp2(grid_b.edges{2}',grid_b.edges{1}',...
 x_init(isnan(x_init)) = 0;
 x_init(isinf(x_init)) = 0;
 x_init = sparse(max(0,x_init));
-err.init = norm(x0-x_init);
+eps.init = norm(x0-x_init);
 x_init_m = grid_x.marginalize(x_init);
 
 
@@ -23,7 +23,7 @@ x_lsq = invert.lsq(Lb*A,Lb*b);
 disp('Inversion complete.');
 disp(' ');
 
-err.lsq = norm(x0-x_lsq);
+eps.lsq = norm(x0-x_lsq);
 
 
 %% Tikhonov (0th) implementation
@@ -35,7 +35,7 @@ t.tk0 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.tk0 = norm(x0-x_tk0);
+eps.tk0 = norm(x0-x_tk0);
 
 
 %% Tikhonov (1st) implementation
@@ -47,7 +47,7 @@ t.tk1 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.tk1 = norm(x0-x_tk1);
+eps.tk1 = norm(x0-x_tk1);
 
 
 %% Tikhonov (2nd) implementation
@@ -59,7 +59,7 @@ t.tk2 = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.tk2 = norm(x0-x_tk2);
+eps.tk2 = norm(x0-x_tk2);
 
 
 %% MART, Maximum entropy regularized solution
@@ -72,7 +72,7 @@ t.MART = toc;
 disp('Inversion complete.');
 disp(' ');
 
-err.mart = norm(x0-x_mart);
+eps.mart = norm(x0-x_mart);
 
 
 %% Twomey
@@ -85,7 +85,7 @@ t.two = toc;
 disp('Completed Twomey.');
 disp(' ');
 
-err.two = norm(x0-x_two);
+eps.two = norm(x0-x_two);
 
 
 %% Twomey-Markowski-Buckley
@@ -96,7 +96,7 @@ tic;
     x_init,35,[1e2,1e-5],x0,'Buckley');
 t.two_mh = toc;
 
-err.two_mh = norm(x0-x_two_mh);
+eps.two_mh = norm(x0-x_two_mh);
 
 
 
