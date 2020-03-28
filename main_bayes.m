@@ -177,7 +177,7 @@ grid_x.plot2d(spo);
 %-- Plot regularization parameter selection schemes ----------------------%
 %-{
 figure(13);
-loglog([out.lambda],[out.chi]); % plot absolute Euclidean error
+loglog([out.lambda],[out.eps]); % plot absolute Euclidean error
 hold on;
 loglog([out.lambda],-([out.B])); % plot Bayes factor
 loglog([out.lambda],-([out.F]),'--'); % plot fit

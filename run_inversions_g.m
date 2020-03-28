@@ -89,15 +89,26 @@ eps.em4 = norm(x0-x_em4);
 
 
 %-- Plot EM results ------------------------%
+%{
 figure(31);
 grid_x.plot2d(x_em);
+colormap(cm);
 colorbar;
+title('EM, attempt 1 (x_{init} = interp(b_{i}/a_{i}x)');
+
 figure(32);
 grid2.plot2d(x_em2);
+colormap(cm);
 colorbar;
+title('EM, attempt 2 (x_{init} = interp(b_{i}/a_{i}x)');
+
 figure(33);
 grid2.plot2d(x_em3);
+colormap(cm);
 colorbar;
+title('EM, attempt 3 (x_{init} = 1');
+%}
+
 
 
 
