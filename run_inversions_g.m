@@ -106,7 +106,7 @@ figure(33);
 grid2.plot2d(x_em3);
 colormap(cm);
 colorbar;
-title('EM, attempt 3 (x_{init} = 1');
+title('EM, attempt 3 (x_{init} = 1)');
 %}
 
 
