@@ -18,7 +18,7 @@
 
 function [phantom,N,y_out,J] = fit(x,vec_grid,logr0)
 
-disp('Fitting phantom object...');
+disp('[ Fitting phantom object... -------------]');
 
 %-- Parse inputs ---------------------------------------------%
 if isa(vec_grid,'Grid')
@@ -58,7 +58,9 @@ phantom.type = 'standard-fit';
 N = y1(1); % scaling parameter denoting total number of particles
 y_out = y1;
 
-disp('Complete.');
+disp(' ');
+disp('[ Complete ------------------------------]');
+disp(' ');
 disp(' ');
 
 end

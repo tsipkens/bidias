@@ -22,7 +22,7 @@
 
 function [phantom,N,y_out,J] = fit2_rho(x,vec_grid,n_modes,logr0)
 
-disp('Fitting phantom object...');
+disp('[ Fitting phantom object... -------------]');
 
 %-- Parse inputs ---------------------------------------------%
 if isa(vec_grid,'Grid')
@@ -84,7 +84,9 @@ end
 phantom = Phantom('standard',grid,mu,Sigma,N);
 phantom.type = 'standard-fit';
 
-disp('Complete.');
+disp(' ');
+disp('[ Complete ------------------------------]');
+disp(' ');
 disp(' ');
 
 end
