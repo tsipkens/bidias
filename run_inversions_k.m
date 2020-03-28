@@ -35,11 +35,6 @@ for tt=1:nt
     t(tt).tk1 = toc;
     
     
-    if iscell(phantom.Sigma)
-        Gd = phantom.Sigma{1};
-    else
-        Gd = phantom.Sigma;
-    end
     
     tic;
     invert.exp_dist(...

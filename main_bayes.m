@@ -25,7 +25,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('1',span_t);
+phantom = Phantom('3',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -118,7 +118,7 @@ Dmb = pha_b.Sigma{1}(1,2)/pha_b.Sigma{1}(2,2); % also s1*R12/s2
 run_inversions_g;
 run_inversions_i;
 run_inversions_j;
-run_inversions_k; % time methods
+% run_inversions_k; % time methods
 
 
 
@@ -158,11 +158,6 @@ caxis([0,cmax*(1+1/256)]);
 
 %-- Exponential distance --%
 %{
-if iscell(phantom.Sigma)
-    Gd = phantom.Sigma{1};
-else
-    Gd = phantom.Sigma;
-end
 Lpr = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),...
     grid_x.elements(:,1));
 [~,spo] = tools.get_posterior(...

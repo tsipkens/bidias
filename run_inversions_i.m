@@ -6,11 +6,7 @@
 if iscell(phantom.Sigma)
     Gd = phantom.Sigma{1};
 elseif isempty(phantom.Sigma)
-    p = phantom.p; ll = 2;
-    Gd = inv([(1/log10(p(ll).smd))^2,...
-        -p(ll).Dm/log10(p(ll).smd)^2;...
-        -p(ll).Dm/log10(p(ll).smd)^2,...
-        1/log10(p(ll).sg)^2+p(ll).Dm^2/log10(p(ll).smd)^2]);
+    [~,Gd] = phantom.p2cov(phantom.p(2),phantom.modes(2));
 else
     Gd = phantom.Sigma;
 end
