@@ -388,7 +388,7 @@ To incorporate `Lb`, use `Lb*A` and `Lb*b` when calling the inversion functions 
 
 Details on the available approaches to inversion are provided in the associated paper, [Sipkens et al. (2020a)][1_JAS1].
 
-Development is underway on the use of an exponential distance covariance function to correlate pixel values and reduce reconstruction errors [Sipkens et al. (Under preparation)][4].
+Development is underway on the use of an exponential distance covariance function to correlate pixel values and reduce reconstruction errors [Sipkens et al. (2020c)][4].
 
 ### 4.4 +optimize
 
@@ -397,6 +397,7 @@ iterations for the Twomey and MART schemes or the optimal prior parameter set fo
 
 Of particular note are a subset of the methods that implement evaluation of the Bayes factor for a range of methods, namely the `optimize.bayesf*.m` methods. The functions have inputs that mirror the functions in the `invert` package, this means that data uncertainties can be included
 in the procedure by giving `Lb*A` as an input to the program in the place of `A`. The methods general take `lambda` as a separate parameter, to promote the stability of the algorithm.
+More details on this method are found in [Sipkens et al. (2020c)][4]. Appendix C of that work includes a discussion of the special considerations required to compute the determinants of the large covariance matrices in this problem. 
 
 ### 4.5 +tools
 
@@ -453,7 +454,7 @@ Information on the provided colormaps can be found in an associated README in th
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020b). New approaches to calculate the transfer function of particle mass analyzers. *Aerosol Sci. Technol.* 54, 111-127.][2_AST]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (Under preparation). Inversion methods to determine two-dimensional aerosol mass-mobility distributions: Existing and novel Bayesian methods.][4]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020c). Inversion methods to determine two-dimensional aerosol mass-mobility distributions II: Existing and novel Bayesian methods.][4]
 
 [Stolzenburg, M. R. (2018). A review of transfer theory and characterization of measured performance for differential mobility analyzers. *Aerosol Sci. Technol.* 52, 1194-1218.][Stolz18]
 
