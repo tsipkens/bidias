@@ -1,21 +1,30 @@
 
-% EXP_DIST_LPR A helper function to 'exp_dist' to compute prior covariance.
-% Author:   Timothy Sipkens, 2019-12-11
+% EXP_DIST_LPR  A helper function for 'exp_dist' to compute prior covariance.
+% Author: Timothy Sipkens, 2019-12-11
 %=========================================================================%
 
-function [Lpr,D,Gpr] = exp_dist_lpr(Gd,grid_d,m)
+function [Lpr,D,Gpr] = exp_dist_lpr(Gd,grid_vec2,vec1)
+
+%-- Parse inputs ---------------------------------------------------------%
+if isa(grid_vec2,'Grid') % if a grid is supplied (`vec1` is unused)
+    vec2 = grid_vec2.elements(:,2);
+    vec1 = grid_vec2.elements(:,1);
+else % if vectors of elements are supplied (`vec1` is used unchanged)
+    vec2 = grid_vec2;
+end
+%-------------------------------------------------------------------------%
 
 
 %-- Compute distances between elements -----------------------------------%
-[vec_d1,vec_d2] = ndgrid(grid_d,grid_d);
-[vec_m1,vec_m2] = ndgrid(m,m);
+[vec2_a,vec2_b] = ndgrid(vec2,vec2);
+[vec1_a,vec1_b] = ndgrid(vec1,vec1);
 
 Gd_inv = inv(Gd);
-drm = log10(vec_m1)-log10(vec_m2);
-drd = log10(vec_d1)-log10(vec_d2);
-D = sqrt(drm.^2.*Gd_inv(1,1)+...
-    2.*drd.*drm.*Gd_inv(1,2)+...
-    drd.^2.*Gd_inv(2,2)); % distance
+dr1 = log10(vec1_a)-log10(vec1_b);
+dr2 = log10(vec2_a)-log10(vec2_b);
+D = sqrt(dr1.^2.*Gd_inv(1,1)+...
+    2.*dr2.*dr1.*Gd_inv(1,2)+...
+    dr2.^2.*Gd_inv(2,2)); % distance
 
 
 %-- Compute prior covariance matrix --------------------------------------%

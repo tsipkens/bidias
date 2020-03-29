@@ -41,7 +41,7 @@ disp(' ');
 for ii=length(Sf):-1:1 % loop through values of Sf
     output(ii).Sf = Sf(ii);
     output(ii).x = x_fun(output(ii).Sf);
-    if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
+    if ~isempty(x_ex); output(ii).eps = norm(output(ii).x-x_ex); end
     output(ii).Axb = norm(A*output(ii).x-b);
     
     disp(' ');
@@ -52,7 +52,7 @@ for ii=length(Sf):-1:1 % loop through values of Sf
 end
 
 if ~isempty(x_ex)
-    [~,ind_min] = min([output.chi]);
+    [~,ind_min] = min([output.eps]); % use Euclidean error
 else
     ind_min = [];
 end

@@ -12,7 +12,7 @@ x_init = interp2(grid_b.edges{2}',grid_b.edges{1}',...
 x_init(isnan(x_init)) = 0;
 x_init(isinf(x_init)) = 0;
 x_init = sparse(max(0,x_init));
-chi.init = norm(x0-x_init);
+eps.init = norm(x0-x_init);
 x_init_m = grid_x.marginalize(x_init);
 
 
@@ -30,7 +30,7 @@ disp('Inversion complete.');
 disp(' ');
 
 % chi.lsq = norm(x0-x_lsq);
-chi.lsq = norm(x0-x_lsq_nn);
+eps.lsq = norm(x0-x_lsq_nn);
 
 
 %% Tikhonov (0th) implementation
@@ -52,7 +52,7 @@ disp('Inversion complete.');
 disp(' ');
 
 % diff.tk0 = norm(x_tk0-x_tk0_nn);
-chi.tk0 = norm(x0-x_tk0_nn);
+eps.tk0 = norm(x0-x_tk0_nn);
 % chi.tk0_hr = norm(x0-x_tk0_hr);
 
 
@@ -75,7 +75,7 @@ disp('Inversion complete.');
 disp(' ');
 
 % diff.tk1 = norm(x_tk1-x_tk1_nn);
-chi.tk1 = norm(x0-x_tk1_nn);
+eps.tk1 = norm(x0-x_tk1_nn);
 % chi.tk1_hr = norm(x0-x_tk1_hr);
 
 
@@ -98,7 +98,7 @@ disp('Inversion complete.');
 disp(' ');
 
 % diff.tk2 = norm(x_tk2-x_tk2_nn);
-chi.tk2 = norm(x0-x_tk2_nn);
+eps.tk2 = norm(x0-x_tk2_nn);
 % chi.tk2_hr = norm(x0-x_tk2_hr);
 
 
@@ -109,7 +109,7 @@ x_MART = invert.mart(A,b,x_init,299);
 disp('Inversion complete.');
 disp(' ');
 
-chi.mart = norm(x0-x_MART);
+eps.mart = norm(x0-x_MART);
 
 
 %% Twomey
@@ -118,7 +118,7 @@ x_Two = invert.twomey(A,b,x_init,500);
 disp('Completed Twomey.');
 disp(' ');
 
-chi.two = norm(x0-x_Two);
+eps.two = norm(x0-x_Two);
 
 
 %% Twomey-Markowski-Buckley
@@ -127,7 +127,7 @@ x_two_mh = invert.twomark(A,b,Lb,grid_x,...
     x_init,35,'Buckley',Sf_two_mh);
 disp('Completed Twomey-Markowski.');
 
-chi.two_mh = norm(x0-x_two_mh);
+eps.two_mh = norm(x0-x_two_mh);
 
 
 

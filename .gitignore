@@ -7,23 +7,31 @@ results/
 +uncertainty
 *.asv
 
-main_exper_fn18_invert.m
-main_exper_fn18_post.m
-main_exper_ua19_salt.m
-main_exper_gra_test.m
-main_exper_gra.m
-main_exper_ua19_nov_a.m
-main_exper_ua19_nov_b.m
-main_exper_ua19_santavac.m
+main_x_fn18_invert.m
+main_x_fn18_post.m
+main_x_ua19_salt.m
+main_x_ua19_salt_invert1.m
+main_x_ua19_salt_invert2.m
+main_x_ua19_salt_post.m
+main_x_gra_test.m
+main_x_gra.m
+main_x_ua19_nov_a.m
+main_x_ua19_nov_b.m
+main_x_ua19_santavac.m
+main_x_ua19_santavac_import.m
+main_x_sp2.m
+
 main_jas19_noise.m
 main_bayes_sp2.m
 main_kernel_sp2.m
-main_exper_sp2.m
 main_tfer.m
 
 CPMASP2KernelV0.m
 ImportSP2.m
 +kernel/gen_c2.m
+cmap/correct.m
+cmap/rgb2hsl.m
+cmap/hsl2rgb.m
 
 test_import.m
 test_cred.m

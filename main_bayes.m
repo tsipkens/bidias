@@ -25,7 +25,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('1',span_t);
+phantom = Phantom('3',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -102,24 +102,37 @@ figure(20);
 grid_b.plot2d_sweep(b,cm_b);
 
 
+[pha_b,Nb] = Phantom.fit2(b,grid_b,2,[0,1.7,0.1,2.3]);
+
+%-- pha_b.Sigma properties --------%
+s1b = sqrt(pha_b.Sigma{1}(1,1));
+s2b = sqrt(pha_b.Sigma{1}(2,2));
+R12b = pha_b.Sigma{1}(1,2)/(s1b*s2b);
+Dmb = pha_b.Sigma{1}(1,2)/pha_b.Sigma{1}(2,2); % also s1*R12/s2
+%----------------------------------%
+
+
 
 %%
 %== STEP 3: Perform inversions ===========================================%
 run_inversions_g;
 run_inversions_i;
 run_inversions_j;
+% run_inversions_k; % time methods
 
 
 
 %%
 %== STEP 4: Visualize the results ========================================%
-% ind = out_tk1.ind_min;
-% x_plot = out_tk1(ind).x;
-% out = out_tk1;
+ind = out_tk1.ind_min;
+x_plot = out_tk1(ind).x;
+out = out_tk1;
+lambda = out_tk1(ind).lambda;
 
-[~,ind] = max([out_ed_lam.B]);
-x_plot = out_ed_lam(ind).x;
-out = out_ed_lam;
+% [~,ind] = max([out_ed_lam.B]);
+% x_plot = out_ed_lam(ind).x;
+% out = out_ed_lam;
+% lambda = lambda_ed_lam;
 
 
 
@@ -133,7 +146,7 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %-{
-%-- Plot posterior uncertainties ---------%
+%-- Plot posterior uncertainties ------------------------------------%
 %-- Tikhonov --%
 % [~,spo] = tools.get_posterior(...
 %     A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
@@ -142,16 +155,13 @@ caxis([0,cmax*(1+1/256)]);
 % grid_x.plot2d(spo);
 % colorbar;
 
+
 %-- Exponential distance --%
-if iscell(phantom.Sigma)
-    Gd = phantom.Sigma{1};
-else
-    Gd = phantom.Sigma;
-end
+%{
 Lpr = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),...
     grid_x.elements(:,1));
 [~,spo] = tools.get_posterior(...
-    A,Lb,lambda_ed_lam.*Lpr);
+    A,Lb,lambda.*Lpr);
 figure(12);
 colormap(gcf,cm_alt);
 grid_x.plot2d(spo);
@@ -159,10 +169,10 @@ grid_x.plot2d(spo);
 
 
 
-%-{
 %-- Plot regularization parameter selection schemes ----------------------%
-figure(12);
-loglog([out.lambda],[out.chi]); % plot absolute Euclidean error
+%-{
+figure(13);
+loglog([out.lambda],[out.eps]); % plot absolute Euclidean error
 hold on;
 loglog([out.lambda],-([out.B])); % plot Bayes factor
 loglog([out.lambda],-([out.F]),'--'); % plot fit

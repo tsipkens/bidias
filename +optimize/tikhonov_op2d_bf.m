@@ -3,7 +3,7 @@
 % Author: Arash Naseri, Timothy Sipkens, 2020-02-28
 %=========================================================================%
 
-function [x,lambda,alpha,out,chi] = tikhonov_op2d_bf(A,b,C,d,span1,span2,order,n,x_ex,xi,solver)
+function [x,lambda,alpha,out,eps] = tikhonov_op2d_bf(A,b,C,d,span1,span2,order,n,x_ex,xi,solver)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -34,7 +34,7 @@ for ii=length(param):-1:1 % reverse loop to pre-allocate
     [out(ii).x,~,Lpr0] = invert.tikhonov(...
         [param(ii,2).*A;C],[param(ii,2).*b;d],param(ii,1),Lpr0,[],xi,solver);
     %-- Store ||Ax-b|| and Euclidean error --%
-    if ~isempty(x_ex); out(ii).chi = norm(out(ii).x-x_ex); end
+    if ~isempty(x_ex); out(ii).eps = norm(out(ii).x-x_ex); end
      out(ii).Axb = norm(A*out(ii).x-b);
     
     %-- Compute credence, fit, and Bayes factor --%
@@ -69,7 +69,7 @@ disp('Complete.');
 
 x = invert.tikhonov(...
     [alpha*A;C],[alpha*b;d],lambda,Lpr0,[],xi,solver);
-chi = norm(x-x_ex);
+eps = norm(x-x_ex); % Euclidean error
 
 
 end

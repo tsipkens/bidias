@@ -1,8 +1,8 @@
 
-% TFER_DMA	Evaluates the transfer function of a differential mobility analyzer.
-% Author:	Timothy Sipkens, 2018-12-27
-% Adapted:	Buckley et al. (2017) and Olfert group
-%-------------------------------------------------------------------------%
+% TFER_DMA  Evaluates the transfer function of a differential mobility analyzer.
+% Author: Timothy Sipkens, 2018-12-27
+% Adapted: Buckley et al. (2017) and Olfert group
+% 
 % Inputs:
 %   d_star          Particle diameter, measurement set point for DMA [m]
 %   d               Particle diameter, points in integral, can be vector [m]
@@ -31,7 +31,7 @@ if isempty(prop); prop = kernel.prop_dma(opts); end
 
 
 %-- Physical constants ---------------------------------------------------%
-kB = 1.38064852e-23; % Boltzmann constant [m^2 kg s^-2 K^-1]
+kb = 1.38064852e-23; % Boltzmann constant [m^2 kg s^-2 K^-1]
 e = 1.6022E-19; % electron charge [C]
 
 
@@ -49,18 +49,18 @@ Zp_tilde = Zp./Zp_star; % array of non-dimensional mobilities
 %-- Evaluate transfer function -------------------------------------------%
 if opts.diffusion
     switch opts.solver
-        case 'Buckley' % evaluation from Buckley et al.
+        case 'buckley' % evaluation from Buckley et al.
             D = prop.D(B).*z; % diffusion
             sigma = (prop.G_DMA*2*pi*prop.L.*D./prop.Q_c).^0.5;
-
+            
         case 'plug' % Plug flow, Stolzenburg, 2018
             V = (prop.Q_c/(2*pi*Zp_star*prop.L))*log(prop.R2/prop.R1); % Classifier Voltage (TSI DMA 3080 Manual Equation B-5)
-            sigma_star = sqrt(((kB*prop.T)/(z*e*V))*prop.G_DMA); % Stolzenburg Manuscript Equation 20
+            sigma_star = sqrt(((kb*prop.T)/(z*e*V))*prop.G_DMA); % Stolzenburg Manuscript Equation 20
             sigma = sqrt(sigma_star^2.*Zp_tilde); % Stolzenburg Manuscript Equation 19
-
-        case {'Olfert','fullydeveloped'} % Olfert laboratory; Fully developed flow, Stolzenburg, 2018
+            
+        case {'olfert','fullydeveloped'} % Olfert laboratory; Fully developed flow, Stolzenburg, 2018
             V = (prop.Q_c/(2*pi.*Zp_star.*prop.L)).*log(prop.R2/prop.R1); % Classifier Voltage (TSI DMA 3080 Manual Equation B-5)
-            sigma_star = sqrt(((kB*prop.T)./(z.*e*V))*prop.G_DMA); % Stolzenburg Manuscript Equation 20
+            sigma_star = sqrt(((kb*prop.T)./(z.*e*V))*prop.G_DMA); % Stolzenburg Manuscript Equation 20
             sigma = sqrt(sigma_star^2.*Zp_tilde); % Stolzenburg Manuscript Equation 19
             
         otherwise
@@ -85,8 +85,8 @@ else % simpler evaluation for the case of exluding diffusion
         abs(Zp_tilde-1-prop.bet)-...
         abs(Zp_tilde-1+prop.bet*prop.del)-...
         abs(Zp_tilde-1-prop.bet*prop.del));
-    
 end
+%-------------------------------------------------------------------------%
 
 
 %-- Remove negative and small values --%

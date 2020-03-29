@@ -70,15 +70,9 @@ switch name
         p.Dm = 1;
         type{1} = 'logn';
         
-    otherwise
+    otherwise % create empty phantom
         p = [];
         type = [];
-end
-
-sm_fun = @(ii) 10^sqrt(log10(p(ii).smd)^2+...
-    p(ii).Dm^2*log10(p(ii).sg)^2);
-for ii=1:length(p)
-    p(ii).sm = sm_fun(ii);
 end
 
 end

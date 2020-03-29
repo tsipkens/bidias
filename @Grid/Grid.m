@@ -1,13 +1,13 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
-% Author:  Timothy Sipkens, 2019-02-03
+% Author: Timothy Sipkens, 2019-02-03
 % 
-% The grid class is currently used when a simple discretization of
-% two-dimensional space is required. It then takes either the span
-% of spcae to be covered or pre-defined edge vectors to form a grid.
+%   The grid class is currently used when a simple discretization of
+%   two-dimensional space is required. It then takes either the span
+%   of spcae to be covered or pre-defined edge vectors to form a grid.
 %
-% See constructor method for list of other variables required
-% for creation.
+%   See constructor method for list of other variables required
+%   for creation.
 %=========================================================================%
 
 classdef Grid
@@ -464,17 +464,33 @@ methods
         
         %-- Added processing for partial grids -----------------------%
         if obj.ispartial==1
-            [~,r_min,r_max] = obj.ray_sum([0,obj.cut(1)],obj.cut(2),0);
-            t0 = (r_min(:,1)-log10(obj.nelements(:,1))).*...
-                (log10(obj.nelements(:,2))-log10(obj.nelements(:,1)));
+            dr0 = obj.full2partial(dr); % used if lower cut is employed
+            
+            [~,rmin,rmax] = obj.ray_sum([0,obj.cut(1)],obj.cut(2),0);
+            t0 = (rmin(:,1)-log10(obj.nelements(:,1))).*...
+                (log10(obj.nelements(:,4))-log10(obj.nelements(:,3)));
                     % lower rectangle
-            t1 = (log10(obj.nelements(:,4))-r_max(:,2)).*...
-                (log10(obj.nelements(:,2))-r_min(:,1));
+            t1 = (log10(obj.nelements(:,4))-rmax(:,2)).*...
+                (log10(obj.nelements(:,2))-rmin(:,1));
                     % right rectangle
-            t2 = 1/2.*(r_max(:,1)-r_min(:,1)).*...
-                (r_max(:,2)-r_min(:,2));
+            t2 = 1/2.*(rmax(:,1)-rmin(:,1)).*...
+                (rmax(:,2)-rmin(:,2));
                     % upper, left triangle
             dr = t0+t1+t2;
+            
+            if length(obj.cut)==4 % consider cutting lower triangle
+                [~,rmin,rmax] = obj.ray_sum([0,obj.cut(3)],obj.cut(4),0);
+                t0 = (log10(obj.nelements(:,2))-rmax(:,1)).*...
+                    (log10(obj.nelements(:,4))-log10(obj.nelements(:,3)));
+                        % upper rectangle
+                t1 = (rmin(:,2)-log10(obj.nelements(:,3))).*...
+                    (rmax(:,1)-log10(obj.nelements(:,1)));
+                        % left rectangle
+                t2 = 1/2.*(rmax(:,1)-rmin(:,1)).*...
+                    (rmax(:,2)-rmin(:,2));
+                        % lower, right triangle
+                dr = dr.*(t0+t1+t2)./dr0; % accounts for element that are discected twice
+            end
             
         end
         %-------------------------------------------------------------%
@@ -491,14 +507,56 @@ methods
         x = obj.reshape(x);
         
         [dr,dr1,dr2] = obj.dr; % generate differential area of elements
+        dr = obj.reshape(dr); % fills out dr for partial grids
         
-        tot = sum(x(:).*dr); % integrated total
+        tot = sum(x(:).*dr(:)); % integrated total
+        
+        t0 = dr2; % added processing for partial elements
+        dr2 = dr./dr1;
+        dr1 = dr./t0;
         
         marg{1} = sum(dr2.*x,2); % integrate over diameter
         marg{2} = sum(dr1.*x,1); % integrate over mass
         
     end
     %=================================================================%
+    
+    
+    
+    %== MARGINALIZE_OP ===============================================%
+    %   A marginalizing operator, C1, to act on 2D distributions.
+    %   Author: Timothy Sipkens, Arash Naseri, 2020-03-09
+    function [C1,dr0] = marginalize_op(obj,dim)
+        
+        if ~exist('dim','var'); dim = []; end
+        if isempty(dim); dim = 1; end
+            
+        switch dim % determine which dimension to sum over
+            case 2 % integrate in column direction
+                C1 = kron(speye(obj.ne(2)),ones(1,obj.ne(1)));
+
+            case 1 % integrate in row direction
+                C1 = repmat(speye(obj.ne(1),obj.ne(1)),[1,obj.ne(2)]);
+        end
+        
+        if obj.ispartial==1
+            C1(:,obj.missing) = []; % remove missing elements
+            
+            %-- Extra processing to account for partial elements -----%
+            [dr,dr1,dr2] = obj.dr;
+            switch dim % determine which dimension to sum over
+                case 2 % integrate in column direction
+                    dr1 = obj.full2partial(dr1(:));
+                    dr0 = dr./dr1; % ~dr2
+                case 1 % integrate in row direction
+                    dr2 = obj.full2partial(dr2(:));
+                    dr0 = dr./dr2; % ~dr1
+            end
+            C1 = bsxfun(@times,C1,dr0');
+        else
+            dr0 = ones(obj.Ne,1);
+        end
+    end
     
     
     
@@ -520,7 +578,7 @@ methods
 
     %== VECTORIZE ====================================================%
     %   A simple function to vectorize 2D gridded data.
-    %-----------------------------------------------------------------%
+    % 
     % Outputs:
     %   x	Vectorized data
     %   t1  Vectorized element centers for first dimension
@@ -528,7 +586,7 @@ methods
     %-----------------------------------------------------------------%
     function [x,t1,t2] = vectorize(obj,x)
         if exist('x','var'); x = x(:); else; x = []; end
-
+        
         if nargout>1; t1 = obj.elements(:,1); end
         if nargout>2; t2 = obj.elements(:,2); end
     end
@@ -542,7 +600,7 @@ methods
     %   and can accommodate partial grids.
     %   Based on:	Code from Samuel Grauer
     %   Author:     Timothy Sipkens, 2019-07-14
-    %-----------------------------------------------------------------%
+    % 
     % Inputs:
     %   logr0   A single point on the line in log-log space, r0 = log10([dim1,dim2])
     %	slope   Slope of the line
@@ -565,32 +623,35 @@ methods
         for ii=1:m % loop over multiple rays
 
             %-- Ray vector -------------%
-            dv = [slope,1]; % convert slope to step vector along line
+            dv = [1,slope]; % convert slope to step vector along line
             dv = dv/norm(dv);
             dv(dv == 0) = 1e-10; % for stability during division
             
             
             %-- Line intersections -----%
-            %   Use parametric representation of the line and find two
-            %   intersections or each element.
+            %   Use parametric representation of the line and finds two
+            %   intersections for each element.
             %   Note: Assumes a logarithmic grid.
-            ttmp = (log10(obj.nelements(:,[1,3]))-...
+            tmin = (log10(obj.nelements(:,[3,1]))-...
                 logr0)./dv; % minimum of element
-            tmax = (log10(obj.nelements(:,[2,4]))-...
+            tmax = (log10(obj.nelements(:,[4,2]))-...
                 logr0)./dv; % maximum of element
             
             
             %-- Corrections ------------%
             %   Decide which points would correspond to transecting the
             %   pixel.
-            tmin = max(min(ttmp,tmax),[],2);
-            tmax = min(max(ttmp,tmax),[],2);
-            tmax(tmax<tmin) = tmin(tmax<tmin); % check if crosses pixel
+            tmin = max(tmin,[],2);
+            tmax = min(tmax,[],2);
             
             
             %-- Convert back to [x,y] --%
-            rmin  = logr0+tmin.*[dv(2),dv(1)]; % location of intersect with min. of pixel
-            rmax = logr0+tmax.*[dv(2),dv(1)]; % location of intersect with max. of pixel
+            rmin = logr0+tmin.*dv; % location of intersect with min. of pixel
+            rmax = logr0+tmax.*dv; % location of intersect with max. of pixel
+            
+            rmin = min(rmin,log10(obj.nelements(:,[4,2])));
+            rmax = max(rmax,log10(obj.nelements(:,[3,1])));
+            
             chord = sqrt(sum((rmax-rmin).^2,2)); % chord length
             chord(chord<1e-15) = 0; % truncate small values
             
@@ -598,9 +659,14 @@ methods
             %-- Ray-sum matrix ---------%
             [~,jj,a] = find(chord');
             if ~isempty(a)
-                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.1*obj.Ne));
+                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.6*obj.Ne));
             end
             if f_bar, tools.textbar(ii/m); end
+            
+            
+            %-- Modify rmin and rmax for output -----%
+            rmin = fliplr(rmin);
+            rmax = fliplr(rmax);
 
         end % end loop over multiple rays
 
@@ -612,7 +678,7 @@ methods
     %== CLOSEST_IDX =================================================%
     %   Returns the pixel in which r0 is located.
     %   This function uses vector operations to find multiple points.
-    %-----------------------------------------------------------------%
+    % 
     % Inputs:
     %   r0      Coordinates in grid space, r0 = [dim1,dim2]
     %           Can form N x 2 vector, where N is the number of points
@@ -652,20 +718,34 @@ methods
     %== PLOT2D =======================================================%
     %   Plots x as a 2D function on the grid.
     %   Author: Timothy Sipkens, 2018-11-21
-    function [h,x] = plot2d(obj,x)
+    function [h,x] = plot2d(obj,x,f_contf)
+        
+        if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
+        if isempty(f_contf); f_contf = 0; end % set contourf flag to false
         
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
-        dr = obj.dr;
-        if ~all(abs(dr(2:end)-dr(1))<1e-10)
+        [dr,dr1,dr2] = obj.dr; % used to give warning below
+        dr0 = dr1(:).*dr2(:);
+        if ~all(abs(dr0(2:end)-dr0(1))<1e-10)
             warning(['The plot2d method does not display ',...
                 'correct proportions for non-uniform grids.']);
         end
         
-        x = obj.reshape(x);
+        mod = 1; % min(obj.full2partial(dr0)./dr,1e2);
+            % used to rewieght according to element size (for partial grids only)
+            % limit modification limit to 100x
+            
+        x = obj.reshape(x.*mod);
+            % reshape, multiplied factor accounts for size of elements
         
-        imagesc(obj.edges{2},obj.edges{1},x);
-        set(gca,'YDir','normal');
+        %-- Plot -------------------------------%
+        if f_contf==0 % plot as image
+            imagesc(obj.edges{2},obj.edges{1},x);
+            set(gca,'YDir','normal');
+        else % plot as contourf
+            contourf(obj.edges{2},obj.edges{1},x,35,'EdgeColor','none');
+        end
         
         %-- Adjust tick marks for log scale ----%
         if strcmp('logarithmic',obj.discrete)
@@ -686,12 +766,16 @@ methods
     %== PLOT2D_MARG ==================================================%
     %   Plots x as a 2D function on the grid, with marginalized distributions.
     %   Author: Timothy Sipkens, 2018-11-21
-    function [h,x_m] = plot2d_marg(obj,x,obj_t,x_t)
+    function [h,x_m] = plot2d_marg(obj,x,obj_t,x_t,f_contf)
+        
+        if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
+        if ~exist('x_t','var'); x_t = []; end
         
         subplot(4,4,[5,15]);
-        obj.plot2d(x);
+        obj.plot2d(x,f_contf);
         
         x_m = obj.marginalize(x);
+        
         
         %-- Plot marginal distribution (dim 2) -----------------------%
         subplot(4,4,[1,3]);
@@ -701,7 +785,8 @@ methods
         xlim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
         set(gca,'XScale','log');
         
-        if nargin>2 % also plot marginal of the true distribution
+        %-- Also plot marginal of the true distribution --------------%
+        if ~isempty(x_t)
             x_m_t = obj_t.marginalize(x_t);
             
             hold on;
@@ -709,6 +794,7 @@ methods
                 [x_m_t{marg_dim},0],'color',[0.6,0.6,0.6]);
             hold off;
         end
+        
         
         %-- Plot marginal distribution (dim 1) -----------------------%
         subplot(4,4,[8,16]);
@@ -718,7 +804,8 @@ methods
         ylim([min(obj.edges{marg_dim}),max(obj.edges{marg_dim})]);
         set(gca,'YScale','log');
         
-        if nargin>2 % also plot marginal of the true distribution
+        %-- Also plot marginal of the true distribution --------------%
+        if ~isempty(x_t)
             hold on;
             plot([0;x_m_t{marg_dim}],...
                 obj_t.nodes{marg_dim},'color',[0.6,0.6,0.6]);
@@ -883,50 +970,6 @@ methods
     
     
     
-    %== OVERLAY_LINE =================================================%
-    %   Plots a line on top of the current grid
-    %   Author:	Timothy Sipkens, 2019-07-15
-    %-----------------------------------------------------------------%
-    % Inputs:
-    %   logr0   A single point on the line
-    %	slope   Slope of the line
-    %   c_spec  Color specification string, e.g. 'k' for a black line
-    % Outputs:
-    %   h       Line object
-    %-----------------------------------------------------------------%
-    function h = overlay_line(obj,logr0,slope,cspec)
-
-        if ~exist('cspec','var'); cspec = 'w'; end
-        
-        if strcmp(get(gca,'XScale'),'log') % for log-scale plots
-            rmin = log10(min([obj.edges{:}]));
-            rmax = log10(max([obj.edges{:}]));
-            
-            hold on;
-            h = loglog(10.^[rmin,rmax],...
-                10.^[logr0(2)+slope*(rmin-logr0(1)),...
-                logr0(2)+slope*(rmax-logr0(1))],cspec);
-            hold off;
-            
-        else % for linear scale plots
-            rmin = min([obj.edges{:}]);
-            rmax = max([obj.edges{:}]);
-            
-            hold on;
-            h = plot([rmin,rmax],...
-                [logr0(2)+slope*(rmin-logr0(1)),...
-                logr0(2)+slope*(rmax-logr0(1))],cspec);
-            hold off;
-        end
-
-        
-
-        if nargout==0; clear h; end
-
-    end
-    %=================================================================%
-    
-    
     
 %=====================================================================%
 %-- SUPPORT FOR PARTIAL GRIDS ----------------------------------------%
@@ -934,34 +977,66 @@ methods
     
     %== PARTIAL ======================================================%
     %   Convert to a partial grid. Currently takes a y-intercept, r0, 
-    %   and slope as arguements and cuts upper triangle.
-    function obj = partial(obj,r0,slope)
+    %   and slope0 as arguements and cuts upper triangle.
+    %   Added r1 and slope1 arguments will also cut a lower triangle.
+    function obj = partial(obj,r0,slope0,r1,slope1)
         
-        if ~exist('slope','var'); slope = []; end
-        if isempty(slope); slope = 1; end
+        %-- Parse inputs ----------------------------%
+        if ~exist('slope0','var'); slope0 = []; end
+        if isempty(slope0); slope0 = 1; end
         
         if ~exist('r0','var'); r0 = []; end
-        if length(r0)==1; b = r0; end % if scalar, use as y-intercept
-        if length(r0)==2; b = r0(1)-slope*r0(2); end
-            % if coordinates, find y-intercept
-        if isempty(r0); b = 0; end % if not specified, use b = 0
+        if length(r0)==1; b0 = r0; end % if scalar, use as y-intercept
+        if length(r0)==2; b0 = r0(1)-slope0*r0(2); end % if coordinates, find y-intercept
+        if isempty(r0); b0 = 0; end % if not specified, use b = 0
         
+        %-- For bottom triangle --%
+        if ~exist('slope1','var'); slope1 = []; end
+        if isempty(slope1); slope1 = 0; end
+        
+        if ~exist('r1','var'); r1 = -inf; end
+        if length(r1)==1; b1 = r1; end % if scalar, use as y-intercept
+        if length(r1)==2; b1 = r1(1)-slope1*r1(2); end % if coordinates, find y-intercept
+        if isempty(r1); b1 = 0; end % if not specified, use b = 0
+        %--------------------------------------------%
+        
+        
+        %-- Cut upper triangle ---------------------%
         if strcmp(obj.discrete,'logarithmic')
-            t0 = log10(obj.elements);
+            tup = log10(obj.nelements(:,[1,4]));
         else
-            t0 = obj.elements;
+            tup = obj.nelements(:,[1,4]);
+        end
+        tup = tup+abs(1e-3.*mean(tup(2:end,:)-tup(1:(end-1),:))).*[1,0];
+            % avoids minimially overlapping elements
+        
+        f_missing = tup(:,1)>(tup(:,2).*slope0+b0);
+        t1 = 1:prod(obj.ne);
+        obj.cut = [b0,slope0];
+        
+        
+        %-- Consider cutting lower triangle --------%
+        if strcmp(obj.discrete,'logarithmic')
+            tlow = log10(obj.nelements(:,[2,3]));
+        else
+            tlow = obj.nelements(:,[2,3]);
+        end
+        tlow = tlow+abs(1e-3.*mean(tlow(2:end,:)-tlow(1:(end-1),:))).*[-1,0];
+            % avoids minimially overlapping elements
+        
+        if ~isinf(r1)
+            f_missing1 = tlow(:,1)<(tlow(:,2).*slope1+b1);
+            f_missing = or(f_missing,f_missing1);
+            obj.cut = [obj.cut,b1,slope1];
         end
         
-        f_above = t0(:,1)>(t0(:,2).*slope+b);
-        t1 = 1:length(f_above);
         
         %-- Update grid properties -----------------%
         obj.ispartial = 1;
-        obj.missing = t1(f_above);
-        obj.cut = [b,slope];
+        obj.missing = t1(f_missing);
         
-        obj.elements = obj.elements(~f_above,:);
-        obj.nelements = obj.nelements(~f_above,:);
+        obj.elements = obj.elements(~f_missing,:);
+        obj.nelements = obj.nelements(~f_missing,:);
         obj.Ne = size(obj.elements,1);
         obj = obj.padjacency;
         

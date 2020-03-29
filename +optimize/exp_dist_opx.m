@@ -1,5 +1,6 @@
 
 % EXP_DIST_OPX  Uses fminsearch to find optimal regularization parameters
+% Author: Timothy Sipkens, 2019-11-14
 % 
 % Inputs:
 %   A       Model matrix

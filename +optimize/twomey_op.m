@@ -25,13 +25,13 @@ out(length(iter_vec)).iter_vec = [];
 
 out(1).iter_vec = iter_vec(1);
 out(1).x = invert.twomey(A,b,xi,iter_vec(1));
-out(1).chi = norm(out(1).x-x_ex);
+out(1).eps = norm(out(1).x-x_ex);
 tools.textbar(1/length(iter_vec));
 
 for ii=2:length(iter_vec)
     out(ii).iter_vec = ii;
     out(ii).x = invert.twomey(A,b,out(ii-1).x,1);
-    out(ii).chi = norm(out(ii).x-x_ex);
+    out(ii).eps = norm(out(ii).x-x_ex); % Euclidean error
     tools.textbar(ii/length(iter_vec));
 end
 

@@ -38,13 +38,13 @@ x_length = size(A,2);
 
 Lpr0 = invert.tikhonov_lpr(order,n_grid,x_length); % get Tikhonov matrix
 
-disp('Pre-computing GSV...');
+disp('Pre-computing generalized SVD...');
 [~,~,~,S1,S2] = gsvd(full(A),full(Lpr0));
     % pre-compute gsvd for Bayes factor calculation
 disp('Complete.');
 disp(' ');
 
-disp('Optimizing Tikhonov regularization:');
+disp('Optimizing Tikhonov regularization w.r.t lambda...');
 tools.textbar(0);
 for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     output(ii).lambda = lambda(ii); % store regularization parameter
@@ -54,7 +54,7 @@ for ii=length(lambda):-1:1 % reverse loop to pre-allocate
         A,b,lambda(ii),Lpr0,[],xi,solver);
     
     %-- Store ||Ax-b|| and Euclidean error --%
-    if ~isempty(x_ex); output(ii).chi = norm(output(ii).x-x_ex); end
+    if ~isempty(x_ex); output(ii).eps = norm(output(ii).x-x_ex); end
     output(ii).Axb = norm(A*output(ii).x-b);
     
     %-- Compute credence, fit, and Bayes factor --%
@@ -66,9 +66,9 @@ for ii=length(lambda):-1:1 % reverse loop to pre-allocate
 end
 
 if ~isempty(x_ex) % if exact solution is supplied
-    [~,ind_min] = min([output.chi]);
+    [~,ind_min] = min([output.eps]); % use Euclidean error
 else
-    [~,ind_min] = max([output.B]);
+    [~,ind_min] = max([output.B]); % use Bayes factor
 end
 lambda = output(ind_min).lambda;
 x = output(ind_min).x;

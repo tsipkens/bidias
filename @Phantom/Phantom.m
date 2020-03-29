@@ -7,18 +7,19 @@ classdef Phantom
 
 %-- Phantom properties -----------------------------------------------%
 properties
-    type = [];  % optional name for the phantom
-    modes = {}; % types of distribution for each mode
-    n_modes = []; % number of modes
+    type = [];      % optional name for the phantom
+    modes = {};     % types of distribution for each mode, e.g. {'logn','logn'}
+    n_modes = [];   % number of modes
+    w = [];         % weighting for each mode
 
-    mu = [];    % center of bivariate distribution
-    Sigma = []; % covariance of bivariate distribution
-    R = [];     % correlation matrix
+    mu = [];        % center of bivariate distribution
+    Sigma = [];     % covariance of bivariate distribution
+    R = [];         % correlation matrix
 
-    x = [];     % phantom evaluated on default grid
-    grid = [];  % default grid the phantom is to be represented
-                % on generally a high resolution instance of the
-                % Grid class
+    x = [];         % phantom evaluated on default grid
+    grid = [];      % default grid the phantom is to be represented
+                    % on generally a high resolution instance of the
+                    % Grid class
 
     p struct = struct();
                 % parameters relevant to mass-mobility distributions
@@ -29,8 +30,8 @@ end
 
 methods
     %== PHANTOM ======================================================%
-    %   Intialize phantom object.
-    %-----------------------------------------------------------------%
+    %   Intialize a phantom object.
+    % 
     % Inputs:
     %   type        The type of phantom specified as a string
     %               (e.g. 'standard', 'mass-mobility', '1')
@@ -42,14 +43,18 @@ methods
     %   Sigma_modes Either the covariance matrix for the distribution
     %               or the number of modes in the distribution
     %               (e.g. 'logn','cond-norm')
+    %   w           Weights for each mode 
+    %               (Optional: default is ones(n_modes,1);)
     %-----------------------------------------------------------------%
-    function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes)
+    function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes,w)
         
         %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty phantom
         
         if ~exist('span_grid','var'); span_grid = []; end
         if isempty(span_grid); span_grid = [10^-1.5,10^1.5;20,10^3]; end
+        
+        if ~exist('w','var'); w = []; end
         %-------------------------------------------------------------%
         
         %== Assign parameter values - 3 options ======================%
@@ -59,28 +64,30 @@ methods
             case {'standard'}
                 n_modes = length(mu_p);
                 if ~iscell(mu_p); n_modes = 1; end
-
+                
                 obj.mu = mu_p;
                 obj.Sigma = Sigma_modes;
                 obj.R = obj.sigma2r(obj.Sigma);
-
-                [obj.modes{1:n_modes}] = 'logn';
-
+                
+                for ii=1:n_modes; obj.modes{ii} = 'logn'; end
+                
                 p = obj.cov2p(obj.mu,obj.Sigma,obj.modes);
                     % mass-mobility equivlanet params.
                 obj.p = obj.fill_p(p); % get mg as well
+                
                 
             %-- OPTION 2: Using a mass-mobility parameter set (p) ----%
             case {'mass-mobility'} % for custom mass-mobility phantom
                                    % sepcified using a p structure
                 obj.type = 'mass-mobility';
                 obj.modes = Sigma_modes;
-                obj.p = mu_p;
-
+                obj.p = obj.fill_p(mu_p); % fill out p structure
+                
                 if ~any(strcmp('cond-norm',Sigma_modes))
                     [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
                     obj.R = obj.sigma2r(obj.Sigma);
                 end
+                
                 
             %-- OPTION 3: Use a preset or sample distribution --------%
             otherwise % check if type is a preset phantom
@@ -100,6 +107,12 @@ methods
         
         obj.n_modes = length(obj.modes); % get number of modes
         
+        if isempty(w) % assign mode weightings
+            obj.w = ones(obj.n_modes,1)./obj.n_modes; % evely distribute modes
+        else
+            obj.w = w./sum(w); % normalize weights and assign
+        end
+            
         
         %-- Generate a grid to evaluate phantom on -------------------%
         if isa(span_grid,'Grid') % if grid is specified
@@ -116,7 +129,7 @@ methods
             obj.x = obj.eval_p(obj.p);
                 % special evaluation for conditional normal conditions
         else
-            obj.x = obj.eval(obj.mu,obj.Sigma);
+            obj.x = obj.eval;
         end
     end
     %=================================================================%
@@ -175,28 +188,45 @@ methods
     %== EVAL =========================================================%
     %   Generates a distribution from the phantom mean and covariance.
     %   Author:  Timothy Sipkens, 2019-10-29
-    %   NOTE: Does not work for conditionally-normal distributions
-    %         (which cannot be defined with mu and Sigma).
-    function [x] = eval(obj,mu,Sigma,grid)
+    %
+    %   Note: This method does not work for conditionally-normal distributions
+    %       (which cannot be defined with mu and Sigma).
+    function [x] = eval(obj,grid_vec,w)
         
-        if ~exist('grid','var'); grid = []; end
-        if isempty(grid); grid = obj.grid; end
+        %-- Parse inputs ---------------------------------------------%
+        if ~exist('w','var'); w = []; end
+        if isempty(w); w = obj.w; end
+        if isempty(w); w = ones(obj.n_modes,1)./obj.n_modes; end
+            % weight modes evenly
+            
+        if ~exist('grid','var'); grid_vec = []; end
+        if isempty(grid_vec); grid_vec = obj.grid; end % use phantom grid
+        if isempty(grid_vec); error('For an empty Phantom, grid_vec is required.'); end
+            % if an empty phantom (e.g. Phantom.eval_p(p);)
         
-        if ~iscell(mu); mu = {mu}; end
-        if ~iscell(Sigma); Sigma = {Sigma}; end
+        if isa(grid_vec,'Grid'); vec = grid_vec.elements; % get element centers from grid
+        else; vec = grid_vec; % if a set of element centers was provided directly
+        end
+        
+        if ~iscell(obj.mu); mu0 = {obj.mu};
+        else; mu0 = obj.mu;
+        end
+        
+        if ~iscell(obj.Sigma); Sigma0 = {obj.Sigma};
+        else; Sigma0 = obj.Sigma;
+        end
+        %-------------------------------------------------------------%
         
         
-        m_vec = grid.elements(:,1);
-        d_vec = grid.elements(:,2);
+        m_vec = vec(:,1); % element centers in mass
+        d_vec = vec(:,2); % element centers in mobility
 
         %-- Assign other parameters of distribution ------------------%
         x = zeros(size(m_vec));
         for ll=1:obj.n_modes % loop through distribution modes
-            x = x + mvnpdf(log10([m_vec,d_vec]),mu{ll},Sigma{ll});
+            x = x + w(ll).*... % add new mode, reweighting accordingly
+                mvnpdf(log10([m_vec,d_vec]),mu0{ll},Sigma0{ll});
         end
-
-        %-- Reweight modes -------------------------------------------%
-        x = x./obj.n_modes;
     end
     %=================================================================%
 
@@ -206,10 +236,32 @@ methods
     %   Generates a distribution from p as required for conditionally-
     %   normal modes.
     %   Author:  Timothy Sipkens, 2019-10-29
-    function [x] = eval_p(obj,p)
+    function [x] = eval_p(obj,p,grid_vec,w)
         
-        m_vec = obj.grid.elements(:,1);
-        d_vec = obj.grid.elements(:,2);
+        %-- Parse inputs ---------------------------------------------%
+        if ~exist('w','var'); w = []; end
+        if isempty(w); w = obj.w; end
+        if isempty(w); w = ones(obj.n_modes,1)./obj.n_modes; end
+            % weight modes evenly
+        
+        if ~exist('p','var'); p = []; end
+        if isempty(p); p = obj.p; end % use p values from given phantom
+        if isempty(p); error('For an empty Phantom, p is required.'); end 
+            % if an empty phantom (e.g. Phantom.eval_p;)
+        
+        if ~exist('grid','var'); grid_vec = []; end
+        if isempty(grid_vec); grid_vec = obj.grid; end % use phantom grid
+        if isempty(grid_vec); error('For an empty Phantom, grid_vec is required.'); end
+            % if an empty phantom (e.g. Phantom.eval_p(p);)
+        
+        if isa(grid_vec,'Grid'); vec = grid_vec.elements; % get element centers from grid
+        else; vec = grid_vec; % if a set of element centers was provided directly
+        end
+        %-------------------------------------------------------------%
+        
+        
+        m_vec = vec(:,1); % element centers in mass
+        d_vec = vec(:,2); % element centers in mobility
         
         m_fun = @(d,ll) log(p(ll).m_100.*((d./100).^p(ll).Dm));
             % geometric mean mass in fg as a function of d
@@ -225,19 +277,55 @@ methods
                     exp(m_fun(d_vec,ll)));
             end
             
-            p_temp = lognpdf(d_vec,log(p(ll).dg),log(p(ll).sg)).*p_m;
-            x = x+p_temp;
+            x = x + ...
+                w(ll).*p_m.*...
+                lognpdf(d_vec,log(p(ll).dg),log(p(ll).sg));
         end
         
         %-- Reweight modes and transform to log-log space ------------%
-        x = x./obj.n_modes;
         x = x.*(d_vec.*m_vec).*log(10).^2;
             % convert to [log10(m),log10(d)]T space
     end
     %=================================================================%
-
-
-
+    
+    
+    
+    %== PLUS =========================================================%
+    %   Adds two phantoms.
+    %   Author:  Timothy Sipkens, 2020-03-24
+    function objn = plus(obj1,obj2,w)
+        
+        if ~exist('w','var'); w = []; end
+        if isempty(w); w = [1,1]./2; else; w = w./sum(w); end
+        w = [w(1).*obj1.w(:);w(2).*obj2.w(:)];
+        
+        span = [min(obj1.grid.span(:,1),obj2.grid.span(:,1)),...
+                max(obj1.grid.span(:,2),obj2.grid.span(:,2))];
+                % update span to incorporate both Phantoms
+        
+                
+        if and(~isempty(obj1.mu),~isempty(obj2.mu)) % bivariate lognormal phantoms
+            if ~iscell(obj1.mu); obj1.mu = {obj1.mu}; end
+            if ~iscell(obj1.Sigma); obj1.Sigma = {obj1.Sigma}; end
+            if ~iscell(obj2.mu); obj2.mu = {obj2.mu}; end
+            if ~iscell(obj2.Sigma); obj2.Sigma = {obj2.Sigma}; end
+            
+            objn = Phantom('standard',span,...
+                [obj1.mu,obj2.mu],...
+                [obj1.Sigma,obj2.Sigma],...
+                w);
+            
+            
+        else % at least one mode is not bivariate lognormal
+            objn = Phantom('mass-mobility',span,...
+                [obj1.p(:);obj2.p(:)]',...
+                [obj1.modes,obj2.modes],...
+                w);
+        end
+    end
+    
+    
+    
     %== MASS2RHO =====================================================%
     %   Convert a mass-mobility phantom to an effective density-mobility
     %   phanatom. Output is a new phantom in the transformed space.
@@ -245,10 +333,17 @@ methods
     function [phantom] = mass2rho(obj,grid_rho)
 
         A = [1,-3;0,1]; % corresponds to mass-mobility relation
-
-        mu_rhod = (A*obj.mu'+[log10(6/pi)+9;0])';
-        Sigma_rhod = A*obj.Sigma*A';
-
+        
+        if obj.n_modes==1 % for unimodal phantom
+            mu_rhod = (A*obj.mu'+[log10(6/pi)+9;0])';
+            Sigma_rhod = A*obj.Sigma*A';
+        else% for a multimodal phantom
+            for ii=1:obj.n_modes
+                mu_rhod{ii} = (A*obj.mu{ii}'+[log10(6/pi)+9;0])';
+                Sigma_rhod{ii} = A*obj.Sigma{ii}*A';
+            end
+        end
+        
         phantom = Phantom('standard',grid_rho,mu_rhod,Sigma_rhod);
 
     end
@@ -258,15 +353,38 @@ end
 
 
 methods (Static)
-    %== PRESET_PHANTOMS ==============================================%
+    %== PRESET_PHANTOMS (External definition) ========================%
     % Returns a set of parameters for preset/sample phantoms.
-    % Definition is in an external function.
     [p,modes,type] = presets(obj,type);
     %=================================================================%
-
+    
+    %== FIT (External definition) ====================================%
+    % Fits a phantom to a given set of data, x, defined on a given grid, 
+    %   or vector of elements. Outputs a fit phantom object.
+    [phantom,N,y_out,J] = fit(x,vec_grid,logr0);
+    %=================================================================%
+    
+    %== FIT2 (External definition) ===================================%
+    % Fits a multimodal phantom object to a given set of data, x, 
+    %   defined on a given grid or vector of elements.
+    % Outputs a fit phantom object.
+    [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0);
+    %=================================================================%
+    
+    %== FIT2_RHO (External definition) ===============================%
+    % Fits a multimodal phantom object to a given set of data, x, 
+    %   defined on a given grid or vector of elements. 
+    % Outputs a fit phantom object.
+    % Tuned specifically for effective density-mobility distributions
+    %   (e.g. for negative or nearly zero correlation)
+    [phantom,N,y_out,J] = fit2_rho(x,vec_grid,n_modes,logr0);
+    %=================================================================%
+    
+    
 
     %== FILL_P =======================================================%
     %   Generates the remainder of the components of p.
+    %   Requires a minimum of: 
     %   Author:  Timothy Sipkens, 2019-10-30
     function p = fill_p(p)
         
@@ -274,15 +392,26 @@ methods (Static)
         
         %-- Assign other parameters of distribution ------------------%
         for ll=1:n_modes % loop through distribution modes
+            
+            %-- Handle mg/rhog ------------%
+            if ~isfield(p(ll),'rhog'); p(ll).rhog = []; end
+            if isempty(p(ll).rhog)
+                p(ll).rhog = p(ll).mg/(1e-9*pi/6*p(ll).dg^3);
+            end
             p(ll).mg = 1e-9*p(ll).rhog*pi/6*...
                 (p(ll).dg^3); % geometric mean mass in fg
-
-            if ~isfield(p,'rhog'); p.rho = []; end
-
-            if ~isempty(p(ll).rhog) % use effective density at dg
-                p(ll).rho_100 = p(ll).rhog*(100/p(ll).dg)^(p(ll).Dm-3);
+            
+            %-- Handle sm/smd -------------%
+            if ~isfield(p(ll),'smd'); p(ll).smd = []; end
+            if isempty(p(ll).smd)
+                p(ll).smd = 10^sqrt(log10(p(ll).sm)^2 - ...
+                    p(ll).Dm^2*log10(p(ll).sg)^2);
             end
-
+            p(ll).sm = 10^sqrt(log10(p(ll).smd)^2+...
+                p(ll).Dm^2*log10(p(ll).sg)^2);
+            
+            %-- Other parameters ----------%
+            p(ll).rho_100 = p(ll).rhog*(100/p(ll).dg)^(p(ll).Dm-3);
             p(ll).m_100 = 1e-9*p(ll).rho_100*pi/6*100^3;
             p(ll).rhog = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
             p(ll).k = p(ll).m_100/(100^p(ll).Dm);
@@ -313,10 +442,12 @@ methods (Static)
     %== COV2P ========================================================%
     %   Function to convert covariance matrix and mean to p.
     %   Author:  Timothy Sipkens, 2019-10-29
-    function [p] = cov2p(mu,Sigma,modes)
+    function [p,Dm,l1,l2] = cov2p(mu,Sigma,modes)
 
         if ~iscell(mu); mu = {mu}; end
         if ~iscell(Sigma); Sigma = {Sigma}; end
+        if ~exist('modes','var'); modes = [];end
+        if isempty(modes); modes = repmat({'logn'},[1,length(mu)]); end
 
         p = [];
         for ll=length(mu):-1:1 % loop through modes
@@ -346,8 +477,11 @@ methods (Static)
 
             p(ll).rhog = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
         end
-
+        
         p = Phantom.fill_p(p);
+        Dm = [p.Dm];
+        l1 = log10([p.sm]);
+        l2 = log10([p.sg]);
     end
     %=================================================================%
 
@@ -370,7 +504,8 @@ methods (Static)
                     -p(ll).Dm/log10(p(ll).smd)^2;...
                     -p(ll).Dm/log10(p(ll).smd)^2,...
                     1/log10(p(ll).sg)^2+p(ll).Dm^2/log10(p(ll).smd)^2]);
-            else
+            
+            else  % for non-bivariate lognormal distributions, approximate
                 Sigma{ll} = inv([(1/p(ll).smd)^2,...
                     -p(ll).Dm/p(ll).smd^2;...
                     -p(ll).Dm/p(ll).smd^2,...
@@ -404,43 +539,7 @@ methods (Static)
         end
     end
     %=================================================================%
-
-
-
-    %== FIT ==========================================================%
-    %   Fits a phantom to a given set of data, x, defined on a given
-    %   grid. Outputs a fit phantom object.
-    %-----------------------------------------------------------------%
-    % Inputs:
-    %   x - input data (2D distribution data)
-    %   grid - 'Grid' object on which input data is evaluated
-    %-----------------------------------------------------------------%
-    function [phantom,N] = fit(x,grid)
-        
-        disp('Fitting phantom object...');
-        [~,vec1,vec2] = grid.vectorize();
-        
-        corr2cov = @(sigma,R) diag(sigma)*R*diag(sigma);
-        
-        fun_pha = @(y) y(1).*mvnpdf(log10([vec1,vec2]),[y(2),y(3)],...
-            corr2cov([y(4),y(5)],[1,y(6);y(6),1]));
-        y0 = [max(x),0,2.3,0.6,0.25,0.97];
-            % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
-        
-        y1 = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
-            [0,-10,-10,0,0,-1],[inf,10,10,10,3,1]);
-        
-        mu = [y1(2),y1(3)];
-        sigma = [y1(4),y1(5)];
-        Sigma = corr2cov(sigma,[1,y1(6);y1(6),1]);
-        
-        phantom = Phantom('standard',grid,mu,Sigma);
-        phantom.type = 'standard-fit';
-        
-        N = y1(1); % scaling parameter denoting total number of particles
-        disp('Complete.');
-    end
-    %=================================================================%
+    
 end
 
 end
