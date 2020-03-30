@@ -208,13 +208,8 @@ methods
         else; vec = grid_vec; % if a set of element centers was provided directly
         end
         
-        if ~iscell(obj.mu); mu0 = {obj.mu};
-        else; mu0 = obj.mu;
-        end
-        
-        if ~iscell(obj.Sigma); Sigma0 = {obj.Sigma};
-        else; Sigma0 = obj.Sigma;
-        end
+        mu0 = obj.mu;
+        Sigma0 = obj.Sigma;
         %-------------------------------------------------------------%
         
         
@@ -225,7 +220,9 @@ methods
         x = zeros(size(m_vec));
         for ll=1:obj.n_modes % loop through distribution modes
             x = x + w(ll).*... % add new mode, reweighting accordingly
-                mvnpdf(log10([m_vec,d_vec]),mu0{ll},Sigma0{ll});
+                mvnpdf(log10([m_vec,d_vec]),...
+                obj.mu(ll,:),...
+                obj.Sigma(:,:,ll));
         end
     end
     %=================================================================%
@@ -305,14 +302,10 @@ methods
         
                 
         if and(~isempty(obj1.mu),~isempty(obj2.mu)) % bivariate lognormal phantoms
-            if ~iscell(obj1.mu); obj1.mu = {obj1.mu}; end
-            if ~iscell(obj1.Sigma); obj1.Sigma = {obj1.Sigma}; end
-            if ~iscell(obj2.mu); obj2.mu = {obj2.mu}; end
-            if ~iscell(obj2.Sigma); obj2.Sigma = {obj2.Sigma}; end
             
             objn = Phantom('standard',span,...
-                [obj1.mu,obj2.mu],...
-                [obj1.Sigma,obj2.Sigma],...
+                [obj1.mu;obj2.mu],...
+                cat(3,obj1.Sigma,obj2.Sigma),...
                 w);
             
             
@@ -334,14 +327,9 @@ methods
 
         A = [1,-3;0,1]; % corresponds to mass-mobility relation
         
-        if obj.n_modes==1 % for unimodal phantom
-            mu_rhod = (A*obj.mu'+[log10(6/pi)+9;0])';
-            Sigma_rhod = A*obj.Sigma*A';
-        else% for a multimodal phantom
-            for ii=1:obj.n_modes
-                mu_rhod{ii} = (A*obj.mu{ii}'+[log10(6/pi)+9;0])';
-                Sigma_rhod{ii} = A*obj.Sigma{ii}*A';
-            end
+        for ll=1:obj.n_modes
+            mu_rhod(ll,:) = (A*obj.mu(ll,:)'+[log10(6/pi)+9;0])';
+            Sigma_rhod(:,:,ll) = A*obj.Sigma(:,:,ll)*A';
         end
         
         phantom = Phantom('standard',grid_rho,mu_rhod,Sigma_rhod);
@@ -444,35 +432,33 @@ methods (Static)
     %   Author:  Timothy Sipkens, 2019-10-29
     function [p,Dm,l1,l2] = cov2p(mu,Sigma,modes)
 
-        if ~iscell(mu); mu = {mu}; end
-        if ~iscell(Sigma); Sigma = {Sigma}; end
         if ~exist('modes','var'); modes = [];end
         if isempty(modes); modes = repmat({'logn'},[1,length(mu)]); end
 
         p = [];
-        for ll=length(mu):-1:1 % loop through modes
-            p(ll).dg = 10.^mu{ll}(2);
-            p(ll).mg = mu{ll}(1);
+        for ll=length(modes):-1:1 % loop through modes
+            p(ll).dg = 10.^mu(ll,2);
+            p(ll).mg = mu(ll,1);
 
             if strcmp(modes{ll},'logn') % if lognormal distribution, convert to geometric mean
                 p(ll).mg = 10.^p(ll).mg;
             end
 
-            p(ll).sg = 10^sqrt(Sigma{ll}(2,2));
-            p(ll).sm = 10^sqrt(Sigma{ll}(1,1));
+            p(ll).sg = 10^sqrt(Sigma(2,2,ll));
+            p(ll).sm = 10^sqrt(Sigma(1,1,ll));
 
-            R12 = Sigma{1}(1,2)/...
-                sqrt(Sigma{1}(1,1)*Sigma{1}(2,2));
-            p(ll).smd = 10^sqrt(Sigma{1}(1,1)*(1-R12^2));
+            R12 = Sigma(1,2,ll)/...
+                sqrt(Sigma(1,1,ll)*Sigma(2,2,ll));
+            p(ll).smd = 10^sqrt(Sigma(1,1,ll)*(1-R12^2));
                 % conditional distribution width
 
-            p(ll).Dm = Sigma{ll}(1,2)/Sigma{ll}(2,2);
+            p(ll).Dm = Sigma(1,2,ll)/Sigma(2,2,ll);
                 % corresponds to slope of "locus of vertical"
                 % (Friendly, Monette, and Fox, 2013)
                 % can be calculated as Dm = corr*sy/sx
 
-            % t0 = eigs(rot90(Sigma{ll},2),1);
-            % p(ll).ma = (t0-Sigma{ll}(2,2))./Sigma{ll}(1,2);
+            % t0 = eigs(rot90(Sigma(:,:,ll),2),1);
+            % p(ll).ma = (t0-Sigma(2,2,ll))./Sigma(1,2,ll);
                 % calculate the major axis slope
 
             p(ll).rhog = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
@@ -493,29 +479,24 @@ methods (Static)
     function [mu,Sigma] = p2cov(p,modes)
 
         for ll=length(p):-1:1
-            mu{ll} = log10([p(ll).mg,p(ll).dg]);
+            mu(ll,:) = log10([p(ll).mg,p(ll).dg]);
                 % use geometric mean
 
             if strcmp(modes{ll},'logn')
                 % R12 = (1+1/(p(ll).Dm^2)*...
                 %     (log10(p(ll).smd)/log10(p(ll).sg))...
                 %     ^2)^(-1/2);
-                Sigma{ll} = inv([(1/log10(p(ll).smd))^2,...
+                Sigma(:,:,ll) = inv([(1/log10(p(ll).smd))^2,...
                     -p(ll).Dm/log10(p(ll).smd)^2;...
                     -p(ll).Dm/log10(p(ll).smd)^2,...
                     1/log10(p(ll).sg)^2+p(ll).Dm^2/log10(p(ll).smd)^2]);
             
             else  % for non-bivariate lognormal distributions, approximate
-                Sigma{ll} = inv([(1/p(ll).smd)^2,...
+                Sigma(:,:,ll) = inv([(1/p(ll).smd)^2,...
                     -p(ll).Dm/p(ll).smd^2;...
                     -p(ll).Dm/p(ll).smd^2,...
                     1/log10(p(ll).sg)^2+p(ll).Dm^2/p(ll).smd^2]);
             end
-        end
-
-        if length(mu)==1
-            mu = mu{1};
-            Sigma = Sigma{1};
         end
     end
     %=================================================================%
@@ -526,15 +507,12 @@ methods (Static)
     %   Function to convert covariance matrix to correlation matrix.
     %   Author:  Timothy Sipkens, 2019-10-29
     function R = sigma2r(Sigma)
-        if ~iscell(Sigma); Sigma = {Sigma}; end
-
-        R = {};
-        for ll=length(Sigma):-1:1
-            R12 = Sigma{ll}(1,2)/...
-                sqrt(Sigma{ll}(1,1)*Sigma{ll}(2,2));
+        for ll=length(Sigma(1,1,:)):-1:1
+            R12 = Sigma(1,2,ll)/...
+                sqrt(Sigma(1,1,ll)*Sigma(2,2,ll));
                 % off-diagonal correlation
 
-            R{ll} = diag([1,1])+rot90(diag([R12,R12]));
+            R(:,:,ll) = diag([1,1])+rot90(diag([R12,R12]));
                 % form correlation matrix
         end
     end

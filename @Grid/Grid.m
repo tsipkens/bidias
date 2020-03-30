@@ -684,7 +684,7 @@ methods
     %           Can form N x 2 vector, where N is the number of points
     %           to be found.
     % Outputs:
-    %   idx     Global index on the grid, incorporating missing pixels
+    %   k       Global index on the grid, incorporating missing pixels
     %   idx_2d  Pair of indices of pixel location
     %-----------------------------------------------------------------%
     function [k,idx_2d] = closest_idx(obj,r0)
