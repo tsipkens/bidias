@@ -2,11 +2,12 @@
 % GRID  Responsible for discretizing space as a grid and related operations.
 % Author: Timothy Sipkens, 2019-02-03
 % 
-%   The grid class is currently used when a simple discretization of
+% Notes:
+% - The grid class is currently used when a simple discretization of
 %   two-dimensional space is required. It then takes either the span
 %   of spcae to be covered or pre-defined edge vectors to form a grid.
 %
-%   See constructor method for list of other variables required
+% - See constructor method for list of other variables required
 %   for creation.
 %=========================================================================%
 

@@ -62,8 +62,7 @@ methods
             
             %-- OPTION 1: Standard bivariate lognormal distribution --%
             case {'standard'}
-                n_modes = length(mu_p);
-                if ~iscell(mu_p); n_modes = 1; end
+                n_modes = size(mu_p,1);
                 
                 obj.mu = mu_p;
                 obj.Sigma = Sigma_modes;
@@ -199,7 +198,7 @@ methods
         if isempty(w); w = ones(obj.n_modes,1)./obj.n_modes; end
             % weight modes evenly
             
-        if ~exist('grid','var'); grid_vec = []; end
+        if ~exist('grid_vec','var'); grid_vec = []; end
         if isempty(grid_vec); grid_vec = obj.grid; end % use phantom grid
         if isempty(grid_vec); error('For an empty Phantom, grid_vec is required.'); end
             % if an empty phantom (e.g. Phantom.eval_p(p);)
@@ -342,30 +341,37 @@ end
 
 methods (Static)
     %== PRESET_PHANTOMS (External definition) ========================%
-    % Returns a set of parameters for preset/sample phantoms.
+    %   Returns a set of parameters for preset/sample phantoms.
     [p,modes,type] = presets(obj,type);
     %=================================================================%
     
     %== FIT (External definition) ====================================%
-    % Fits a phantom to a given set of data, x, defined on a given grid, 
-    %   or vector of elements. Outputs a fit phantom object.
+    %   Fits a phantom to a given set of data, x, defined on a given grid, 
+    %       or vector of elements. Outputs a fit phantom object.
     [phantom,N,y_out,J] = fit(x,vec_grid,logr0);
     %=================================================================%
     
     %== FIT2 (External definition) ===================================%
-    % Fits a multimodal phantom object to a given set of data, x, 
-    %   defined on a given grid or vector of elements.
-    % Outputs a fit phantom object.
+    %   Fits a multimodal phantom object to a given set of data, x, 
+    %       defined on a given grid or vector of elements.
+    %   Outputs a fit phantom object.
     [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0);
     %=================================================================%
     
     %== FIT2_RHO (External definition) ===============================%
-    % Fits a multimodal phantom object to a given set of data, x, 
-    %   defined on a given grid or vector of elements. 
-    % Outputs a fit phantom object.
-    % Tuned specifically for effective density-mobility distributions
-    %   (e.g. for negative or nearly zero correlation)
+    %   Fits a multimodal phantom object to a given set of data, x, 
+    %       defined on a given grid or vector of elements. 
+    %   Outputs a fit phantom object.
+    %   Tuned specifically for effective density-mobility distributions
+    %       (e.g. for negative or nearly zero correlation)
     [phantom,N,y_out,J] = fit2_rho(x,vec_grid,n_modes,logr0);
+    %=================================================================%
+    
+    %== FIT_GMM (External definition) ================================%
+    %	Fits a phantom to a given set of data, x, defined on a given grid.
+    %   Uses sampling and k-means to fit a Guassian mixture model.
+    %   Outputs a fit phantom object.
+    [phantom,N,s] = fit_gmm(x,grid,k);
     %=================================================================%
     
     

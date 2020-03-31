@@ -52,37 +52,9 @@ semilogx(pha_dim1,vec_dim1);
 hold off;
 
 
-
 subplot(4,4,[5,15]); % refocus center panel
 
 if nargout==0; clear pha N; end % prevent unnecessary output
-
-%-------------------------%
-%{
-if isa(x_pha,'Phantom')
-    pha = x_pha;
-    grid = pha.grid;
-    N = [];
-else
-    [pha,N] = Phantom.fit(x_pha,grid);
-end
-
-if isempty(varargin); varargin = {'Color',[1,1,0,1]}; end
-    % specify line properties (default: yellow, no transparency)
-
-%-- Proceed with plotting ----------------%
-tools.overlay_ellipse(pha.mu,pha.Sigma,1,varargin{:});
-tools.overlay_ellipse(pha.mu,pha.Sigma,2,varargin{:});
-tools.overlay_ellipse(pha.mu,pha.Sigma,3,varargin{:});
-
-tools.overlay_line(grid,fliplr(pha.mu),...
-    pha.p.Dm,varargin{:});
-
-ylim(ylim_st); % restore original plot bounds
-xlim(xlim_st);
-
-if nargout==0; clear pha N; end % prevent unnecessary output
-%}
 
 end
 

@@ -25,7 +25,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('3',span_t);
+phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -105,10 +105,10 @@ grid_b.plot2d_sweep(b,cm_b);
 [pha_b,Nb] = Phantom.fit2(b,grid_b,2,[0,1.7,0.1,2.3]);
 
 %-- pha_b.Sigma properties --------%
-s1b = sqrt(pha_b.Sigma{1}(1,1));
-s2b = sqrt(pha_b.Sigma{1}(2,2));
-R12b = pha_b.Sigma{1}(1,2)/(s1b*s2b);
-Dmb = pha_b.Sigma{1}(1,2)/pha_b.Sigma{1}(2,2); % also s1*R12/s2
+s1b = sqrt(pha_b.Sigma(1,1,1));
+s2b = sqrt(pha_b.Sigma(2,2,1));
+R12b = pha_b.Sigma(1,2,1)/(s1b*s2b);
+Dmb = pha_b.Sigma(1,2,1)/pha_b.Sigma(2,2,1); % also s1*R12/s2
 %----------------------------------%
 
 

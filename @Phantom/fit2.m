@@ -22,6 +22,7 @@
 
 function [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0)
 
+disp(' ');
 disp('[ Fitting phantom object... -------------]');
 
 %-- Parse inputs ---------------------------------------------%

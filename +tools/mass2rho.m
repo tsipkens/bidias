@@ -1,5 +1,5 @@
 
-% MASS2RHO  Converts a mass-mobility distribution to a effective density-mobility distribution.
+% MASS2RHO  Converts a mass-mobility distribution to an effective density-mobility distribution.
 % Author:   Timothy Sipkens, 2019-05-17
 %=========================================================================%
 
