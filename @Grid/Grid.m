@@ -668,7 +668,7 @@ methods
             %-- Modify rmin and rmax for output -----%
             rmin = fliplr(rmin);
             rmax = fliplr(rmax);
-
+            
         end % end loop over multiple rays
 
     end
@@ -726,7 +726,7 @@ methods
         
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
-        [dr,dr1,dr2] = obj.dr; % used to give warning below
+        [~,dr1,dr2] = obj.dr; % used to give warning below
         dr0 = dr1(:).*dr2(:);
         if ~all(abs(dr0(2:end)-dr0(1))<1e-10)
             warning(['The plot2d method does not display ',...
@@ -824,42 +824,29 @@ methods
     %== PLOT2D_SWEEP =================================================%
     %   Plot data in slices, sweeping through the provided colormap.
     %   Author: Timothy Sipkens, 2019-11-28
-    function [h,x] = plot2d_sweep(grid,x,cmap)
+    function [h,x] = plot2d_sweep(grid,x,cm,dim)
         
-        n1 = ceil(grid.ne(1)./20);
-        n2 = floor(grid.ne(1)/n1);
-        n3 = floor(length(cmap)/n2);
-        cmap2 = cmap(1:n3:end,:);
-
-        set(gca,'ColorOrder',cmap2,'NextPlot','replacechildren');
+        if ~exist('dim','var'); dim = []; end
+        if isempty(dim); dim = 1; end
+            % dimension to sweep through
+            % e.g. sweep through mass setpoints on standard grid, dim = 1
+        
+        dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
+        
+        n1 = ceil(grid.ne(dim)./20);
+        n2 = floor(grid.ne(dim)/n1);
+        n3 = floor(length(cm)/n2);
+        cm2 = cm(1:n3:end,:); % adjust colormap to appropriate size
+        
+        set(gca,'ColorOrder',cm2,'NextPlot','replacechildren');
         x = reshape(x,grid.ne);
-        h = semilogx(grid.edges{2},x(1:n1:end,:),...
+        if dim==2; x = x'; end
+        
+        h = semilogx(grid.edges{dim2},x(1:n1:end,:),...
             'o-','MarkerSize',2.5,'MarkerFaceColor',[1,1,1]);
 
         if nargout==0; clear h; end
     
-    end
-    %=================================================================%
-    
-    
-    
-    %== PLOT2D_SWEEPT ================================================%
-    %   Plot transposed data in slices, sweeping through the provided colormap.
-    %   Author: Timothy Sipkens, 2019-11-28
-    function [h,x] = plot2d_sweept(grid,x,cmap)
-        
-        n1 = ceil(grid.ne(2)./20);
-        n2 = floor(grid.ne(2)/n1);
-        n3 = floor(length(cmap)/n2);
-        cmap2 = cmap(1:n3:end,:);
-        
-        set(gca,'ColorOrder',cmap2,'NextPlot','replacechildren');
-        x = reshape(x,grid.ne)';
-        h = semilogx(grid.edges{1},x(1:n1:end,:),...
-            'o-','MarkerSize',2.5,'MarkerFaceColor',[1,1,1]);
-        
-        if nargout==0; clear h; end
-        
     end
     %=================================================================%
     

@@ -3,7 +3,7 @@
 % Author: Timothy Sipkens, 2019-11-28
 %=========================================================================%
 
-function [] = plot2d_scatter(m,d,b,cmap)
+function [] = plot2d_scatter(vec1,vec2,b,cm)
 
 b = b./max(b);
 
@@ -17,17 +17,17 @@ bscl = max((logb-bmin)/(bmax-bmin),bmin);
 marker_size = 12.*bscl+0.1;
 corder = 1-bscl; % color is logscale
 
-if ~exist('cmap','var'); cmap = []; end
-if isempty(cmap); cmap = colormap('gray'); end
+if ~exist('cmap','var'); cm = []; end
+if isempty(cm); cm = colormap('gray'); end
 
-N = size(cmap,1);
-color = cmap(round(corder.*(N-1)+1),:);
+N = size(cm,1);
+color = cm(round(corder.*(N-1)+1),:);
 color(corder==1,:) = 1;
 
 clf;
-for ii=1:length(m)
+for ii=1:length(vec1)
     if ii==2; hold on; end
-    loglog(d(ii),m(ii),'.',...
+    loglog(vec2(ii),vec1(ii),'.',...
         'Color',color(ii,:),...
         'MarkerSize',marker_size(ii));
         % marker_size is also logscale
@@ -40,7 +40,7 @@ for ii=5:-1:0
     t0 = (bmax+ii-5-bmin)/(bmax-bmin);
     if t0>=0
         h(6-ii) = plot(NaN,NaN,'.',...
-            'Color',cmap(round((1-t0)*(N-1)+1),:),...
+            'Color',cm(round((1-t0)*(N-1)+1),:),...
             'MarkerSize',12*t0+0.1);
         text{6-ii} = num2str(10^(ii-5));
     end
