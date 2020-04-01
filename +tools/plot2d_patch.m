@@ -22,16 +22,19 @@ n2 = length(cm)-grid.ne(dim)*n1+1;
 cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
 
 clf;
-patch(log10(grid.edges{dim2}([1,1:end,end])),... % plot data slices as patches
+p = patch(log10(grid.edges{dim2}([1,1:end,end])),... % plot data slices as patches
     log10(grid.edges{dim}(1)).*ones(1,grid.ne(dim2)+2),...
     [min_x,max(log10(x_rs(:,1)'),min_x),min_x],cm2(1,:));
+p.FaceAlpha = 1;%1;
 hold on;
 for ii=2:grid.ne(dim)
-    patch(log10(grid.edges{dim2}([1,1:end,end])),...
+    p = patch(log10(grid.edges{dim2}([1,1:end,end])),...
         log10(grid.edges{dim}(ii)).*ones(1,grid.ne(dim2)+2),...
         [min_x,max(log10(x_rs(:,ii)'),min_x),min_x],cm2(ii,:));
+    p.FaceAlpha = 1;%1-ii/(grid.ne(dim));
 end
 hold off;
+zlim([min_x,inf]);
 
 view([-20,45,70]); % adjust view so slices are visible
 
