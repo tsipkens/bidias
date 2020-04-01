@@ -833,16 +833,15 @@ methods
         
         dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
         
-        n1 = ceil(grid.ne(dim)./20);
-        n2 = floor(grid.ne(dim)/n1);
-        n3 = floor(length(cm)/n2);
-        cm2 = cm(1:n3:end,:); % adjust colormap to appropriate size
+        n1 = floor(size(cm,1)/grid.ne(dim));
+        n2 = length(cm)-grid.ne(dim)*n1+1;
+        cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
         
         set(gca,'ColorOrder',cm2,'NextPlot','replacechildren');
-        x = reshape(x,grid.ne);
-        if dim==2; x = x'; end
+        x_rs = reshape(x,grid.ne);
+        if dim==2; x_rs = x_rs'; end
         
-        h = semilogx(grid.edges{dim2},x(1:n1:end,:),...
+        h = semilogx(grid.edges{dim2},x_rs,...
             'o-','MarkerSize',2.5,'MarkerFaceColor',[1,1,1]);
 
         if nargout==0; clear h; end
