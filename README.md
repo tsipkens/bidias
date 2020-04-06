@@ -15,7 +15,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 phantom = Phantom('1',span_t);
 ```
 
-to the corresponding phantom number (e.g. to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]).
+to the corresponding phantom number (e.g. to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]). Default runtimes should be under two minutes but will depend on computer hardware. Alternate arragnements of the `run_inversion*` scripts within the main `main_bayes` script will incur very different runtimes, as most attempt to optimize the prior parameter set (up to the order of several hours). 
 
 This program is organized into several: classes (folders starting with the `@` symbol), packages (folders starting with the `+` symbol), and scripts that form the base of the program and will be detailed in this README.
 
