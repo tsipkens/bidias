@@ -3,12 +3,9 @@
 % Author: Timothy Sipkens, 2019-05-28
 %=========================================================================%
 
-if iscell(phantom.Sigma)
-    Gd = phantom.Sigma{1};
-elseif isempty(phantom.Sigma)
+Gd = phantom.Sigma(:,:,1);
+if isempty(Gd) % for Phantom 3
     [~,Gd] = phantom.p2cov(phantom.p(2),phantom.modes(2));
-else
-    Gd = phantom.Sigma;
 end
 
 %-- Gd properties -----------------%

@@ -8,10 +8,8 @@ clear;
 clc;
 close all;
 
-
 %-- Load colour maps -----------------------------------------------------%
 addpath('cmap');
-cm_alt = load_cmap('BuPu',255);
 cm_b = load_cmap('inferno',255);
 cm_b = cm_b(40:end,:);
 cm_div = load_cmap('RdBu',200);
@@ -25,7 +23,7 @@ load('viridis.mat');
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
 
-phantom = Phantom('3',span_t);
+phantom = Phantom('1',span_t);
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -44,6 +42,9 @@ figure(1);
 phantom.plot;
 colormap(gcf,[cm;1,1,1]);
 caxis([0,cmax*(1+1/256)]);
+subplot(4,4,[1,3]);
+title('Phantom');
+subplot(4,4,[5,15]);
 
 hold on; % plots mg ridges of phantom
 plot(log10(grid_t.edges{2}),...
@@ -76,6 +77,9 @@ figure(2);
 colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x0,grid_t,x_t);
 caxis([0,cmax*(1+1/256)]);
+subplot(4,4,[1,3]);
+title('x_{projected}');
+subplot(4,4,[5,15]);
 
 
 
@@ -93,13 +97,16 @@ Ntot = 1e5;
 figure(5);
 tools.plot2d_scatter(...
     grid_b.elements(:,1),grid_b.elements(:,2),b,cm_b);
+title('Data: 2D scatter');
 
 figure(6);
-colormap(cm_b);
-grid_b.plot2d_marg(b);
+% tools.plot2d_patch(grid_b,b,cm_b);
+tools.plot2d_slices(grid_b,b,cm_b);
+title('Data: 2D slices');
 
 figure(20);
 grid_b.plot2d_sweep(b,cm_b);
+title('Data: Color sweep');
 
 
 [pha_b,Nb] = Phantom.fit2(b,grid_b,2,[0,1.7,0.1,2.3]);
@@ -115,19 +122,24 @@ Dmb = pha_b.Sigma(1,2,1)/pha_b.Sigma(2,2,1); % also s1*R12/s2
 
 %%
 %== STEP 3: Perform inversions ===========================================%
-run_inversions_g;
-run_inversions_i;
-run_inversions_j;
+run_inversions_h; % simple, faster, stand-alone Tikhonov + ED
+
+% run_inversions_g;
+% run_inversions_i;
+% run_inversions_j;
+
 % run_inversions_k; % time methods
 
 
 
 %%
 %== STEP 4: Visualize the results ========================================%
-ind = out_tk1.ind_min;
-x_plot = out_tk1(ind).x;
-out = out_tk1;
-lambda = out_tk1(ind).lambda;
+x_plot = x_ed;
+
+% ind = out_tk1.ind_min;
+% x_plot = out_tk1(ind).x;
+% out = out_tk1;
+% lambda = out_tk1(ind).lambda;
 
 % [~,ind] = max([out_ed_lam.B]);
 % x_plot = out_ed_lam(ind).x;
@@ -140,14 +152,25 @@ lambda = out_tk1(ind).lambda;
 figure(10);
 colormap(gcf,[cm;1,1,1]);
 grid_x.plot2d_marg(x_plot,grid_t,x_t);
-% colorbar;
 caxis([0,cmax*(1+1/256)]);
+subplot(4,4,[1,3]);
+title('x_{ed}');
+subplot(4,4,[5,15]);
+
+figure(11);
+colormap(gcf,[cm;1,1,1]);
+grid_x.plot2d_marg(x_tk1,grid_t,x_t);
+caxis([0,cmax*(1+1/256)]);
+subplot(4,4,[1,3]);
+title('x_{tk1}');
+subplot(4,4,[5,15]);
 
 
 
 %-{
+%-- Requires running run_inversions_(g,i,j) --%
 %-- Plot posterior uncertainties ------------------------------------%
-%-- Tikhonov --%
+%	... for Tikhonov -----------------%
 % [~,spo] = tools.get_posterior(...
 %     A,Lb,out_tk1(ind).lambda.*out_tk1(1).Lpr);
 % figure(12);
@@ -155,8 +178,7 @@ caxis([0,cmax*(1+1/256)]);
 % grid_x.plot2d(spo);
 % colorbar;
 
-
-%-- Exponential distance --%
+%	...for exponential distance ------%
 %{
 Lpr = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),...
     grid_x.elements(:,1));
@@ -170,7 +192,8 @@ grid_x.plot2d(spo);
 
 
 %-- Plot regularization parameter selection schemes ----------------------%
-%-{
+%-- Requires running run_inversions_(g,i,j) --%
+%{
 figure(13);
 loglog([out.lambda],[out.eps]); % plot absolute Euclidean error
 hold on;
@@ -181,7 +204,5 @@ hold off;
 %}
 
 
-
 figure(10);
-
 
