@@ -3,7 +3,7 @@
 
 [![DOI](https://zenodo.org/badge/190667091.svg)](https://zenodo.org/badge/latestdoi/190667091)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
-[![Version](https://img.shields.io/badge/Version-2.1+-blue.svg)]()
+[![Version](https://img.shields.io/badge/Version-3.0+-blue.svg)]()
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1], 
 is designed to invert tandem measurements of aerosol size distributions.
@@ -11,6 +11,8 @@ This includes the inversion of particle mass analyzer-differential mobility anal
 (PMA-DMA) data to find the two-dimensional mass-mobility distribution.
 
 The results of the aforementioned paper can be produced by running `main_jas20a` in [v1.1][code_v11] of this code. See Section [2.1.2](#212-script-associated-with-the-original-j-aerosol-sci-paper) of this README for more details.
+
+The code was update in association with a second article [Sipkens et al. (2020c)][4], currently under review. The results of that paper can be reproduced by running `main_bayes.m` in [v3.0][code_v3] of this code. 
 
 This program is organized into several: classes (folders starting with the `@` symbol),
 packages (folders starting with the `+` symbol), and scripts that form the
@@ -467,4 +469,5 @@ Information on the provided colormaps can be found in an associated README in th
 [7_CC_Lcurve]: https://arxiv.org/abs/1608.04571
 [Stolz18]: https://www.tandfonline.com/doi/full/10.1080/02786826.2018.1514101
 [code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v1.1
+[code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v3.0
 
