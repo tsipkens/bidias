@@ -1,12 +1,13 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
 % Author: Timothy Sipkens, 2019-02-03
-% 
-%   The grid class is currently used when a simple discretization of
+%
+% Notes:
+% - The grid class is currently used when a simple discretization of
 %   two-dimensional space is required. It then takes either the span
 %   of spcae to be covered or pre-defined edge vectors to form a grid.
 %
-%   See constructor method for list of other variables required
+% - See constructor method for list of other variables required
 %   for creation.
 %=========================================================================%
 
@@ -667,7 +668,7 @@ methods
             %-- Modify rmin and rmax for output -----%
             rmin = fliplr(rmin);
             rmax = fliplr(rmax);
-
+            
         end % end loop over multiple rays
 
     end
@@ -684,7 +685,7 @@ methods
     %           Can form N x 2 vector, where N is the number of points
     %           to be found.
     % Outputs:
-    %   idx     Global index on the grid, incorporating missing pixels
+    %   k       Global index on the grid, incorporating missing pixels
     %   idx_2d  Pair of indices of pixel location
     %-----------------------------------------------------------------%
     function [k,idx_2d] = closest_idx(obj,r0)
@@ -725,7 +726,7 @@ methods
         
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
-        [dr,dr1,dr2] = obj.dr; % used to give warning below
+        [~,dr1,dr2] = obj.dr; % used to give warning below
         dr0 = dr1(:).*dr2(:);
         if ~all(abs(dr0(2:end)-dr0(1))<1e-10)
             warning(['The plot2d method does not display ',...
@@ -823,42 +824,28 @@ methods
     %== PLOT2D_SWEEP =================================================%
     %   Plot data in slices, sweeping through the provided colormap.
     %   Author: Timothy Sipkens, 2019-11-28
-    function [h,x] = plot2d_sweep(grid,x,cmap)
+    function [h,x] = plot2d_sweep(grid,x,cm,dim)
         
-        n1 = ceil(grid.ne(1)./20);
-        n2 = floor(grid.ne(1)/n1);
-        n3 = floor(length(cmap)/n2);
-        cmap2 = cmap(1:n3:end,:);
-
-        set(gca,'ColorOrder',cmap2,'NextPlot','replacechildren');
-        x = reshape(x,grid.ne);
-        h = semilogx(grid.edges{2},x(1:n1:end,:),...
+        if ~exist('dim','var'); dim = []; end
+        if isempty(dim); dim = 1; end
+            % dimension to sweep through
+            % e.g. sweep through mass setpoints on standard grid, dim = 1
+        
+        dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
+        
+        n1 = floor(size(cm,1)/grid.ne(dim));
+        n2 = length(cm)-grid.ne(dim)*n1+1;
+        cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
+        
+        set(gca,'ColorOrder',cm2,'NextPlot','replacechildren');
+        x_rs = reshape(x,grid.ne);
+        if dim==2; x_rs = x_rs'; end
+        
+        h = semilogx(grid.edges{dim2},x_rs,...
             'o-','MarkerSize',2.5,'MarkerFaceColor',[1,1,1]);
 
         if nargout==0; clear h; end
     
-    end
-    %=================================================================%
-    
-    
-    
-    %== PLOT2D_SWEEPT ================================================%
-    %   Plot transposed data in slices, sweeping through the provided colormap.
-    %   Author: Timothy Sipkens, 2019-11-28
-    function [h,x] = plot2d_sweept(grid,x,cmap)
-        
-        n1 = ceil(grid.ne(2)./20);
-        n2 = floor(grid.ne(2)/n1);
-        n3 = floor(length(cmap)/n2);
-        cmap2 = cmap(1:n3:end,:);
-        
-        set(gca,'ColorOrder',cmap2,'NextPlot','replacechildren');
-        x = reshape(x,grid.ne)';
-        h = semilogx(grid.edges{1},x(1:n1:end,:),...
-            'o-','MarkerSize',2.5,'MarkerFaceColor',[1,1,1]);
-        
-        if nargout==0; clear h; end
-        
     end
     %=================================================================%
     
@@ -999,7 +986,6 @@ methods
         if length(r1)==2; b1 = r1(1)-slope1*r1(2); end % if coordinates, find y-intercept
         if isempty(r1); b1 = 0; end % if not specified, use b = 0
         %--------------------------------------------%
-        
         
         %-- Cut upper triangle ---------------------%
         if strcmp(obj.discrete,'logarithmic')

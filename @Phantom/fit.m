@@ -18,6 +18,7 @@
 
 function [phantom,N,y_out,J] = fit(x,vec_grid,logr0)
 
+disp(' ');
 disp('[ Fitting phantom object... -------------]');
 
 %-- Parse inputs ---------------------------------------------%

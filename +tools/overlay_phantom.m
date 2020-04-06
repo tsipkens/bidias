@@ -29,12 +29,11 @@ xlim_st = xlim;
 mu = pha.mu; % local copies of parameters
 Sigma = pha.Sigma;
 p = pha.p;
-if ~iscell(mu); mu = {mu}; Sigma = {Sigma}; end % handle unimodal case
-for ii=1:pha.n_modes
+for ll=1:pha.n_modes
     for jj=1:length(iso_levels)
-        tools.overlay_ellipse(mu{ii},Sigma{ii},iso_levels(jj),varargin{:});
+        tools.overlay_ellipse(mu(ll,:),Sigma(:,:,ll),iso_levels(jj),varargin{:});
     end
-    tools.overlay_line(grid,fliplr(mu{ii}),p(ii).Dm,varargin{:});
+    tools.overlay_line(grid,fliplr(mu(ll,:)),p(ll).Dm,varargin{:});
 end
 
 

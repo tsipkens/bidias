@@ -3,7 +3,7 @@
 % Author: Timothy Sipkens, 2019-12-17
 % 
 % Note:
-%   The prop_pma input woudl override deriving some of the properties from
+%   The prop_pma input would override deriving some of the properties from
 %   the imported data file.
 %=========================================================================%
 

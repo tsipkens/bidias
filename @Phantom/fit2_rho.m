@@ -22,6 +22,7 @@
 
 function [phantom,N,y_out,J] = fit2_rho(x,vec_grid,n_modes,logr0)
 
+disp(' ');
 disp('[ Fitting phantom object... -------------]');
 
 %-- Parse inputs ---------------------------------------------%
@@ -76,9 +77,9 @@ N = exp(y1(1:6:end)); % scaling parameter denoting total number of particles
 y_out = y1;
 
 for ii=0:(n_modes-1)
-    mu{ii+1} = [y1(6*ii+2),y1(6*ii+3)];
-    sigma{ii+1} = [y1(6*ii+4),y1(6*ii+5)];
-    Sigma{ii+1} = corr2cov(sigma{ii+1},[1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
+    mu(ii+1,:) = [y1(6*ii+2),y1(6*ii+3)];
+    sigma(ii+1,:) = [y1(6*ii+4),y1(6*ii+5)];
+    Sigma(:,:,ii+1) = corr2cov(sigma(ii+1,:),[1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
 end
 
 phantom = Phantom('standard',grid,mu,Sigma,N);
