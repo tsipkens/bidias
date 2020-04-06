@@ -1,22 +1,23 @@
 
 # MATLAB tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
 
-[![DOI](https://zenodo.org/badge/190667091.svg)](https://zenodo.org/badge/latestdoi/190667091)
+[![DOI](https://img.shields.io/badge/DOI-10.17632/sg2zj5yrvr.3-blue.svg)](10.17632/sg2zj5yrvr.3)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Version](https://img.shields.io/badge/Version-3.0+-blue.svg)]()
 
-This program, originally released with [Sipkens et al. (2020a)][1_JAS1], 
-is designed to invert tandem measurements of aerosol size distributions.
-This includes the inversion of particle mass analyzer-differential mobility analyzer
-(PMA-DMA) data to find the two-dimensional mass-mobility distribution.
+This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. The methods in this code are described in two papers that correspond to releases:
 
-The results of the aforementioned paper can be produced by running `main_jas20a` in [v1.1][code_v11] of this code. See Section [2.1.2](#212-script-associated-with-the-original-j-aerosol-sci-paper) of this README for more details.
+**v1.1** - The results of [Sipkens et al. (2020a)][1_JAS1] can be produced by running `main_jas20a` in [v1.1][code_v11] of this code. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in [v1.1][code_v11] provides a better optimized regularization parameter and thus a slightly smaller Euclidean error. Later updates this code result in minimal changes to the output of this script. 
 
-The code was update in association with a second article [Sipkens et al. (2020c)][4], currently under review. The results of that paper can be reproduced by running `main_bayes.m` in [v3.0][code_v3] of this code. 
+**v3.0** - The results of a second article [Sipkens et al. (2020c)][4], currently under review, can be reproduced by running `main_bayes.m` in [v3.0][code_v3] of this code. This version of the code is to be archived with Mendeley Data at [https://doi.org/10.17632/sg2zj5yrvr.3](https://doi.org/10.17632/sg2zj5yrvr.3). The four different phantoms in that work can be realized by changing the integer in the line:
 
-This program is organized into several: classes (folders starting with the `@` symbol),
-packages (folders starting with the `+` symbol), and scripts that form the
-base of the program and will be detailed in this README.
+```Matlab
+phantom = Phantom('1',span_t);
+```
+
+to the corresponding phantom number (e.g. to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]).
+
+This program is organized into several: classes (folders starting with the `@` symbol), packages (folders starting with the `+` symbol), and scripts that form the base of the program and will be detailed in this README.
 
 ## 1. General description and problem definition
 
@@ -84,11 +85,6 @@ where `Ntot` is the total number of particle counts as described in [Sipkens et 
 **STEP 3**: With this information, one can proceed to implement various inversion approaches, such as those available in the `invert` package described below. Preset groupings on inversion approaches are available in the `run_inversions*` scripts, also described below.
 
 **STEP 4**: Finally, one can post-process and visualize the results as desired. The `Grid` class allows for a simple visualization of the inferred distribution by calling the `Grid.plot2d_marg` method of this class. This plots both the retrieved distribution as well as the marginalized distribution on each of the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
-
-##### 2.1.2 Script associated with the original J. Aerosol Sci. paper
-
-Of particular note, the `main_jas20a.m` script is designed to replicate the results in the associated paper [Sipkens et al. (2020a)][1_JAS1], as noted above. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower
-range in the updated code provides a better optimized regularization parameter and thus a slightly smaller Euclidean error.
 
 ### 2.2 Scripts to run a series of inversion methods (run_inversions*.m)
 
@@ -469,5 +465,5 @@ Information on the provided colormaps can be found in an associated README in th
 [7_CC_Lcurve]: https://arxiv.org/abs/1608.04571
 [Stolz18]: https://www.tandfonline.com/doi/full/10.1080/02786826.2018.1514101
 [code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v1.1
-[code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v3.0
+[code_v3]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v3.0
 
