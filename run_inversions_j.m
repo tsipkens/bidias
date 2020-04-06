@@ -26,12 +26,9 @@ disp(' ');
 
 
 %-{
-if iscell(phantom.Sigma)
-    Gd = phantom.Sigma{1};
-elseif isempty(phantom.Sigma)
+Gd = phantom.Sigma(:,:,1);
+if isempty(Gd) % for Phantom 3
     [~,Gd] = phantom.p2cov(phantom.p(2),phantom.modes(2));
-else
-    Gd = phantom.Sigma;
 end
 [x_ed_corr,out_ed_corr] = ...
     optimize.exp_dist_op1d(Lb*A,Lb*b,lambda_ed_lam,Gd,...
