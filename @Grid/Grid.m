@@ -1,7 +1,7 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
 % Author: Timothy Sipkens, 2019-02-03
-% 
+%
 % Notes:
 % - The grid class is currently used when a simple discretization of
 %   two-dimensional space is required. It then takes either the span
@@ -986,7 +986,6 @@ methods
         if length(r1)==2; b1 = r1(1)-slope1*r1(2); end % if coordinates, find y-intercept
         if isempty(r1); b1 = 0; end % if not specified, use b = 0
         %--------------------------------------------%
-        
         
         %-- Cut upper triangle ---------------------%
         if strcmp(obj.discrete,'logarithmic')

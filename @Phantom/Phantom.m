@@ -211,6 +211,9 @@ methods
         Sigma0 = obj.Sigma;
         %-------------------------------------------------------------%
         
+        if ~iscell(obj.mu); mu0 = {obj.mu};
+        else; mu0 = obj.mu;
+        end
         
         m_vec = vec(:,1); % element centers in mass
         d_vec = vec(:,2); % element centers in mobility
@@ -254,7 +257,6 @@ methods
         else; vec = grid_vec; % if a set of element centers was provided directly
         end
         %-------------------------------------------------------------%
-        
         
         m_vec = vec(:,1); % element centers in mass
         d_vec = vec(:,2); % element centers in mobility
