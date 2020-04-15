@@ -75,6 +75,7 @@ for jj=1:x_length
         L(jj,jj) = L(jj,jj)+0.5;
     end
 end
+L(end,:) = []; % remove final row
 L = sparse(L);
 
 end

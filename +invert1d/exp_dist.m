@@ -20,26 +20,17 @@
 %   Gpo_inv     Inverse of the posterior covariance
 %=========================================================================%
 
-function [x,D,Lpr0,Gpo_inv] = exp_dist(A,b,lambda,Gd,grid_vec2,vec1,xi,solver)
-
-if ~exist('vec1','var'); vec1 = []; end
+function [x,D,Lpr0,Gpo_inv] = exp_dist(A,b,lambda,ld,vec,xi,solver)
 
 x_length = size(A,2);
 
-
 %-- Parse inputs ---------------------------------------------%
-if ~exist('Gd','var'); Gd = []; end
-if isempty(Gd); Gd = speye(2); end % if not specified, use an identity matrix
-if Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2))>=1 % check if correlation is unphysical
-    error('Correlation greater than 1.');
-end
-
 if ~exist('xi','var'); xi = []; end % if no initial x is given
 if ~exist('solver','var'); solver = []; end % if computation method not specified
 %--------------------------------------------------------------%
 
 
-Lpr0 = invert.exp_dist_lpr(Gd,grid_vec2,vec1);
+Lpr0 = invert1d.exp_dist_lpr(ld,vec);
     % use external function to evaluate prior covariance
 Lpr = lambda.*Lpr0;
 

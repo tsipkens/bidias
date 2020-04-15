@@ -7,7 +7,7 @@ function [data,d_star,sp,prop_dma,prop_pma] = import_a(fn_smps,fn_cpma)
 
 
 %== Read SMPS/CPC file =========================================%
-n = linecount(fn_smps);
+n = io.linecount(fn_smps);
 opts = detectImportOptions(fn_smps);
 opts.Whitespace = '\b ';
 opts.Delimiter = {'\t'};
@@ -103,20 +103,4 @@ end
 
 
 
-
-
-function n = linecount(fname)
-
-fid = fopen(fname);
-
-n = 0;
-tline = fgetl(fid);
-while ischar(tline)
-  tline = fgetl(fid);
-  n = n+1;
-end
-
-fclose(fid);
-
-end
 
