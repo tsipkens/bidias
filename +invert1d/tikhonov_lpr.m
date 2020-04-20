@@ -17,15 +17,18 @@ function Lpr0 = tikhonov_lpr(order,x_length)
 switch order
     case 0 % 0th order Tikhonov
     	Lpr0 = speye(x_length);
+        
     case 1 % 1st order Tikhonov
         Lpr0 = -speye(x_length);
         Lpr0 = spdiags(ones(x_length,1),1,Lpr0);
         Lpr0(end,:) = [];
+        
     case 2 % 2nd order Tikhonov
         Lpr0 = -speye(x_length);
         Lpr0 = spdiags(0.5.*ones(x_length,2),[-1,1],Lpr0);
         Lpr0(1,:) = [];
         Lpr0(end,:) = [];
+        
     otherwise
         disp('The specified order of Tikhonov is not available.');
         disp(' ');
