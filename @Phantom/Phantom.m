@@ -66,7 +66,7 @@ methods
                 
                 obj.mu = mu_p;
                 obj.Sigma = Sigma_modes;
-                obj.R = obj.sigma2r(obj.Sigma);
+                obj.R = obj.cov2corr(obj.Sigma);
                 
                 for ii=1:n_modes; obj.modes{ii} = 'logn'; end
                 
@@ -84,7 +84,7 @@ methods
                 
                 if ~any(strcmp('cond-norm',Sigma_modes))
                     [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
-                    obj.R = obj.sigma2r(obj.Sigma);
+                    obj.R = obj.cov2corr(obj.Sigma);
                 end
                 
                 
@@ -100,7 +100,7 @@ methods
                 
                 if ~any(strcmp('cond-norm',modes))
                     [obj.mu,obj.Sigma] = obj.p2cov(obj.p,obj.modes);
-                    obj.R = obj.sigma2r(obj.Sigma);
+                    obj.R = obj.cov2corr(obj.Sigma);
                 end
         end
         
@@ -511,10 +511,10 @@ methods (Static)
 
 
 
-    %== SIGMA2R ========================================================%
+    %== COV2CORR =====================================================%
     %   Function to convert covariance matrix to correlation matrix.
     %   Author:  Timothy Sipkens, 2019-10-29
-    function R = sigma2r(Sigma)
+    function R = cov2corr(Sigma)
         for ll=length(Sigma(1,1,:)):-1:1
             R12 = Sigma(1,2,ll)/...
                 sqrt(Sigma(1,1,ll)*Sigma(2,2,ll));

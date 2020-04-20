@@ -24,8 +24,8 @@ switch order
     case 2 % 2nd order Tikhonov
         Lpr0 = -speye(x_length);
         Lpr0 = spdiags(0.5.*ones(x_length,2),[-1,1],Lpr0);
-        Lpr0(1,1) = -0.5;
-        Lpr0(end,end) = -0.5;
+        Lpr0(1,:) = [];
+        Lpr0(end,:) = [];
     otherwise
         disp('The specified order of Tikhonov is not available.');
         disp(' ');
