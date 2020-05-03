@@ -64,7 +64,7 @@ idx_endc = find([t0{:}],1); % remove trailing columns
 if isempty(idx_endc); idx_endc = width(ta); end
 
 ta = table2array(ta);
-ncol = length(ta(:,1:(idx_endc-1)))-1; % number of data samples/scans
+ncol = idx_endc-1; % number of data samples/scans
 %-------------------------------------------------------------------------%
 
 
@@ -74,7 +74,7 @@ optsb.VariableTypes(:) = {'string'};
 optsb.DataLines = [n_date,n_date+1];
 
 ta = readtable(fn,optsb);
-ta = table2array(ta(:,1:(idx_endc-1)));
+ta = table2array(ta(:,1:idx_endc));
 for ii=1:ncol
     time_smps(ii,1) = datetime(ta(1,ii+1),'InputFormat','MM/dd/yy')+...
         duration(ta(2,ii+1),'InputFormat','hh:mm:ss');
@@ -85,7 +85,7 @@ end
 %-- Read in actual data --------------------------%
 opts.DataLines = [idx_0,n-26]; % read in the data
 ta = readtable(fn,opts);
-idx_0 = table2array(ta(:,1:(idx_endc-1)));
+idx_0 = table2array(ta(:,1:idx_endc));
 data = idx_0(:,2:(ncol+1));
 d_star = idx_0(:,1);
 %-------------------------------------------------%

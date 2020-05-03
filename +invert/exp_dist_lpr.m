@@ -16,8 +16,8 @@ end
 
 
 %-- Compute distances between elements -----------------------------------%
-[vec2_a,vec2_b] = ndgrid(vec2,vec2);
-[vec1_a,vec1_b] = ndgrid(vec1,vec1);
+[vec2_a,vec2_b] = ndgrid(vec2,vec2); % for differences in 2nd dim
+[vec1_a,vec1_b] = ndgrid(vec1,vec1); % for differences in 1st dim
 
 Gd_inv = inv(Gd);
 dr1 = log10(vec1_a)-log10(vec1_b);

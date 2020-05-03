@@ -19,10 +19,11 @@
 %   Gpo_inv     Inverse of posterior covariance
 %=========================================================================%
 
-function [x,lambda,output,Gpo_inv] = tikhonov_op(A,b,span,order,n)
+function [x,lambda,output,Gpo_inv] = tikhonov_op(A,b,span,order,n,~,solver)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('order','var'); order = []; end
+if ~exist('solver','var'); solver = []; end
 
 if ~exist('n','var'); n = []; end
 if isempty(n); n = 70; end % default number of lambda entries to consider
@@ -46,7 +47,7 @@ for ii=length(lambda):-1:1 % reverse loop to pre-allocate
     
     %-- Perform inversion --%
     [output(ii).x,~,Lpr0] = invert.tikhonov(...
-        A,b,lambda(ii),Lpr0);
+        A,b,lambda(ii),Lpr0,[],solver);
     
     %-- Store ||Ax-b|| and Euclidean error --%
     output(ii).Axb = norm(A*output(ii).x-b);
