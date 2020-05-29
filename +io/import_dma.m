@@ -12,6 +12,7 @@ opts.Whitespace = '\b ';
 opts.Delimiter = {'\t'};
 
 
+
 %-- Find header rows with specific data ----------------------------------%
 optsc = opts;
 optsc.DataLines = [1,(optsc.DataLines(1)+9)];
@@ -20,39 +21,66 @@ optsc.VariableTypes(:) = {'string'};
 ta = readtable(fn,optsc);
 tb = table2cell(ta);
 n_date = find(cellfun(@(x) x=="Date",tb(:,1)));
-n_r1 = find(or(...
-    cellfun(@(x) x=="DMA Inner Radius(cm)",tb(:,1)),...
-    cellfun(@(x) x=="DMA Inner Radius (cm)",tb(:,1))));
+n_r1 = find(cellfun(@(x) contains(x,"DMA Inner Radius"),tb(:,1)));
+n_flow = find(cellfun(@(x) contains(x,"Sample Flow"),tb(:,1)));
 n_T = find(cellfun(@(x) x=="Reference Gas Temperature (K)",tb(:,1)));
+n_dia = find(cellfun(@(x) contains(x,"Diameter"),tb(:,1)));
 
-idx_0 = n_date + 8; % in case automatic detection started at date line
+idx_0 = n_dia + 1; % in case automatic detection started at date line
 %-------------------------------------------------------------------------%
 
 
+
 %-- Read header information ----------------------------------------------%
+disp('[ Reading header information ... -----------------------]');
+disp('  Note: Info. stored in prop_dma should be checked.');
 opts.VariableTypes(:) = {'double'};
 
 opts.DataLines = [n_r1,n_r1+2];
 ta = readtable(fn,opts);
 ta = table2array(ta);
-prop_dma.R1 = ta(1,2)/100; % some DMA properties (file is in cm, covert to m)
-prop_dma.R2 = ta(2,2)/100;
-prop_dma.L = ta(3,2)/100;
 
-opts.DataLines = [12,12]; % this is unreliable (i.e. row may vary)
-ta = readtable(fn,opts);
-ta = table2array(ta);
-prop_dma.Q_a = ta(1,2)/60/1000;
-prop_dma.Q_s = prop_dma.Q_a; % equal flow assumption
-prop_dma.Q_c = ta(1,4)/60/1000;
-prop_dma.Q_m = prop_dma.Q_c; % equal flow assumption
+prop_dma.R1 = ta(1,2)/100; % DMA inner radius (file is normally in cm, covert to m)
+if prop_dma.R1<0.1 % correct if illogical value for cm, likely in m then
+    prop_dma.R1 = prop_dma.R1*100;
+    disp('  Note: Corrected R1 due to unexpected magnitude.');
+end
 
-opts.DataLines = [n_T,n_T+1];
-ta = readtable(fn,opts);
-ta = table2array(ta);
-prop_dma.T = ta(1,2); % more DMA properties
-prop_dma.p = ta(2,2)/101.325;
+prop_dma.R2 = ta(2,2)/100; % DMA outer radius 
+if prop_dma.R2<0.1 % correct if illogical value for cm, likely in m then
+    prop_dma.R2 = prop_dma.R2*100;
+    disp('  Note: Corrected R2 due to unexpected magnitude.');
+end
+
+prop_dma.L = ta(3,2)/100; % DMA column length 
+if prop_dma.L<1 % correct if illogical value for cm, likely in m then
+    prop_dma.L = prop_dma.L*100;
+    disp('  Note: Corrected L due to unexpected magnitude.');
+end
+
+if ~isempty(n_flow) % read flow rates
+    opts.DataLines = [n_flow,n_flow]; % this is unreliable (i.e. row may vary)
+    ta = readtable(fn,opts);
+    ta = table2array(ta);
+    prop_dma.Q_a = ta(1,2)/60/1000;
+    prop_dma.Q_s = prop_dma.Q_a; % equal flow assumption
+    prop_dma.Q_c = ta(1,4)/60/1000;
+    prop_dma.Q_m = prop_dma.Q_c; % equal flow assumption
+    disp('  Note: Applied equal flow assumption for Q_s and Q_m.');
+    disp('  Note: Reading flow information from the header is unreliable.');
+end
+
+if ~isempty(n_T) % read temperature and pressure
+    opts.DataLines = [n_T,n_T+1];
+    ta = readtable(fn,opts);
+    ta = table2array(ta);
+    prop_dma.T = ta(1,2); % more DMA properties
+    prop_dma.p = ta(2,2)/101.325;
+end
+disp('[ Complete. --------------------------------------------]');
+disp(' ');
 %-------------------------------------------------------------------------%
+
 
 
 %-- Get number of samples/data columns -----------------------------------%
@@ -68,7 +96,9 @@ ncol = idx_endc-1; % number of data samples/scans
 %-------------------------------------------------------------------------%
 
 
+
 %-- Read date/time rows --------------------------------------------------%
+disp('[ Reading data... --------------------------------------]');
 optsb = opts;
 optsb.VariableTypes(:) = {'string'};
 optsb.DataLines = [n_date,n_date+1];
@@ -76,10 +106,13 @@ optsb.DataLines = [n_date,n_date+1];
 ta = readtable(fn,optsb);
 ta = table2array(ta(:,1:idx_endc));
 for ii=1:ncol
-    time_smps(ii,1) = datetime(ta(1,ii+1),'InputFormat','MM/dd/yy')+...
+    time_dma(ii,1) = datetime(ta(1,ii+1),'InputFormat','MM/dd/yy')+...
         duration(ta(2,ii+1),'InputFormat','hh:mm:ss');
 end
+disp('[ Complete. --------------------------------------------]');
+disp(' ');
 %-------------------------------------------------------------------------%
+
 
 
 %-- Read in actual data --------------------------%
@@ -89,6 +122,7 @@ idx_0 = table2array(ta(:,1:idx_endc));
 data = idx_0(:,2:(ncol+1));
 d_star = idx_0(:,1);
 %-------------------------------------------------%
+
 
 
 %-- Set remaining prop_dma parameters --------%

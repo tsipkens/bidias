@@ -831,6 +831,10 @@ methods
             % dimension to sweep through
             % e.g. sweep through mass setpoints on standard grid, dim = 1
         
+        if ~exist('cm','var'); cm = []; end
+        if isempty(cm); cm = colormap('gray'); end
+        
+        
         dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
         
         n1 = floor(size(cm,1)/grid.ne(dim));
