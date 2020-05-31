@@ -7,70 +7,7 @@ function [data,d_star,sp,prop_dma,prop_pma] = import_a(fn_smps,fn_cpma)
 
 
 %== Read SMPS/CPC file =========================================%
-n = io.linecount(fn_smps);
-opts = detectImportOptions(fn_smps);
-opts.Whitespace = '\b ';
-opts.Delimiter = {'\t'};
-
-optsc = opts;
-for ii=1:40
-    optsc.DataLines = [ii,ii];
-    for jj=1:length(optsc.VariableTypes)
-        optsc.VariableTypes{jj} = 'string';
-    end
-    
-    ta = readtable(fn_smps,optsc);
-    if or(table2array(ta(1,1))=="DMA Inner Radius(cm)",table2array(ta(1,1))=="DMA Inner Radius (cm)");
-        nR1 = ii;
-    end
-    if table2array(ta(1,1))=="Reference Gas Temperature (K)"; nT = ii; end
-    if table2array(ta(1,1))=="Date"; nDate = ii; end
-end
-
-opts.DataLines = [40,40];
-ta = readtable(fn_smps,opts);
-ta = table2array(ta);
-ta(isnan(ta)) = [];
-ncol = length(ta)-1; % number of data samples/scans
-
-opts.DataLines = [nR1,nR1+2];
-ta = readtable(fn_smps,opts);
-ta = table2array(ta);
-prop_dma.R1 = ta(1,2);
-prop_dma.R2 = ta(2,2);
-prop_dma.L = ta(3,2); % some DMA properties
-
-opts.DataLines = [12,12]; % this is unreliable
-ta = readtable(fn_smps,opts);
-ta = table2array(ta);
-prop_dma.Q_a = ta(1,2)/60/1000;
-prop_dma.Q_s = prop_dma.Q_a; % equal flow assumption
-prop_dma.Q_c = ta(1,4)/60/1000;
-prop_dma.Q_m = prop_dma.Q_c; % equal flow assumption
-
-opts.DataLines = [nT,nT+1];
-ta = readtable(fn_smps,opts);
-ta = table2array(ta);
-prop_dma.T = ta(1,2); % more DMA properties
-prop_dma.p = ta(2,2);
-
-
-optsb = opts;
-for ii=1:length(optsb.VariableTypes); optsb.VariableTypes{ii} = 'string'; end
-optsb.DataLines = [nDate,nDate+1];
-ta = readtable(fn_smps,optsb);
-ta = table2array(ta);
-for ii=1:ncol
-    date_smps(ii,1) = datetime(ta(1,ii+1),'InputFormat','MM/dd/yy')+...
-        duration(ta(2,ii+1),'InputFormat','hh:mm:ss');
-end
-
-
-opts.DataLines = [nDate+3,n-26];
-t0 = readtable(fn_smps,opts);
-t0 = table2array(t0);
-data = t0(:,2:(ncol+1));
-d_star = t0(:,1);
+[data,d_star,prop_dma,time_dma] = import_dma(fn_smps);
 %==============================================================%
 
 
