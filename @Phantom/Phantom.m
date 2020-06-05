@@ -337,6 +337,26 @@ methods
 
     end
     %=================================================================%
+    
+    
+    
+    %== RHO2MASS =====================================================%
+    %   Convert an effective density-mobility phantom to a mass-mobility
+    %   phanatom. Output is a new phantom in the transformed space.
+    %   Author:  Timothy Sipkens, 2020-06-01
+    function [phantom] = rho2mass(obj,grid_mm)
+
+        A = [1,3;0,1]; % corresponds to mass-mobility relation
+        
+        for ll=1:obj.n_modes
+            mu_mm(ll,:) = (A*obj.mu(ll,:)'-[log10(6/pi)+9;0])';
+            Sigma_mm(:,:,ll) = A*obj.Sigma(:,:,ll)*A';
+        end
+        
+        phantom = Phantom('standard',grid_mm,mu_mm,Sigma_mm);
+
+    end
+    %=================================================================%
 end
 
 
