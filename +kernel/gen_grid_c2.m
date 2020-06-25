@@ -23,6 +23,7 @@ function [A,sp] = gen_grid_c2(grid_b,grid_i,prop_pma,varargin)
 
 
 %-- Parse inputs ---------------------------------------------------------%
+addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
     % import properties of PMA
@@ -90,7 +91,7 @@ disp('Computing PMA contribution:');
 
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
-sp = tfer_pma.get_setpoint(prop_pma,...
+sp = get_setpoint(prop_pma,...
     'm_star',grid_b.edges{2}.*1e-18,varargin{:}); % get PMA setpoints
 
 for kk=1:n_z % loop over the charge state

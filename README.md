@@ -7,13 +7,19 @@
 
 
 
-**Installation note:** This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `+tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `+tfer_pma/` folders respectively. If cloning using git, clone the repository using
+**Installation note:** This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders respectively. If cloning using git, clone the repository using
 
 ```shell
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
 ```
 
-which will automatically download the submodules.
+which will automatically download the submodules. To be used directly these packages should then be added to MATLAB path at the beginning of any script using
+
+```Matlab
+addpath tfer_pma cmap;
+```
+
+For `cmap`, One could also replace references in existing scripts to the colormaps that would otherwise be in that package.  For `tfer_pma`, calls to the kernel package will add this folder to the path automatically, whenever necessary. 
 
 
 

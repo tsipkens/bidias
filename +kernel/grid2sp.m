@@ -7,6 +7,7 @@ function [sp] = grid2sp(prop,grid_b,varargin)
 
 
 %-- Parse inputs ---------------------------------------------------------%
+addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
 if ~exist('prop','var'); prop = []; end
 if isempty(prop); prop = kernel.prop_pma; end
     % import properties of PMA
@@ -21,7 +22,7 @@ if isempty(varargin); varargin = {'Rm',3}; end
 m_star = grid_b.elements(:,1);
 
 for ii=length(m_star):-1:1
-    sp(ii) = tfer_pma.get_setpoint(prop,...
+    sp(ii) = get_setpoint(prop,...
         'm_star',m_star(ii).*1e-18,varargin{:});
 end
 
