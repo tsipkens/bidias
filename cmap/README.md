@@ -1,8 +1,8 @@
 # Perceptually improved colormaps for MATLAB
 
-*Last updated: November 19, 2019*
+*Last updated: May 19, 2020*
 
-These `.mat` files contain the colormaps from multiple primary sources:
+These `.mat` files compile colormaps from multiple primary sources:
 
 1. *matplotlib* - Colormaps designed by Stéfan van der Walt and
 Nathaniel Smith. (More information is available at https://bids.github.io/colormap/).
@@ -15,7 +15,7 @@ https://matplotlib.org/cmocean/).
     available at http://colorbrewer2.org/).
 4. CMasher - A collection of scientific colormaps for making accessible, informative and *cmashing* plots in Python. (More information available at https://github.com/1313e/CMasher and https://cmasher.readthedocs.io/). 
 5. *turbo* - A. Mikhailov. Turbo, An Improved Rainbow Colormap for Visualization.
-  (More information is available at https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html).
+    (More information is available at https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html).
 
 When loaded directly, the colormaps will appear as the variable `cm` in the
 workspace. Otherwise `load_cmap` can be used to load the colormap specified
@@ -65,9 +65,21 @@ The colormaps, and swages indicating their color progression, are included below
 
 ![YlGnBu](docs/YlGnBu.jpg) *YlGnBu*
 
+![GnBu](docs/GnBu.jpg) *GnBu*
+
 ![BuPu](docs/BuPu.jpg) *BuPu*
 
 ![RdPu](docs/RdPu.jpg) *RdPu*
+
+![PuRd](docs/PuRd.jpg) *PuRd*
+
+![purples](docs/purples.jpg) *purples*
+
+![blues](docs/blues.jpg) *blues*
+
+![greens](docs/greens.jpg) *greens*
+
+![reds](docs/reds.jpg) *reds*
 
 ##### From CMasher:
 
@@ -83,7 +95,7 @@ The colormaps, and swages indicating their color progression, are included below
 
 ![ocean](docs/ocean.jpg) *ocean*
 
-##### Custom:
+##### Custom (only approximately perceptually uniform):
 
 ![fblue](docs/fblue.jpg) *fblue*
 
@@ -108,6 +120,12 @@ The colormaps, and swages indicating their color progression, are included below
 ![RdBu](docs/RdBu.jpg) *RdBu*
 
 ![PrGn](docs/PrGn.jpg) *PrGn*
+
+![PiYG](docs/PiYG.jpg) *PiYG*
+
+![RdYlGn](docs/RdYlGn.jpg) *RdYlGn*
+
+![spectral](docs/spectral.jpg) *spectral*
 
 ## Rainbow colormaps
 

@@ -25,17 +25,17 @@ x_rs = grid_x.reshape(x);
 
 n_d = grid_x.ne(2);
 y = zeros(grid_x.ne(2),length(rho_n));
-for ii=1:n_d % loop over mobility diameter
-    c4 = zeros(grid_rho.ne(1),grid_x.ne(1));
+for ii=1:n_d % loop over mobility diameter (consider conditional mass distributions)
+    c4 = zeros(grid_rho.ne(1),grid_x.ne(1)); % initialize transformation kernel
     rho_old = log10(6.*grid_x.nodes{1}./(pi.*grid_x.edges{2}(ii).^3).*1e9);
             % convert x nodes to effective density for iith mobility
     
     for jj=1:grid_x.ne(1)
         c4(:,jj) = max(...
-            min(log10(grid_rho.nodes{1}(2:end)),rho_old(jj+1))-... % lower bound
-            max(log10(grid_rho.nodes{1}(1:(end-1))),rho_old(jj))... % upper bound
+            min(log10(grid_rho.nodes{1}(2:end)),rho_old(jj+1))-... % upper bound
+            max(log10(grid_rho.nodes{1}(1:(end-1))),rho_old(jj))... % lower bound
             ,0)./...
-            (log10(grid_rho.nodes{1}(2:end))-log10(grid_rho.nodes{1}(1:(end-1)))); % normalize by rho_old bin size
+            (log10(grid_rho.nodes{1}(2:end))-log10(grid_rho.nodes{1}(1:(end-1)))); % normalize by rho bin size
     end
     
     y(ii,:) = c4*x_rs(:,ii);

@@ -42,17 +42,17 @@ if nargin<=3 % if P and T are not specified, use Buckley/Davies
 else % If P and T are Olfert laboratory / Kim et al.
     S = 110.4; % temperature [K]
     T_0 = 296.15; % reference temperature [K]
-    vis_23 = 1.83245*10^-5; % reference viscosity [kg/(m*s)]
-    mu = vis_23*((T/T_0)^1.5)*((T_0+S)/(T+S)); % gas viscosity
+    vis_23 = 1.83245e-5; % reference viscosity [kg/(m*s)]
+    mu = vis_23 * ((T / T_0) ^ 1.5) * ((T_0 + S)/(T + S)); % gas viscosity
         % Kim et al. (2005), ISO 15900, Eqn 3
     
-    B = Cc(d,T,p)./(3*pi*mu.*d); % mechanical mobility
+    B = Cc(d,T,p) ./ (3*pi*mu.*d); % mechanical mobility
     
 end
 %-------------------------------------------------------------------------%
 
 
-Zp = B.*e.*z; % electromobility
+Zp = B .* e .* z; % electromobility
 
 end
 
@@ -88,7 +88,7 @@ if nargin==1 % if P and T are not specified, use Buckley/Davies
     
 else % from Olfert laboratory / Kim et al.
     S = 110.4; % temperature [K]
-    mfp_0 = 6.730*10^-8; % mean free path of gas molecules in air [m]
+    mfp_0 = 6.730e-8; % mean free path of gas molecules in air [m]
     T_0 = 296.15; % reference temperature [K]
     p_0 = 101325; % reference pressure, [Pa] (760 mmHg to Pa)
     

@@ -5,7 +5,7 @@
 % Inputs:
 %   d_star              Particle diameter, measurement set point for DMA [m]
 %   d                   Particle diameter, points in integral, can be vector [m]
-
+% 
 %   varargin{1} = 
 %       prop	DMA properties, struct, generated using prop_DMA function (optional)
 %   
@@ -34,7 +34,7 @@ n_z = length(z_vec);
 disp('Computing DMA kernel...');
 Omega = sparse(n_b,n_i);
 for kk=1:n_z
-    t0 = sparse(n_b,n_i); % pre-allocate for speed
+    t0 = zeros(n_b,n_i); % pre-allocate for speed
     
     for ii=1:n_b % loop over d_star
         t0(ii,:) = kernel.tfer_dma(...
@@ -46,7 +46,7 @@ for kk=1:n_z
     t0(t0<(1e-7.*max(max(t0)))) = 0;
         % remove numerical noise in kernel
     
-    Omega = Omega+f_z(kk,:).*t0;
+    Omega = Omega+f_z(kk,:).*sparse(t0);
 end
 disp('Completed DMA contribution.');
 disp(' ');

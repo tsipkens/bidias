@@ -17,7 +17,7 @@ bscl = max((logb-bmin)/(bmax-bmin),bmin);
 marker_size = 12.*bscl+0.1;
 corder = 1-bscl; % color is logscale
 
-if ~exist('cmap','var'); cm = []; end
+if ~exist('cm','var'); cm = []; end
 if isempty(cm); cm = colormap('gray'); end
 
 N = size(cm,1);
