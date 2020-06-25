@@ -9,7 +9,7 @@ clc;
 close all;
 
 %-- Load colour maps -----------------------------------------------------%
-addpath('cmap');
+addpath cmap;
 cm_b = load_cmap('inferno',255);
 cm_b = cm_b(40:end,:);
 cm_div = load_cmap('RdBu',200);

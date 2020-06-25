@@ -22,6 +22,7 @@ function [Lambda,prop] = tfer_pma(sp,m,d,z,prop,opt)
 
 
 %-- Parse inputs ---------------------------------------------------------%
+addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
 if ~exist('opt','var'); opt = []; end
 
 if isempty(opt); opt = '1C_diff'; end
@@ -30,7 +31,7 @@ if isempty(opt); opt = '1C_diff'; end
 %-------------------------------------------------------------------------%
 
 
-fun = str2func(['tfer_pma.tfer_',opt]); % call relevant function from submodule
+fun = str2func(['tfer_',opt]); % call relevant function from submodule
 Lambda = fun(sp,m,d,z,prop)'; % CPMA transfer function
 
 

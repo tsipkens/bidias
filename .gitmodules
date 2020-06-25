@@ -2,7 +2,6 @@
 	path = cmap
 	url = git://github.com/tsipkens/cmap
 	branch = master
-[submodule "+tfer_pma"]
-	path = +tfer_pma
+[submodule "tfer_pma"]
+	path = tfer_pma
 	url = git://github.com/tsipkens/mat-tfer-pma
-	branch = master

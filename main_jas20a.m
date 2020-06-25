@@ -10,7 +10,7 @@ close all;
 
 
 %-- Load colour schemes --------------------------------------------------%
-addpath('cmap');
+addpath cmap;
 load('inferno.mat');
 cm = cm(40:end,:);
 cm_b = cm;

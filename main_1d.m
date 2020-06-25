@@ -3,6 +3,8 @@
 % Author: Timothy Sipkens, 2020-04-11
 %=========================================================================%
 
+addpath cmap;
+
 d = logspace(log10(10),log10(1e3),400)';
 d_star = logspace(log10(10),log10(1e3),150)';
 

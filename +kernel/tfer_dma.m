@@ -21,6 +21,8 @@ function [Omega,Zp_tilde] = tfer_dma(d_star,d,z,prop,opts)
 
 
 %-- Parse inputs ---------------------------------------------------------%
+addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
+
 if ~exist('opts','var'); opts = []; end % initialize options struct
 if ~exist('prop','var'); prop = []; end
 
@@ -37,11 +39,11 @@ e = 1.6022E-19; % electron charge [C]
 
 %-- Evaluate particle mobility -------------------------------------------%
 if strcmp(opts.solver,'Buckley')
-    [B,Zp] = tfer_pma.dm2zp(d,z); % evaluate electrical mobility (Davies)
-    [~,Zp_star] = tfer_pma.dm2zp(d_star);
+    [B,Zp] = dm2zp(d,z); % evaluate electrical mobility (Davies)
+    [~,Zp_star] = dm2zp(d_star);
 else
-    [B,Zp] = tfer_pma.dm2zp(d,z,prop.T,prop.p); % evaluate electrical mobility (Kim et al.)
-    [~,Zp_star] = tfer_pma.dm2zp(d_star,1,prop.T,prop.p);
+    [B,Zp] = dm2zp(d,z,prop.T,prop.p); % evaluate electrical mobility (Kim et al.)
+    [~,Zp_star] = dm2zp(d_star,1,prop.T,prop.p);
 end
 Zp_tilde = Zp./Zp_star; % array of non-dimensional mobilities
 
