@@ -837,11 +837,10 @@ methods
         
         dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
         
-        n1 = floor(size(cm,1)/grid.ne(dim));
-        n2 = length(cm)-grid.ne(dim)*n1+1;
-        cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
+        addpath('cmap'); % load cmap package to use `sweep_cmap(...)`
+        if isfile('cmap/cmap_sweep.m'); cmap_sweep(grid.ne(dim), cm); % set color order to sweep through colormap
+        else; warning('The `cmap` package missing.'); end % if package is missing
         
-        set(gca,'ColorOrder',cm2,'NextPlot','replacechildren');
         x_rs = reshape(x,grid.ne);
         if dim==2; x_rs = x_rs'; end
         

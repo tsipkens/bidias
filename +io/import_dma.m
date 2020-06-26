@@ -1,5 +1,5 @@
 
-% IMPORT_DMA  Import a raw CPC file contianing SMPS data. 
+% IMPORT_DMA  Import a raw CPC file containing SMPS data. 
 % Author: Timothy Sipkens, 2020-04-12
 %=========================================================================%
 

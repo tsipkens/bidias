@@ -7,7 +7,7 @@ clc;
 close all;
 
 %-- Load colour schemes --------------------------------------------------%
-addpath cmap;
+addpath cmap cmap/data;
 cm = load_cmap('YlGnBu',255);
 cm_alt = cm;
 load('inferno.mat');
