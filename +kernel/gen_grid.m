@@ -48,7 +48,7 @@ d = r(:,2);
 
 
 %-- Start evaluate kernel ------------------------------------------------%
-disp('Computing kernel...');
+disp('[ Computing kernel... =============================]');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
@@ -78,7 +78,7 @@ for kk=1:n_z
     Omega_mat{kk} = Omega_mat{kk}(:,jj);
         % repeat transfer function for repeated mass in grid_i
 end
-disp('Completed DMA contribution.');
+disp('Complete.');
 disp(' ');
 %=========================================================================%
 
@@ -118,14 +118,16 @@ for kk=1:n_z
         Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat{kk}(i2,:); % DMA contribution
 end
-disp('Completed kernel.');
 %=========================================================================%
+disp('Kernel compiled.');
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 
-disp('Completed computing kernel matrix, <strong>A</strong>.');
+disp('[ Complete ========================================]');
+
+disp(' ');
 disp(' ');
 
 

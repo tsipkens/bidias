@@ -18,7 +18,7 @@
 function [phantom,N,s] = fit_gmm(x,grid_vec,k)
 
 disp(' ');
-disp('[ Fitting phantom object... -------------]');
+disp('[ Fitting phantom object... ===============]');
 disp(' ');
 
 disp('Sampling from distribution...');
@@ -42,7 +42,7 @@ phantom = Phantom('standard',grid_vec,GMModel.mu,...
     GMModel.Sigma,GMModel.ComponentProportion);
 
 
-disp('[ Complete ------------------------------]');
+disp('[ Complete ================================]');
 disp(' ');
 
 end

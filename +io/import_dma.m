@@ -15,7 +15,7 @@ opts.Delimiter = {'\t'};
 
 %-- Find header rows with specific data ----------------------------------%
 optsc = opts;
-optsc.DataLines = [1,(optsc.DataLines(1)+9)];
+optsc.DataLines = [1,(optsc.DataLines(1)+25)]; % adjust +25 in case detection failed 
 optsc.VariableTypes(:) = {'string'};
 
 ta = readtable(fn,optsc);
@@ -25,8 +25,6 @@ n_r1 = find(cellfun(@(x) contains(x,"DMA Inner Radius"),tb(:,1)));
 n_flow = find(cellfun(@(x) contains(x,"Sample Flow"),tb(:,1)));
 n_T = find(cellfun(@(x) x=="Reference Gas Temperature (K)",tb(:,1)));
 n_dia = find(cellfun(@(x) contains(x,"Diameter"),tb(:,1)));
-
-idx_0 = n_dia + 1; % in case automatic detection started at date line
 %-------------------------------------------------------------------------%
 
 
@@ -116,6 +114,15 @@ disp(' ');
 
 
 %-- Read in actual data --------------------------%
+idx_0 = n_dia; % in case automatic detection started at date line
+
+for ii=0:10 % loop through several rows to find a number
+    idx_0 = idx_0 + 1;
+    opts.DataLines = [idx_0,idx_0];
+    ta = readtable(fn,opts);
+    if ~isnan(table2array(ta(1,1))); break; end
+end
+
 opts.DataLines = [idx_0,n-26]; % read in the data
 ta = readtable(fn,opts);
 idx_0 = table2array(ta(:,1:idx_endc));
