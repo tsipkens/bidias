@@ -13,19 +13,21 @@
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
 ```
 
-which will automatically download the submodules. To be used directly these packages should then be added to MATLAB path at the beginning of any script using
+which will automatically download the submodules. To be used directly, these packages should then be added to MATLAB path at the beginning of any script using
 
 ```Matlab
-addpath('tfer_pma','cmap');
+addpath tfer_pma cmap;
 ```
 
-For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
+For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
 
 
 
 ------
 
 
+
+[TOC]
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. 
 
