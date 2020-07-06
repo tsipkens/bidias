@@ -27,8 +27,6 @@ For `tfer_pma`, calls to the `+kernel` package will add this folder to the path 
 
 
 
-[TOC]
-
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. 
 
 The methods in this code are described in two papers that correspond to releases:
