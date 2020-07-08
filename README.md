@@ -84,8 +84,8 @@ and **e** is a vector of measurement errors that corrupt the results of **Ax**. 
 What follows is a simple demonstration of this program, building a phantom mass-mobility distribution, generating and corrupting synthetic data, and then performing an inversion. To start, create an instance of the [Grid](#31-grid-class) class to discretize mass-mobility space:
 
 ```Matlab
-span = [0.01,100; ...
-    10,1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
+span = [0.01, 100; ...
+    10, 1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
 ne = [100, 125]; % number of elements in grid for each dimension
 grid_x = Grid(span, ne, 'logarithmic'); % create instance of Grid, with logarithmic spacing
 ```
@@ -93,12 +93,12 @@ grid_x = Grid(span, ne, 'logarithmic'); % create instance of Grid, with logarith
 To speed computation, we convert the grid to a partial grid (optional) by removing elements in the upper left and lower right corners:
 
 ```Matlab
-ut_r = [2,0.7]; % point in line to cut upper triangle
+ut_r = [2, 0.7]; % point in line to cut upper triangle
 ut_m = 3; % slope for line to cut upper triangle
-lt_r = [2,-0.8]; % point in line to cut lower triangle
+lt_r = [2, -0.8]; % point in line to cut lower triangle
 lt_m = 3; % slope for line to cut upper triangle
 grid_x = grid_x.partial(...
-	fliplr(ut_r),ut_m,...
+    fliplr(ut_r),ut_m,...
     fliplr(lt_r),lt_m); % convert to a partial grid
 ```
 
