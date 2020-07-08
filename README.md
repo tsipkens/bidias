@@ -7,19 +7,19 @@
 
 
 
-**Installation note:** This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders respectively. If cloning using git, clone the repository using
+**Installation note:** This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders respectively. If cloning using git, clone the repository using 
 
 ```shell
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
 ```
 
-which will automatically download the submodules. To be used directly, these packages should then be added to MATLAB path at the beginning of any script using
+which will automatically download the submodules. To be used directly, these packages should then be added to the MATLAB path at the beginning of any script using
 
 ```Matlab
-addpath tfer_pma cmap;
+addpath('tfer_pma','cmap');
 ```
 
-For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
+For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
 
 
 
@@ -27,23 +27,25 @@ For `tfer_pma`, calls to the `+kernel` package will add this folder to the path 
 
 
 
-This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. 
+## 1. General description and underlying physics
+
+This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution, but can be generalized to other applications (e.g., inversion of PMA-SP2 data).
 
 The methods in this code are described in two papers that correspond to releases:
 
 **v1.1** - The results of [Sipkens et al. (2020a)][1_JAS1] can be reproduced by running `main_jas20a` in [v1.1][code_v11] of this code. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in [v1.1][code_v11] provides a better optimized regularization parameter and thus a slightly smaller Euclidean error. Later updates to this code result in minimal changes to the output of this script. 
 
-**v3.0** - The results of [Sipkens et al. (2020c)][4], currently under review, can be reproduced by running `main_bayes.m` in [v3.0][code_v3] of this code. This version of the code is to be archived with Mendeley Data at [https://doi.org/10.17632/sg2zj5yrvr.3](https://doi.org/10.17632/sg2zj5yrvr.3). The four different phantoms in that work can be realized by changing the integer in the line:
+**v3.0** - The results of [Sipkens et al. (2020c)][4], currently under review, can be reproduced by running `main_bayes` in [v3.0][code_v3] of this code. This version of the code is to be archived with Mendeley Data at [https://doi.org/10.17632/sg2zj5yrvr.3](https://doi.org/10.17632/sg2zj5yrvr.3). The four different phantoms in that work can be realized by changing the integer in the line:
 
 ```Matlab
 phantom = Phantom('1',span_t);
 ```
 
-to the corresponding phantom number (e.g. to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]). Default runtimes should be under two minutes but will depend on computer hardware. Alternate arrangements of the `run_inversion*` scripts within the main `main_bayes` script will incur very different runtimes, as most attempt to optimize the prior parameter set (up to the order of several hours). 
+to the corresponding phantom number (e.g., to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]). Default runtimes should be under two minutes but will depend on computer hardware. Alternate arrangements of the `run_inversion*` scripts within the main `main_bayes` script will incur very different runtimes, as most attempt to optimize the prior parameter set (up to the order of several hours). 
 
-This program is organized into several: classes (folders starting with the `@` symbol), packages (folders starting with the `+` symbol), and scripts that form the base of the program and will be detailed in this README.
+This program is organized into several: [classes](#3-classes) (folders starting with the `@` symbol), [packages](#4-packages) (folders starting with the `+` symbol), and scripts that form the base of the program and will be detailed in this README. 
 
-## 1. General description and problem definition
+### 1.1 Underlying physics
 
 Size characterization is critical to understanding the role of aerosols in various roles, ranging from climate change to novel nanotechnologies. Aerosol size distributions have typically been resolved only with respect to a single quantity or variable. With the increasing frequency of tandem measurements, this program is designed to move towards inferring two-dimensional distributions of aerosol particle size. This kind of analysis requires a double deconvolution, that is the inversion of a double integral. While this may complicate the process, the information gained is quite valuable, including the distribution of aerosol quantities and the identification of multiple particle types which may be challenging from one-dimensional analyses or when simply computing summary parameters.
 
@@ -52,17 +54,11 @@ Mathematically, the problem to be solved here is of the form
 ![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int_0^{\infty}{\int_0^{\infty}{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
 
 where:
-- *a* and *b* are two aerosol properties (e.g. the logarithm of the particle
-mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* =
-log<sub>10</sub>*d*<sub>m</sub>);
-- *N<sub>i</sub>* is some measurement, most often a number of counts of
-particles, at some *i*<sup>th</sup> measurement setpoint or location;
-- *N*<sub>tot</sub> is the total number of particles in the measured volume of
-aerosol, that is the product of the particle number concentration, the flow rate,
-and the total sampling time;
-- *K*(*a<sub>i</sub>**,*b<sub>i</sub>**,*a*,*b*)
-is a kernel containing device transfer functions or other discretization information;
-and *p*(*a*,*b*) is a two-dimensional size distribution.
+
+- *a* and *b* are two aerosol properties (e.g. the logarithm of the particle mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*<sub>m</sub>);
+- *N<sub>i</sub>* is some measurement, most often a number of counts of particles, at some *i*<sup>th</sup> measurement setpoint or location;
+- *N*<sub>tot</sub> is the total number of particles in the measured volume of aerosol, that is the product of the particle number concentration, the flow rate, and the total sampling time;
+- *K*(*a<sub>i</sub>*\*,*b<sub>i</sub>*\*,*a*,*b*) is a kernel containing device transfer functions or other discretization information; and *p*(*a*,*b*) is a two-dimensional size distribution.
 
 Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the two-dimensional size distribution is discretized, most simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub> discrete points for the first type of particle size (that is for *a*, e.g. particle mass) and *n*<sub>b</sub> for the second type of particle size (that is for *b*, e.g. particle mobility diameter). In this case, we define a global index for the grid, *j*, and vectorize the distribution, such that
 
@@ -83,14 +79,117 @@ where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*); **A** i
 
 and **e** is a vector of measurement errors that corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
 
+### 1.2 A simple demonstration
+
+What follows is a simple demonstration of this program, building a phantom mass-mobility distribution, generating and corrupting synthetic data, and then performing an inversion. To start, create an instance of the [Grid](#31-grid-class) class to discretize mass-mobility space:
+
+```Matlab
+span = [0.01,100; ...
+    10,1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
+ne = [100, 125]; % number of elements in grid for each dimension
+grid_x = Grid(span, ne, 'logarithmic'); % create instance of Grid, with logarithmic spacing
+```
+
+To speed computation, we convert the grid to a partial grid (optional) by removing elements in the upper left and lower right corners:
+
+```Matlab
+ut_r = [2,0.7]; % point in line to cut upper triangle
+ut_m = 3; % slope for line to cut upper triangle
+lt_r = [2,-0.8]; % point in line to cut lower triangle
+lt_m = 3; % slope for line to cut upper triangle
+grid_x = grid_x.partial(...
+	fliplr(ut_r),ut_m,...
+    fliplr(lt_r),lt_m); % convert to a partial grid
+```
+
+Now, one can generate a phantom mass-mobility distribution, using one of the present values for the [Phantom](#32-phantom-class) class. Then, plot the phantom distribution:
+
+```Matlab
+phantom = Phantom('4', grid_x); % get Phantom 4 from Sipkens et al. (2020a)
+x0 = phantom.x; % get value of phantom for specified grid
+
+figure(1);
+grid_x.plot2d(x0); % show the phantom in figure 1
+```
+
+Next, define a new grid for the points at which the measurements will take place:
+
+```Matlab
+% define a new grid for the measurements
+span_b = span;
+ne_b = [20, 65];
+grid_b = Grid(span_b, ne_b, 'logarithmic');
+```
+
+Before generating data, we must now compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `kernel.prop_pma(...)` to get a set of CPMA parameters: 
+
+```Matlab
+prop_pma = kernel.prop_pma % use default CPMA properties (will display in command line)
+```
+
+Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_grid(...)` method:
+
+```Matlab
+A = kernel.gen_grid(grid_b, grid_x); % generate the kernel, use default CPMA properties
+```
+
+Now we can generate a noiseless data set using the forward mode:
+
+```Matlab
+b0 = A * x0; % generate a set of data using the forward model
+```
+
+Corrupt the data with noise, assuming a peak of 10<sup>5</sup> counts and then plot the data as if they were mass-selected mobility scans:
+
+```Matlab
+[b, Lb] = tools.get_noise(b0, 1e5); % corrupt data, assume peak counts ~1e5
+
+% plot resultant data as mobility scans at a range of mass setpoint
+figure(2);
+tools.plot2d_slices(grid_b, b0);
+xlabel('log_{10}(d_m)');
+ylabel('log_{10}(m_p)');
+```
+
+Note that since we chose a very narrow phantom, multiple charging artifacts are visible in the data (in the form of multiple modes). Next, we compute a Tikhonov-regularized solution using the corrupted data and data covariance information (`Lb`) and plot the result:
+
+```Matlab
+lambda = 1; % regularization parameter
+order = 1; % order of Tikhonov matrix to be used
+x_tk1 = invert.tikhonov(Lb*A, Lb*b, ...
+    lambda, order, grid_x); % tikhonov solution
+```
+
+We also compute an exponential distance-based solution:
+
+```Matlab
+lambda = 1; % regularization parameter
+Gd = phantom.Sigma;
+x_ed = invert.exp_dist(Lb*A, Lb*b, ...
+    lambda, Gd, grid_x); % exponential distance solution
+```
+
+Finally, plot the solutions:
+
+```Matlab
+figure(3);
+subplot(1,2,1);
+grid_x.plot2d(x_tk1); % plot Tikhonov solution
+
+subplot(1,2,2);
+grid_x.plot2d(x_ed); % plot exponential distance solution
+
+set(gcf, 'Position', [50 300 900 300]); % position and size plot
+```
+
+This example is provided in the `main_0` script in the upper directory of this program. Runtimes are typically on the order of a minute. 
+
 
 ## 2. Scripts in upper directory
 
 ### 2.1 Main scripts (main*.m)
 
-The `main*` scripts in the top directory of the program constitute the primary code
-that can be called to demonstrate use of the code. The are generally composed of
-four parts.
+The `main*` scripts in the top directory of the program constitute the primary code that can be called to demonstrate use of the code. The are generally composed of four parts.
 
 ##### 2.1.1 General structure: Four parts
 
@@ -101,7 +200,7 @@ four parts.
 **STEP 2b**: One must also define some set of data in an appropriate format. For simulated data, this is straightforward: `b = A*x;`. For experimental data, the data should be imported along with either (i) a grid on which the data is defined or (ii) using a series of setpoints for the DMA and PMA. For experimental data, one must have knowledge of the setpoint before computing `A`. Accordingly, the data may first be imported prior to Step 2A. Also in this step, one should include some definition of the expected uncertainties in each point in `b`, encoded in the matrix `Lb`. For those cases involving simple counting noise, this can be approximated as
 
 ```Matlab
-Lb = diag(1./sqrt(1/Ntot.*b));
+Lb = diag(1 ./ sqrt(1 / Ntot .* b));
 ```
 
 where `Ntot` is the total number of particle counts as described in [Sipkens et al. (2020a)][1_JAS1]. The function `tools.get_noise` is included to help with noise creation and more information on the noise model is provided in [Sipkens et al. (2017)][6_AO17].
@@ -118,20 +217,9 @@ As noted above, these scripts are intend to bundle a series of inversion methods
 
 ### 3.1 Grid class
 
-Grid is a class developed to discretize a parameter space (e.g. mass-mobility space).
-This is done using a simple rectangular grid that can have linear, logarithmic
-or custom spaced elements along the edges. Methods are designed
-to make it easier to deal with gridded data, allowing users to reshape
-vectorized data back to a 2D grid (`Grid.reshape` method) or vice versa. Other
-methods allow for plotting the 2D representation of vector data (`Grid.plot2d` method) or calculate the gradient of vector data (`Grid.grad` method).
+Grid is a class developed to discretize a parameter space (e.g. mass-mobility space). This is done using a simple rectangular grid that can have linear, logarithmic or custom spaced elements along the edges. Methods are designed to make it easier to deal with gridded data, allowing users to reshape vectorized data back to a 2D grid (`Grid.reshape` method) or vice versa. Other methods allow for plotting the 2D representation of vector data (`Grid.plot2d` method) or calculate the gradient of vector data (`Grid.grad` method).
 
-Instances of the Grid class can primarily be constructed in two ways. First,
-one can specify a `Grid.span` for the grid to cover in the parameter space. The span
-is specified using a 2 x 2 matrix, where the first row corresponds to the
-span for the first dimension of the parameter space (e.g. mass) and the second
-row corresponds to the span for the second dimension of the parameter space (e.g. mobility).
-For example, if one wanted to logarithmically discretize mass space between
-0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
+Instances of the Grid class can primarily be constructed in two ways. First, one can specify a `Grid.span` for the grid to cover in the parameter space. The span is specified using a 2 x 2 matrix, where the first row corresponds to the span for the first dimension of the parameter space (e.g. mass) and the second row corresponds to the span for the second dimension of the parameter space (e.g. mobility). For example, if one wanted to logarithmically discretize mass space between 0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
 
 ```Matlab
 span = [0.01,100; 10,1000]; % span of space to be covered
@@ -139,32 +227,17 @@ ne = [10,12]; % number of elements for each dimension
 grid = Grid(span,ne,'logarithmic'); % create instance of Grid
 ```
 
-Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center
-of the elements in the first dimension of parameter space and the second entry
-of the elements in the second dimension of parameter space. For example, to make
-a simple grid with elements at 0.1 and 1 fg in mass space and
-10, 200, and 1000 nm in mobility space, one would call:
+Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center of the elements in the first dimension of parameter space and the second entry of the elements in the second dimension of parameter space. For example, to make
+a simple grid with elements at 0.1 and 1 fg in mass space and 10, 200, and 1000 nm in mobility space, one would call:
 
 ```Matlab
 edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors
 grid = Grid(edges,[],'logarithmic'); % create instance of Grid
 ```
 
-Note that the number of elements is not required in this instance, as it is
-implied by the length of the vectors given in `edges`. The `'logarithmic'`
-argument is still required to specify where nodes would be placed between
-the elements.
+Note that the number of elements is not required in this instance, as it is implied by the length of the vectors given in `edges`. The `'logarithmic'` argument is still required to specify where nodes would be placed between the elements.
 
-Both the data, **b**, and two-dimensional size distribution, **x**, vectors
-can be defined with respect to an instance of this class. Generally, the data
-will only rely on the center of the elements on the grid (the width of the grid
-elements has little meaning for data).
-The vectors are arranged such that the first entry corresponds
-to the smallest size in both dimensions. The vector proceeds, first with
-increasing the first size dimension (e.g. for mass-mobility distributions this is mass
-by default) and then with increasing the second size dimension. Vectorizing the
-2D gridded data can be done using the colon operand, i.e. `x(:)`, or using
-the `vectorize` method.
+Both the data, **b**, and two-dimensional size distribution, **x**, vectors can be defined with respect to an instance of this class. Generally, the data will only rely on the center of the elements on the grid (the width of the grid elements has little meaning for data). The vectors are arranged such that the first entry corresponds to the smallest size in both dimensions. The vector proceeds, first with increasing the first size dimension (e.g. for mass-mobility distributions this is mass by default) and then with increasing the second size dimension. Vectorizing the 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using the `vectorize` method.
 
 ##### 3.1.1 Support for partial grids
 
@@ -212,17 +285,17 @@ The '**standard**' parameterization is explicitly for bivariate lognormal distri
 For this scenario, instances of the class are created by calling:
 
 ```Matlab
-phantom = Phantom('standard',grid,mu,Sigma);
+phantom = Phantom('standard', grid, mu, Sigma);
 ```
 
 where `grid` is an instance of the Grid class described above. For example, for a mass-mobility distribution,
 
 ```Matlab
 span = [0.01,100; 10,1000]; % span of grid
-ne = [550,600]; % elements in grid
-grid = Grid(span,ne,'logarithmic'); % create instance of Grid
+ne = [550, 600]; % elements in grid
+grid = Grid(span, ne, 'logarithmic'); % create instance of Grid
 
-phantom = Phantom('standard',grid,[-0.105,1.70],... % distribution mean
+phantom = Phantom('standard', grid, [-0.105,1.70],... % distribution mean
 	[0.205,0.0641;0.0641,0.0214]); % covariance information
 
 grid.plot2d_marg(phantom.x); % plot the resultant phantom
@@ -233,9 +306,9 @@ will produce and plot a bivariate lognormal distribution centered at *m* = 0.785
 ```Matlab
 span = [0.01,100; 10,1000]; % span of grid
 ne = [550,600]; % elements in grid
-grid = Grid(span,ne,'logarithmic'); % create instance of Grid
+grid = Grid(span, ne, 'logarithmic'); % create instance of Grid
 
-phantom = Phantom('standard',grid,...
+phantom = Phantom('standard', grid, ...
 	{[0,2],[1,2.5]},... % distribution means
 	{[0.205,0.0641;0.0641,0.0214],... % covaraince of mode no. 1
 	[0.126,0.0491;0.0491,0.0214]}); % covaraince of mode no. 2
@@ -269,7 +342,7 @@ For lognormal modes, means should be geometric means and standard deviations sho
 For this scenario, instances of the class are generated by calling:
 
 ```Matlab
-phantom = Phantom('mass-mobility',grid,p,modes);
+phantom = Phantom('mass-mobility', grid, p, modes);
 ```
 
 where, as before, `grid` is an instance of the Grid class described above, `p` is the structured array containing the mass-mobility properties, and, `modes` indicates the type of mode that the `p` structure represents. The final argument is a cell of strings, with one cell entry per mode and where each string can be either:
@@ -353,7 +426,7 @@ Transfer function evaluation for a PMA can proceed using one of two inputs eithe
 
 ##### 4.1.1 sp
 
-The `sp` or setpoint structure is a structured array containing the information necessary to define the PMA setpoints. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `tfer_pma.get_setpoint` function described below and in the README for the tfer_pma package. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
+The `sp` or setpoint structure is a structured array containing the information necessary to define the PMA setpoints, which is described in more detail in the [README](tfer_pma/README.md) for the tfer_pma package. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `tfer_pma.get_setpoint` function described below and in the README for the tfer_pma package. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
 | Fields  | m_star    | V      | Rm  | omega | omega1 | omega2 | alpha | beta  | m_max    |
 | ------- | :-------: | :----: | :-: | :---: | :----: | :----: | :---: | :---: | :------: |

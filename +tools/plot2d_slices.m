@@ -5,10 +5,14 @@
 
 function [] = plot2d_slices(grid,x,cm,dim)
 
+% dimension to sweep through
+% e.g. sweep through mass setpoints on standard grid, dim = 1
 if ~exist('dim','var'); dim = []; end
 if isempty(dim); dim = 1; end
-    % dimension to sweep through
-    % e.g. sweep through mass setpoints on standard grid, dim = 1
+
+% by default, use gray colormap if none specified
+if ~exist('cm','var'); cm = []; end
+if isempty(cm); cm = colormap('gray'); end
 
 dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
 
@@ -18,7 +22,7 @@ if dim==1; x_rs = x_rs'; end
 min_x = max(log10(x))-3;
 
 addpath('cmap'); % load cmap package to use `sweep_cmap(...)`
-if isfile('cmap/cmap_sweep.m'); cmap_sweep(grid.ne(dim), cm); % set color order to sweep through colormap
+if isfile('cmap/cmap_sweep.m'); cm2 = cmap_sweep(grid.ne(dim), cm); % set color order to sweep through colormap
 else; warning('The `cmap` package missing.'); end % if package is missing
 
 clf;
@@ -34,6 +38,6 @@ end
 hold off;
 zlim([min_x,inf]);
 
-view([-20,45,70]); % adjust view so slices are visible
+view([-145,60]); % adjust view so slices are visible
 
 end

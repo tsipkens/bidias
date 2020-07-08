@@ -5,10 +5,14 @@
 
 function [] = plot2d_patch(grid,x,cm,dim)
 
+% dimension to sweep through
+% e.g. sweep through mass setpoints on standard grid, dim = 1
 if ~exist('dim','var'); dim = []; end
 if isempty(dim); dim = 1; end
-    % dimension to sweep through
-    % e.g. sweep through mass setpoints on standard grid, dim = 1
+
+% by default, use gray colormap if none specified
+if ~exist('cm','var'); cm = []; end
+if isempty(cm); cm = colormap('gray'); end
 
 dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
 
@@ -36,6 +40,6 @@ end
 hold off;
 zlim([min_x,inf]);
 
-view([-20,45,70]); % adjust view so slices are visible
+view([-145,60]); % adjust view so slices are visible
 
 end

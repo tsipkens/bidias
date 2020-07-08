@@ -729,8 +729,9 @@ methods
         [~,dr1,dr2] = obj.dr; % used to give warning below
         dr0 = dr1(:).*dr2(:);
         if ~all(abs(dr0(2:end)-dr0(1))<1e-10)
-            warning(['The plot2d method does not display ',...
-                'correct proportions for non-uniform grids.']);
+            warning(['The plot2d method does not necessarily display ',...
+                'correct proportions for non-uniform grids.', ...
+                'Use a regularily-spaced grid for best results.']);
         end
         
         mod = 1; % min(obj.full2partial(dr0)./dr,1e2);

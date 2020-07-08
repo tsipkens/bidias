@@ -126,7 +126,6 @@ A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 
 disp('[ Complete ========================================]');
-
 disp(' ');
 disp(' ');
 

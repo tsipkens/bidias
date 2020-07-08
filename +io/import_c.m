@@ -10,6 +10,10 @@
 function [data0,d_star0,sp0,prop_dma,prop_pma,out] = ...
     import_c(fnames,prop_pma)
 
+%-- Parse inputs ---------------------------------------------------------%
+addpath tfer_pma; % add tfer_pma dependency
+
+% check if input is a filename structure, or convert to structure
 if ~isstruct(fnames)
     t0 = fnames;
     fnames = struct();
@@ -17,71 +21,66 @@ if ~isstruct(fnames)
     fnames.name = [fnames.name,ext];
 end
 
+% if not supplied get properties structure
+if ~exist('prop_pma','var'); prop_pma = []; end
+if isempty(prop_pma); prop_pma = kernel.prop_pma(' CPMA'); end
+%-------------------------------------------------------------------------%
+
+
+% initiate diameters
 data0 = [];
 d_star0 = [];
 
-disp('Reading files...');
 
+disp('Reading files...');
 N = length(fnames); % number of files to read
-if N>1; tools.textbar(0); end
-for ff=1:N
+if N>1; tools.textbar(0); end % initiate commandline textbar
+for ff=1:N % loop through files
     fn = [fnames(ff).folder,'\',fnames(ff).name];
+        % ffth file name
     
     
-    %== Open file and read data =========%
-    fid = fopen(fn);
+    opts = detectImportOptions(fn,'NumHeaderLines',1);
+        % default options
     
-    ii = 0; % automatically detect size of header
-    line = {''};
-    while ~strcmp(line{1},'Point')
-        line = split(fgets(fid),',');
-        ii = ii+1;
-    end
-    
-    [~] = fclose(fid);
-    
-    
-    %== Proceed with reading data ========%
-    t = readtable(fn, 'HeaderLines',ii-1);
+    %== Proceed with reading data ================%
+    tab0 = readtable(fn, opts);
     
     %-- PMA setpoints -----------------------------------------------%
-    m_star = table2array(t(:,3));
-    V = table2array(t(:,4));
-    omega = table2array(t(:,5)); % centerline radial speed
-    Rm = table2array(t(:,6)); % CPMA implied resolution
-    p = table2array(t(:,7)); % PMA pressure
-    T = table2array(t(:,8)); % PMA tempreature
-
-    if ~exist('prop_pma','var'); prop_pma = []; end
-    if isempty(prop_pma); prop_pma = kernel.prop_pma(' CPMA'); end
+    m_star = tab0.m_fg_;
+    V = tab0.V_V__1;
+    omega = tab0.w_rad_s_; % centerline radial speed
+    Rm = []; % CPMA implied resolution, currently N/A
+    p = tab0.P_Pa_; % PMA pressure
+    T = tab0.T_C_; % PMA tempreature
     
-    prop_pma.Q = mean(table2array(t(:,9)))/1000/60; % current averages over all setpoint
+    
+    
+    prop_pma.Q = mean(tab0.Qa_LPM__1) / 1000 / 60; % current assumed constant over all setpoint
             % and does not support changing Q during measurements
     prop_pma.v_bar = prop_pma.Q/prop_pma.A; % average flow velocity
     
     clear sp; % reset PMA setpoints
-    for ii=1:length(V)
-        prop_pma.T = T(ii)+273.15; % pressure converted to Kelvin
-        prop_pma.p = p(ii)/101325; % pressure converted to atm
-        % sp(ii,1) = tfer_pma.get_setpoint(prop_pma,...
-        %     'm_star',m_star(ii).*1e-18,'Rm',Rm(ii));
-        sp(ii,1) = tfer_pma.get_setpoint(prop_pma,...
-            'V',V(ii),'omega',omega(ii));
-    end
+    prop_pma.T = mean(T) + 273.15; % pressure converted to Kelvin
+    prop_pma.p = mean(p) / 101325; % pressure converted to atm
+    % sp(ii,1) = tfer_pma.get_setpoint(prop_pma,...
+    %     'm_star',m_star(ii).*1e-18,'Rm',Rm(ii));
+    sp = get_setpoint(prop_pma,...
+        'V', V, 'omega', omega);
     %----------------------------------------------------------------%
 
 
     %-- DMA setpoints -----------------------------------------------%
-    d_star = table2array(t(:,12)); % DMA setpoints
+    d_star = tab0.dm_nm_; % DMA setpoints
     prop_dma = kernel.prop_dma(' Electrostatic Classifier Model 3080');
-    prop_dma.Q_a = mean(table2array(t(:,9)))/1000/60; % aerosol flow (same as PMA)
+    prop_dma.Q_a = prop_pma.Q; % aerosol flow (same as PMA)
     prop_dma.Q_s = prop_dma.Q_a;
-    prop_dma.Q_c = mean(table2array(t(:,14)))/1000/60; % shield flow
+    prop_dma.Q_c = mean(tab0.Qsh_LPM_) / 1000 / 60; % shield flow
     prop_dma.Q_m = prop_dma.Q_c;
     %----------------------------------------------------------------%
     
     
-    data = table2array(t(:,20)); % data as a vector
+    data = tab0.N_p_cc_; % data as a vector
     
     
     %-- Append to arrays --------------------------------------------%
