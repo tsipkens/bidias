@@ -36,6 +36,9 @@ grid_b = Grid(span_b, ne_b, 'logarithmic');
 prop_pma = kernel.prop_pma % use default CPMA properties (will display in command line)
 A = kernel.gen_grid(grid_b, grid_x); % generate the kernel, use default CPMA properties
 
+figure(2);
+grid_x.plot2d_marg(A(530,:)); % plot kernel for 530th data point
+
 
 %== STEP 2b ==============================================================%
 b0 = A * x0; % generate a set of data using the forward model
@@ -43,7 +46,7 @@ b0 = A * x0; % generate a set of data using the forward model
 [b, Lb] = tools.get_noise(b0, 1e5); % corrupt data, assume peak counts ~1e5
 
 % plot resultant data as mobility scans at a range of mass setpoint
-figure(2);
+figure(3);
 tools.plot2d_slices(grid_b, b0);
 xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
@@ -69,7 +72,7 @@ disp(' ');
 
 
 %== STEP 4 ===============================================================%
-figure(3);
+figure(4);
 subplot(1,2,1);
 grid_x.plot2d(x_tk1); % plot Tikhonov solution
 

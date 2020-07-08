@@ -133,6 +133,13 @@ Then, since we have a grid for the mass-mobility distribution and the data, use 
 A = kernel.gen_grid(grid_b, grid_x); % generate the kernel, use default CPMA properties
 ```
 
+One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point using: 
+
+```Matlab
+figure(2);
+grid_x.plot2d_marg(A(530,:)); % plot kernel for 530th data point
+```
+
 Now we can generate a noiseless data set using the forward mode:
 
 ```Matlab
@@ -145,7 +152,7 @@ Corrupt the data with noise, assuming a peak of 10<sup>5</sup> counts and then p
 [b, Lb] = tools.get_noise(b0, 1e5); % corrupt data, assume peak counts ~1e5
 
 % plot resultant data as mobility scans at a range of mass setpoint
-figure(2);
+figure(3);
 tools.plot2d_slices(grid_b, b0);
 xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
@@ -172,7 +179,7 @@ x_ed = invert.exp_dist(Lb*A, Lb*b, ...
 Finally, plot the solutions:
 
 ```Matlab
-figure(3);
+figure(4);
 subplot(1,2,1);
 grid_x.plot2d(x_tk1); % plot Tikhonov solution
 
