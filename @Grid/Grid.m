@@ -3,11 +3,11 @@
 % Author: Timothy Sipkens, 2019-02-03
 %
 % Notes:
-% - The grid class is currently used when a simple discretization of
+% + The grid class is currently used when a simple discretization of
 %   two-dimensional space is required. It then takes either the span
 %   of spcae to be covered or pre-defined edge vectors to form a grid.
 %
-% - See constructor method for list of other variables required
+% + See constructor method for list of other variables required
 %   for creation.
 %=========================================================================%
 
@@ -136,7 +136,7 @@ methods
 
                 obj.nodes{ii} = [exp(2*log(obj.edges{ii}(1))-log(r_m(1))),...
                     r_m, exp(2*log(obj.edges{ii}(end))-log(r_m(end)))];
-
+                
             elseif strcmp(obj.discrete,'linear')
                 r_m = (obj.edges{ii}(2:end)+...
                     obj.edges{ii}(1:(end-1)))./2; % mean of edges
@@ -757,6 +757,15 @@ methods
         
         xlim(obj.span(2,:));
         ylim(obj.span(1,:));
+        
+        if obj.ispartial==1
+            hold on;
+            tools.overlay_line(obj,[0,obj.cut(1)],obj.cut(2)); % overlay partial grid limits
+            if length(obj.cut)>2
+                tools.overlay_line(obj,[0,obj.cut(3)],obj.cut(4));
+            end
+            hold off;
+        end
         
         if nargout>0; h = gca; end
         

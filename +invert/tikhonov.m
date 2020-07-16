@@ -1,7 +1,7 @@
 
 % TIKHONOV  Performs inversion using various order Tikhonov regularization in 2D.
 % Author:   Timothy Sipkens, 2018-11-21
-%-------------------------------------------------------------------------%
+% 
 % Inputs:
 %   A           Model matrix
 %   b           Data
