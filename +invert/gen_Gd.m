@@ -1,6 +1,6 @@
 
 % GEN_GD  Generate the Gd matrix from a series of name-value pairs.
-% Author: Timothy Sipkens, 2018-10-22
+% Author: Timothy Sipkens, 2020-07-17
 % 
 % Inputs: 
 %   OPTION 1: One can enter a series of name-value pairs.
