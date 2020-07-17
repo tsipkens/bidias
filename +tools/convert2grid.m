@@ -10,6 +10,8 @@ function [grid,idx] = convert2grid(sp_m, d_star)
 if isstruct(sp_m); m_star = [sp_m.m_star] .* 1e18; % if setpoint structure
 else; m_star = sp_m; end % if mass setpoints
 
+b_size = length(d_star);
+
 
 % round the setpoints to discretize
 m_star = exp(round(log(m_star), 1));  % grouped based on one-digit rounding
@@ -19,8 +21,13 @@ d_star = exp(round(log(d_star), 2))'; % grouped based on two-digit rounding
 [d_star,~,ic_d] = unique(d_star);
 [~,idx] = sortrows([ic_d, ic_m]);
 
-
-grid = Grid({m_star, d_star});
+if length(m_star)*length(d_star)==b_size
+    grid = Grid({m_star, d_star});
+else
+    disp('Failed to convert to Grid.');
+    grid = [];
+    idx = [];
+end
 
 end
 
