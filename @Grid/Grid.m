@@ -758,10 +758,11 @@ methods
         xlim(obj.span(2,:));
         ylim(obj.span(1,:));
         
+        % add lines marking the edges of the partial grid
         if obj.ispartial==1
             hold on;
             tools.overlay_line(obj,[0,obj.cut(1)],obj.cut(2)); % overlay partial grid limits
-            if length(obj.cut)>2
+            if length(obj.cut)>2 % if also a bottom cut
                 tools.overlay_line(obj,[0,obj.cut(3)],obj.cut(4));
             end
             hold off;
