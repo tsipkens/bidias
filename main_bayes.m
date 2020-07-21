@@ -63,7 +63,7 @@ grid_b = Grid(span_b,...
     n_b,'logarithmic'); % grid for data
 
 prop_pma = kernel.prop_pma;
-[A_t,sp] = kernel.gen_grid(grid_b,grid_t,prop_pma,'Rm',3);
+[A_t,sp] = kernel.gen_grid(grid_b,grid_t,prop_pma,[],'Rm',3);
     % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in <strong>x</strong>...');

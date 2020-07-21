@@ -21,13 +21,14 @@
 %   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
 %=========================================================================%
 
-function [A,sp] = gen_grid(grid_b,grid_i,prop_pma,varargin)
+function [A,sp] = gen_grid(grid_b,grid_i,prop_pma,prop_dma,varargin)
 
 addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
     % import properties of PMA
     % use default properties selected by prop_pma function
+if ~exist('prop_dma','var'); prop_dma = []; end
 
     
 %-- Parse measurement set points (b) -------------------------------------%
@@ -65,10 +66,11 @@ Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge sta
 for kk=1:n_z
     Omega_mat{kk} = sparse(n_b(2),n_i(2));% pre-allocate for speed
     for ii=1:n_b(2)
-        Omega_mat{kk}(ii,:) = kernel.tfer_dma(...
-            grid_b.edges{2}(ii).*1e-9,...
-            grid_i.edges{2}.*1e-9,...
-            z_vec(kk));
+        Omega_mat{kk}(ii,:) = kernel.tfer_dma( ...
+            grid_b.edges{2}(ii) .* 1e-9, ...
+            grid_i.edges{2} .* 1e-9, ...
+            z_vec(kk), ...
+            prop_dma);
     end
     
     Omega_mat{kk}(Omega_mat{kk}<(1e-7.*max(max(Omega_mat{kk})))) = 0;
