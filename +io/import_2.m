@@ -22,7 +22,8 @@ addpath('tfer_pma');
 
 if ~iscell(fn_cpma); fn_cpma = {fn_cpma}; end
 
-opts = detectImportOptions(fn_cpma{1}); % default options
+opts = detectImportOptions(fn_cpma{1}, ...
+    'FileType', 'text'); % default options
 for ff=1:length(fn_cpma)
     if ~exist('time_cpma','var'); idx0 = 1;
     else; idx0 = [idx0, length(time_cpma)]; end

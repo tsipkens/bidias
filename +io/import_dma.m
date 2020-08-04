@@ -5,6 +5,8 @@
 
 function [data,d_star,prop_dma,time_dma] = import_dma(fn)
 
+prop_dma = kernel.prop_dma;
+
 n = io.linecount(fn); % total line counts in file, sub-function below
 
 opts = detectImportOptions(fn); % default options prior to modification below
