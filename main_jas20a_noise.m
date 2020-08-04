@@ -7,13 +7,13 @@ clc;
 close all;
 
 %-- Load colour schemes --------------------------------------------------%
-addpath cmap cmap/data;
-cm = load_cmap('YlGnBu',255);
+addpath cmap;
+cm = ylgnbu(255);
 cm_alt = cm;
-load('inferno.mat');
+cm = inferno;
 cm = cm(40:end,:);
 cm_b = cm;
-load('viridis.mat');
+cm = viridis;
 
 
 %%

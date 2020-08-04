@@ -11,10 +11,10 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath cmap;
-load('inferno.mat');
+cm = inferno;
 cm = cm(40:end,:);
 cm_b = cm;
-load('viridis.mat');
+cm = viridis;
 
 
 
