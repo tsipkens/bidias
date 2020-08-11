@@ -7,7 +7,7 @@
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution, but can be generalized to other applications (e.g., inversion of PMA-SP2 data). 
 
-#### Installation note
+### Installation note
 
 This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders respectively. If cloning using git, clone the repository using 
 
@@ -23,7 +23,7 @@ addpath('tfer_pma','cmap');
 
 For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
 
-#### A simple demonstration
+### A simple demonstration
 
 What follows is a simple demonstration of this program, building a phantom mass-mobility distribution, generating and corrupting synthetic data, and then performing an inversion. To start, create an instance of the [Grid](#31-grid-class) class to discretize mass-mobility space:
 
