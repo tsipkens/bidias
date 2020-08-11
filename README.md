@@ -5,9 +5,11 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Version](https://img.shields.io/badge/Version-3.0+-blue.svg)]()
 
+This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution, but can be generalized to other applications (e.g., inversion of PMA-SP2 data). 
 
+#### Installation note
 
-**Installation note:** This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders respectively. If cloning using git, clone the repository using 
+This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders respectively. If cloning using git, clone the repository using 
 
 ```shell
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
@@ -21,65 +23,7 @@ addpath('tfer_pma','cmap');
 
 For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
 
-
-
-------
-
-
-
-## 1. General description and underlying physics
-
-This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution, but can be generalized to other applications (e.g., inversion of PMA-SP2 data).
-
-The methods in this code are described in two papers that correspond to releases:
-
-**v1.1** - The results of [Sipkens et al. (2020a)][1_JAS1] can be reproduced by running `main_jas20a` in [v1.1][code_v11] of this code. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in [v1.1][code_v11] provides a better optimized regularization parameter and thus a slightly smaller Euclidean error. Later updates to this code result in minimal changes to the output of this script. 
-
-**v3.0** - The results of [Sipkens et al. (2020c)][4], currently under review, can be reproduced by running `main_bayes` in [v3.0][code_v3] of this code. This version of the code is to be archived with Mendeley Data at [https://doi.org/10.17632/sg2zj5yrvr.3](https://doi.org/10.17632/sg2zj5yrvr.3). The four different phantoms in that work can be realized by changing the integer in the line:
-
-```Matlab
-phantom = Phantom('1',span_t);
-```
-
-to the corresponding phantom number (e.g., to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]). Default runtimes should be under two minutes but will depend on computer hardware. Alternate arrangements of the `run_inversion*` scripts within the main `main_bayes` script will incur very different runtimes, as most attempt to optimize the prior parameter set (up to the order of several hours). 
-
-This program is organized into several: [classes](#3-classes) (folders starting with the `@` symbol), [packages](#4-packages) (folders starting with the `+` symbol), and scripts that form the base of the program and will be detailed in this README. 
-
-### 1.1 Underlying physics
-
-Size characterization is critical to understanding the role of aerosols in various roles, ranging from climate change to novel nanotechnologies. Aerosol size distributions have typically been resolved only with respect to a single quantity or variable. With the increasing frequency of tandem measurements, this program is designed to move towards inferring two-dimensional distributions of aerosol particle size. This kind of analysis requires a double deconvolution, that is the inversion of a double integral. While this may complicate the process, the information gained is quite valuable, including the distribution of aerosol quantities and the identification of multiple particle types which may be challenging from one-dimensional analyses or when simply computing summary parameters.
-
-Mathematically, the problem to be solved here is of the form
-
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int_0^{\infty}{\int_0^{\infty}{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
-
-where:
-
-- *a* and *b* are two aerosol properties (e.g. the logarithm of the particle mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*<sub>m</sub>);
-- *N<sub>i</sub>* is some measurement, most often a number of counts of particles, at some *i*<sup>th</sup> measurement setpoint or location;
-- *N*<sub>tot</sub> is the total number of particles in the measured volume of aerosol, that is the product of the particle number concentration, the flow rate, and the total sampling time;
-- *K*(*a<sub>i</sub>*\*,*b<sub>i</sub>*\*,*a*,*b*) is a kernel containing device transfer functions or other discretization information; and *p*(*a*,*b*) is a two-dimensional size distribution.
-
-Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the two-dimensional size distribution is discretized, most simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub> discrete points for the first type of particle size (that is for *a*, e.g. particle mass) and *n*<sub>b</sub> for the second type of particle size (that is for *b*, e.g. particle mobility diameter). In this case, we define a global index for the grid, *j*, and vectorize the distribution, such that
-
-![](https://latex.codecogs.com/svg.latex?x_j=p(a_j,b_j))
-
-This results is a vector with *n*<sub>a</sub> x *n*<sub>b</sub> total entries. This vectorized form is chosen over a two-dimensional **x** so that the problem can be represented as a linear system of equations. Here, the solution is assumed to be uniform within each element, in which case
-
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum_{j=1}^{n_a\cdot{n_b}}{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
-
-(where the integrals are over the two-dimensional area of the *j*<sup>th</sup> element
-in [*a*,*b*]<sup>T</sup> space). This results is a linear system of equations of the form
-
-![](https://latex.codecogs.com/svg.latex?{\mathbf{b}}={\mathbf{Ax}}+{\mathbf{e}})
-
-where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*); **A** is a discrete form of the kernel,
-
-![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}})
-
-and **e** is a vector of measurement errors that corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
-
-### 1.2 A simple demonstration
+#### A simple demonstration
 
 What follows is a simple demonstration of this program, building a phantom mass-mobility distribution, generating and corrupting synthetic data, and then performing an inversion. To start, create an instance of the [Grid](#31-grid-class) class to discretize mass-mobility space:
 
@@ -190,6 +134,60 @@ set(gcf, 'Position', [50 300 900 300]); % position and size plot
 ```
 
 This example is provided in the `main_0` script in the upper directory of this program. Runtimes are typically on the order of a minute. 
+
+
+
+------
+
+
+
+This program is organized into several: [classes](#3-classes) (folders starting with the `@` symbol), [packages](#4-packages) (folders starting with the `+` symbol), and scripts that form the base of the program. These will be described, along with the underlying physics, below. 
+
+## 1. Underlying physics
+
+Size characterization is critical to understanding the role of aerosols in various roles, ranging from climate change to novel nanotechnologies. Aerosol size distributions have typically been resolved only with respect to a single quantity or variable. With the increasing frequency of tandem measurements, this program is designed to move towards inferring two-dimensional distributions of aerosol particle size. This kind of analysis requires a double deconvolution, that is the inversion of a double integral. While this may complicate the process, the information gained is quite valuable, including the distribution of aerosol quantities and the identification of multiple particle types which may be challenging from one-dimensional analyses or when simply computing summary parameters.
+
+Mathematically, the problem to be solved here is of the form
+
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int_0^{\infty}{\int_0^{\infty}{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
+
+where:
+
+- *a* and *b* are two aerosol properties (e.g. the logarithm of the particle mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*<sub>m</sub>);
+- *N<sub>i</sub>* is some measurement, most often a number of counts of particles, at some *i*<sup>th</sup> measurement setpoint or location;
+- *N*<sub>tot</sub> is the total number of particles in the measured volume of aerosol, that is the product of the particle number concentration, the flow rate, and the total sampling time;
+- *K*(*a<sub>i</sub>*\*,*b<sub>i</sub>*\*,*a*,*b*) is a kernel containing device transfer functions or other discretization information; and *p*(*a*,*b*) is a two-dimensional size distribution.
+
+Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the two-dimensional size distribution is discretized, most simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub> discrete points for the first type of particle size (that is for *a*, e.g. particle mass) and *n*<sub>b</sub> for the second type of particle size (that is for *b*, e.g. particle mobility diameter). In this case, we define a global index for the grid, *j*, and vectorize the distribution, such that
+
+![](https://latex.codecogs.com/svg.latex?x_j=p(a_j,b_j))
+
+This results is a vector with *n*<sub>a</sub> x *n*<sub>b</sub> total entries. This vectorized form is chosen over a two-dimensional **x** so that the problem can be represented as a linear system of equations. Here, the solution is assumed to be uniform within each element, in which case
+
+![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*){\approx}N_{\text{tot}}\sum_{j=1}^{n_a\cdot{n_b}}{p(a_j,b_j)\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
+
+(where the integrals are over the two-dimensional area of the *j*<sup>th</sup> element
+in [*a*,*b*]<sup>T</sup> space). This results is a linear system of equations of the form
+
+![](https://latex.codecogs.com/svg.latex?{\mathbf{b}}={\mathbf{Ax}}+{\mathbf{e}})
+
+where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*); **A** is a discrete form of the kernel,
+
+![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}})
+
+and **e** is a vector of measurement errors that corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
+
+The methods in this code are further described in two papers that correspond to releases:
+
+**v1.1** - The results of [Sipkens et al. (2020a)][1_JAS1] can be reproduced by running `main_jas20a` in [v1.1][code_v11] of this code. Minor differences in the Euclidean error stem from using a smaller search space when optimizing the regularization parameter for Tikhonov regularization. The narrower range in [v1.1][code_v11] provides a better optimized regularization parameter and thus a slightly smaller Euclidean error. Later updates to this code result in minimal changes to the output of this script. 
+
+**v3.0** - The results of [Sipkens et al. (2020c)][4], currently under review, can be reproduced by running `main_bayes` in [v3.0][code_v3] of this code. This version of the code is to be archived with Mendeley Data at [https://doi.org/10.17632/sg2zj5yrvr.3](https://doi.org/10.17632/sg2zj5yrvr.3). The four different phantoms in that work can be realized by changing the integer in the line:
+
+```Matlab
+phantom = Phantom('1',span_t);
+```
+
+to the corresponding phantom number (e.g., to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]). Default runtimes should be under two minutes but will depend on computer hardware. Alternate arrangements of the `run_inversion*` scripts within the main `main_bayes` script will incur very different runtimes, as most attempt to optimize the prior parameter set (up to the order of several hours). 
 
 
 ## 2. Scripts in upper directory
