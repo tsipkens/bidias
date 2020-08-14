@@ -23,7 +23,7 @@ addpath('tfer_pma','cmap');
 
 For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
 
-### A simple demonstration
+### Getting started
 
 What follows is a simple demonstration of this program, building a phantom mass-mobility distribution, generating and corrupting synthetic data, and then performing an inversion. To start, create an instance of the [Grid](#31-grid-class) class to discretize mass-mobility space:
 
