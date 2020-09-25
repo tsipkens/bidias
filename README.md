@@ -149,7 +149,7 @@ Size characterization is critical to understanding the role of aerosols in vario
 
 Mathematically, the problem to be solved here is of the form
 
-![](https://latex.codecogs.com/svg.latex?N_i(a_i*,b_i*)=N_{\text{tot}}\int_0^{\infty}{\int_0^{\infty}{K(a_i*,b_i*,a,b)\cdot{p(a,b)}\cdot\text{d}a\cdot\text{d}b}})
+![](https://latex.codecogs.com/svg.latex?{\epsilon}=\frac{1}{{\pi}}{\text{tot}}\int_0^{\infty}{\int_0^{\infty}\frac{{\delta}(r)r}{sqrt{y_0^2-r^2}}dy_0})
 
 where:
 
