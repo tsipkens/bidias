@@ -12,7 +12,6 @@
 %   3. By default, this function uses the analytical PMA transfer function 
 %   corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
 % 
-% 
 %-------------------------------------------------------------------------%
 % Inputs:
 %   grid_b      Grid on which the data exists
@@ -21,7 +20,7 @@
 %   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
 %=========================================================================%
 
-function [A,sp] = gen_grid(grid_b,grid_i,prop_pma,prop_dma,varargin)
+function [A,sp] = gen_grid(grid_b, grid_i, prop_pma, prop_dma, varargin)
 
 addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
 if ~exist('prop_pma','var'); prop_pma = []; end

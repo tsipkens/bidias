@@ -184,7 +184,7 @@ The methods in this code are further described in two papers that correspond to 
 **v3.0** - The results of [Sipkens et al. (2020c)][4], currently under review, can be reproduced by running `main_bayes` in [v3.0][code_v3] of this code. This version of the code is to be archived with Mendeley Data at [https://doi.org/10.17632/sg2zj5yrvr.3](https://doi.org/10.17632/sg2zj5yrvr.3). The four different phantoms in that work can be realized by changing the integer in the line:
 
 ```Matlab
-phantom = Phantom('1',span_t);
+phantom = Phantom('1', span_t);
 ```
 
 to the corresponding phantom number (e.g., to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]). Default runtimes should be under two minutes but will depend on computer hardware. Alternate arrangements of the `run_inversion*` scripts within the main `main_bayes` script will incur very different runtimes, as most attempt to optimize the prior parameter set (up to the order of several hours). 
@@ -229,7 +229,7 @@ Instances of the Grid class can primarily be constructed in two ways. First, one
 ```Matlab
 span = [0.01,100; 10,1000]; % span of space to be covered
 ne = [10,12]; % number of elements for each dimension
-grid = Grid(span,ne,'logarithmic'); % create instance of Grid
+grid = Grid(span, ne, 'logarithmic'); % create instance of Grid
 ```
 
 Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center of the elements in the first dimension of parameter space and the second entry of the elements in the second dimension of parameter space. For example, to make
@@ -237,7 +237,7 @@ a simple grid with elements at 0.1 and 1 fg in mass space and 10, 200, and 1000 
 
 ```Matlab
 edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors
-grid = Grid(edges,[],'logarithmic'); % create instance of Grid
+grid = Grid(edges, [], 'logarithmic'); % create instance of Grid
 ```
 
 Note that the number of elements is not required in this instance, as it is implied by the length of the vectors given in `edges`. The `'logarithmic'` argument is still required to specify where nodes would be placed between the elements.
@@ -256,7 +256,7 @@ Partial grids can be created using the `Grid.partial`, which cuts the grid about
 (as is relevant for PMA-SP2 inversion), one can call
 
 ```Matlab
-grid = grid.partial(0,1);
+grid = grid.partial(0, 1);
 ```
 
 which replaces the current grid with a partial grid with the same span. For partial grids:
