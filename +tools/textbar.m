@@ -1,7 +1,7 @@
 
 % TEXTBAR   Print out a text-based progress bar.
-% Author:   Samuel Grauer, 2017-11-16
-% Modified: Timothy Sipkens, 2020-11-02
+% Author: Timothy Sipkens, 2020-11-02
+% Based on: Samuel Grauer, 2017-11-16 + tqdm for Python
 % 
 % DESCRIPTION:
 %   textbar() or textbar(0) initializes a textbar without
