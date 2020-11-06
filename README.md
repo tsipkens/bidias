@@ -23,7 +23,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 - [3.2 Phantom class](#32-phantom-class)
 
-[4. Packages](#4-packages)
+[4. Packages](#4-packages): +kernel, +invert, +optimize, etc.
 
 [License, how to cite, and acknowledgements](#license)
 
@@ -480,13 +480,15 @@ to minimize the number of function evaluations (using the `kernel.gen_grid` func
 
 ### 4.2 tfer_pma
 
-Unlike the other packages, tfer_pma corresponds to a submodule that is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). It does not contain a `+` symbol and thus must be added to the Matlab path using
+Unlike the other packages, tfer_pma corresponds to a submodule that is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). It does not contain a `+` symbol and thus must be explicitly added to the Matlab path using
 
 ```Matlab
-addpath('tfer_pma','cmap');
+addpath('tfer_pma');
 ```
 
-to be used explicitly in scripts. The package is automatically added to the Matlab path, whenever it is necessary in calling functions in the kernel package. The package is used in evaluating the transfer function of the particle mass analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal particle mass analyzer (CPMA). PMA transfer functions are evaluated using the analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including different approximations for the particle migration velocity and options for transfer functions that include diffusion. For more details on the theory, one is referred to the referenced work. The package also contains some standard reference functions (e.g. `dm2zp`) used in evaluating the DMA transfer function when calling `kernel.tfer_dma`.
+to be used explicitly in scripts. The package is automatically added to the Matlab path, whenever it is necessary in calling functions in the kernel package. 
+
+The package is used in evaluating the transfer function of the particle mass analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal particle mass analyzer (CPMA). PMA transfer functions are evaluated using the analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including different approximations for the particle migration velocity and options for transfer functions that include diffusion. For more details on the theory, one is referred to the referenced work. The package also contains some standard reference functions (e.g. `dm2zp`) used in evaluating the DMA transfer function when calling `kernel.tfer_dma(...)`.
 
 ### 4.3 +invert
 
