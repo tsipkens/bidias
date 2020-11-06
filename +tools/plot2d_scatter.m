@@ -3,11 +3,16 @@
 % Author: Timothy Sipkens, 2019-11-28
 %=========================================================================%
 
-function [] = plot2d_scatter(vec1,vec2,b,cm)
+function [] = plot2d_scatter(vec1, vec2, b, cm)
 
-b = b./max(b);
+% If not colormap specified, use grays.
+if ~exist('cm', 'var'); cm = []; end
+if isempty(cm); cm = gray(255); end
 
-logb = log10(b); % scale data
+
+b = b ./ max(b); % scale data
+
+logb = log10(b); % compute log, allows for plotting of larger range
 bmax = max(logb);
 bmin = min(logb(~isinf(logb)));
 bmin = max(bmin,bmax-5); % at most, span four orders of magnitude
