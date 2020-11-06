@@ -725,6 +725,8 @@ methods
         if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
         if isempty(f_contf); f_contf = 0; end % set contourf flag to false
         
+        cla; % clear existing axis
+        
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
         [~,dr1,dr2] = obj.dr; % used to give warning below
@@ -768,6 +770,11 @@ methods
             end
             hold off;
         end
+        
+        % Grey labels and axes to allow viz against dark and light bgs.
+        set(gca, 'XColor', [0.5, 0.5, 0.5], ...
+            'YColor', [0.5, 0.5, 0.5], ...
+            'linewidth', 0.75);
         
         if nargout>0; h = gca; end
         
