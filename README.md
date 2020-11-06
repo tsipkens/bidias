@@ -47,7 +47,7 @@ This code also makes use of the [optimization toolbox](https://www.mathworks.com
 
 ### A sample inversion
 
-Let's start with a simple demonstration of this program. Any inversion has three components: (i) data, whether built from a synthetic phantom or experiments; (ii) a mathemtical kernel, which contains the device transfer functions and charging fractions, if relevant; and (iii) an inversion step where the previous two components are used to estimate the size distributions. In many ways, this is no different from a standard one-dimensional inversion, with many of the same benefits (e.g., multiple charge correction).
+Let's start with a simple demonstration of this program. Any inversion has three components: (i) data, whether built from a synthetic phantom or experiments; (ii) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; and (iii) an inversion step where the previous two components are used to estimate the size distributions. In many ways, this is no different from a standard one-dimensional inversion, with many of the same benefits (e.g., multiple charge correction).
 
 To demonstrate this code, we will build a phantom mass-mobility distribution (considering particle mass analyzer-differential mobility analyzer data); generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. To start here, let's create an instance of the [Grid](#31-grid-class) class, which is used to discretize mass-mobility space:
 
@@ -90,6 +90,7 @@ grid_x.plot2d(x0); % show the phantom in figure 1
   <img width="420" height="315" src="docs/01a_distr4.png">
 </p>
 
+
 Note that we chose a very narrow phantom. The white lines indicate the edges of the partial grid that we defined in a previous step. 
 
 Next, we define a new grid for the points at which the measurements will take place:
@@ -125,7 +126,7 @@ grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
 </p>
 
 
-One can see multiple peaks corresponding to the multiple charging contributions. Now we can generate a noiseless data set using the forward mode:
+One can see multiple peaks corresponding to the multiple charging contributions. Now we can generate a noiseless data set using the forward model:
 
 ```Matlab
 b0 = A * x0; % generate a set of data using the forward model
@@ -204,12 +205,12 @@ Mathematically, the problem to be solved here is of the form
 
 where:
 
-- *a* and *b* are two aerosol properties (e.g. the logarithm of the particle mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*<sub>m</sub>);
+- *a* and *b* are two aerosol properties (e.g., the logarithm of the particle mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*<sub>m</sub>);
 - *N<sub>i</sub>* is some measurement, most often a number of counts of particles, at some *i*<sup>th</sup> measurement setpoint or location;
 - *N*<sub>tot</sub> is the total number of particles in the measured volume of aerosol, that is the product of the particle number concentration, the flow rate, and the total sampling time;
 - *K*(*a<sub>i</sub>*\*,*b<sub>i</sub>*\*,*a*,*b*) is a kernel containing device transfer functions or other discretization information; and *p*(*a*,*b*) is a two-dimensional size distribution.
 
-Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the two-dimensional size distribution is discretized, most simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub> discrete points for the first type of particle size (that is for *a*, e.g. particle mass) and *n*<sub>b</sub> for the second type of particle size (that is for *b*, e.g. particle mobility diameter). In this case, we define a global index for the grid, *j*, and vectorize the distribution, such that
+Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the two-dimensional size distribution is discretized, most simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub> discrete points for the first type of particle size (that is for *a*, e.g., particle mass) and *n*<sub>b</sub> for the second type of particle size (that is for *b*, e.g., particle mobility diameter). In this case, we define a global index for the grid, *j*, and vectorize the distribution, such that
 
 ![](https://latex.codecogs.com/svg.latex?x_j=p(a_j,b_j))
 
@@ -222,7 +223,7 @@ in [*a*,*b*]<sup>T</sup> space). This results is a linear system of equations of
 
 ![](https://latex.codecogs.com/svg.latex?{\mathbf{b}}={\mathbf{Ax}}+{\mathbf{e}})
 
-where **b** is the data vector (i.e. *b<sub>i</sub>* = *N<sub>i</sub>*); **A** is a discrete form of the kernel,
+where **b** is the data vector (i.e., *b<sub>i</sub>* = *N<sub>i</sub>*); **A** is a discrete form of the kernel,
 
 ![](https://latex.codecogs.com/svg.latex?A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}})
 
@@ -263,7 +264,7 @@ where `Ntot` is the total number of particle counts as described in [Sipkens et 
 
 **STEP 3**: With this information, one can proceed to implement various inversion approaches, such as those available in the `invert` package described below. Preset groupings on inversion approaches are available in the `run_inversions*` scripts, also described below.
 
-**STEP 4**: Finally, one can post-process and visualize the results as desired. The `Grid` class allows for a simple visualization of the inferred distribution by calling the `Grid.plot2d_marg` method of this class. This plots both the retrieved distribution as well as the marginalized distribution on each of the axes, taking the reconstruction (e.g. `x_tk1`, `x_lsq`) as an input.
+**STEP 4**: Finally, one can post-process and visualize the results as desired. The `Grid` class allows for a simple visualization of the inferred distribution by calling the `Grid.plot2d_marg` method of this class. This plots both the retrieved distribution as well as the marginalized distribution on each of the axes, taking the reconstruction (e.g., `x_tk1`, `x_lsq`) as an input.
 
 ### 2.2 Scripts to run a series of inversion methods (run_inversions*.m)
 
@@ -273,9 +274,9 @@ As noted above, these scripts are intend to bundle a series of inversion methods
 
 ### 3.1 Grid class
 
-Grid is a class developed to discretize a parameter space (e.g. ,mass-mobility space). This is done using a simple rectangular grid that can have linear, logarithmic or custom spaced elements along the edges. Methods are designed to make it easier to deal with gridded data, allowing users to reshape vectorized data back to a 2D grid (`Grid.reshape` method) or vice versa. Other methods allow for plotting the 2D representation of vector data (`Grid.plot2d` method) or calculate the gradient of vector data (`Grid.grad` method).
+Grid is a class developed to discretize a parameter space (e.g., mass-mobility space). This is done using a simple rectangular grid that can have linear, logarithmic or custom spaced elements along the edges. Methods are designed to make it easier to deal with gridded data, allowing users to reshape vectorized data back to a 2D grid (`Grid.reshape` method) or vice versa. Other methods allow for plotting the 2D representation of vector data (`Grid.plot2d` method) or calculate the gradient of vector data (`Grid.grad` method).
 
-Instances of the Grid class can primarily be constructed in two ways. First, one can specify a `Grid.span` for the grid to cover in the parameter space. The span is specified using a 2 x 2 matrix, where the first row corresponds to the span for the first dimension of the parameter space (e.g., mass) and the second row corresponds to the span for the second dimension of the parameter space (e.g. mobility). For example, if one wanted to logarithmically discretize mass space between 0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
+Instances of the Grid class can primarily be constructed in two ways. First, one can specify a `Grid.span` for the grid to cover in the parameter space. The span is specified using a 2 x 2 matrix, where the first row corresponds to the span for the first dimension of the parameter space (e.g., mass) and the second row corresponds to the span for the second dimension of the parameter space (e.g., mobility diameter). For example, if one wanted to logarithmically discretize mass space between 0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
 
 ```Matlab
 span = [0.01,100; 10,1000]; % span of space to be covered
@@ -293,7 +294,7 @@ grid = Grid(edges, [], 'log'); % create instance of Grid
 
 Note that the number of elements is not required in this instance, as it is implied by the length of the vectors given in `edges`. The `'log'` (or equivalently `'logarithm'`) argument is still required to specify where nodes would be placed between the elements.
 
-Both the data, **b**, and two-dimensional size distribution, **x**, vectors can be defined with respect to an instance of this class. Generally, the data will only rely on the center of the elements on the grid (the width of the grid elements has little meaning for data). The vectors are arranged such that the first entry corresponds to the smallest size in both dimensions. The vector proceeds, first with increasing the first size dimension (e.g. for mass-mobility distributions this is mass by default) and then with increasing the second size dimension. Vectorizing the 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using the `vectorize` method.
+Both the data, **b**, and two-dimensional size distribution, **x**, vectors can be defined with respect to an instance of this class. Generally, the data will only rely on the center of the elements on the grid (the width of the grid elements has little meaning for data). The vectors are arranged such that the first entry corresponds to the smallest size in both dimensions. The vector proceeds, first with increasing the first size dimension (e.g., for mass-mobility distributions this is mass by default) and then with increasing the second size dimension. Vectorizing the 2D gridded data can be done using the colon operand, i.e., `x(:)`, or using the `vectorize` method.
 
 ##### 3.1.1 Support for partial grids
 
@@ -312,21 +313,21 @@ grid = grid.partial(0, 1);
 
 which replaces the current grid with a partial grid with the same span. For partial grids:
 
-1. `Grid.ispartial` will be 1 (i.e. true),
+1. `Grid.ispartial` will be 1 (i.e., true),
 2. `Grid.missing` contains a list of the global indices for the missing pixels,
 3. `Grid.cut` contains the y-intercept and slope of the line used in making the cut (which is used in marginalization to only partially weight points that are cut off),
 4.	`Grid.elements` is updated to only list the center of the elements that
-are left in the grid (i.e. have indices that are not listed in `Grid.ismissing`),
+are left in the grid (i.e., have indices that are not listed in `Grid.ismissing`),
 5.	`Grid.nelements` similarly only lists the edges of pixels that remain in the partial grid, and
 6.	`Grid.adj` is updated to only list the elements/pixels that are adjacent on the partial grid.
 
 The `Grid.edges` and `Grid.nodes` properties remain unchanged and refer to the underlying grid structure prior to any of the grid points being removed.
 
 Methods specific to partial grids include:
-1.	`Grid.partial2full(x)` will convert a partial x (resolved with only the remaining points on the grid) to one resolved on the original grid, filling the missing points with zeros. I use this to plot and marginalize the distributions (i.e. plots will have zeros in all of the missing elements/pixels) and
+1.	`Grid.partial2full(x)` will convert a partial x (resolved with only the remaining points on the grid) to one resolved on the original grid, filling the missing points with zeros. I use this to plot and marginalize the distributions (i.e., plots will have zeros in all of the missing elements/pixels) and
 2.	`Grid.full2partial(x)` will do the reverse of above, converting a full x (with all of the points from the original grid) to one resolved on the partial grid.
 
-Most other Grid methods will operate on partial grids. For example, the `Grid.marginalization` method will only sum the pixels that are still on the grid (exploiting the fact that the other pixels are necessarily zero), including accounting for the fact that pixels on the diagonal are only half pixels (i.e. they are triangles rather than rectangular elements). The `Grid.plot2d` method, equally, will plot zeros in the upper left triangle. The `Grid.l1` method will generate the first-order Tikhonov L matrix for the modified grid (only considering pixels that are adjacent on the partial grid). The `Grid.ray_sum` method will sum the distribution along some ray (i.e. along some line), assuming missing pixels are zero and do not contribute to the ray-sum. The list goes on.
+Most other Grid methods will operate on partial grids. For example, the `Grid.marginalization` method will only sum the pixels that are still on the grid (exploiting the fact that the other pixels are necessarily zero), including accounting for the fact that pixels on the diagonal are only half pixels (i.e., they are triangles rather than rectangular elements). The `Grid.plot2d` method, equally, will plot zeros in the upper left triangle. The `Grid.l1` method will generate the first-order Tikhonov L matrix for the modified grid (only considering pixels that are adjacent on the partial grid). The `Grid.ray_sum` method will sum the distribution along some ray (i.e., along some line), assuming missing pixels are zero and do not contribute to the ray-sum. The list goes on.
 
 ### 3.2 Phantom class
 
@@ -450,9 +451,9 @@ In both cases, creating an instance of the class will also contain the informati
 
 ##### 3.2.4 OPTION 3: Preset phantoms
 
-Use a preset or sample distribution, which are loaded using a string and the `presets` function, which is defined external to the main Phantom class definition for easier access. For example, the four sample phantoms from [Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing the distribution numbers or names from that work (e.g. the demonstration phantom can be generated using `'1'` or `'demonstration'`). The demonstration phantom is indicated in the image below.
+Use a preset or sample distribution, which are loaded using a string and the `presets` function, which is defined external to the main Phantom class definition for easier access. For example, the four sample phantoms from [Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing the distribution numbers or names from that work (e.g., the demonstration phantom can be generated using `'1'` or `'demonstration'`). The demonstration phantom is indicated in the image below.
 
-<img src="docs/distr1.png" width="450px">
+<img src="docs/distr1.png" width="420" height="315">
 
 Notably, Phantom no. 3, that is the phantom produced by
 
