@@ -15,9 +15,9 @@ classdef Grid
 
 
 properties
-    discrete = 'logarithmic';
+    discrete = 'log';
                 % type discretization to be applied to the edges
-                % ('logarithmic' or 'linear')
+                % ('log'/'logarithmic' or 'linear')
     
     dim = 2;    % number of dimensions of mesh
     
@@ -55,7 +55,7 @@ end
 methods
     %== GRID =========================================================%
     %   Class constructor.
-    %-----------------------------------------------------------------%
+    % 
     % Inputs:
     %   span_edges  Either:
     %                (i) a span over which discretization occurs or
@@ -64,16 +64,17 @@ methods
     %               elements/pixels in each dimension
     %   discrete    Specifies type of discretization, used for
     %               marginalization and/or discretization
-    %               Possible values: 'linear' or 'logarithmic' (default)
+    %               Possible values: 'linear' or 'logarithmic'/'log' (default)
     %-----------------------------------------------------------------%
     function obj = Grid(span_edges,ne,discrete)
         
         %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty grid
         
+        % If discrete is not specified, use logarithmic spacing.
         if ~exist('discrete','var'); discrete = []; end
-        if isempty(discrete); discrete = 'logarithmic'; end
-            % if discrete is not specified, use logarithmic
+        if isempty(discrete); discrete = 'log'; end
+        if strcmp(discrete, 'logarithmic'); discrete = 'log'; end % allow for longhand
         %-------------------------------------------------------------%
         
         if isa(span_edges,'cell') % consider case where edges are given
@@ -120,7 +121,7 @@ methods
                 if strcmp('linear',obj.discrete)
                     obj.edges{ii} = linspace(obj.span(ii,1),obj.span(ii,2),obj.ne(ii));
 
-                elseif strcmp('logarithmic',obj.discrete)
+                elseif strcmp('log',obj.discrete)
                     obj.edges{ii} = logspace(...
                         log10(obj.span(ii,1)),log10(obj.span(ii,2)),obj.ne(ii));
                 end
@@ -130,7 +131,7 @@ methods
 
         %-- Generate nodes -------------------------------------------%
         for ii=1:obj.dim
-            if strcmp(obj.discrete,'logarithmic')
+            if strcmp(obj.discrete,'log')
                 r_m = exp((log(obj.edges{ii}(2:end))+...
                     log(obj.edges{ii}(1:(end-1))))./2); % mean of edges
 
@@ -448,7 +449,7 @@ methods
         
         dr_0 = cell(obj.dim,1);
         for ii=1:obj.dim
-            if strcmp(obj.discrete,'logarithmic')
+            if strcmp(obj.discrete,'log')
                 dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
                     log10(obj.nodes{ii}(1:(end-1)));
             
@@ -750,7 +751,7 @@ methods
         end
         
         %-- Adjust tick marks for log scale ----%
-        if strcmp('logarithmic',obj.discrete)
+        if strcmp('log',obj.discrete)
             set(gca,'XScale','log');
             set(gca,'YScale','log');
         end
@@ -971,6 +972,21 @@ methods
     
     
     
+    %== PLOT2D_SCATTER ===============================================%
+    %   Wrapper for tools.plot2d_scatter.
+    %   Author:	Timothy Sipkens, 2020-11-05
+    %   Note: 'x' can be a cell array containing multiple x vectors
+    function [] = plot2d_scatter(obj, x, cm)
+        
+        if ~exist('cm', 'var'); cm = []; end
+
+        %-- Parse inputs ---------------------------------------------%
+        [e2, e1] = meshgrid(obj.edges{2}, obj.edges{1});
+        tools.plot2d_scatter(e1(:), e2(:), x, cm);
+    end
+    %=================================================================%
+    
+    
     
 %=====================================================================%
 %-- SUPPORT FOR PARTIAL GRIDS ----------------------------------------%
@@ -1002,7 +1018,7 @@ methods
         %--------------------------------------------%
         
         %-- Cut upper triangle ---------------------%
-        if strcmp(obj.discrete,'logarithmic')
+        if strcmp(obj.discrete,'log')
             tup = log10(obj.nelements(:,[1,4]));
         else
             tup = obj.nelements(:,[1,4]);
@@ -1016,7 +1032,7 @@ methods
         
         
         %-- Consider cutting lower triangle --------%
-        if strcmp(obj.discrete,'logarithmic')
+        if strcmp(obj.discrete,'log')
             tlow = log10(obj.nelements(:,[2,3]));
         else
             tlow = obj.nelements(:,[2,3]);
