@@ -523,7 +523,7 @@ The package is used in evaluating the transfer function of the particle mass ana
 ### 4.3 +invert
 
 The invert package contains various functions used to invert the measured data for the desired two-dimensional distribution. This includes implementations of least-squares, Tikhonov regularization, Twomey, Twomey-Markowski (including using
-the method of [Buckley et al. (2017)][3_Buck]), and the multiplicative algebraic reconstruction technique (MART).
+the method of [Buckley et al. (2017)][3_Buck] and [Rawat et al. (2016)][rawat]), and the multiplicative algebraic reconstruction technique (MART).
 
 An important note in connection with these methods is that they do not have the matrix `Lb` as an input. This is done for two reasons:
 
@@ -575,7 +575,7 @@ to [Buckley et al. (2017)][3_Buck] and [Sipkens et al. (2020b)][2_AST] should al
 
 #### Contact information and acknowledgements
 
-This program was largely written and compiled by Timothy Sipkens ([tsipkens@uwaterloo.ca](mailto:tsipkens@uwaterloo.ca)) while at the
+This program was largely written and compiled by Timothy Sipkens ([@tsipkens](https://github.com/tsipkens), [tsipkens@uwaterloo.ca](mailto:tsipkens@uwaterloo.ca)) while at the
 University of British Columbia and the University of Alberta. Code excerpts were contributed by [@ArashNaseri](https://github.com/ArashNaseri) from the University of Alberta, including implementation of the L-curve optimization method of [Cultrera and Callegaro (2016)][7_CC_Lcurve] among other optimizations. 
 
 Also included is a reference to code designed to quickly evaluate the transfer function of particle mass analyzers (e.g. APM, CPMA) by [Sipkens et al. (2020b)][2_AST]. See the parallel repository parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) for more details. 
@@ -583,9 +583,9 @@ Also included is a reference to code designed to quickly evaluate the transfer f
 This distribution includes code snippets from the code provided with the work of [Buckley et al. (2017)][3_Buck],
 who used a Twomey-type approach to derive two-dimensional mass-mobility distributions. Much of the code from that work has been significantly modified in this distribution.
 
-The authors would also like to thank [@sgrauer](https://github.com/sgrauer) for consulting on small pieces of this code (such as the MART code and the `tools.textbar` function).
+The authors would also like to thank [@sgrauer](https://github.com/sgrauer) for consulting on small pieces of this code (such as the MART code and the `tools.textbar(...)` function).
 
-Information on the provided colormaps can be found in an associated README in the `cmap` folder.
+Information on the provided colormaps can be found in an associated README in the `cmap/` folder.
 
 #### References
 
@@ -593,7 +593,9 @@ Information on the provided colormaps can be found in an associated README in th
 
 [Cultrera, A., & Callegaro, L. (2016). A simple algorithm to find the L-curve corner in the regularization of inverse problems. arXiv preprint arXiv:1608.04571.][7_CC_Lcurve]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). Matlab tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. DOI: 10.5281/zenodo.3513259][5_code]
+[Rawat, V. K., Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., & Hogan Jr, C. J. (2016). Two dimensional size–mass distribution function inversion from differential mobility analyzer–aerosol particle mass analyzer (DMA–APM) measurements. *J. Aerosol Sci.*, 92, 70-82.][rawat]
+
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). Matlab tools for PMA transfer function evaluation (mat-tfer-pma).][5_code]
 
 [Sipkens, T. A., Hadwin, P. J., Grauer, S. J., & Daun, K. J. (2017). General error model for analysis of laser-induced incandescence signals. *Appl. Opt.* 56, 8436-8445.][6_AO17]
 
@@ -601,17 +603,18 @@ Information on the provided colormaps can be found in an associated README in th
 
 [Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020b). New approaches to calculate the transfer function of particle mass analyzers. *Aerosol Sci. Technol.* 54, 111-127.][2_AST]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020c). Inversion methods to determine two-dimensional aerosol mass-mobility distributions II: Existing and novel Bayesian methods.][4]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2020c). Inversion methods to determine two-dimensional aerosol mass-mobility distributions II: Existing and novel Bayesian methods. *J. Aerosol Sci.* 146, 105565][4]
 
 [Stolzenburg, M. R. (2018). A review of transfer theory and characterization of measured performance for differential mobility analyzers. *Aerosol Sci. Technol.* 52, 1194-1218.][Stolz18]
 
 [1_JAS1]: https://doi.org/10.1016/j.jaerosci.2019.105484
 [2_AST]: https://doi.org/10.1080/02786826.2019.1680794
 [3_Buck]: https://doi.org/10.1016/j.jaerosci.2017.09.012
-[4]: N/A
-[5_code]: https://10.5281/zenodo.3513259
+[4]: https://doi.org/10.1016/j.jaerosci.2020.105565
+[5_code]: https://github.com/tsipkens/mat-tfer-pma
 [6_AO17]: https://doi.org/10.1364/AO.56.008436
 [7_CC_Lcurve]: https://arxiv.org/abs/1608.04571
+[rawat]: https://www.sciencedirect.com/science/article/abs/pii/S0021850215300306
 [Stolz18]: https://www.tandfonline.com/doi/full/10.1080/02786826.2018.1514101
 [code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v1.1
 [code_v3]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v3.0
