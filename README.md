@@ -19,10 +19,10 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 [3. Classes](#3-classes)
 
-  [3.1 Grid class](#31-grid-class)
-  
-  [3.2 Phantom class](#32-phantom-class)
-  
+- [3.1 Grid class](#31-grid-class)
+
+- [3.2 Phantom class](#32-phantom-class)
+
 [4. Packages](#4-packages)
 
 [License, how to cite, and acknowledgements](#license)
