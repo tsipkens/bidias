@@ -87,7 +87,7 @@ grid_x.plot2d(x0); % show the phantom in figure 1
 ```
 
 <p align="left">
-  <img width="387" height="337.5" src="docs/01a_distr4.png">
+  <img width="420" height="315" src="docs/01a_distr4.png">
 </p>
 
 Note that we chose a very narrow phantom. The white lines indicate the edges of the partial grid that we defined in a previous step. 
@@ -121,8 +121,9 @@ grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
 ```
 
 <p align="left">
-  <img width="387" height="337.5" src="docs/01b_tfer527.png">
+  <img width="420" height="315" src="docs/01b_tfer527.png">
 </p>
+
 
 One can see multiple peaks corresponding to the multiple charging contributions. Now we can generate a noiseless data set using the forward mode:
 
@@ -143,8 +144,9 @@ ylabel('log_{10}(m_p)');
 ```
 
 <p align="left">
-  <img width="387" height="337.5" src="docs/01c_b.png">
+  <img width="420" height="315" src="docs/01c_b.png">
 </p>
+
 
 Note that since we chose a very narrow phantom, multiple charging artifacts are visible in the data (in the form of multiple modes or a shoulder in the main peaks). Next, we compute a Tikhonov-regularized solution using the corrupted data and data covariance information (`Lb`) and plot the result:
 
