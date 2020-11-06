@@ -1,29 +1,51 @@
 
-# MATLAB tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
+# Matlab tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
 
 [![DOI](https://img.shields.io/badge/DOI-10.17632/sg2zj5yrvr.3-blue.svg)](10.17632/sg2zj5yrvr.3)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Version](https://img.shields.io/badge/Version-3.0+-blue.svg)]()
 
-This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution, but can be generalized to other applications (e.g., inversion of PMA-SP2 data). 
+This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution but can be generalized to other applications (e.g., inversion of PMA-SP2 data). 
 
-### Installation note
+### Table of contents
 
-This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders respectively. If cloning using git, clone the repository using 
+[Getting started](#getting-started): How to set this code up
+
+[A simple inversion](#a-simple-inversion): Performing your first inversion
+
+[1. Underlying physics](#1-underlying-physics)
+
+[2. Upper directory scripts](#2-upper-directory-scripts)
+
+[3. Classes](#3-classes)
+
+  [3.1 Grid class](#31-grid-class)
+  
+  [3.2 Phantom class](#32-phantom-class)
+  
+[4. Packages](4-packages)
+
+[License, how to cite, and acknowledgements](#license)
+
+### Getting started
+
+This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders, respectively. If cloning using git, clone the repository using 
 
 ```shell
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
 ```
 
-which will automatically download the submodules. To be used directly, these packages should then be added to the MATLAB path at the beginning of any script using
+which will automatically download the submodules. To be used directly, these packages should then be added to the Matlab path at the beginning of any script using
 
 ```Matlab
-addpath('tfer_pma','cmap');
+addpath('tfer_pma', 'cmap');
 ```
 
 For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
 
-### Getting started
+This code also makes use of the [optimization toolbox](https://www.mathworks.com/products/optimization.html) from Matlab. 
+
+### A sample inversion
 
 What follows is a simple demonstration of this program, building a phantom mass-mobility distribution, generating and corrupting synthetic data, and then performing an inversion. To start, create an instance of the [Grid](#31-grid-class) class to discretize mass-mobility space:
 
@@ -31,7 +53,7 @@ What follows is a simple demonstration of this program, building a phantom mass-
 span = [0.01, 100; ...
     10, 1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
 ne = [100, 125]; % number of elements in grid for each dimension
-grid_x = Grid(span, ne, 'logarithmic'); % create instance of Grid, with logarithmic spacing
+grid_x = Grid(span, ne, 'log'); % create instance of Grid, with logarithmic spacing
 ```
 
 To speed computation, we convert the grid to a partial grid (optional) by removing elements in the upper left and lower right corners:
@@ -62,7 +84,7 @@ Next, define a new grid for the points at which the measurements will take place
 % define a new grid for the measurements
 span_b = span;
 ne_b = [20, 65];
-grid_b = Grid(span_b, ne_b, 'logarithmic');
+grid_b = Grid(span_b, ne_b, 'log');
 ```
 
 Before generating data, we must now compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `kernel.prop_pma(...)` to get a set of CPMA parameters: 
@@ -143,7 +165,7 @@ This example is provided in the `main_0` script in the upper directory of this p
 
 This program is organized into several: [classes](#3-classes) (folders starting with the `@` symbol), [packages](#4-packages) (folders starting with the `+` symbol), and scripts that form the base of the program. These will be described, along with the underlying physics, below. 
 
-## 1. Underlying physics
+## 1. UNDERLYING PHYSICS
 
 Size characterization is critical to understanding the role of aerosols in various roles, ranging from climate change to novel nanotechnologies. Aerosol size distributions have typically been resolved only with respect to a single quantity or variable. With the increasing frequency of tandem measurements, this program is designed to move towards inferring two-dimensional distributions of aerosol particle size. This kind of analysis requires a double deconvolution, that is the inversion of a double integral. While this may complicate the process, the information gained is quite valuable, including the distribution of aerosol quantities and the identification of multiple particle types which may be challenging from one-dimensional analyses or when simply computing summary parameters.
 
@@ -190,7 +212,7 @@ phantom = Phantom('1', span_t);
 to the corresponding phantom number (e.g., to `'3'` for the phantom from [Buckley et al. (2017)][3_Buck]). Default runtimes should be under two minutes but will depend on computer hardware. Alternate arrangements of the `run_inversion*` scripts within the main `main_bayes` script will incur very different runtimes, as most attempt to optimize the prior parameter set (up to the order of several hours). 
 
 
-## 2. Scripts in upper directory
+## 2. UPPER DIRECTORY SCRIPTS
 
 ### 2.1 Main scripts (main*.m)
 
@@ -218,18 +240,18 @@ where `Ntot` is the total number of particle counts as described in [Sipkens et 
 
 As noted above, these scripts are intend to bundle a series of inversion methods into a single line of code in the `main*` scripts. This can include optimization routines, included in the `+optimize` package, which run through several values of the regularization parameters. The lettered scripts each denote different combinations of techniques. The `run_inversions_a` script, for example, attempts to optimize the regularization parameter in the Tikhonov, MART, Twomey, and Twomey-Markowski approaches. Other lettered scripts combine other sets of inversion techniques. 
 
-## 3. Classes
+## 3. CLASSES
 
 ### 3.1 Grid class
 
-Grid is a class developed to discretize a parameter space (e.g. mass-mobility space). This is done using a simple rectangular grid that can have linear, logarithmic or custom spaced elements along the edges. Methods are designed to make it easier to deal with gridded data, allowing users to reshape vectorized data back to a 2D grid (`Grid.reshape` method) or vice versa. Other methods allow for plotting the 2D representation of vector data (`Grid.plot2d` method) or calculate the gradient of vector data (`Grid.grad` method).
+Grid is a class developed to discretize a parameter space (e.g. ,mass-mobility space). This is done using a simple rectangular grid that can have linear, logarithmic or custom spaced elements along the edges. Methods are designed to make it easier to deal with gridded data, allowing users to reshape vectorized data back to a 2D grid (`Grid.reshape` method) or vice versa. Other methods allow for plotting the 2D representation of vector data (`Grid.plot2d` method) or calculate the gradient of vector data (`Grid.grad` method).
 
-Instances of the Grid class can primarily be constructed in two ways. First, one can specify a `Grid.span` for the grid to cover in the parameter space. The span is specified using a 2 x 2 matrix, where the first row corresponds to the span for the first dimension of the parameter space (e.g. mass) and the second row corresponds to the span for the second dimension of the parameter space (e.g. mobility). For example, if one wanted to logarithmically discretize mass space between 0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
+Instances of the Grid class can primarily be constructed in two ways. First, one can specify a `Grid.span` for the grid to cover in the parameter space. The span is specified using a 2 x 2 matrix, where the first row corresponds to the span for the first dimension of the parameter space (e.g., mass) and the second row corresponds to the span for the second dimension of the parameter space (e.g. mobility). For example, if one wanted to logarithmically discretize mass space between 0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
 
 ```Matlab
 span = [0.01,100; 10,1000]; % span of space to be covered
 ne = [10,12]; % number of elements for each dimension
-grid = Grid(span, ne, 'logarithmic'); % create instance of Grid
+grid = Grid(span, ne, 'log'); % create instance of Grid
 ```
 
 Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center of the elements in the first dimension of parameter space and the second entry of the elements in the second dimension of parameter space. For example, to make
@@ -237,10 +259,10 @@ a simple grid with elements at 0.1 and 1 fg in mass space and 10, 200, and 1000 
 
 ```Matlab
 edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors
-grid = Grid(edges, [], 'logarithmic'); % create instance of Grid
+grid = Grid(edges, [], 'log'); % create instance of Grid
 ```
 
-Note that the number of elements is not required in this instance, as it is implied by the length of the vectors given in `edges`. The `'logarithmic'` argument is still required to specify where nodes would be placed between the elements.
+Note that the number of elements is not required in this instance, as it is implied by the length of the vectors given in `edges`. The `'log'` (or equivalently `'logarithm'`) argument is still required to specify where nodes would be placed between the elements.
 
 Both the data, **b**, and two-dimensional size distribution, **x**, vectors can be defined with respect to an instance of this class. Generally, the data will only rely on the center of the elements on the grid (the width of the grid elements has little meaning for data). The vectors are arranged such that the first entry corresponds to the smallest size in both dimensions. The vector proceeds, first with increasing the first size dimension (e.g. for mass-mobility distributions this is mass by default) and then with increasing the second size dimension. Vectorizing the 2D gridded data can be done using the colon operand, i.e. `x(:)`, or using the `vectorize` method.
 
@@ -298,7 +320,7 @@ where `grid` is an instance of the Grid class described above. For example, for 
 ```Matlab
 span = [0.01,100; 10,1000]; % span of grid
 ne = [550, 600]; % elements in grid
-grid = Grid(span, ne, 'logarithmic'); % create instance of Grid
+grid = Grid(span, ne, 'log'); % create instance of Grid
 
 phantom = Phantom('standard', grid, [-0.105,1.70],... % distribution mean
 	[0.205,0.0641;0.0641,0.0214]); % covariance information
@@ -311,7 +333,7 @@ will produce and plot a bivariate lognormal distribution centered at *m* = 0.785
 ```Matlab
 span = [0.01,100; 10,1000]; % span of grid
 ne = [550,600]; % elements in grid
-grid = Grid(span, ne, 'logarithmic'); % create instance of Grid
+grid = Grid(span, ne, 'log'); % create instance of Grid
 
 phantom = Phantom('standard', grid, ...
 	{[0,2],[1,2.5]},... % distribution means
@@ -360,7 +382,7 @@ To exemplify this procedure, the unimodal phantom from the previous section can 
 ```Matlab
 span = [0.01,100; 10,1000]; % span of grid
 ne = [550,600]; % elements in grid
-grid = Grid(span,ne,'logarithmic'); % create instance of Grid
+grid = Grid(span,ne,'log'); % create instance of Grid
 
 p.dg = 50; p.rhog = 12000; % geometric means
 p.sg = 1.4; p.smd = 1.3; % geometric standard deviations
@@ -375,7 +397,7 @@ noting that the final entry must still be enclosed by curly braces. One can gene
 ```Matlab
 span = [0.01,100; 10,1000]; % span of grid
 ne = [550,600]; % elements in grid
-grid = Grid(span,ne,'logarithmic'); % create instance of Grid
+grid = Grid(span,ne,'log'); % create instance of Grid
 
 % distribution parameters:
 % mode 1           mode 2
@@ -419,7 +441,7 @@ Of particular note, the `Phantom.fit` method, which is defined external to the m
 
 The `Phantom.fit2` method can be used in an attempt to derive multimodal phantoms for the data. This task is often challenging, such that the method may need tuning in order to get distributions that appropriately resemble the data. 
 
-## 4. Packages
+## 4. PACKAGES
 
 ### 4.1 +kernel
 
@@ -458,13 +480,13 @@ to minimize the number of function evaluations (using the `kernel.gen_grid` func
 
 ### 4.2 tfer_pma
 
-Unlike the other packages, tfer_pma corresponds to a submodule that is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). It does not contain a `+` symbol and thus must be added to the MATLAB path using
+Unlike the other packages, tfer_pma corresponds to a submodule that is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). It does not contain a `+` symbol and thus must be added to the Matlab path using
 
 ```Matlab
 addpath('tfer_pma','cmap');
 ```
 
-to be used explicitly in scripts. The package is automatically added to the MATLAB path, whenever it is necessary in calling functions in the kernel package. The package is used in evaluating the transfer function of the particle mass analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal particle mass analyzer (CPMA). PMA transfer functions are evaluated using the analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including different approximations for the particle migration velocity and options for transfer functions that include diffusion. For more details on the theory, one is referred to the referenced work. The package also contains some standard reference functions (e.g. `dm2zp`) used in evaluating the DMA transfer function when calling `kernel.tfer_dma`.
+to be used explicitly in scripts. The package is automatically added to the Matlab path, whenever it is necessary in calling functions in the kernel package. The package is used in evaluating the transfer function of the particle mass analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal particle mass analyzer (CPMA). PMA transfer functions are evaluated using the analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including different approximations for the particle migration velocity and options for transfer functions that include diffusion. For more details on the theory, one is referred to the referenced work. The package also contains some standard reference functions (e.g. `dm2zp`) used in evaluating the DMA transfer function when calling `kernel.tfer_dma`.
 
 ### 4.3 +invert
 
@@ -539,7 +561,7 @@ Information on the provided colormaps can be found in an associated README in th
 
 [Cultrera, A., & Callegaro, L. (2016). A simple algorithm to find the L-curve corner in the regularization of inverse problems. arXiv preprint arXiv:1608.04571.][7_CC_Lcurve]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). MATLAB tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. DOI: 10.5281/zenodo.3513259][5_code]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). Matlab tools for PMA transfer function evaluation (mat-tfer-pma). Zenodo. DOI: 10.5281/zenodo.3513259][5_code]
 
 [Sipkens, T. A., Hadwin, P. J., Grauer, S. J., & Daun, K. J. (2017). General error model for analysis of laser-induced incandescence signals. *Appl. Opt.* 56, 8436-8445.][6_AO17]
 
