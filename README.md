@@ -11,7 +11,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 [Getting started](#getting-started): How to set this code up
 
-[A simple inversion](#a-simple-inversion): Performing your first inversion
+[A simple inversion](#a-sample-inversion): Performing your first inversion
 
 [1. Underlying physics](#1-underlying-physics)
 
@@ -23,7 +23,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
   
   [3.2 Phantom class](#32-phantom-class)
   
-[4. Packages](4-packages)
+[4. Packages](#4-packages)
 
 [License, how to cite, and acknowledgements](#license)
 
