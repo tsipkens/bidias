@@ -9,7 +9,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 ### Table of contents
 
-[Getting started](#getting-started): How to set this code up
+[Getting started](#getting-started): Setting up this code
 
 [A simple inversion](#a-sample-inversion): Performing your first inversion
 
@@ -27,7 +27,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 [License, how to cite, and acknowledgements](#license)
 
-### Getting started
+### Getting started: Setting up this code
 
 This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders, respectively. If cloning using git, clone the repository using 
 
@@ -47,7 +47,9 @@ This code also makes use of the [optimization toolbox](https://www.mathworks.com
 
 ### A sample inversion
 
-What follows is a simple demonstration of this program, building a phantom mass-mobility distribution, generating and corrupting synthetic data, and then performing an inversion. To start, create an instance of the [Grid](#31-grid-class) class to discretize mass-mobility space:
+Let's start with a simple demonstration of this program. Any inversion has three components: (i) data, whether built from a synthetic phantom or experiments; (ii) a mathemtical kernel, which contains the device transfer functions and charging fractions, if relevant; and (iii) an inversion step where the previous two components are used to estimate the size distributions. In many ways, this is no different from a standard one-dimensional inversion, with many of the same benefits (e.g., multiple charge correction).
+
+To demonstrate this code, we will build a phantom mass-mobility distribution (considering particle mass analyzer-differential mobility analyzer data); generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. To start here, let's create an instance of the [Grid](#31-grid-class) class, which is used to discretize mass-mobility space:
 
 ```Matlab
 span = [0.01, 100; ...
@@ -56,7 +58,7 @@ ne = [100, 125]; % number of elements in grid for each dimension
 grid_x = Grid(span, ne, 'log'); % create instance of Grid, with logarithmic spacing
 ```
 
-To speed computation, we convert the grid to a partial grid (optional) by removing elements in the upper left and lower right corners:
+The first variable defines the scope of masses and mobility diameters to be considered. To speed computation, we convert the grid to a partial grid (*optional*) by removing elements in the upper left and lower right corners:
 
 ```Matlab
 ut_r = [2, 0.7]; % point in line to cut upper triangle
@@ -68,17 +70,29 @@ grid_x = grid_x.partial(...
     fliplr(lt_r),lt_m); % convert to a partial grid
 ```
 
-Now, one can generate a phantom mass-mobility distribution, using one of the present values for the [Phantom](#32-phantom-class) class. Then, plot the phantom distribution:
+We refer the reader to the  [Grid](#31-grid-class) class description below for more information on partial grids. This ultimately greatly speeds up the inversion. 
+
+Now, one can generate a phantom (or simulated) mass-mobility distribution, using one of the presets for the [Phantom](#32-phantom-class) class. 
 
 ```Matlab
 phantom = Phantom('4', grid_x); % get Phantom 4 from Sipkens et al. (2020a)
 x0 = phantom.x; % get value of phantom for specified grid
+```
 
+We can plot the distribution to show what we are working with using the `plot2d(...)` method of the Grid class:
+
+```Matlab
 figure(1);
 grid_x.plot2d(x0); % show the phantom in figure 1
 ```
 
-Next, define a new grid for the points at which the measurements will take place:
+<p align="left">
+  <img width="387" height="337.5" src="docs/01a_distr4.png">
+</p>
+
+Note that we chose a very narrow phantom. The white lines indicate the edges of the partial grid that we defined in a previous step. 
+
+Next, we define a new grid for the points at which the measurements will take place:
 
 ```Matlab
 % define a new grid for the measurements
@@ -103,16 +117,20 @@ One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point
 
 ```Matlab
 figure(2);
-grid_x.plot2d_marg(A(530,:)); % plot kernel for 530th data point
+grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
 ```
 
-Now we can generate a noiseless data set using the forward mode:
+<p align="left">
+  <img width="387" height="337.5" src="docs/01b_tfer527.png">
+</p>
+
+One can see multiple peaks corresponding to the multiple charging contributions. Now we can generate a noiseless data set using the forward mode:
 
 ```Matlab
 b0 = A * x0; % generate a set of data using the forward model
 ```
 
-Corrupt the data with noise, assuming a peak of 10<sup>5</sup> counts and then plot the data as if they were mass-selected mobility scans:
+Next, corrupt the data with noise, assuming a peak of 10<sup>5</sup> counts and then plot the data as if they were mass-selected mobility scans:
 
 ```Matlab
 [b, Lb] = tools.get_noise(b0, 1e5); % corrupt data, assume peak counts ~1e5
@@ -124,7 +142,11 @@ xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
 ```
 
-Note that since we chose a very narrow phantom, multiple charging artifacts are visible in the data (in the form of multiple modes). Next, we compute a Tikhonov-regularized solution using the corrupted data and data covariance information (`Lb`) and plot the result:
+<p align="left">
+  <img width="387" height="337.5" src="docs/01c_b.png">
+</p>
+
+Note that since we chose a very narrow phantom, multiple charging artifacts are visible in the data (in the form of multiple modes or a shoulder in the main peaks). Next, we compute a Tikhonov-regularized solution using the corrupted data and data covariance information (`Lb`) and plot the result:
 
 ```Matlab
 lambda = 1; % regularization parameter
@@ -155,7 +177,12 @@ grid_x.plot2d(x_ed); % plot exponential distance solution
 set(gcf, 'Position', [50 300 900 300]); % position and size plot
 ```
 
-This example is provided in the `main_0` script in the upper directory of this program. Runtimes are typically on the order of a minute. 
+<p align="left">
+  <img width="675" height="225" src="docs/01d_xrec.png">
+</p>
+
+
+For this narrow phantom, the exponential distance approach appears to outperform Tikhonov. This example is provided in the `main_0` script in the upper directory of this program. Runtimes are typically on the order of a minute. 
 
 
 

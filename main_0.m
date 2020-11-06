@@ -10,9 +10,9 @@ ne = [100, 125]; % number of elements in grid for each dimension
 grid_x = Grid(span, ne, 'logarithmic'); % create instance of Grid, with logarithmic spacing
 
 
-ut_r = [2,0.7]; % point in line to cut upper triangle
+ut_r = [2,0.5]; % point in line to cut upper triangle
 ut_m = 3; % slope for line to cut upper triangle
-lt_r = [2,-0.8]; % point in line to cut lower triangle
+lt_r = [2,-1.2]; % point in line to cut lower triangle
 lt_m = 3; % slope for line to cut upper triangle
 grid_x = grid_x.partial(...
     fliplr(ut_r),ut_m,...
@@ -23,13 +23,13 @@ phantom = Phantom('4', grid_x); % get Phantom 4 from Sipkens et al. (2020a)
 x0 = phantom.x;
 
 figure(1);
-grid_x.plot2d_marg(x0);
+grid_x.plot2d(x0);
 
 
 % define a new grid for the measurements
 span_b = span;
 ne_b = [20, 65];
-grid_b = Grid(span_b, ne_b, 'logarithmic');
+grid_b = Grid(span_b, ne_b, 'log');
 
 
 %== Step 2A ==============================================================%
@@ -37,7 +37,7 @@ prop_pma = kernel.prop_pma % use default CPMA properties (will display in comman
 A = kernel.gen_grid(grid_b, grid_x); % generate the kernel, use default CPMA properties
 
 figure(2);
-grid_x.plot2d_marg(A(530,:)); % plot kernel for 530th data point
+grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
 
 
 %== STEP 2b ==============================================================%
@@ -47,7 +47,7 @@ b0 = A * x0; % generate a set of data using the forward model
 
 % plot resultant data as mobility scans at a range of mass setpoint
 figure(3);
-tools.plot2d_slices(grid_b, b0);
+tools.plot2d_slices(grid_b, b);
 xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
 
