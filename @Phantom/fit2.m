@@ -62,8 +62,8 @@ if ~isempty(logr0) % update centers of distributions, if specified
     y0(3:6:end) = logr0(2:2:end);
 end
 for ii=1:n_modes % prior std. dev.
-    sy = [sy,inf,y0(6*(ii-1)+[4,5]),y0(6*(ii-1)+[4,5]),4];
-        % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
+    sy = [sy, inf, y0(6*(ii-1)+[4,5]), y0(6*(ii-1)+[4,5]),4];
+       % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
 end
 
 % opts = optimoptions(@lsqnonlin,'MaxFunctionEvaluations',1e4,'MaxIterations',1e3);
@@ -79,7 +79,8 @@ y_out = y1;
 for ii=0:(n_modes-1)
     mu(ii+1,:) = [y1(6*ii+2),y1(6*ii+3)];
     sigma(ii+1,:) = [y1(6*ii+4),y1(6*ii+5)];
-    Sigma(:,:,ii+1) = corr2cov(sigma(ii+1,:),[1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
+    Sigma(:,:,ii+1) = corr2cov(sigma(ii+1,:), ...
+        [1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
 end
 
 phantom = Phantom('standard',grid,mu,Sigma,N);
