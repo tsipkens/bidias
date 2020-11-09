@@ -758,15 +758,19 @@ methods
             set(gca,'YScale','log');
         end
         
-        xlim(obj.span(2,:));
+        xlim(obj.span(2,:));  % set plot limits bsed on grid limits
         ylim(obj.span(1,:));
         
-        % add lines marking the edges of the partial grid
+        % Add lines marking the edges of the partial grid.
         if obj.ispartial==1
             hold on;
-            tools.overlay_line(obj,[0,obj.cut(1)],obj.cut(2)); % overlay partial grid limits
-            if length(obj.cut)>2 % if also a bottom cut
-                tools.overlay_line(obj,[0,obj.cut(3)],obj.cut(4));
+            tools.overlay_line(obj, [0,obj.cut(1)], obj.cut(2), ...
+                'Color', [0.5,0.5,0.5]); % overlay partial grid limits, gray lines
+            
+             % If also a bottom cut.
+            if length(obj.cut)>2
+                tools.overlay_line(obj, [0,obj.cut(3)], obj.cut(4), ...
+                    'Color', [0.5,0.5,0.5]); % add a gray line
             end
             hold off;
         end
