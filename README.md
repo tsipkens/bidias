@@ -23,7 +23,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 - [3.2 Phantom class](#32-phantom-class)
 
-[4. Packages](#4-packages): +kernel, +invert, +optimize, etc.
+[4. Packages](#4-packages): +kernel, +invert, +optimize, tfer_pma, etc.
 
 [License, how to cite, and acknowledgements](#license)
 
@@ -43,7 +43,7 @@ addpath('tfer_pma', 'cmap');
 
 For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
 
-This code also makes use of the [optimization toolbox](https://www.mathworks.com/products/optimization.html) from Matlab. 
+This code also makes use of the [optimization toolbox](https://www.mathworks.com/products/optimization.html) from Matlab. Refer to the [Matlab documentation](https://www.mathworks.com/help/matlab/add-ons.html) for information on how to add toolboxes. 
 
 ### A sample inversion
 
