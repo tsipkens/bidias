@@ -43,7 +43,7 @@ d = r(:,2);
 
 
 %-- Start evaluate kernel ------------------------------------------------%
-disp('[ Computing kernel... =============================]');
+tools.textheader('Computing PMA-DMA kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
@@ -113,9 +113,7 @@ dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 
-disp('[ Complete ========================================]');
-disp(' ');
-disp(' ');
+tools.textheader();
 
 
 end

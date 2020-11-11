@@ -22,8 +22,7 @@
 
 function [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0)
 
-disp(' ');
-disp('[ Fitting phantom object... ===============]');
+tools.textheader('Fitting phantom object');
 
 %-- Parse inputs ---------------------------------------------%
 if isa(vec_grid,'Grid')
@@ -87,9 +86,7 @@ phantom = Phantom('standard',grid,mu,Sigma,N);
 phantom.type = 'standard-fit';
 
 disp(' ');
-disp('[ Complete ================================]');
-disp(' ');
-disp(' ');
+tools.textheader();
 
 end
 

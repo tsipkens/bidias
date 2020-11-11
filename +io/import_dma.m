@@ -31,7 +31,7 @@ n_dia = find(cellfun(@(x) contains(x,"Diameter"),tb(:,1)));
 
 
 
-disp('[== READING SMPS FILE =======================================]');
+tools.textheader('Reading SMPS file');  % output header indicating file processing
 
 %-- Read header information ----------------------------------------------%
 disp('Reading header information...');
@@ -152,11 +152,9 @@ ta = readtable(fn, opts, 'ReadVariableNames', false);
 idx_0 = table2array(ta(:,1:idx_endc));
 data = idx_0(:,2:(ncol+1));
 d_star = idx_0(:,1);
-disp('Complete.');
-disp('[============================================================]');
-disp(' ');
 %-------------------------------------------------%
 
+tools.textheader();
 
 
 %-- Set remaining prop_dma parameters --------%

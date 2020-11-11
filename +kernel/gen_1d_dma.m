@@ -31,7 +31,7 @@ n_z = length(z_vec);
 
 
 %== Evaluate DMA transfer function =======================================%
-disp('Computing DMA kernel...');
+tools.textheader('Computing DMA kernel');
 Omega = sparse(n_b,n_i);
 for kk=1:n_z
     t0 = zeros(n_b,n_i); % pre-allocate for speed
@@ -48,9 +48,7 @@ for kk=1:n_z
     
     Omega = Omega+f_z(kk,:).*sparse(t0);
 end
-disp('Completed DMA contribution.');
-disp(' ');
-
+tools.textheader();
 
 
 end
