@@ -152,6 +152,10 @@ ta = readtable(fn, opts, 'ReadVariableNames', false);
 idx_0 = table2array(ta(:,1:idx_endc));
 data = idx_0(:,2:(ncol+1));
 d_star = idx_0(:,1);
+
+for cc=1:size(data, 2)
+    if all(isnan(data(:,cc))); data(:,cc) = []; end  % is NaN column, remove
+end
 %-------------------------------------------------%
 
 tools.textheader();
