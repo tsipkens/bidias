@@ -3,7 +3,7 @@
 % Author:   Timothy Sipkens, 2019-05-17
 %=========================================================================%
 
-function [y,grid_rho] = mass2rho(x,grid_x,span_rho,n_rho)
+function [y,grid_rho] = mass2rho(x, grid_x, span_rho, n_rho)
 
 %-- Parse inputs -----------------------------------%
 if ~exist('n_rho','var'); n_rho = []; end
@@ -16,31 +16,40 @@ if isempty(span_rho); span_rho = [100,3000]; end
 
 rho_min = span_rho(1); % get span for effective density
 rho_max = span_rho(2);
-rho_n = logspace(log10(rho_min),log10(rho_max),n_rho); % discretize rho space
+rho_n = logspace(log10(rho_min), log10(rho_max), n_rho); % discretize rho space
+
+% Generate new grid for effective density-mobility
 grid_rho = Grid([rho_min,rho_max;grid_x.span(2,:)],...
-    [n_rho,length(grid_x.edges{2})],'logarithmic');
-    % generate grid
+    [n_rho,length(grid_x.edges{2})], 'logarithmic');
 
 x_rs = grid_x.reshape(x);
 
+
+%== Loop over mobility diameter ==========================================%
+%   (i.e., consider conditional mass distributions)
 n_d = grid_x.ne(2);
-y = zeros(grid_x.ne(2),length(rho_n));
-for ii=1:n_d % loop over mobility diameter (consider conditional mass distributions)
+y = zeros(grid_x.ne(2), length(rho_n));
+for ii=1:n_d
     c4 = zeros(grid_rho.ne(1),grid_x.ne(1)); % initialize transformation kernel
+    
+    % Convert x nodes to effective density for iith mobility.
     rho_old = log10(6.*grid_x.nodes{1}./(pi.*grid_x.edges{2}(ii).^3).*1e9);
-            % convert x nodes to effective density for iith mobility
     
     for jj=1:grid_x.ne(1)
         c4(:,jj) = max(...
-            min(log10(grid_rho.nodes{1}(2:end)),rho_old(jj+1))-... % upper bound
-            max(log10(grid_rho.nodes{1}(1:(end-1))),rho_old(jj))... % lower bound
-            ,0)./...
-            (log10(grid_rho.nodes{1}(2:end))-log10(grid_rho.nodes{1}(1:(end-1)))); % normalize by rho bin size
+            min(log10(grid_rho.nodes{1}(2:end)), rho_old(jj+1)) - ... % upper bound
+            max(log10(grid_rho.nodes{1}(1:(end-1))), rho_old(jj))... % lower bound
+            ,0) ./ ...
+            (log10(grid_rho.nodes{1}(2:end)) - ...
+            log10(grid_rho.nodes{1}(1:(end-1)))); % normalize by rho bin size
     end
     
     y(ii,:) = c4*x_rs(:,ii);
 end
+%=========================================================================%
 
+
+% Format data for output
 y = y';
 y = y(:);
 
