@@ -36,6 +36,7 @@ tools.textheader('Reading SMPS file');  % output header indicating file processi
 %-- Read header information ----------------------------------------------%
 disp('Reading header information...');
 disp('  Note: Info. stored in prop_dma should be checked.');
+disp('  Variables read from file:');
 opts.VariableTypes(:) = {'double'};
 
 opts.DataLines = [n_r1,n_r1+2];
