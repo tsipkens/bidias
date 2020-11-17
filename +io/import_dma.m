@@ -35,8 +35,8 @@ tools.textheader('Reading SMPS file');  % output header indicating file processi
 
 %-- Read header information ----------------------------------------------%
 disp('Reading header information...');
-disp('  Note: Info. stored in prop_dma should be checked.');
-disp('  Variables read from file:');
+disp('NOTE: Info. stored in prop_dma should be checked.');
+disp('  Variables read from file (others are defaults):');
 opts.VariableTypes(:) = {'double'};
 
 opts.DataLines = [n_r1,n_r1+2];
@@ -81,11 +81,12 @@ if ~isempty(n_flow)
     prop_dma.Q_m = prop_dma.Q_c; % equal flow assumption
     disp('  Note: Applied equal flow assumption for Q_s and Q_m.');
     disp('  Note: Reading flow information from the header is unreliable.');
+    
+    disp(['    Q_a = ', num2str(prop_dma.Q_a),' m3/s = ', ...
+        num2str(prop_dma.Q_a*60*1000), ' LPM']);
+    disp(['    Q_c = ', num2str(prop_dma.Q_c),' m3/s = ', ...
+        num2str(prop_dma.Q_c*60*1000), ' LPM']);
 end
-disp(['    Q_a = ', num2str(prop_dma.Q_a),' m3/s = ', ...
-    num2str(prop_dma.Q_a*60*1000), ' LPM']);
-disp(['    Q_c = ', num2str(prop_dma.Q_c),' m3/s = ', ...
-    num2str(prop_dma.Q_c*60*1000), ' LPM']);
 
 
 % Read temperature and pressure.
@@ -157,6 +158,7 @@ d_star = idx_0(:,1);
 for cc=1:size(data, 2)
     if all(isnan(data(:,cc))); data(:,cc) = []; end  % is NaN column, remove
 end
+disp('Data read.');
 %-------------------------------------------------%
 
 tools.textheader();

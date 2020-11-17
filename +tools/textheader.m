@@ -16,7 +16,7 @@ if isempty(txt); f_before = 0; txt = 'Complete.'; end
 dots = ''; % will hold text to display "..." if before
 if f_before
     fprintf('\n');
-    dots = '...';
+    dots = ' ...';
 end
 
 
