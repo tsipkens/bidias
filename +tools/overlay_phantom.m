@@ -3,7 +3,7 @@
 % Author: Timothy Sipkens, 2019-10-31
 %=========================================================================%
 
-function [pha,N] = overlay_phantom(x_pha,grid,iso_levels,varargin)
+function [pha, N, ci] = overlay_phantom(x_pha,grid,iso_levels,varargin)
 
 %-- Parse inputs ---------------------------------------------------------%
 if isa(x_pha,'Phantom')
@@ -11,7 +11,7 @@ if isa(x_pha,'Phantom')
     grid = pha.grid;
     N = [];
 else
-    [pha,N] = Phantom.fit(x_pha,grid);
+    [pha, N, ~, ci] = Phantom.fit(x_pha, grid);
 end
 
 if ~exist('iso_levels','var'); iso_levels = []; end

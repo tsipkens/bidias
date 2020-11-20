@@ -16,7 +16,7 @@
 %   J           Jacobian of fitting procedure
 %=============================================================%
 
-function [pha, N, y_out, J] = fit(x, vec_grid, logr0)
+function [pha, N, y_out, ci] = fit(x, vec_grid, logr0)
 
 tools.textheader('Fitting phantom object');
 
@@ -49,8 +49,11 @@ if ~isempty(logr0)
     y0(2:3) = logr0;
 end
 
-[y1,~,~,~,~,~,J] = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
+[y1,~,resid,~,~,~,J] = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
     [0, -10, -10, 0, 0, -pi], [inf, 10, 10, 10, 3, pi]); % search bounds
+
+ci = nlparci(y1, resid, 'jacobian', J) - y1';
+ci = 2 .* ci(:,2);  % 95% confidence interval
 
 mu = [y1(2),y1(3)];
 sigma = [y1(4),y1(5)];
