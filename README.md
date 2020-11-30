@@ -137,9 +137,11 @@ Next, corrupt the data with noise, assuming a peak of 10<sup>5</sup> counts and 
 ```Matlab
 [b, Lb] = tools.get_noise(b0, 1e5); % corrupt data, assume peak counts ~1e5
 
-% plot resultant data as mobility scans at a range of mass setpoint
+% Plot resultant data as mobility scans 
+% at a range of mass-to-charge setpoints.
 figure(3);
-tools.plot2d_slices(grid_b, b0);
+opts.f_lines = 1;
+tools.plot2d_patch(grid_b, b0, [], [], opts);
 xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
 ```
