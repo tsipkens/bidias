@@ -3,8 +3,9 @@
 % Author: Timothy Sipkens, 2020-04-02
 %=========================================================================%
 
-function [] = plot2d_patch(grid,x,cm,dim)
+function [] = plot2d_patch(grid, x, cm, dim, opts)
 
+%-- Parse inputs ---------------------------------------------------------%
 % dimension to sweep through
 % e.g. sweep through mass setpoints on standard grid, dim = 1
 if ~exist('dim','var'); dim = []; end
@@ -16,29 +17,44 @@ if isempty(cm); cm = colormap('gray'); end
 
 dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
 
+if ~exist('opts', 'var'); opts = struct(); end
+if ~isfield(opts, 'f_line'); opts.f_line = 0; end  % by default, apply patch
+%-------------------------------------------------------------------------%
 
-x_rs = grid.reshape(x); % reshape data
+
+x_rs = grid.reshape(x);  % reshape data
 if dim==1; x_rs = x_rs'; end
-min_x = max(log10(x))-3;
+min_x = 10.^(max(log10(x))-4);  % data minimum, applied due to log scale
 
+
+% Set up colormap for sweep.
 n1 = floor(size(cm,1)/grid.ne(dim));
 n2 = length(cm)-grid.ne(dim)*n1+1;
-cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
+cm2 = cm(n2:n1:end,:);  % adjust colormap to appropriate size
 
+
+plotter = @patch;  % use `patch` by default
+
+% If plotting lines instead of patches.
+if opts.f_line==1
+    plotter = @(x,y,z,cm) plot3(x,y,z,'Color',cm);
+end
+
+
+% Clear figure and 
+% proceed to loop through slices.
 clf;
-p = patch(log10(grid.edges{dim2}([1,1:end,end])),... % plot data slices as patches
-    log10(grid.edges{dim}(1)).*ones(1,grid.ne(dim2)+2),...
-    [min_x,max(log10(x_rs(:,1)'),min_x),min_x],cm2(1,:));
-p.FaceAlpha = 1;
 hold on;
-for ii=2:grid.ne(dim)
-    p = patch(log10(grid.edges{dim2}([1,1:end,end])),...
-        log10(grid.edges{dim}(ii)).*ones(1,grid.ne(dim2)+2),...
-        [min_x,max(log10(x_rs(:,ii)'),min_x),min_x],cm2(ii,:));
-    p.FaceAlpha = 1;%1-ii/(grid.ne(dim));
+for ii=1:grid.ne(dim)
+    p = plotter(grid.edges{dim2}([1,1:end,end]), ...
+        grid.edges{dim}(ii) .* ones(1,grid.ne(dim2)+2), ...
+        [min_x, max(x_rs(:,ii)', min_x), min_x], ...
+        cm2(ii,:));
 end
 hold off;
 zlim([min_x,inf]);
+
+set(gca, 'ZScale', 'log', 'YScale', 'log', 'XScale', 'log');
 
 view([-145,60]); % adjust view so slices are visible
 
