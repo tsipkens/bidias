@@ -87,7 +87,7 @@ grid_x.plot2d(x0); % show the phantom in figure 1
 ```
 
 <p align="left">
-  <img width="420" height="315" src="docs/01a_distr4.png">
+  <img width="420" src="docs/01a_distr4.png">
 </p>
 
 
@@ -122,7 +122,7 @@ grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
 ```
 
 <p align="left">
-  <img width="420" height="315" src="docs/01b_tfer527.png">
+  <img width="420" src="docs/01b_tfer527.png">
 </p>
 
 
@@ -145,7 +145,7 @@ ylabel('log_{10}(m_p)');
 ```
 
 <p align="left">
-  <img width="420" height="315" src="docs/01c_b.png">
+  <img width="420" src="docs/01c_b.png">
 </p>
 
 
@@ -181,7 +181,7 @@ set(gcf, 'Position', [50 300 900 300]); % position and size plot
 ```
 
 <p align="left">
-  <img width="675" height="225" src="docs/01d_xrec.png">
+  <img width="675" src="docs/01d_xrec.png">
 </p>
 
 
