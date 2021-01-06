@@ -13,17 +13,17 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 [A simple inversion](#a-sample-inversion): Performing your first inversion
 
-[1. Underlying physics](#1-underlying-physics)
+[1. UNDERLYING PHYSICS](#1-underlying-physics)
 
-[2. Upper directory scripts](#2-upper-directory-scripts)
+[2. UPPER DIRECTORY SCRIPTS](#2-upper-directory-scripts)
 
-[3. Classes](#3-classes)
+[3. CLASSES](#3-classes)
 
 - [3.1 Grid class](#31-grid-class)
 
 - [3.2 Phantom class](#32-phantom-class)
 
-[4. Packages](#4-packages): +kernel, +invert, +optimize, tfer_pma, etc.
+[4. PACKAGES](#4-packages): +kernel, +invert, +optimize, tfer_pma, etc.
 
 [License, how to cite, and acknowledgements](#license)
 
