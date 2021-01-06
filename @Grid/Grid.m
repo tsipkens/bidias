@@ -1,15 +1,25 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
-% Author: Timothy Sipkens, 2019-02-03
-%
-% Notes:
+% 
+% G = Grid(SPAN,NE) creates a grid with the domain specified by SPAN, a
+% 2x2 array with [min(dim1),max(dim1); min(dim2),max(dim2)], and with the
+% number of elements in each dimension specified by NE, a 1x2 array. 
+% 
+% G = Grid(EDGES) create a grid with edges specified by the entries of
+% EDGES, a 1x2 cell with the edges for the dim1 and dim2, respectively. 
+% Some functionality is limited if the edges are not uniform in log or 
+% linear space. 
+% 
+% G = GRID(SPAN,NE,DISCRETE) adds an input to specify whether logarithmic
+% (default), specified using DISCRETE = 'log', or linear spacing, specified 
+% using DISCRETE = 'linear'. 
+% 
+% NOTES:
 % + The grid class is currently used when a simple discretization of
 %   two-dimensional space is required. It then takes either the span
 %   of spcae to be covered or pre-defined edge vectors to form a grid.
-%
-% + See constructor method for list of other variables required
-%   for creation.
-%=========================================================================%
+% 
+% AUTHOR: Timothy Sipkens, 2019-02-03
 
 classdef Grid
 
