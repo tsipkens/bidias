@@ -27,56 +27,66 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 [License, how to cite, and acknowledgements](#license)
 
-## Getting started: Setting up this code
+## Setup
 
-This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders, respectively. If cloning using git, clone the repository using 
+This code makes use of the [optimization](https://www.mathworks.com/products/optimization.html) and [statistical](https://www.mathworks.com/products/statistics.html) toolboxes from Matlab. Refer to the [Matlab documentation](https://www.mathworks.com/help/matlab/add-ons.html) for information on how to add toolboxes. 
+
+In addition to the necessary Matlab toolboxes, this program has two dependences that are included as git submodules: 
+
+1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains Matlab code to compute the transfer function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). 
+
+2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds percceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
+
+As a result, the folders corresponding to these submodules will initially be empty. Their are multiple route to downloading these submodules. If using git, one can initially clone the repository using 
 
 ```shell
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
 ```
 
-which will automatically download the submodules. To be used directly, these packages should then be added to the Matlab path at the beginning of any script using
+which will automatically download the submodules when downloading overall program. Alternatively, the submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders. In either case, to be used directly, these packages should then be added to the Matlab path at the beginning of any script using
 
 ```Matlab
 addpath('tfer_pma', 'cmap');
 ```
 
-For `tfer_pma`, calls to the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. For `cmap`, one could also replace references in existing scripts to the colormaps that would otherwise be in that package.  
+For **tfer_pma**, functions in the `+kernel` package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. 
 
-This code also makes use of the [optimization toolbox](https://www.mathworks.com/products/optimization.html) from Matlab. Refer to the [Matlab documentation](https://www.mathworks.com/help/matlab/add-ons.html) for information on how to add toolboxes. 
+## Getting started: A sample inversion
 
-## A sample inversion
+Any inversion has three components: (i) data, whether built from a synthetic phantom or experiments; (ii) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; and (iii) an inversion step where the previous two components are used to estimate the size distributions. In many ways, the procedure is the same as the standard 1D inversion of aerosol size distributions, with many of the same benefits (e.g., multiple charge correction). 
 
-Let's start with a simple demonstration of this program. Any inversion has three components: (i) data, whether built from a synthetic phantom or experiments; (ii) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; and (iii) an inversion step where the previous two components are used to estimate the size distributions. In many ways, this is no different from a standard one-dimensional inversion, with many of the same benefits (e.g., multiple charge correction).
-
-To demonstrate this code, we will build a phantom mass-mobility distribution (considering particle mass analyzer-differential mobility analyzer data); generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. To start here, let's create an instance of the [Grid](#31-grid-class) class, which is used to discretize mass-mobility space:
+In this example, we will build a phantom mass-mobility distribution, thereby considering particle mass analyzer-differential mobility analyzer measurements; generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. First, let's create an instance of the [Grid](#31-grid-class) class, which is used to discretize mass-mobility space:
 
 ```Matlab
 span = [0.01, 100; ...
     10, 1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
 ne = [100, 125]; % number of elements in grid for each dimension
-grid_x = Grid(span, ne, 'log'); % create instance of Grid, with logarithmic spacing
+
+% Create an instance of Grid, with logarithmic spacing.
+grid_x = Grid(span, ne, 'log');
 ```
 
-The first variable defines the scope of masses and mobility diameters to be considered. To speed computation, we convert the grid to a partial grid (*optional*) by removing elements in the upper left and lower right corners:
+The first variable defines the range of masses and mobility diameters to be considered. To speed computation, we convert the grid to a partial grid (which is *optional*) by removing elements in the upper left and lower right corners from the reconstruction domain:
 
 ```Matlab
-ut_r = [2, 0.7]; % point in line to cut upper triangle
+ut_r = [0.7, 2]; % point in line to cut upper triangle
 ut_m = 3; % slope for line to cut upper triangle
-lt_r = [2, -0.8]; % point in line to cut lower triangle
+lt_r = [-0.8, 2]; % point in line to cut lower triangle
 lt_m = 3; % slope for line to cut upper triangle
+
+% Convert to a partial grid.
 grid_x = grid_x.partial(...
-    fliplr(ut_r),ut_m,...
-    fliplr(lt_r),lt_m); % convert to a partial grid
+    ut_r, ut_m,...
+    lt_r, lt_m);
 ```
 
-We refer the reader to the  [Grid](#31-grid-class) class description below for more information on partial grids. This ultimately greatly speeds up the inversion. 
+We refer the reader to the  [Grid](#31-grid-class) class description below for more information on partial grids. This  greatly speeds up the inversion. 
 
 Now, one can generate a phantom (or simulated) mass-mobility distribution, using one of the presets for the [Phantom](#32-phantom-class) class. 
 
 ```Matlab
-phantom = Phantom('4', grid_x); % get Phantom 4 from Sipkens et al. (2020a)
-x0 = phantom.x; % get value of phantom for specified grid
+phantom = Phantom('4'); % get Phantom 4 from Sipkens et al. (2020a)
+x0 = phantom.eval(grid_x); % get value of phantom for specified grid
 ```
 
 We can plot the distribution to show what we are working with using the `plot2d(...)` method of the Grid class:
