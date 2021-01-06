@@ -7,7 +7,7 @@
 
 This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution but can be generalized to other applications (e.g., inversion of PMA-SP2 data). 
 
-### Table of contents
+## Table of contents
 
 [Getting started](#getting-started): Setting up this code
 
@@ -27,7 +27,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 [License, how to cite, and acknowledgements](#license)
 
-### Getting started: Setting up this code
+## Getting started: Setting up this code
 
 This program has two dependences that are included as submodules: the `cmap` package available at https://github.com/tsipkens/cmap and the `tfer_pma` package available at https://github.com/tsipkens/mat-tfer-pma. As a result, these folders will initially be empty. The submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders, respectively. If cloning using git, clone the repository using 
 
@@ -45,7 +45,7 @@ For `tfer_pma`, calls to the `+kernel` package will add this folder to the path 
 
 This code also makes use of the [optimization toolbox](https://www.mathworks.com/products/optimization.html) from Matlab. Refer to the [Matlab documentation](https://www.mathworks.com/help/matlab/add-ons.html) for information on how to add toolboxes. 
 
-### A sample inversion
+## A sample inversion
 
 Let's start with a simple demonstration of this program. Any inversion has three components: (i) data, whether built from a synthetic phantom or experiments; (ii) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; and (iii) an inversion step where the previous two components are used to estimate the size distributions. In many ways, this is no different from a standard one-dimensional inversion, with many of the same benefits (e.g., multiple charge correction).
 
