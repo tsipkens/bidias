@@ -1,25 +1,26 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
-% 
-% G = Grid(SPAN,NE) creates a grid with the domain specified by SPAN, a
-% 2x2 array with [min(dim1),max(dim1); min(dim2),max(dim2)], and with the
-% number of elements in each dimension specified by NE, a 1x2 array. 
-% 
-% G = Grid(EDGES) create a grid with edges specified by the entries of
-% EDGES, a 1x2 cell with the edges for the dim1 and dim2, respectively. 
-% Some functionality is limited if the edges are not uniform in log or 
-% linear space. 
-% 
-% G = GRID(SPAN,NE,DISCRETE) adds an input to specify whether logarithmic
-% (default), specified using DISCRETE = 'log', or linear spacing, specified 
-% using DISCRETE = 'linear'. 
-% 
-% NOTES:
-% + The grid class is currently used when a simple discretization of
+%  The grid class is currently used when a simple discretization of
 %   two-dimensional space is required. It then takes either the span
 %   of spcae to be covered or pre-defined edge vectors to form a grid.
 % 
-% AUTHOR: Timothy Sipkens, 2019-02-03
+%  G = Grid(SPAN,NE) creates a grid with the domain specified by SPAN, a
+%  2x2 array with [min(dim1),max(dim1); min(dim2),max(dim2)], and with the
+%  number of elements in each dimension specified by NE, a 1x2 array. 
+% 
+%  G = Grid(EDGES) create a grid with edges specified by the entries of
+%  EDGES, a 1x2 cell with the edges for the dim1 and dim2, respectively. 
+%  Some functionality is limited if the edges are not uniform in log or 
+%  linear space. 
+% 
+%  G = GRID(SPAN,NE,DISCRETE) adds an input to specify whether logarithmic
+%  (default), specified using DISCRETE = 'log', or linear spacing, specified 
+%  using DISCRETE = 'linear'. 
+% 
+%  For information of partial grid (where some elements are ignored, refer
+%  to `help Grid.partial`. 
+% 
+%  AUTHOR: Timothy Sipkens, 2019-02-03
 
 classdef Grid
 
@@ -214,6 +215,12 @@ methods
         
         adj = sparse(ind1,ind2,vec,...
             prod(obj.ne),prod(obj.ne));
+        
+        % If grid is partial, remove corresponding elements.
+        if obj.ispartial==1
+            adj(obj.missing, :) = [];
+            adj(:, obj.missing) = [];
+        end
         
         obj.adj = adj;
     end
@@ -994,7 +1001,7 @@ methods
     
     %== PLOT2D_SCATTER ===============================================%
     %   Wrapper for tools.plot2d_scatter.
-    %   Author:	Timothy Sipkens, 2020-11-05
+    %   AUTHOR: Timothy Sipkens, 2020-11-05
     %   Note: 'x' can be a cell array containing multiple x vectors
     function [] = plot2d_scatter(obj, x, cm)
         
@@ -1014,19 +1021,20 @@ methods
     
     %== PARTIAL ======================================================%
     function obj = partial(obj, r0, slope0, r1, slope1)
-    % PARTIAL  Convert grid to a partial grid. 
+    % PARTIAL  Convert grid to a partial grid, removing elements above or 
+    %  below a line. 
     % 
-    % G = Grid.partial(R0,SLOPE0) removes elements above the line that goes
-    % through the point R0 and having a slope of SLOPE0. For logarithmic
-    % grids, lines correspond to exponential curves, R0 are given as 
-    % log10(...) quantities, and slopes correspond to the exponent. For 
-    % example, Grid.partial([0,2],3) removes all grid elements above the
-    % exponential curve that passes through [1,100] and having an exponent
-    % of 3 (e.g., curves that increase volumetrically). 
+    %  G = Grid.partial(R0,SLOPE0) removes elements above the line that goes
+    %  through the point R0 and having a slope of SLOPE0. For logarithmic
+    %  grids, lines correspond to exponential curves, R0 are given as 
+    %  log10(...) quantities, and slopes correspond to the exponent. For 
+    %  example, Grid.partial([0,2],3) removes all grid elements above the
+    %  exponential curve that passes through [1,100] and having an exponent
+    %  of 3 (e.g., curves that increase volumetrically). 
     % 
-    % G = Grid.partial(R0,SLOPE0,R1,SLOPE1) adds a second set of arguments
-    % analogous to above but remove points below a given line (instead of 
-    % above). 
+    %  G = Grid.partial(R0,SLOPE0,R1,SLOPE1) adds a second set of arguments
+    %  analogous to above but remove points below a given line (instead of 
+    %  above). 
         
         %-- Parse inputs ----------------------------%
         if ~exist('slope0','var'); slope0 = []; end
@@ -1084,7 +1092,7 @@ methods
         obj.elements = obj.elements(~f_missing,:);
         obj.nelements = obj.nelements(~f_missing,:);
         obj.Ne = size(obj.elements,1);
-        obj = obj.padjacency;
+        obj = obj.adjacency;
         
     end
     %=================================================================%
@@ -1094,7 +1102,7 @@ methods
     %== PARTIAL2FULL =================================================%
     %   Convert x defined on a partial grid to the full grid equivalent, 
     %   using zeros to fill the removed grid points.
-    function x_full = partial2full(obj,x)
+    function x_full = partial2full(obj ,x)
         x_full = zeros(prod(obj.ne),1);
         t0 = setdiff((1:prod(obj.ne))',obj.missing);
         x_full(t0) = x;
@@ -1106,23 +1114,8 @@ methods
     %== FULL2PARTIAL =================================================%
     %   Convert x defined on a full grid to the partial grid equivalent, 
     %   removing entries for missing indices.
-    function x = full2partial(obj,x)
+    function x = full2partial(obj, x)
         x(obj.missing,:) = [];
-    end
-    %=================================================================%
-    
-    
-    
-    %== PADJACENCY ===================================================%
-    %   Convert x defined on a partial grid to the full grid equivalent, 
-    %   using zeros to fill the removed grid points.
-    function [obj,adj] = padjacency(obj)
-        [~,adj] = obj.adjacency;
-        
-        adj(obj.missing,:) = [];
-        adj(:,obj.missing) = [];
-        
-        obj.adj = adj;
     end
     %=================================================================%
     
