@@ -3,11 +3,11 @@
 % Author: Timothy Sipkens, 2019-02-03
 %
 % Notes:
-% - The grid class is currently used when a simple discretization of
+% + The grid class is currently used when a simple discretization of
 %   two-dimensional space is required. It then takes either the span
 %   of spcae to be covered or pre-defined edge vectors to form a grid.
 %
-% - See constructor method for list of other variables required
+% + See constructor method for list of other variables required
 %   for creation.
 %=========================================================================%
 
@@ -15,9 +15,9 @@ classdef Grid
 
 
 properties
-    discrete = 'logarithmic';
+    discrete = 'log';
                 % type discretization to be applied to the edges
-                % ('logarithmic' or 'linear')
+                % ('log'/'logarithmic' or 'linear')
     
     dim = 2;    % number of dimensions of mesh
     
@@ -55,7 +55,7 @@ end
 methods
     %== GRID =========================================================%
     %   Class constructor.
-    %-----------------------------------------------------------------%
+    % 
     % Inputs:
     %   span_edges  Either:
     %                (i) a span over which discretization occurs or
@@ -64,16 +64,17 @@ methods
     %               elements/pixels in each dimension
     %   discrete    Specifies type of discretization, used for
     %               marginalization and/or discretization
-    %               Possible values: 'linear' or 'logarithmic' (default)
+    %               Possible values: 'linear' or 'logarithmic'/'log' (default)
     %-----------------------------------------------------------------%
     function obj = Grid(span_edges,ne,discrete)
         
         %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty grid
         
+        % If discrete is not specified, use logarithmic spacing.
         if ~exist('discrete','var'); discrete = []; end
-        if isempty(discrete); discrete = 'logarithmic'; end
-            % if discrete is not specified, use logarithmic
+        if isempty(discrete); discrete = 'log'; end
+        if strcmp(discrete, 'logarithmic'); discrete = 'log'; end % allow for longhand
         %-------------------------------------------------------------%
         
         if isa(span_edges,'cell') % consider case where edges are given
@@ -120,7 +121,7 @@ methods
                 if strcmp('linear',obj.discrete)
                     obj.edges{ii} = linspace(obj.span(ii,1),obj.span(ii,2),obj.ne(ii));
 
-                elseif strcmp('logarithmic',obj.discrete)
+                elseif strcmp('log',obj.discrete)
                     obj.edges{ii} = logspace(...
                         log10(obj.span(ii,1)),log10(obj.span(ii,2)),obj.ne(ii));
                 end
@@ -130,13 +131,13 @@ methods
 
         %-- Generate nodes -------------------------------------------%
         for ii=1:obj.dim
-            if strcmp(obj.discrete,'logarithmic')
+            if strcmp(obj.discrete,'log')
                 r_m = exp((log(obj.edges{ii}(2:end))+...
                     log(obj.edges{ii}(1:(end-1))))./2); % mean of edges
 
                 obj.nodes{ii} = [exp(2*log(obj.edges{ii}(1))-log(r_m(1))),...
                     r_m, exp(2*log(obj.edges{ii}(end))-log(r_m(end)))];
-
+                
             elseif strcmp(obj.discrete,'linear')
                 r_m = (obj.edges{ii}(2:end)+...
                     obj.edges{ii}(1:(end-1)))./2; % mean of edges
@@ -448,7 +449,7 @@ methods
         
         dr_0 = cell(obj.dim,1);
         for ii=1:obj.dim
-            if strcmp(obj.discrete,'logarithmic')
+            if strcmp(obj.discrete,'log')
                 dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
                     log10(obj.nodes{ii}(1:(end-1)));
             
@@ -724,13 +725,16 @@ methods
         if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
         if isempty(f_contf); f_contf = 0; end % set contourf flag to false
         
+        cla; % clear existing axis
+        
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
         [~,dr1,dr2] = obj.dr; % used to give warning below
         dr0 = dr1(:).*dr2(:);
         if ~all(abs(dr0(2:end)-dr0(1))<1e-10)
-            warning(['The plot2d method does not display ',...
-                'correct proportions for non-uniform grids.']);
+            warning(['The plot2d method does not necessarily display ',...
+                'correct proportions for non-uniform grids.', ...
+                'Use a regularily-spaced grid for best results.']);
         end
         
         mod = 1; % min(obj.full2partial(dr0)./dr,1e2);
@@ -749,13 +753,32 @@ methods
         end
         
         %-- Adjust tick marks for log scale ----%
-        if strcmp('logarithmic',obj.discrete)
+        if strcmp('log',obj.discrete)
             set(gca,'XScale','log');
             set(gca,'YScale','log');
         end
         
-        xlim(obj.span(2,:));
+        xlim(obj.span(2,:));  % set plot limits bsed on grid limits
         ylim(obj.span(1,:));
+        
+        % Add lines marking the edges of the partial grid.
+        if obj.ispartial==1
+            hold on;
+            tools.overlay_line(obj, [0,obj.cut(1)], obj.cut(2), ...
+                'Color', [0.5,0.5,0.5]); % overlay partial grid limits, gray lines
+            
+             % If also a bottom cut.
+            if length(obj.cut)>2
+                tools.overlay_line(obj, [0,obj.cut(3)], obj.cut(4), ...
+                    'Color', [0.5,0.5,0.5]); % add a gray line
+            end
+            hold off;
+        end
+        
+        % Grey labels and axes to allow viz against dark and light bgs.
+        set(gca, 'XColor', [0.5, 0.5, 0.5], ...
+            'YColor', [0.5, 0.5, 0.5], ...
+            'linewidth', 0.75);
         
         if nargout>0; h = gca; end
         
@@ -837,11 +860,10 @@ methods
         
         dim2 = setdiff([1,2],dim); % other dimension, dimension to plot
         
-        n1 = floor(size(cm,1)/grid.ne(dim));
-        n2 = length(cm)-grid.ne(dim)*n1+1;
-        cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
+        addpath('cmap'); % load cmap package to use `sweep_cmap(...)`
+        if isfile('cmap/cmap_sweep.m'); cmap_sweep(grid.ne(dim), cm); % set color order to sweep through colormap
+        else; warning('The `cmap` package missing.'); end % if package is missing
         
-        set(gca,'ColorOrder',cm2,'NextPlot','replacechildren');
         x_rs = reshape(x,grid.ne);
         if dim==2; x_rs = x_rs'; end
         
@@ -961,6 +983,21 @@ methods
     
     
     
+    %== PLOT2D_SCATTER ===============================================%
+    %   Wrapper for tools.plot2d_scatter.
+    %   Author:	Timothy Sipkens, 2020-11-05
+    %   Note: 'x' can be a cell array containing multiple x vectors
+    function [] = plot2d_scatter(obj, x, cm)
+        
+        if ~exist('cm', 'var'); cm = []; end
+
+        %-- Parse inputs ---------------------------------------------%
+        [e2, e1] = meshgrid(obj.edges{2}, obj.edges{1});
+        tools.plot2d_scatter(e1(:), e2(:), x, cm);
+    end
+    %=================================================================%
+    
+    
     
 %=====================================================================%
 %-- SUPPORT FOR PARTIAL GRIDS ----------------------------------------%
@@ -992,7 +1029,7 @@ methods
         %--------------------------------------------%
         
         %-- Cut upper triangle ---------------------%
-        if strcmp(obj.discrete,'logarithmic')
+        if strcmp(obj.discrete,'log')
             tup = log10(obj.nelements(:,[1,4]));
         else
             tup = obj.nelements(:,[1,4]);
@@ -1006,7 +1043,7 @@ methods
         
         
         %-- Consider cutting lower triangle --------%
-        if strcmp(obj.discrete,'logarithmic')
+        if strcmp(obj.discrete,'log')
             tlow = log10(obj.nelements(:,[2,3]));
         else
             tlow = obj.nelements(:,[2,3]);

@@ -8,12 +8,12 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath cmap;
-cm = load_cmap('YlGnBu',255);
+cm = ylgnbu(255);
 cm_alt = cm;
-load('inferno.mat');
+cm = inferno;
 cm = cm(40:end,:);
 cm_b = cm;
-load('viridis.mat');
+cm = viridis;
 
 
 %%
@@ -47,7 +47,7 @@ for ii=1:length(n_b_vec)
     grid_b = Grid(span_b,...
         n_b,'logarithmic'); % should be uniform basis
 
-    A_t = kernel.gen_grid(grid_b,grid_t,prop_pma,'Rm',3);
+    A_t = kernel.gen_grid(grid_b,grid_t,prop_pma,[],'Rm',3);
         % generate A matrix based on grid for x_t and b
 
 

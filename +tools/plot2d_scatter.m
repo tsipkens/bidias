@@ -3,11 +3,16 @@
 % Author: Timothy Sipkens, 2019-11-28
 %=========================================================================%
 
-function [] = plot2d_scatter(vec1,vec2,b,cm)
+function [] = plot2d_scatter(vec1, vec2, b, cm)
 
-b = b./max(b);
+% If not colormap specified, use grays.
+if ~exist('cm', 'var'); cm = []; end
+if isempty(cm); cm = gray(255); end
 
-logb = log10(b); % scale data
+
+b = b ./ max(b); % scale data
+
+logb = log10(b); % compute log, allows for plotting of larger range
 bmax = max(logb);
 bmin = min(logb(~isinf(logb)));
 bmin = max(bmin,bmax-5); % at most, span four orders of magnitude
@@ -25,14 +30,12 @@ color = cm(round(corder.*(N-1)+1),:);
 color(corder==1,:) = 1;
 
 clf;
-for ii=1:length(vec1)
-    if ii==2; hold on; end
-    loglog(vec2(ii),vec1(ii),'.',...
-        'Color',color(ii,:),...
-        'MarkerSize',marker_size(ii));
-        % marker_size is also logscale
-end
-hold off;
+scatter(vec2, vec1,...
+    marker_size, color);
+    % marker_size is also logscale
+
+set(gca,'XScale','log');
+set(gca,'YScale','log');
 
 %-- Add custom legend ----------------------%
 hold on;

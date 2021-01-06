@@ -20,10 +20,9 @@
 %   J           Jacobian of fitting procedure
 %=============================================================%
 
-function [phantom,N,y_out,J] = fit2(x,vec_grid,n_modes,logr0)
+function [phantom,N,y_out,ci] = fit2(x,vec_grid,n_modes,logr0)
 
-disp(' ');
-disp('[ Fitting phantom object... -------------]');
+tools.textheader('Fitting phantom object');
 
 %-- Parse inputs ---------------------------------------------%
 if isa(vec_grid,'Grid')
@@ -62,33 +61,35 @@ if ~isempty(logr0) % update centers of distributions, if specified
     y0(3:6:end) = logr0(2:2:end);
 end
 for ii=1:n_modes % prior std. dev.
-    sy = [sy,inf,y0(6*(ii-1)+[4,5]),y0(6*(ii-1)+[4,5]),4];
-        % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
+    sy = [sy, inf, y0(6*(ii-1)+[4,5]), y0(6*(ii-1)+[4,5]),4];
+       % [C,log10(mg),log10(dg),log10(sm),log10(sg),corr]
 end
 
 % opts = optimoptions(@lsqnonlin,'MaxFunctionEvaluations',1e4,'MaxIterations',1e3);
 % y1 = lsqnonlin(@(y) fun_pha(y,vec1,vec2,n_modes,corr2cov)-...
 %     x, y0, ylow, yup);
-[y1,~,~,~,~,~,J] = ...
+[y1,~,resid,~,~,~,J] = ...
     lsqnonlin(@(y) [max(log(fun_pha(y,vec1,vec2,n_modes,corr2cov)),max(log(x)-4))-...
     max(log(x),max(log(x)-4));...
     (y-y0)'./sy'], y0, ylow, yup);
 N = exp(y1(1:6:end)); % scaling parameter denoting total number of particles
 y_out = y1;
 
+ci = nlparci(y1, resid, 'jacobian', J) - y1';
+ci = 2 .* ci(:,2);  % 95% confidence interval
+
 for ii=0:(n_modes-1)
     mu(ii+1,:) = [y1(6*ii+2),y1(6*ii+3)];
     sigma(ii+1,:) = [y1(6*ii+4),y1(6*ii+5)];
-    Sigma(:,:,ii+1) = corr2cov(sigma(ii+1,:),[1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
+    Sigma(:,:,ii+1) = corr2cov(sigma(ii+1,:), ...
+        [1,sin(y1(6*ii+6));sin(y1(6*ii+6)),1]);
 end
 
 phantom = Phantom('standard',grid,mu,Sigma,N);
 phantom.type = 'standard-fit';
 
 disp(' ');
-disp('[ Complete ------------------------------]');
-disp(' ');
-disp(' ');
+tools.textheader();
 
 end
 

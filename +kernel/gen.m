@@ -4,11 +4,13 @@
 % 
 % Notes:
 %   1. Cell arrays are used for Omega_mat and Lambda_mat in order to 
-%   allow for the use of sparse matrices, which is necessary to 
-%   store information on higher resolutions grids
-%   (such as those used for phantoms).
+%      allow for the use of sparse matrices, which is necessary to 
+%      store information on higher resolutions grids
+%      (such as those used for phantoms).
 %   2. By default, this function uses the analytical PMA transfer function 
-%   corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
+%      corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
+%   3. Unlike gen_grid, requires a pre-computed setpoint structure (and,
+%      as such, a varargin argument is not included).
 % 
 % Inputs:
 %   sp          PMA setpoint structure
@@ -17,13 +19,14 @@
 %   prop_pma    Structure defining the properties of the PMA
 %=========================================================================%
 
-function A = gen(sp,d_star,grid_i,prop_pma)
+function A = gen(sp,d_star,grid_i,prop_dma)
 
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
     % import properties of PMA
     % use default properties selected by prop_pma function
 if length(sp)~=length(d_star); error('Setpoint / d_star mismatch.'); end
+if ~exist('prop_dma','var'); prop_dma = []; end
 
     
 %-- Parse measurement set points (b) -------------------------------------%
@@ -40,7 +43,7 @@ d = r(:,2);
 
 
 %-- Start evaluate kernel ------------------------------------------------%
-disp('Computing kernel...');
+tools.textheader('Computing PMA-DMA kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
@@ -58,10 +61,11 @@ for kk=1:n_z
     Omega_mat{kk} = sparse(N_b,n_i(2)); % pre-allocate for speed
     
     for ii=1:N_b % loop over d_star
-        Omega_mat{kk}(ii,:) = kernel.tfer_dma(...
-            d_star(ii).*1e-9,...
-            grid_i.edges{2}.*1e-9,...
-            z_vec(kk));
+        Omega_mat{kk}(ii,:) = kernel.tfer_dma( ...
+            d_star(ii).*1e-9, ...
+            grid_i.edges{2}.*1e-9, ...
+            z_vec(kk), ...
+            prop_dma);
     end
     
     Omega_mat{kk}(Omega_mat{kk}<(1e-7.*max(max(Omega_mat{kk})))) = 0;
@@ -103,14 +107,14 @@ for kk=1:n_z
         Lambda_mat{kk}(:,:).*... % PMA contribution
         Omega_mat{kk}(:,:); % DMA contribution
 end
-disp('Completed kernel.');
+disp('Kernel compiled.');
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 
-disp('Completed computing kernel matrix, <strong>A</strong>.');
-disp(' ');
+tools.textheader();
+
 
 end
 

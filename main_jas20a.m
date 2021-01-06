@@ -11,10 +11,10 @@ close all;
 
 %-- Load colour schemes --------------------------------------------------%
 addpath cmap;
-load('inferno.mat');
+cm = inferno;
 cm = cm(40:end,:);
 cm_b = cm;
-load('viridis.mat');
+cm = viridis;
 
 
 
@@ -60,7 +60,7 @@ grid_b = Grid(span_b,...
     n_b,'logarithmic'); % should be uniform basis
 
 prop_pma = kernel.prop_pma;
-A_t = kernel.gen_grid(grid_b,grid_t,prop_pma,'Rm',3);
+A_t = kernel.gen_grid(grid_b,grid_t,prop_pma,[],'Rm',3);
     % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in x...');
@@ -100,9 +100,12 @@ grid_b.plot2d_sweep(b,cm_b);
 
 %%
 %== STEP 3: Perform inversions ============================================%
-run_inversions_a; % optimize regularization parameter
-run_inversions_b;
-% run_inversions_c;
+run_inversions_c;
+
+% % optimize the inversion schemes, incurs longer runtimes
+% run_inversions_a; % optimize regularization parameter
+% run_inversions_b;
+
 
 
 
@@ -119,13 +122,13 @@ caxis([0,cmax*(1+1/256)]);
 %%
 %-- Bar plot of Euclidean error ------------------------------------------%
 figure(30);
-chi_names = fieldnames(chi);
-chi_vals = zeros(length(chi_names),1);
-for ii=1:length(chi_names)
-    chi_vals(ii) = chi.(chi_names{ii});
+eps_names = fieldnames(eps);
+eps_vals = zeros(length(eps_names),1);
+for ii=1:length(eps_names)
+    eps_vals(ii) = eps.(eps_names{ii});
 end
 
-bar(chi_vals);
+bar(eps_vals);
 % ylim([0,20]);
 % ylim([0,100]);
-set(gca,'xticklabel',chi_names);
+set(gca,'xticklabel',eps_names);

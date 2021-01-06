@@ -3,10 +3,13 @@
 % Author: Timothy Sipkens, 2019-01-21
 %===========================================================%
 
-function [p,d_med,m_vec] = fit_mm_median(b,grid_b,grid_x,bool_plot)
+function [p,d_med,m_vec] = fit_mm_median(b, grid_b, grid_x)
 
-if ~exist('bool_plot','var'); bool_plot = []; end
-if isempty(bool_plot); bool_plot = 1; end
+if ~exist('grid_x', 'var'); grid_x = []; end
+
+% Infer whether to plot depending on if grid_x is supplied.
+if isempty(grid_x); f_plot = 0;
+else f_plot = 1; end
 
 
 b_plot_rs = reshape(b,grid_b.ne);
@@ -44,7 +47,7 @@ x1 = lsqnonlin(min_fun,x0,[],[],opts);
 
 
 %-- Plot results -------------------------------------------%
-if bool_plot
+if f_plot
     hold on;
     plot(log10(d_med),log10(m_vec),'r.');
     plot(log10(grid_x.edges{2}),...

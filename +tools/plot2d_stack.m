@@ -1,9 +1,9 @@
 
-% PLOT2D_PATCH  Sweep through data using patch and creating a 3D plot.
+% PLOT2D_STACK  Sweep through data and stack results.
 % Author: Timothy Sipkens, 2020-04-02
 %=========================================================================%
 
-function [] = plot2d_patch(grid, x, cm, dim, opts)
+function [] = plot2d_stack(grid, x, cm, dim)
 
 %-- Parse inputs ---------------------------------------------------------%
 % dimension to sweep through
@@ -30,32 +30,26 @@ min_x = 10.^(max(log10(x))-4);  % data minimum, applied due to log scale
 % Set up colormap for sweep.
 n1 = floor(size(cm,1)/grid.ne(dim));
 n2 = length(cm)-grid.ne(dim)*n1+1;
-cm2 = cm(n2:n1:end,:);  % adjust colormap to appropriate size
+cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
 
-
-plotter = @patch;  % use `patch` by default
-
-% If plotting lines instead of patches.
-if opts.f_line==1
-    plotter = @(x,y,z,cm) plot3(x,y,z,'Color',cm);
-end
-
-
-% Clear figure and 
-% proceed to loop through slices.
 clf;
 hold on;
 for ii=1:grid.ne(dim)
-    p = plotter(grid.edges{dim2}([1,1:end,end]), ...
-        grid.edges{dim}(ii) .* ones(1,grid.ne(dim2)+2), ...
-        [min_x, max(x_rs(:,ii)', min_x), min_x], ...
-        cm2(ii,:));
+    p = patch(grid.edges{dim2}([1,1:end,end]), ...
+        10.^(log10([min_x, max(x_rs(:,ii)', min_x), min_x]) + 8.*log10(grid.edges{dim}(ii))), ...
+        cm2(ii,:), ...
+        'EdgeColor', 'w');
+    plot(grid.edges{dim2}(1:end), ...
+        10.^(log10(min_x) + 8.*log10(grid.edges{dim}(ii))) .* ones(grid.ne(dim2), 1), ...
+        'Color', cm2(ii,:));
+    text(grid.edges{dim2}(1) .* 1.07, ...
+        10.^(log10(min_x) + 8.*log10(grid.edges{dim}(ii))), ...
+        num2str(grid.edges{dim}(ii)), ...
+        'Color', cm2(ii,:), ...
+        'VerticalAlignment', 'bottom');
 end
 hold off;
-zlim([min_x,inf]);
 
-set(gca, 'ZScale', 'log', 'YScale', 'log', 'XScale', 'log');
-
-view([-145,60]); % adjust view so slices are visible
+set(gca, 'YScale', 'log', 'XScale', 'log');
 
 end
