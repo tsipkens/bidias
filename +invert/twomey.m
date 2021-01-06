@@ -1,25 +1,27 @@
 
-% TWOMEY   Performs inversion using the iterative Twomey approach.
-% Author:  Timothy Sipkens, 2018-11-21
-%-------------------------------------------------------------------------%
-% Inputs:
-%   A             Model matrix
-%   b             Data
-%   Lb            Cholesky factorization of inverse covariance matrix
-%   xi            Initial guess
-%   iter          Max. number of iterations
-%   sigma_fun     Function of x to be evaluated to determine convergence
-%                   (Optional, default: ignore)
-%   sigma         Value to which sigma_fun is compared to determine convergence
-%                   (Optional, default: ignore)
-%   f_bar         Boolean to determine whether or not to show textbar
-%                   (Optional, default: 0)
-%
-% Outputs:
-%   x             Twomey estimate
-%=========================================================================%
+% TWOMEY  Performs inversion using the iterative Twomey approach.
+% 
+%  X = invert.twomey(A,B) inverts the system A*X = B using Twomey 
+%  inversion, where A is a model matrix or kernel and B is a data vector.
+% 
+%  X = invert.twomey(A,B,XI) applies Twomey inversion using an initial 
+%  guess of XI. If excluded, a vector of ones is used. 
+% 
+%  X = invert.twomey(A,B,XI,ITER) applies Twomey inversion using ITER 
+%  number of iterations. If excluded, 100 iterations is used. 
+% 
+%  X = invert.twomey(A,B,XI,ITER,SIGMA_FUN,SIGMA) applies Twomey inversion 
+%  using a function of X, SIGMA_FUN, and threshold, SIGMA, to determine 
+%  convergence. If excluded, convergence is not checked and the full number
+%  of iterations is used. 
+% 
+%  X = invert.twomey(A,B,XI,ITER,SIGMA_FUN,SIGMA,F_BAR) applies Twomey 
+%  inversion, as above, with F_BAR flagging whether a progress bar is 
+%  output to the console. 
+% 
+%  AUTHOR:  Timothy Sipkens, 2018-11-21
 
-function [x] = twomey(A,b,xi,iter,sigma_fun,sigma,f_bar)
+function [x] = twomey(A, b, xi, iter, sigma_fun, sigma, f_bar)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('iter','var'); iter = []; end
