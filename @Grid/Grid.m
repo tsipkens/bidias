@@ -23,7 +23,6 @@
 
 classdef Grid
 
-
 properties
     discrete = 'log';
                 % type discretization to be applied to the edges
@@ -1014,10 +1013,20 @@ methods
 %=====================================================================%
     
     %== PARTIAL ======================================================%
-    %   Convert to a partial grid. Currently takes a y-intercept, r0, 
-    %   and slope0 as arguements and cuts upper triangle.
-    %   Added r1 and slope1 arguments will also cut a lower triangle.
-    function obj = partial(obj,r0,slope0,r1,slope1)
+    function obj = partial(obj, r0, slope0, r1, slope1)
+    % PARTIAL  Convert grid to a partial grid. 
+    % 
+    % G = Grid.partial(R0,SLOPE0) removes elements above the line that goes
+    % through the point R0 and having a slope of SLOPE0. For logarithmic
+    % grids, lines correspond to exponential curves, R0 are given as 
+    % log10(...) quantities, and slopes correspond to the exponent. For 
+    % example, Grid.partial([0,2],3) removes all grid elements above the
+    % exponential curve that passes through [1,100] and having an exponent
+    % of 3 (e.g., curves that increase volumetrically). 
+    % 
+    % G = Grid.partial(R0,SLOPE0,R1,SLOPE1) adds a second set of arguments
+    % analogous to above but remove points below a given line (instead of 
+    % above). 
         
         %-- Parse inputs ----------------------------%
         if ~exist('slope0','var'); slope0 = []; end
