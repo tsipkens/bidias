@@ -69,14 +69,19 @@ grid_x = Grid(span, ne, 'log');
 The first variable defines the range of masses and mobility diameters to be considered. To speed computation, we convert the grid to a partial grid (which is *optional*) by removing elements in the upper left and lower right corners from the reconstruction domain:
 
 ```Matlab
+% Cut elements above line that passes through 10.^[0.7,2] = [5.01,100], 
+% with and exponent (slope in log-log space) of 3.
 ut_r = [0.7, 2]; % point in line to cut upper triangle
 ut_m = 3; % slope for line to cut upper triangle
+
+% Cut elements below line that passes through 10.^[-0.8,2] = [0.159,100], 
+% with and exponent (slope in log-log space) of 3.
 lt_r = [-0.8, 2]; % point in line to cut lower triangle
 lt_m = 3; % slope for line to cut upper triangle
 
 % Convert to a partial grid.
-grid_x = grid_x.partial(...
-    ut_r, ut_m,...
+grid_x = grid_x.partial( ...
+    ut_r, ut_m, ...
     lt_r, lt_m);
 ```
 
@@ -118,7 +123,7 @@ However, before actually generating data, we must first compute the kernel, in t
 prop_pma = kernel.prop_pma % use default CPMA properties (will display in command line)
 ```
 
-Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.pma_dma_grid(...)` method: 
+Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_pma_dma_grid(...)` method: 
 
 ```Matlab
 % Generate the kernel, use default CPMA properties. 
