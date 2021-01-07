@@ -74,6 +74,7 @@ methods
         
         if ~exist('w','var'); w = []; end
         
+        % If type is a number, cover to string for future comparisons.
         if isnumeric(type_name); type_name = num2str(type_name); end
         %-------------------------------------------------------------%
         
