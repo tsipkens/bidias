@@ -118,7 +118,7 @@ Before generating data, we must now compute the kernel, in this example composed
 prop_pma = kernel.prop_pma % use default CPMA properties (will display in command line)
 ```
 
-Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_grid(...)` method:
+Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_grid(...)` method: 
 
 ```Matlab
 A = kernel.gen_grid(grid_b, grid_x); % generate the kernel, use default CPMA properties
@@ -128,7 +128,7 @@ One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point
 
 ```Matlab
 figure(2);
-grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
+grid_x.plot2d_marg(A(527, :)); % plot kernel for 527th data point
 ```
 
 <p align="left">
@@ -192,18 +192,15 @@ grid_x.plot2d(x_ed); % plot exponential distance solution
 set(gcf, 'Position', [50 300 900 300]); % position and size plot
 ```
 
+This results in the following reconstruction:
+
 <p align="left">
   <img width="675" src="docs/01d_xrec.png">
 </p>
 
-
 For this narrow phantom, the exponential distance approach appears to outperform Tikhonov. This example is provided in the `main_0` script in the upper directory of this program. Runtimes are typically on the order of a minute. 
 
-
-
 ------
-
-
 
 This program is organized into several: [classes](#3-classes) (folders starting with the `@` symbol), [packages](#4-packages) (folders starting with the `+` symbol), and scripts that form the base of the program. These will be described, along with the underlying physics, below. 
 
