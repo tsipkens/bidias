@@ -19,8 +19,8 @@ grid_x = grid_x.partial(...
     fliplr(lt_r),lt_m); % convert to a partial grid
 
 
-phantom = Phantom('4', grid_x); % get Phantom 4 from Sipkens et al. (2020a)
-x0 = phantom.x;
+phantom = Phantom('4'); % get Phantom 4 from Sipkens et al. (2020a)
+x0 = phantom.eval(grid_x);
 
 figure(1);
 grid_x.plot2d(x0);
@@ -47,13 +47,13 @@ b0 = A * x0; % generate a set of data using the forward model
 
 % plot resultant data as mobility scans at a range of mass setpoint
 figure(3);
-tools.plot2d_slices(grid_b, b);
+tools.plot2d_patch(grid_b, b);
 xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
 
 
 %== STEP 3 ===============================================================%
-disp('Performing Tikhonov regularization...');
+tools.textheader('Performing Tikhonov regularization');
 lambda = 1; % regularization parameter
 order = 1; % order of Tikhonov matrix to be used
 x_tk1 = invert.tikhonov(Lb*A, Lb*b, ...
@@ -62,7 +62,7 @@ disp('Complete.');
 disp(' ');
 
 
-disp('Performing exponential distance regularization...');
+tools.textheader('Performing exponential distance regularization');
 lambda = 1; % regularization parameter
 Gd = phantom.Sigma;
 x_ed = invert.exp_dist(Lb*A, Lb*b, ...
