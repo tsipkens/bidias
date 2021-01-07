@@ -1,7 +1,42 @@
 
-% PHANTOM  Class containing the properties and methods for bivariate lognormal phantoms.
-% Author:  Timothy Sipkens, 2019-07-08
-%=========================================================================%
+% PHANTOM  Creates a bivariate phantom (typically bivariate lognormal).
+%  Can be used to represent multimodal phantoms.
+% 
+%  Use the Phantom.eval(grid) method to evalute the phantom on a 
+%  specific Grid.
+% 
+%  Pha = Phantom(NAME) generates a pre-computed phantom object specified by 
+%  NAME, a string that is typically an integer. For example, '1' generates 
+%  Phantom 1 from Sipkens et al., J. Aerosol Sci. (2020). 
+% 
+%  Pha = Phantom('standard',[],MU,SIGMA) creates a phantom with a mean of 
+%  MU and covariance of SIGMA. This is the most general definition. In the 
+%  standard representation, all modes are taken as bivariate lognormal, 
+%  where MU is log10(...) of the geometric means and SIGMA is thecovariance 
+%  in logspace. See Sipkens et al., J. Aerosol Sci. (2020) for more 
+%  information on the bivariate lognormal distribution. 
+%  NOTE: Bimodal distributions are given by stacking the means and
+%  covariance in the next dimension. For MU, this results in one row per
+%  set of means. For SIGMA, this involves concatenating covariance matrices
+%  in the third dimension, e.g., SIGMA = cat(3,SIGMA1,SIGMA2). 
+% 
+%  Pha = Phantom('mass-mobility',[],P,MODES) creates a mass-mobility phantom
+%  using a P data structure. MODES is a cell array, with a string
+%  specifying the type of distribution the P struct represents for each 
+%  mode, e.g., 'logn' for a bivariate lognormal mode. 
+% 
+%  Pha = Phantom(TYPE,GRID,...) adds a instance of the Grid class on which
+%  that phantom will be evaluated. If GRID is not given, the phantom is
+%  simply not evaluated at the time of contrusction (but can be evaluated
+%  on a specified grid using Phantom.eval(grid). 
+% 
+%  Pha = Phantom(...,W) constructs a phantom with mode weights specified by
+%  W, which is an array with one weight per mode. By default, all modes are
+%  given equal weight and selected such that the sum of the weights is
+%  unity. 
+% 
+% AUTHOR: Timothy Sipkens, 2019-07-08
+
 
 classdef Phantom
 
@@ -30,35 +65,18 @@ end
 
 methods
     %== PHANTOM ======================================================%
-    %   Intialize a phantom object.
-    % 
-    % Inputs:
-    %   type        The type of phantom specified as a string
-    %               (e.g. 'standard', 'mass-mobility', '1')
-    %   span_grid   Either (i) the span over which the phantom is to be
-    %               evaluated or (ii) a grid on which the phantom is to
-    %               be evaluated
-    %   mu_p        Either a vector of distribution means or a vector p
-    %               specifying the mass-mobility parameters
-    %   Sigma_modes Either the covariance matrix for the distribution
-    %               or the number of modes in the distribution
-    %               (e.g. 'logn','cond-norm')
-    %   w           Weights for each mode 
-    %               (Optional: default is ones(n_modes,1);)
-    %-----------------------------------------------------------------%
-    function [obj] = Phantom(type,span_grid,mu_p,Sigma_modes,w)
+    function [obj] = Phantom(type_name, span_grid, mu_p, Sigma_modes, w)
         
         %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty phantom
         
         if ~exist('span_grid','var'); span_grid = []; end
-        if isempty(span_grid); span_grid = [10^-1.5,10^1.5;20,10^3]; end
         
         if ~exist('w','var'); w = []; end
         %-------------------------------------------------------------%
         
         %== Assign parameter values - 3 options ======================%
-        switch type
+        switch type_name
             
             %-- OPTION 1: Standard bivariate lognormal distribution --%
             case {'standard'}
@@ -90,10 +108,10 @@ methods
                 
             %-- OPTION 3: Use a preset or sample distribution --------%
             otherwise % check if type is a preset phantom
-                [p,modes,type] = obj.presets(type);
+                [p,modes,type_name] = obj.presets(type_name);
                 if isempty(p); error('Invalid phantom call.'); end
                 
-                obj.type = type;
+                obj.type = type_name;
                 obj.modes = modes;
                 
                 obj.p = obj.fill_p(p);
@@ -107,28 +125,30 @@ methods
         obj.n_modes = length(obj.modes); % get number of modes
         
         if isempty(w) % assign mode weightings
-            obj.w = ones(obj.n_modes,1)./obj.n_modes; % evely distribute modes
+            obj.w = ones(obj.n_modes, 1) ./ obj.n_modes; % evely distribute modes
         else
             obj.w = w./sum(w); % normalize weights and assign
         end
             
         
         %-- Generate a grid to evaluate phantom on -------------------%
-        if isa(span_grid,'Grid') % if grid is specified
+        if isa(span_grid, 'Grid') % if grid is specified
             obj.grid = span_grid;
-        else % if span is specified, create grid
+        elseif ~isempty(span_grid) % if span is specified, create grid
             n_t = [540,550]; % resolution of phantom distribution
-            obj.grid = Grid(span_grid,...
-                n_t,'logarithmic'); % generate grid of which to represent phantom
+            obj.grid = Grid(span_grid, ...
+                n_t, 'logarithmic'); % generate grid of which to represent phantom
         end
 
 
         %-- Evaluate phantom -----------------------------------------%
-        if any(strcmp('cond-norm',obj.modes))
-            obj.x = obj.eval_p(obj.p);
-                % special evaluation for conditional normal conditions
-        else
-            obj.x = obj.eval;
+        if ~isempty(span_grid)
+            if any(strcmp('cond-norm', obj.modes))
+                obj.x = obj.eval_p(obj.p);
+                    % special evaluation for conditional normal conditions
+            else
+                obj.x = obj.eval;
+            end
         end
     end
     %=================================================================%
@@ -190,7 +210,7 @@ methods
     %
     %   Note: This method does not work for conditionally-normal distributions
     %       (which cannot be defined with mu and Sigma).
-    function [x] = eval(obj,grid_vec,w)
+    function [x] = eval(obj, grid_vec, w)
         
         %-- Parse inputs ---------------------------------------------%
         if ~exist('w','var'); w = []; end
