@@ -7,7 +7,9 @@
 % 
 %  Pha = Phantom(NAME) generates a pre-computed phantom object specified by 
 %  NAME, a string that is typically an integer. For example, '1' generates 
-%  Phantom 1 from Sipkens et al., J. Aerosol Sci. (2020). 
+%  Phantom 1 from Sipkens et al., J. Aerosol Sci. (2020). One can also
+%  supply integers in the range of [1,4] for the phantoms in the
+%  aforementioned paper. 
 % 
 %  Pha = Phantom('standard',[],MU,SIGMA) creates a phantom with a mean of 
 %  MU and covariance of SIGMA. This is the most general definition. In the 
