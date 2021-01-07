@@ -4,19 +4,19 @@ close all;
 clc;
 
 %== STEP 1 ===============================================================%
-span = [0.01,100; ...
-    10,1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
+span = [0.01, 100; ...
+    10, 1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
 ne = [100, 125]; % number of elements in grid for each dimension
 grid_x = Grid(span, ne, 'logarithmic'); % create instance of Grid, with logarithmic spacing
 
 
-ut_r = [2,0.5]; % point in line to cut upper triangle
+ut_r = [0.5,2]; % point in line to cut upper triangle
 ut_m = 3; % slope for line to cut upper triangle
-lt_r = [2,-1.2]; % point in line to cut lower triangle
+lt_r = [-1.2,2]; % point in line to cut lower triangle
 lt_m = 3; % slope for line to cut upper triangle
 grid_x = grid_x.partial(...
-    fliplr(ut_r),ut_m,...
-    fliplr(lt_r),lt_m); % convert to a partial grid
+    ut_r, ut_m,...
+    lt_r, lt_m); % convert to a partial grid
 
 
 phantom = Phantom('4'); % get Phantom 4 from Sipkens et al. (2020a)
@@ -47,13 +47,14 @@ b0 = A * x0; % generate a set of data using the forward model
 
 % plot resultant data as mobility scans at a range of mass setpoint
 figure(3);
-tools.plot2d_patch(grid_b, b);
+opts.f_lines = 1;
+tools.plot2d_patch(grid_b, b0, [], [], opts);
 xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
 
 
 %== STEP 3 ===============================================================%
-tools.textheader('Performing Tikhonov regularization');
+tools.textheader('Tikhonov inversion');
 lambda = 1; % regularization parameter
 order = 1; % order of Tikhonov matrix to be used
 x_tk1 = invert.tikhonov(Lb*A, Lb*b, ...
@@ -62,10 +63,11 @@ disp('Complete.');
 disp(' ');
 
 
-tools.textheader('Performing exponential distance regularization');
+tools.textheader('Exponential distance inversion');
 lambda = 1; % regularization parameter
 Gd = phantom.Sigma;
-x_ed = invert.exp_dist(Lb*A, Lb*b, ...
+x_ed = invert.exp_dist( ...
+    Lb*A, Lb*b, ...
     lambda, Gd, grid_x); % exponential distance solution
 disp('Complete.');
 disp(' ');
