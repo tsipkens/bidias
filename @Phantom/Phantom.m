@@ -68,11 +68,13 @@ methods
     function [obj] = Phantom(type_name, span_grid, mu_p, Sigma_modes, w)
         
         %-- Parse inputs ---------------------------------------------%
-        if nargin==0; return; end % return empty phantom
+        if nargin==0; return; end  % return empty phantom
         
         if ~exist('span_grid','var'); span_grid = []; end
         
         if ~exist('w','var'); w = []; end
+        
+        if isnumeric(type_name); type_name = num2str(type_name); end
         %-------------------------------------------------------------%
         
         %== Assign parameter values - 3 options ======================%
