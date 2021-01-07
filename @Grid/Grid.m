@@ -880,7 +880,7 @@ methods
         if isfile('cmap/cmap_sweep.m'); cmap_sweep(grid.ne(dim), cm); % set color order to sweep through colormap
         else; warning('The `cmap` package missing.'); end % if package is missing
         
-        x_rs = reshape(x,grid.ne);
+        x_rs = reshape(x, grid.ne);
         if dim==2; x_rs = x_rs'; end
         
         h = semilogx(grid.edges{dim2},x_rs,...

@@ -33,8 +33,11 @@ grid_b = Grid(span_b, ne_b, 'log');
 
 
 %== Step 2A ==============================================================%
-prop_pma = kernel.prop_pma % use default CPMA properties (will display in command line)
-A = kernel.gen_pma_dma_grid(grid_b, grid_x); % generate the kernel, use default CPMA properties
+% Use default CPMA properties (will display in command line). 
+prop_pma = kernel.prop_pma;
+
+% Generate the kernel, use default CPMA properties. 
+A = kernel.gen_pma_dma_grid(grid_b, grid_x);
 
 figure(2);
 grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point

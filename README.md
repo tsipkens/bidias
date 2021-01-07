@@ -106,22 +106,23 @@ Note that we chose a very narrow phantom. The white lines indicate the edges of 
 Next, we define a new grid for the points at which the measurements will take place:
 
 ```Matlab
-% define a new grid for the measurements
+% Define a new grid for the measurements. 
 span_b = span;
-ne_b = [20, 65];
+ne_b = [20, 65];  % correspond to 20 masses and 65 mobilities
 grid_b = Grid(span_b, ne_b, 'log');
 ```
 
-Before generating data, we must now compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `kernel.prop_pma(...)` to get a set of CPMA parameters: 
+However, before actually generating data, we must first compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `kernel.prop_pma(...)` to get a set of CPMA parameters: 
 
 ```Matlab
 prop_pma = kernel.prop_pma % use default CPMA properties (will display in command line)
 ```
 
-Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_grid(...)` method: 
+Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.pma_dma_grid(...)` method: 
 
 ```Matlab
-A = kernel.gen_grid(grid_b, grid_x); % generate the kernel, use default CPMA properties
+% Generate the kernel, use default CPMA properties. 
+A = kernel.gen_pma_dma_grid(grid_b, grid_x);
 ```
 
 One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point using: 
