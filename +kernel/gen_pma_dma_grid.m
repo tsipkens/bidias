@@ -1,35 +1,53 @@
 
-% GEN_GRID  Evaluate kernel/transfer functions for DMA-PMA to find A, exploiting grid structure.
-% Author: Timothy Sipkens, 2018-11-27
+% GEN_PMA_DMA_GRID  Evaluate kernel/transfer functions for PMA-DMA. 
+%  Relative to kernel.gen_pma_dma, this function exploits the grid 
+%  structure of the data and reconstruction domain to speed computation.
 % 
-% Notes:
-% 	1. This function exploits the grid structure to minimize the number of
-%	transfer function evaluations. 
-%   2. Cell arrays are used for Omega_mat and Lambda_mat in order to 
-%   allow for the use of sparse matrices, which is necessary to 
-%   store information on higher resolutions grids
-%   (such as those used for phantoms).
-%   3. By default, this function uses the analytical PMA transfer function 
-%   corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
+%  A = kernel.gen_pma_dma_grid(GRID_B,GRID_I) uses the data grid, GRID_B,
+%  and integration grid, GRID_I, which is generally higher resolution. 
 % 
-%-------------------------------------------------------------------------%
-% Inputs:
-%   grid_b      Grid on which the data exists
-%   grid_i      Grid on which to perform integration
-%   prop_pma    Structure defining the properties of the PMA
-%   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
-%=========================================================================%
+%  A = kernel.gen_pma_dma_grid(GRID_B,GRID_I,PROP_PMA) uses the 
+%  pre-computed particle mass analyzer properties specified by PROP_PMA. 
+%  This structure can be generated manually or with the help of the 
+%  kernel.prop_pma(...) function. 
+% 
+%  A = kernel.gen_pma_dma_grid(GRID_B,GRID_I,PROP_PMA,PROP_DMA) uses the 
+%  pre-computed differential mobility analyzer properties specified by 
+%  PROP_DMA. This structure can be generated manually or with the help of 
+%  the kernel.prop_dma(...) function. PROP_PMA can be excluded by supplying
+%  an empty input, i.e., PROP_PMA = []. 
+% 
+%  A = kernel.gen_pma_dma_grid(...,'name',value) specifies a name-value
+%  pairs that is passed on as input to the get_setpoint(...) function
+%  from the tfer_pma folder. This specifies one quantity other than the
+%  setpoint mass that is used to constrain the PMA operating point. For
+%  example, {'Rm',10} specifies a resolution PMA resolution of 10, which is
+%  used for all of the setpoints. 
+% 
+%  [A,SP] = kernel.prop_pma_dma_grid(...) also outputs the PMA setpoint
+%  structure (associated with the mat_tfer_pma submodule) for the given
+%  grid.
+% 
+% NOTE: Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%  allow for the use of sparse matrices, which is necessary to 
+%  store information on higher resolutions grids
+%  (such as those used for phantoms).
+% 
+% AUTHOR: Timothy Sipkens, 2018-11-27
 
-function [A,sp] = gen_grid(grid_b, grid_i, prop_pma, prop_dma, varargin)
+function [A, sp] = gen_pma_dma_grid(grid_b, grid_i, prop_pma, prop_dma, varargin)
 
-addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
+% Add mat-tfer-pma package to MATLAB path.
+addpath tfer_pma;
+
+% If not given, import default properties of PMA, 
+% as selected by prop_pma function.
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
-    % import properties of PMA
-    % use default properties selected by prop_pma function
+
 if ~exist('prop_dma','var'); prop_dma = []; end
 
-    
+
 %-- Parse measurement set points (b) -------------------------------------%
 r_star = grid_b.elements;  % vector of all setpoint pairs
 m_star = r_star(:,1);  % mass setpoints
@@ -103,9 +121,9 @@ for kk=1:n_z  % loop over the charge state
     for ii=1:n_b(1)  % loop over m_star
         
         % Evaluate PMA transfer function.
-        Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
+        Lambda_mat{kk}(ii,:) = kernel.tfer_pma( ...
             sp(ii), m.*1e-18, ... 
-            d.*1e-9, z_vec(kk), prop_pma)'; 
+            d.*1e-9, z_vec(kk), prop_pma)';
         
         tools.textbar([ii, n_b(1), kk, n_z]);  % update text progress bar
     end
@@ -125,8 +143,8 @@ for kk=1:n_z
         Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat{kk}(i2,:); % DMA contribution
 end
-%=========================================================================%
 disp('Kernel compiled.');
+%=========================================================================%
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area

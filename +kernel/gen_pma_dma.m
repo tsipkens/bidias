@@ -1,31 +1,39 @@
 
-% GEN  Evaluate kernel/transfer functions for DMA-PMA to find A.
-% Author:  Timothy Sipkens, 2020-02-04
+% GEN_PMA_DMA  Evaluate kernel/transfer functions for PMA-DMA.
+%  This function applies to miscellaneous PMA-DMA setpoints. 
+%  The kernel.gen_pma_dma_grid function is preferred for computional
+%  reasions. As such, this function should only be used when the data does
+%  not adhere to a reasonable grid. 
 % 
-% Notes:
-%   1. Cell arrays are used for Omega_mat and Lambda_mat in order to 
-%      allow for the use of sparse matrices, which is necessary to 
-%      store information on higher resolutions grids
-%      (such as those used for phantoms).
-%   2. By default, this function uses the analytical PMA transfer function 
-%      corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
-%   3. Unlike gen_grid, requires a pre-computed setpoint structure (and,
-%      as such, a varargin argument is not included).
+%  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I) evaluated the transfer function
+%  for the PMA setpoints specified by SP and the DMA setpoints specified by 
+%  D_STAR. The kernel is evaluated by integrating the transfer function
+%  over the elements in GRID_I. This require the same numder of entries in
+%  SP and D_STAR. 
 % 
-% Inputs:
-%   sp          PMA setpoint structure
-%   d_star      DMA setpoints
-%   grid_i      Grid on which to perform integration
-%   prop_pma    Structure defining the properties of the PMA
-%=========================================================================%
+%  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA) specifies a
+%  pre-computed PMA property data structure. If not given, the function
+%  uses the defaults of kernel.prop_pma(...).
+% 
+%  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA,PROP_DMA) specifies a
+%  pre-computed DMA property data structure. 
+% 
+% NOTE: Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%  allow for the use of sparse matrices, which is necessary to 
+%  store information on higher resolutions grids (such as those 
+%  used for phantoms).
+% 
+% AUTHOR: Timothy Sipkens, 2020-02-04
 
-function A = gen(sp,d_star,grid_i,prop_dma)
+function A = gen_pma_dma(sp, d_star, grid_i, prop_pma, prop_dma)
 
+% If not given, import default properties of PMA, 
+% as selected by prop_pma function.
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
-    % import properties of PMA
-    % use default properties selected by prop_pma function
+
 if length(sp)~=length(d_star); error('Setpoint / d_star mismatch.'); end
+
 if ~exist('prop_dma','var'); prop_dma = []; end
 
     

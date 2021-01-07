@@ -1,5 +1,5 @@
 
-% GEN_GRID_C2  Evaluate kernel/transfer functions for PMA-SP2 to find A, exploiting grid structure.
+% GEN_PMA_SP2_GRID  Evaluate kernel/transfer functions for PMA-SP2 to find A, exploiting grid structure.
 % Author: Timothy Sipkens, 2018-11-27
 % 
 % Notes:
@@ -19,15 +19,15 @@
 %   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
 %=========================================================================%
 
-function [A,sp] = gen_grid_c2(grid_b,grid_i,prop_pma,varargin)
+function [A,sp] = gen_pma_sp2_grid(grid_b,grid_i,prop_pma,varargin)
 
 
 %-- Parse inputs ---------------------------------------------------------%
+% If not given, import default properties of PMA, 
+% as selected by prop_pma function.
 addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
-    % import properties of PMA
-    % use default properties selected by prop_pma function
     
 if or(isempty(varargin),length(varargin)~=2) % parse extra information for PMA
     error('Invalid additional information for PMA setpoint.');
