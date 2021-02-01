@@ -465,7 +465,7 @@ methods
         
         dr_0 = cell(obj.dim,1);
         for ii=1:obj.dim
-            if strcmp(obj.discrete,'log')
+            if any(strcmp(obj.discrete, {'log', 'logarithmic'}))
                 dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
                     log10(obj.nodes{ii}(1:(end-1)));
             
@@ -769,7 +769,8 @@ methods
         end
         
         %-- Adjust tick marks for log scale ----%
-        if strcmp('log',obj.discrete)
+        %   'logarithmic' included for backward compatibility.
+        if any(strcmp(obj.discrete, {'log', 'logarithmic'}))
             set(gca,'XScale','log');
             set(gca,'YScale','log');
         end
