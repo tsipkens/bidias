@@ -57,10 +57,11 @@ properties
     grid = [];      % default grid the phantom is to be represented
                     % on generally a high resolution instance of the
                     % Grid class
-
-    p struct = struct();
-                % parameters relevant to mass-mobility distributions
-                % fields include mg, sm, sd, rho_100, etc.
+    
+    % Parameters relevant to mass-mobility distributions
+    % fields include mg, sm, sd, rho_100, etc.
+    p = struct();
+    
 end
 
 
