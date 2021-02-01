@@ -463,7 +463,7 @@ methods
     %   Calculates the differential area of the elements in the grid.
     function [dr,dr1,dr2] = dr(obj)
         
-        dr_0 = cell(obj.dim,1);
+        dr_0 = cell(obj.dim, 1);
         for ii=1:obj.dim
             if any(strcmp(obj.discrete, {'log', 'logarithmic'}))
                 dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
@@ -520,7 +520,7 @@ methods
     %== MARGINALIZE ==================================================%
     %   Marginalizes over the grid in each dimension.
     %   Uses Euler's method to integrate over domain.
-    function [marg,tot] = marginalize(obj,x)
+    function [marg, tot] = marginalize(obj, x, dim)
         
         x = obj.reshape(x);
         
@@ -533,8 +533,14 @@ methods
         dr2 = dr./dr1;
         dr1 = dr./t0;
         
-        marg{1} = sum(dr2.*x,2); % integrate over diameter
-        marg{2} = sum(dr1.*x,1); % integrate over mass
+        marg{1} = sum(dr2 .* x,2); % integrate over diameter
+        marg{2} = sum(dr1 .* x,1); % integrate over mass
+        
+        % If dim input, output marginalized distribution for 
+        % specific dimension. 
+        if exist('dim', 'var')
+            marg = marg{dim};
+        end
         
     end
     %=================================================================%
@@ -1105,7 +1111,7 @@ methods
     %   using zeros to fill the removed grid points.
     function x_full = partial2full(obj ,x)
         x_full = zeros(prod(obj.ne),1);
-        t0 = setdiff((1:prod(obj.ne))',obj.missing);
+        t0 = setdiff((1:prod(obj.ne))', obj.missing);
         x_full(t0) = x;
     end
     %=================================================================%
