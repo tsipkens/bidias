@@ -1,13 +1,18 @@
 
+% MAIN_0  A simple script demonstrating a simple inversion. 
+
+
 clear;
 close all;
 clc;
 
 %== STEP 1 ===============================================================%
 span = [0.01, 100; ...
-    10, 1000]; % span of grid [min(mass),max(mass); min(mobility),max(mobility)]
+    10, 1000];  % span of grid
 ne = [100, 125]; % number of elements in grid for each dimension
-grid_x = Grid(span, ne, 'logarithmic'); % create instance of Grid, with logarithmic spacing
+
+% Create an instance of Grid, with logarithmic spacing.
+grid_x = Grid(span, ne, 'log');
 
 
 ut_r = [0.5,2]; % point in line to cut upper triangle
