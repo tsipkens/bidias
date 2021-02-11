@@ -490,7 +490,7 @@ The `Phantom.fit2` method can be used in an attempt to derive multimodal phantom
 
 ### 4.1 +kernel
 
-This package is used to evaluate the transfer function of the different instruments, such as the differential mobility analyzer (DMA), particle mass analyzer (such as the CPMA or APM), and charging fractions. Various functions within this package can generate the matrix `A` that acts as the forward model.
+This package is used to evaluate the transfer function of the different instruments, such as the differential mobility analyzer (DMA), particle mass analyzer (such as the CPMA or APM), single particle soot photometer (SP2), and charging fractions to generate discrete kernels useful for computation. In general, functions starting with `gen` are upper level functions that can generate the matrix `A` that acts as the forward model ins subsequent steps. Other functions (e.g., `kernel.tfer_dma(...)`) act as supporting methods (e.g., in evaluating the transfer function for just the DMA). 
 
 The transfer function for the DMA uses the analytical expressions of [Stozenburg et al. (2018)][Stolz18].
 
@@ -498,7 +498,7 @@ Transfer function evaluation for a PMA can proceed using one of two inputs eithe
 
 ##### 4.1.1 sp
 
-The `sp` or setpoint structure is a structured array containing the information necessary to define the PMA setpoints, which is described in more detail in the [README](tfer_pma/README.md) for the tfer_pma package. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `tfer_pma.get_setpoint` function described below and in the README for the tfer_pma package. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
+The `sp` or setpoint structure is a structured array containing the information necessary to define the setpoints for particle mass analyzers, which is described in more detail in the [README](tfer_pma/README.md) for the tfer_pma package. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `tfer_pma.get_setpoint(...)` function described below and in the README for the tfer_pma package. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
 | Fields  | m_star    | V      | Rm  | omega | omega1 | omega2 | alpha | beta  | m_max    |
 | ------- | :-------: | :----: | :-: | :---: | :----: | :----: | :---: | :---: | :------: |
@@ -508,20 +508,17 @@ The `sp` or setpoint structure is a structured array containing the information 
 | 4       | 2.22×10<sup>-18</sup> |	198.02 | 3  | 486.1 | 493.7  | 478.7 |	33.63 |	1.656 |	2.96×10<sup>-18</sup> |
 | ... ||||||||||
 
-As an example, the array can be generated from a vector of mass setpoints assuming
-a resolution of *R*<sub>m</sub> = 10 and PMA properties specified in `kernel.prop_pma` using:
+As an example, the array can be generated from a vector of mass setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified in `kernel.prop_pma` using:
 
 ```Matlab
-m_star = 1e-18.*logspace(log10(0.1),log10(100),25); % mass setpoints
+m_star = 1e-18 .* logspace(log10(0.1), log10(100), 25); % mass setpoints
 sp = tfer_pma.get_setpoint(prop_pma,...
-    'm_star',m_star,'Rm',10); % get PMA setpoints
+    'm_star', m_star, 'Rm', 10); % get PMA setpoints
 ```
 
 ##### 4.1.2 Exploiting the gridded structure of that data
 
-Alternatively, one can generate a grid corresponding to the data points. This can
-speed transfer function evaluation be exploiting the structure of the setpoints
-to minimize the number of function evaluations (using the `kernel.gen_grid` function).
+We note that functions that end in `_grid` exploit the structure of gridded data to speed transfer function evaluation. This is particularly useful when the transfer function may not be a function of both aerosol size parameters (e.g., for SP2 data, the SP2 binning process does not depend on the total particle mass). 
 
 ### 4.2 tfer_pma
 
