@@ -1,25 +1,42 @@
 
 % GEN_PMA_SP2_GRID  Evaluate kernel/transfer functions for PMA-SP2 to find A, exploiting grid structure.
-% Author: Timothy Sipkens, 2018-11-27
 % 
-% Notes:
-% 	1. This function exploits the grid structure to minimize the number of
-%	transfer function evaluations. 
-%   2. Cell arrays are used for Omega_mat and Lambda_mat in order to 
-%   allow for the use of sparse matrices, which is necessary to 
-%   store information on higher resolutions grids
-%   (such as those used for phantoms).
-%   3. By default, this function uses the analytical PMA transfer function 
-%   corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
+%  A = kernel.gen_pma_sp2_grid(GRID_B,GRID_I) uses the data grid, GRID_B,
+%  and integration grid, GRID_I, which is generally higher resolution. 
 % 
-% Inputs:
-%   grid_b      Grid on which the data exists
-%   grid_i      Grid on which to perform integration
-%   prop_pma    Structure defining the properties of the PMA
-%   varargin    Name-value pairs used in evaluating the PMA tfer. fun.
-%=========================================================================%
+%  A = kernel.gen_pma_sp2_grid(GRID_B,GRID_I,PROP_PMA) uses the 
+%  pre-computed particle mass analyzer properties specified by PROP_PMA. 
+%  This structure can be generated manually or with the help of the 
+%  kernel.prop_pma(...) function. 
+% 
+%  A = kernel.gen_pma_sp2_grid(...,'name',value) specifies a name-value
+%  pairs that is passed on as input to the get_setpoint(...) function
+%  from the tfer_pma folder. This specifies one quantity other than the
+%  setpoint mass that is used to constrain the PMA operating point. For
+%  example, {'Rm',10} specifies a resolution PMA resolution of 10, which is
+%  used for all of the setpoints. 
+%  If not provided, the function uses the default in the get_setpoint(...)
+%  function in the tfer_pma folder.
+% 
+%  [A,SP] = kernel.gen_pma_sp2_grid(...) also outputs the PMA setpoint
+%  structure (associated with the mat_tfer_pma  or tfer_pma folder) for 
+%  the given grid.
+%  
+%  ------------------------------------------------------------------------
+% 
+%  NOTES:
+%  1. This function exploits the grid structure to minimize the number of
+%  transfer function evaluations. 
+%  2. Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%  allow for the use of sparse matrices, which is necessary to 
+%  store information on higher resolutions grids
+%  (such as those used for phantoms).
+%  3. By default, this function uses the analytical PMA transfer function 
+%  corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
+%  
+%  AUTHOR: Timothy Sipkens, 2018-11-27
 
-function [A,sp] = gen_pma_sp2_grid(grid_b,grid_i,prop_pma,varargin)
+function [A,sp] = gen_pma_sp2_grid(grid_b, grid_i, prop_pma, varargin)
 
 
 %-- Parse inputs ---------------------------------------------------------%
@@ -56,7 +73,7 @@ d = (m.*1e-18./prop_pma.rho0).^...
 
 
 %-- Start evaluate kernel ------------------------------------------------%
-disp('Computing kernel...');
+tools.textheader('Computing PMA-SP2 kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
@@ -69,12 +86,14 @@ n_z = length(z_vec);
 %   state. It is boxcar function that takes into account discretization
 %   only. 
 disp('Computing SP2 contribution...');
+tools.textbar(0); % initiate textbar
 Omega_mat = sparse(n_b(1),n_i(1));% pre-allocate for speed
 for ii=1:n_b(1)
     Omega_mat(ii,:) = max(...
         min(grid_i.nodes{1}(2:end),grid_b.nodes{1}(ii+1))-... % lower bound
         max(grid_i.nodes{1}(1:(end-1)),grid_b.nodes{1}(ii))... % upper bound
         ,0)./(grid_b.nodes{1}(ii+1)-grid_b.nodes{1}(ii)); % normalize by SP2 bin size
+    tools.textbar([ii,n_b(1)]);
 end
 
 [~,jj] = max(mrbc==grid_i.edges{1},[],2);
@@ -129,8 +148,7 @@ dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 
-disp('Completed computing kernel matrix, <strong>A</strong>.');
-disp(' ');
+tools.textheader;
 
 
 end

@@ -5,11 +5,13 @@
 %  reasions. As such, this function should only be used when the data does
 %  not adhere to a reasonable grid. 
 % 
-%  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I) evaluated the transfer function
+%  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I) evaluates the transfer function
 %  for the PMA setpoints specified by SP and the DMA setpoints specified by 
 %  D_STAR. The kernel is evaluated by integrating the transfer function
 %  over the elements in GRID_I. This require the same numder of entries in
 %  SP and D_STAR. 
+%  Please refer to the get_setpoint(...) function in tfer_pma folder for
+%  more details on generating the SP struture.
 % 
 %  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA) specifies a
 %  pre-computed PMA property data structure. If not given, the function
@@ -17,13 +19,15 @@
 % 
 %  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA,PROP_DMA) specifies a
 %  pre-computed DMA property data structure. 
+%  
+%  ------------------------------------------------------------------------
 % 
-% NOTE: Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%  NOTE: Cell arrays are used for Omega_mat and Lambda_mat in order to 
 %  allow for the use of sparse matrices, which is necessary to 
 %  store information on higher resolutions grids (such as those 
 %  used for phantoms).
 % 
-% AUTHOR: Timothy Sipkens, 2020-02-04
+%  AUTHOR: Timothy Sipkens, 2020-02-04
 
 function A = gen_pma_dma(sp, d_star, grid_i, prop_pma, prop_dma)
 

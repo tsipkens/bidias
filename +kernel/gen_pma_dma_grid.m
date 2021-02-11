@@ -23,17 +23,21 @@
 %  setpoint mass that is used to constrain the PMA operating point. For
 %  example, {'Rm',10} specifies a resolution PMA resolution of 10, which is
 %  used for all of the setpoints. 
+%  If not provided, the function uses the default in the get_setpoint(...)
+%  function in the tfer_pma folder.
 % 
-%  [A,SP] = kernel.prop_pma_dma_grid(...) also outputs the PMA setpoint
+%  [A,SP] = kernel.gen_pma_dma_grid(...) also outputs the PMA setpoint
 %  structure (associated with the mat_tfer_pma submodule) for the given
 %  grid.
+%  
+%  ------------------------------------------------------------------------
 % 
-% NOTE: Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%  NOTE: Cell arrays are used for Omega_mat and Lambda_mat in order to 
 %  allow for the use of sparse matrices, which is necessary to 
 %  store information on higher resolutions grids
 %  (such as those used for phantoms).
 % 
-% AUTHOR: Timothy Sipkens, 2018-11-27
+%  AUTHOR: Timothy Sipkens, 2018-11-27
 
 function [A, sp] = gen_pma_dma_grid(grid_b, grid_i, prop_pma, prop_dma, varargin)
 

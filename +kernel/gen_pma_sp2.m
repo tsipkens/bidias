@@ -1,16 +1,18 @@
 
 % GEN_PMA_SP2  Evaluate kernel/transfer functions for PMA-SP2 to find A.
-% Author:  Timothy Sipkens, Arash Naseri, 2020-02-19
+%  
+%  A = kernel.gen_pma_sp2(SP,MRBC_NODES,GRID_I) evaluates the transfer 
+%  function for the PMA setpoints specified by SP and the SP2 bins
+%  specified by MRBC_NODES. The kernel is evaluated by integrating the 
+%  transfer function over the elements in GRID_I. 
+%  Please refer to the get_setpoint(...) function in tfer_pma folder for
+%  more details on generating the SP struture.
 % 
-% Notes:
-%   1. Cell arrays are used for Omega_mat and Lambda_mat in order to 
-%   allow for the use of sparse matrices, which is necessary to 
-%   store information on higher resolutions grids
-%   (such as those used for phantoms).
-%   2. By default, this function uses the analytical PMA transfer function 
-%   corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
-% 
-% Inputs:
+%  A = kernel.gen_pma_sp2(...,PROP_PMA) specifies a pre-computed PMA 
+%  property data structure. If not given, the function uses the 
+%  defaults of kernel.prop_pma(...).
+%  
+%  INPUTS:
 %   sp          PMA setpoint structure
 %   mrbc_nodes  Nodes (bin edges) for binned SP2 data setpoints, 
 %               refractory black carbon mass
@@ -21,11 +23,22 @@
 %               (Optional: default is the default properties from the
 %               kernel.prop_pma function)
 % 
-% Outputs:
+%  OUTPUTS:
 %   A           Kernel matrix
-%=========================================================================%
+%  
+%  ------------------------------------------------------------------------
+%  
+%  NOTES:
+%  1. Cell arrays are used for Omega_mat and Lambda_mat in order to 
+%  allow for the use of sparse matrices, which is necessary to 
+%  store information on higher resolutions grids
+%  (such as those used for phantoms).
+%  2. By default, this function uses the analytical PMA transfer function 
+%  corresponding to Case 1C from Sipkens et al. (Aerosol Sci. Technol. 2020b).
+%  
+%  AUTHOR: Timothy Sipkens, Arash Naseri, 2020-02-19
 
-function A = gen_pma_sp2(sp,mrbc_nodes,grid_i,prop_pma)
+function A = gen_pma_sp2(sp, mrbc_nodes, grid_i, prop_pma)
 
 % If not given, import default properties of PMA, 
 % as selected by prop_pma function.
@@ -52,7 +65,7 @@ d = (m.*1e-18./prop_pma.rho0).^...
 
 
 %-- Start evaluate kernel ------------------------------------------------%
-disp('Computing kernel...');
+tools.textheader('Computing PMA-SP2 kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
@@ -64,13 +77,15 @@ n_z = length(z_vec);
 %== STEP 1: Evaluate SP2 transfer function ===============================%
 %   Note: The SP2 contribution is a boxcar function that takes into 
 %   account discretization only. 
-disp('Computing SP2 contribution...');
+disp('Computing SP2 contribution:');
+tools.textbar(0); % initiate textbar
 Omega_mat = sparse(N_b,n_i(1));% pre-allocate for speed
 for ii=1:N_b
     Omega_mat(ii,:) = max(...
         min(grid_i.nodes{1}(2:end),mrbc_nodes(ii,2))-... % lower bound
         max(grid_i.nodes{1}(1:(end-1)),mrbc_nodes(ii,1))... % upper bound
         ,0)./(mrbc_nodes(ii,2)-mrbc_nodes(ii,1)); % normalize by SP2 bin size
+    tools.textbar([ii, N_b]);
 end
 
 [~,jj] = max(mrbc==grid_i.edges{1},[],2);
@@ -116,8 +131,7 @@ dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area
 A = sparse(A); % exploit sparse structure
 
-disp('Completed computing kernel matrix, <strong>A</strong>.');
-disp(' ');
+tools.textheader;
 
 end
 
