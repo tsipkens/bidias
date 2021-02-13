@@ -1,31 +1,39 @@
 
 % GET_NOISE Simulates Poisson-Gaussian noise in signals.
-% Author: Timothy Sipkens, 2019-12-08
-% 
-% Modeled after Sipkens et al., Appl. Opt. (2017).
-% DOI: https://doi.org/10.1364/AO.56.008436
-% 
-% Inputs:
-%   b0      Uncorrupted data vector
-% 
-%   n_tot   Factor by which the data was normalized
-%           Note that `get_noise(n_tot.*b0)./n_tot;` and
-%           `get_noise(b0,n_tot);` should give identical results. 
-%               (Optional, dafault: n_tot = 1)
-% 
-%   gam0    Percentage of the maximum noise used for the background
-%           Gaussian noise. 
-%               (Optional, default: gam0 = 1e-4, 
-%                i.e. 0.01% of the peak noise)
-% 
-%   f_apx   Flag for whether to use a Gaussian approximation for Poisson
-%           noise. Note that Lb is the Cholesky factorization of the
-%           inverse of the covariance matrix for the Gaussian
-%           approximation. Though, this covariance will 
-%           well-approximates the covariance information for the
-%           true Poisson case. 
-%               (Optional, default: f_apx = 1;)
-%=========================================================================%
+%  Modeled after Sipkens et al., Appl. Opt. (2017).
+%  DOI: https://doi.org/10.1364/AO.56.008436
+%  
+%  B = tools.get_noise(B0) adds Poisson-Gaussian noise to the raw signal
+%  B0 (representing raw counts) and outputs data corrupted wiht noise to B.
+%  
+%  B = tools.get_noise(B0,N_TOT) adds the option to use scaled data as
+%  input. By default, N_TOT = 1, which means that B0 is counts. For
+%  example, this usage can corrupt a PDF specified by B0 with
+%  Poisson-Gaussian noise if the total counts over the PDF was N_TOT. 
+%  Note that tools.get_noise(N_TOT.*B0)./N_TOT and 
+%  tools.get_noise(B0,N_TOT) will give the same result. 
+%  
+%  B = tools.get_noise(B0,N_TOT,GAM0) adds an input to specify the level of
+%  Gaussian background noise. The quantity is phrased relative to the
+%  maximum value of N_TOT.*B0. By default, GAM0 = 1e-4, which corresponds 
+%  to a Gaussian noise level of 0.01% of the the peak noise.
+%  
+%  B = tools.get_noise(...,F_APX) adds a flag for whether to use a Gaussian 
+%  approximation is used for the Poisson noise. 
+%  
+%  [B,LB] = tools.get_noise(...) adds an output for the Cholesky 
+%  factorization of the inverse of the covariance matrix, assuming the 
+%  Poisson noise can be approximated as Gaussian. 
+%  
+%  ------------------------------------------------------------------------
+%  
+%  NOTE: Note that Lb is the Cholesky factorization of the
+%  inverse of the covariance matrix for the Gaussian
+%  approximation. Though, this covariance will 
+%  well-approximates the covariance information for the
+%  true Poisson case. 
+%  
+%  AUTHOR: Timothy Sipkens, 2019-12-08
 
 function [b,Lb] = get_noise(b0,n_tot,gam0,f_apx)
 
