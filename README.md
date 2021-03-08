@@ -242,7 +242,7 @@ in [*a*,*b*]<sup>T</sup> space). This results is a linear system of equations of
 
 where **b** is the data vector (i.e., *b<sub>i</sub>* = *N<sub>i</sub>*); **A** is a discrete form of the kernel,
 
-![](https://latex.codecogs.com/svg.latex?{A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j)\cdot\text{d}a\cdot\text{d}b}}})
+![](https://latex.codecogs.com/svg.latex?{A_{i,j}=\int_{a_j}{\int_{b_j}{K(a_i*,b_i*,a_j,b_j){\cdot}\text{d}a\cdot\text{d}b}}})
 
 and **e** is a vector of measurement errors that corrupt the results of **Ax**. This is the problem that the current code is designed to solve.
 
