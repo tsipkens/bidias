@@ -6,7 +6,9 @@ clear;
 close all;
 clc;
 
-%== STEP 1 ===============================================================%
+
+
+%== (1) ==================================================================%
 span = [0.01, 100; ...
     10, 1000];  % span of grid
 ne = [100, 125]; % number of elements in grid for each dimension
@@ -31,13 +33,14 @@ figure(1);
 grid_x.plot2d(x0);
 
 
-% define a new grid for the measurements
+
+%== (2) ==================================================================%
+% Define a new grid for the measurements
 span_b = span;
 ne_b = [20, 65];
 grid_b = Grid(span_b, ne_b, 'log');
 
 
-%== Step 2A ==============================================================%
 % Use default CPMA properties (will display in command line). 
 prop_pma = kernel.prop_pma;
 
@@ -48,7 +51,8 @@ figure(2);
 grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
 
 
-%== STEP 2b ==============================================================%
+
+%== (3) ==================================================================%
 b0 = A * x0; % generate a set of data using the forward model
 
 [b, Lb] = tools.get_noise(b0, 1e5); % corrupt data, assume peak counts ~1e5
@@ -61,7 +65,8 @@ xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
 
 
-%== STEP 3 ===============================================================%
+
+%== (4) ==================================================================%
 tools.textheader('Tikhonov inversion');
 lambda = 1; % regularization parameter
 order = 1; % order of Tikhonov matrix to be used
@@ -81,7 +86,8 @@ disp('Complete.');
 disp(' ');
 
 
-%== STEP 4 ===============================================================%
+
+%== (5) ===============================================================%
 figure(4);
 subplot(1,2,1);
 grid_x.plot2d(x_tk1); % plot Tikhonov solution
