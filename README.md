@@ -9,7 +9,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 ## Table of contents
 
-[Setup](#setup): Setting up this code
+[Setup](#setup)
 
 [Getting started: A sample inversion](#getting-started-a-sample-inversion)
 
@@ -33,7 +33,7 @@ This code makes use of the [optimization](https://www.mathworks.com/products/opt
 
 In addition to the necessary Matlab toolboxes, this program has two dependences that are included as git submodules: 
 
-1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains Matlab code to compute the transfer function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). 
+1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains Matlab code to compute the transfer function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). This package is only necessary if considering particle mass analyzer transfer functions. 
 
 2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds perceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
 
