@@ -35,7 +35,7 @@ In addition to the necessary Matlab toolboxes, this program has two dependences 
 
 1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains Matlab code to compute the transfer function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). 
 
-2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds percceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
+2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds perceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
 
 As a result, the folders corresponding to these submodules will initially be empty. Their are multiple route to downloading these submodules. If using git, one can initially clone the repository using 
 
@@ -53,9 +53,9 @@ For **tfer_pma**, functions in the `+kernel` package will add this folder to the
 
 ## Getting started: A sample inversion
 
-Any inversion has three components: (*i*) data, whether built from a synthetic phantom or experiments; (*ii*) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; and (*iii*) an inversion step where the previous two components are used to estimate the size distributions. In many ways, the procedure is the same as the standard 1D inversion of aerosol size distributions, with many of the same benefits (e.g., multiple charge correction). 
+Inversions have four components: (**1**) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; (**2**) data, whether built from a synthetic phantom or experiments; and (**3**) an inversion step where the previous two components are used to estimate the size distributions. In many ways, the procedure is the same as the standard 1D inversion of aerosol size distributions, with many of the same benefits (e.g., multiple charge correction). In this example, we will build a phantom mass-mobility distribution, thereby considering particle mass analyzer-differential mobility analyzer measurements; generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. 
 
-In this example, we will build a phantom mass-mobility distribution, thereby considering particle mass analyzer-differential mobility analyzer measurements; generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. First, let's create an instance of the [Grid](#31-grid-class) class, which is used to discretize mass-mobility space:
+First, let's create an instance of the [Grid](#31-grid-class) class, which is used to discretize mass-mobility space:
 
 ```Matlab
 % Span of grid. 
@@ -87,7 +87,7 @@ grid_x = grid_x.partial( ...
     lt_r, lt_m);
 ```
 
-We refer the reader to the  [Grid](#31-grid-class) class description below for more information on partial grids. This  greatly speeds up the inversion. 
+We refer the reader to the [Grid](#31-grid-class) class description below for more information on partial grids. This  greatly speeds up the inversion. 
 
 Now, one can generate a phantom (or simulated) mass-mobility distribution, using one of the presets for the [Phantom](#32-phantom-class) class. 
 
@@ -267,7 +267,7 @@ The `main*` scripts in the top directory of the program constitute the primary c
 
 ##### 2.1.1 General structure: Four parts
 
-**STEP 1**: Optionally, one can define a phantom used to generate synthetic data and a ground truth. The `Phantom` class, described in Section [3.2](#32-phantom-class), is designed to perform this task. The results is an instance of the `Grid` class, which is described in Section [3.1](#31-grid-class), and a vector, `x_t`, that contains a vectorized form of the phantom distribution, defined on the output grid.
+**STEP 1**: Optionally, one can define a phantom used to generate synthetic data and a ground truth. The `Phantom` class, described in Section [3.2](#32-phantom-class), is designed to perform this task. The results is an instance of the `Grid` class, which is described in Section [3.1](#31-grid-class), and a vector, `x_t`, that contains a vectorized form of the phantom distribution, defined on the output grid. Alternatively, one can generate synthetic data in **STEP 2b**. 
 
 **STEP 2A**: One must now generate a model matrix, `A`, which relates the distribution, `x`, to the data, `b`, such that **Ax** = **b**. This requires one to compute the transfer functions of all of the devices involved in the measurement as well as the grids on which `x` and `b` are to be defined. For phantom distributions, the grid for `x` can generated using the `Phantom` class. In all other cases, the grid for `x` and `b` can be generated by creating an instance of the `Grid` class described below.
 
@@ -301,8 +301,7 @@ ne = [10,12]; % number of elements for each dimension
 grid = Grid(span, ne, 'log'); % create instance of Grid
 ```
 
-Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center of the elements in the first dimension of parameter space and the second entry of the elements in the second dimension of parameter space. For example, to make
-a simple grid with elements at 0.1 and 1 fg in mass space and 10, 200, and 1000 nm in mobility space, one would call:
+Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center of the elements in the first dimension of parameter space and the second entry of the elements in the second dimension of parameter space. For example, to make a simple grid with elements at 0.1 and 1 fg in mass space and 10, 200, and 1000 nm in mobility space, one would call:
 
 ```Matlab
 edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors

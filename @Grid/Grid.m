@@ -1,9 +1,15 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
-%  The grid class is currently used when a simple discretization of
-%   two-dimensional space is required. It then takes either the span
-%   of spcae to be covered or pre-defined edge vectors to form a grid.
-% 
+%  
+%  Grid is a class developed to discretize a parameter space (e.g., 
+%  mass-mobility space). This is done using a simple rectangular grid that 
+%  can have linear, logarithmic or custom spaced elements along the edges. 
+%  Methods are designed to make it easier to deal with gridded data, 
+%  allowing users to reshape vectorized data back to a 2D grid 
+%  (`Grid.reshape` method) or vice versa. Other methods allow for plotting 
+%  the 2D representation of vector data (`Grid.plot2d` method) or 
+%  calculate the gradient of vector data (`Grid.grad` method).
+%  
 %  G = Grid(SPAN,NE) creates a grid with the domain specified by SPAN, a
 %  2x2 array with [min(dim1),max(dim1); min(dim2),max(dim2)], and with the
 %  number of elements in each dimension specified by NE, a 1x2 array. 
@@ -17,10 +23,15 @@
 %  (default), specified using DISCRETE = 'log', or linear spacing, specified 
 %  using DISCRETE = 'linear'. 
 % 
-%  For information of partial grid (where some elements are ignored, refer
-%  to `help Grid.partial`. 
 % 
 %  AUTHOR: Timothy Sipkens, 2019-02-03
+%  
+%  ------------------------------------------------------------------------
+%  
+%  We refer the reader to the <README.md> for more information. 
+%  
+%  For information on partial grids (where some elements are ignored, 
+%  refer to `help Grid.partial` and the <README.md>. 
 
 classdef Grid
 
