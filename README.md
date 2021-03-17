@@ -9,9 +9,9 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 ## Table of contents
 
-[Getting started](#getting-started): Setting up this code
+[Setup](#setup): Setting up this code
 
-[A simple inversion](#a-sample-inversion): Performing your first inversion
+[Getting started: A sample inversion](#getting-started-a-sample-inversion)
 
 [1. UNDERLYING PHYSICS](#1-underlying-physics)
 
