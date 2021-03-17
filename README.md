@@ -53,7 +53,13 @@ For **tfer_pma**, functions in the `+kernel` package will add this folder to the
 
 ## Getting started: A sample inversion
 
-Inversions have four main components: (**1**) a reconsturction grid; (**2**) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; (**3**) data, whether built from a synthetic phantom or experiments; and (**4**) an inversion step where the previous two components are used to estimate the size distributions. (These components are combined with (**0**) phantom and (**5**) post-processing steps in scripts, as described [below](#21-main-scripts-mainm)). In many ways, the procedure is the same as the standard 1D inversion of aerosol size distributions, with many of the same benefits (e.g., multiple charge correction). In this example, we will build a phantom mass-mobility distribution, thereby considering particle mass analyzer-differential mobility analyzer measurements; generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. 
+Inversions have four main components: (**1**) a reconstruction grid; (**2**) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; (**3**) data, whether built from a synthetic phantom or experiments; and (**4**) an inversion step where the previous two components are used to estimate the size distributions. 
+
+> These components are combined with (**0**) phantom and (**5**) post-processing steps in scripts, as described [below](#21-main-scripts-mainm). 
+
+In many ways, the procedure is the same as the standard 1D inversion of aerosol size distributions, with many of the same benefits (e.g., multiple charge correction). In this example, we will build a phantom mass-mobility distribution, thereby considering particle mass analyzer-differential mobility analyzer measurements; generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. 
+
+### (1) Generate a reconstruction grid
 
 First, let's create an instance of the [Grid](#31-grid-class) class, which is used to discretize mass-mobility space:
 
@@ -107,8 +113,9 @@ grid_x.plot2d(x0); % show the phantom in figure 1
   <img width="420" src="docs/01a_distr4.png">
 </p>
 
-
 Here the vertical axis corresponds to the mass in fg that we specified at the beginning, and the horizontal axis to the mobility diameter in nm. Note that we chose a very narrow phantom. The white lines indicate the edges of the partial grid that we defined in a previous step. 
+
+### (2) Generate synthetic data
 
 Next, we define a new grid for the points at which the measurements will take place:
 
@@ -168,8 +175,11 @@ ylabel('log_{10}(m_p)');
   <img width="420" src="docs/01c_b.png">
 </p>
 
+Note that since we chose a very narrow phantom, multiple charging artifacts are visible in the data (in the form of multiple modes or a shoulder in the main peaks). 
 
-Note that since we chose a very narrow phantom, multiple charging artifacts are visible in the data (in the form of multiple modes or a shoulder in the main peaks). Next, we compute a Tikhonov-regularized solution using the corrupted data and data covariance information (`Lb`) and plot the result:
+### Perform inversion
+
+Next, we compute a Tikhonov-regularized solution using the corrupted data and data covariance information (`Lb`) and plot the result:
 
 ```Matlab
 lambda = 1; % regularization parameter
