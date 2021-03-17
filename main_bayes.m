@@ -18,10 +18,11 @@ cm = viridis;
 
 
 %%
-%== STEP 1: Generate phantom (x_t) =======================================%
+%== (1) ==================================================================%
+%   Generate phantom (x_t) and reconstruction grid.
 %   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
-span_t = [10^-1.5,10^1.5;20,10^3]; % range of mobility and mass
+span_t = [10^-1.5, 10^1.5; 20, 10^3]; % range of mobility and mass
 
 phantom = Phantom('1',span_t);
 x_t = phantom.x;
@@ -54,7 +55,8 @@ hold off;
 
 
 %%
-%== STEP 2A: Generate A matrix ===========================================%
+%== (2) ==================================================================%
+%   Compute kernel.
 %   Note that here a dense kernel is computed for
 %   data synthesis in Step 3. 
 n_b = [14,50]; %[14,50]; %[17,35];
@@ -84,7 +86,8 @@ subplot(4,4,[5,15]);
 
 
 %%
-%== STEP 2b: Generate data ===============================================%
+%== (3) ==================================================================%
+%   Generate data using forward model.
 b0 = A_t*x_t; % forward evaluate kernel
 
 
@@ -121,7 +124,8 @@ Dmb = pha_b.Sigma(1,2,1)/pha_b.Sigma(2,2,1); % also s1*R12/s2
 
 
 %%
-%== STEP 3: Perform inversions ===========================================%
+%== (4) ==================================================================%
+%   Invert.
 run_inversions_h; % simple, faster, stand-alone Tikhonov + ED
 
 % run_inversions_g;

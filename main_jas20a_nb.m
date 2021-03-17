@@ -17,7 +17,8 @@ cm = viridis;
 
 
 %%
-%-- Generate phantom (x_t) -----------------------------------------------%
+%== (1) ==================================================================%
+%   Phantom and reconstruction grid.
 %   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
 span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
@@ -41,7 +42,8 @@ hold off;
 n_b_vec = [25,35,42,50,60,75];
 for ii=1:length(n_b_vec)
     %%
-    %-- Generate A matrix and b vector ---------------------------------------%
+    %== (2) ==============================================================%
+    %   Compute kernel.
     n_b = [14,n_b_vec(ii)]; %[12,50]; %[17,35];
     span_b = grid_t.span;
     grid_b = Grid(span_b,...
@@ -75,7 +77,8 @@ for ii=1:length(n_b_vec)
 
 
     %%
-    %-- Generate data --------------------------------------------------------%
+    %== (3) ==============================================================%
+    %   Generate data.
     b0 = A_t*x_t; % forward evaluate kernel
 
     %-- Corrupt data with noise ----------------------------------------------%
@@ -100,7 +103,8 @@ for ii=1:length(n_b_vec)
     x_vec(ii).b = max(b);
 
 
-    %-- Perform inversions -----------------------------------------------%
+    %== (4) ==============================================================%
+    %   Invert.
     run_inversions_a; % run regularization
 
 

@@ -19,7 +19,8 @@ cm = viridis;
 
 
 %%
-%== STEP 1: Generate phantom (x_t) =======================================%
+%== (1) ==================================================================%
+%   Phantom and reconstruction grid.
 %   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
 span_t = [10^-1.5, 10^1.5; ...
@@ -54,7 +55,8 @@ hold off;
 
 
 %%
-%== STEP 2A: Generate A matrix ===========================================%
+%== (2) ==================================================================%
+%   Compute kernel.
 n_b = [14,50]; %[12,50]; %[17,35];
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
@@ -79,7 +81,8 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %%
-%== STEP 2b: Generate data ==============================================%
+%== (3) ==================================================================%
+%   Generate data.
 b0 = A_t*x_t; % forward evaluate kernel (high dimension)
 
 
@@ -100,7 +103,8 @@ grid_b.plot2d_sweep(b,cm_b);
 
 
 %%
-%== STEP 3: Perform inversions ============================================%
+%== (4) ==================================================================%
+%   Invert.
 run_inversions_c;
 
 % % optimize the inversion schemes, incurs longer runtimes
@@ -111,7 +115,8 @@ run_inversions_c;
 
 
 %%
-%== STEP 4: Plot solution =================================================%
+%== (5) ==================================================================%
+%   Post-process / plot.
 x_plot = x_tk1;
 
 figure(10); % plot reconstruction and marginal distributions
