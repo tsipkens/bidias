@@ -129,7 +129,9 @@ grid_b = Grid(span_b, ne_b, 'log');
 However, before actually generating data, we must first compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `kernel.prop_pma(...)` to get a set of CPMA parameters: 
 
 ```Matlab
-prop_pma = kernel.prop_pma % use default CPMA properties (will display in command line)
+% Use the default CPMA properties
+% (will display in command line).
+prop_pma = kernel.prop_pma
 ```
 
 Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_pma_dma_grid(...)` method: 
