@@ -1,14 +1,13 @@
 
-% PROP_PMA  Generates the prop struct used to summarize PMA parameters.
-% Author:   Timothy Sipkens, 2019-06-26
-%-------------------------------------------------------------------------%
-% Input:
-%   opts        Options string specifying parameter set
-%                   (Optional, default 'Olfert')
-%
-% Output:
-%   prop        Properties struct for use in evaluating transfer function
-%=========================================================================%
+% PROP_PMA  Generates the prop struct used to summarize CPMA parameters.
+%  
+%  PROP = kernel.prop_pma() creates a default PMA properties structure for 
+%  use in evaluating transfer function. This is equiavlent to 
+%  kernel.prop_pma('olfert').
+%  
+%  PROP = kernel.prop_pma(SPEC) add a string specifying parameter set. 
+%  
+%  AUTHOR: Timothy Sipkens, 2019-06-26
 
 function [prop] = prop_pma(opts)
 
@@ -128,6 +127,10 @@ prop.v_bar = prop.Q/prop.A; % average flow velocity
 kB = 1.3806488e-23; % Boltzmann's constant
 prop.D = @(B) kB.*prop.T.*B; % diffusion coefficient
 
+
+% Fill mass-mobility relation equivalents.
+addpath tfer_pma;
+prop = prop_massmob(prop);
 
 end
 
