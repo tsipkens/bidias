@@ -10,7 +10,6 @@ results/
 main_x_*.m
 
 main_jas19_noise.m
-main_bayes_sp2.m
 main_kernel_sp2.m
 main_tfer.m
 
