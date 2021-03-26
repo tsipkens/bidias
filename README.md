@@ -113,11 +113,11 @@ grid_x.plot2d(x0); % show the phantom in figure 1
   <img width="420" src="docs/01a_distr4.png">
 </p>
 
-Here the vertical axis corresponds to the mass in fg that we specified at the beginning, and the horizontal axis to the mobility diameter in nm. Note that we chose a very narrow phantom. The white lines indicate the edges of the partial grid that we defined in a previous step. 
+Here the vertical axis corresponds to the mass in fg that we specified at the beginning, and the horizontal axis to the mobility diameter in nm. Note that we chose a very narrow phantom. The white lines indicate the edges of the partial grid that we defined in a previous step. This is what we will try to reconstruct. 
 
 ### (2) Compute the kernel / transfer functions
 
-Next, we need to compute the kernel. This first requires us to define the setpoints on which the data will be generated. Here, we defined a new `Grid` for the points at which the measurements will take place:
+Next, we need to compute the kernel (or device transfer functions). This first requires us to define the setpoints on which the data will be generated. Here, we defined a new `Grid` for the points at which the measurements will take place:
 
 ```Matlab
 % Define a new grid for the measurements. 
@@ -137,8 +137,8 @@ prop_pma = kernel.prop_pma
 Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_pma_dma_grid(...)` method: 
 
 ```Matlab
-% Generate the kernel, use default CPMA properties. 
-A = kernel.gen_pma_dma_grid(grid_b, grid_x);
+% Generate the kernel, use the above CPMA properties. 
+A = kernel.gen_pma_dma_grid(grid_b, grid_x, prop_pma);
 ```
 
 One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point using: 
