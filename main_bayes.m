@@ -129,14 +129,52 @@ Dmb = pha_b.Sigma(1,2,1)/pha_b.Sigma(2,2,1); % also s1*R12/s2
 %== (4) ==================================================================%
 %   Invert.
 
-% Simple stand-alone Tikhonov + exp. dist. (much faster)
-run_inversions_h;
+%-{
+% (Previously run_inversions_h)
 
-% Schemes to optimize different components of the regularization.
+%-- Tikhonov (1st order) -------------------------------------------------%
+tools.textheader('Tikhonov (1st) regularization');
+lambda_tk1 = 1.1053; % found using other run_inversion* scripts
+x_tk1 = invert.tikhonov(...
+    Lb*A,Lb*b,lambda_tk1,1,n_x(1));
+disp('Inversion complete.');
+disp(' ');
+
+eps.tk1_0 = norm(x0-x_tk1);
+
+
+%-- Exponential distance approach ----------------------------------------%
+Gd = phantom.Sigma(:,:,1);
+if isempty(Gd) % for Phantom 3
+    [~,Gd] = phantom.p2cov(phantom.p(2),phantom.modes(2));
+end
+
+%-- Gd properties -----------------%
+l1 = sqrt(Gd(1,1));
+l2 = sqrt(Gd(2,2));
+R12 = Gd(1,2)/(l1*l2);
+Dm = Gd(1,2)/Gd(2,2); % s1*R12/s2
+%----------------------------------%
+
+tools.textheader('Exponential distance regularization');
+lambda_ed = 1.0826; % found using other run_inversion* scripts
+[x_ed] = ...
+    invert.exp_dist(...
+    Lb*A,Lb*b,lambda_ed,Gd,...
+    grid_x,[]);
+disp('Inversion complete.');
+disp(' ');
+
+eps.ed_0 = norm(x_ed-x0);
+%}
+
+
+
+% Alternative code to optimize different 
+% components of the regularization.
 % run_inversions_g;
 % run_inversions_i;
 % run_inversions_j;
-
 
 
 
