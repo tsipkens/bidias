@@ -53,9 +53,7 @@ For **tfer_pma**, functions in the `+kernel` package will add this folder to the
 
 ## Getting started: A sample inversion
 
-Inversions have four main components: (**1**) a reconstruction grid; (**2**) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; (**3**) data, whether built from a synthetic phantom or experiments; and (**4**) an inversion step where the previous two components are used to estimate the size distributions. 
-
-> These components are then combined with (**5**) post-processing steps in scripts, as described [below](#21-main-scripts-mainm). 
+Scripts associated with this codebase typically have five components: (**1**) a reconstruction grid; (**2**) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; (**3**) data, whether built from a synthetic phantom or experiments; (**4**) an inversion step where the previous two components are used to estimate the size distributions; and, finally, (**5**) post-processing and visualization (e.g., plotting, distribution fitting). 
 
 In many ways, the procedure is the same as the standard 1D inversion of aerosol size distributions, with many of the same benefits (e.g., multiple charge correction). In this example, we will build a phantom mass-mobility distribution, thereby considering particle mass analyzer-differential mobility analyzer measurements; generate corrupted, synthetic data; and then perform an inversion using two different inversion schemes. 
 
@@ -202,6 +200,8 @@ Gd = phantom.Sigma;
 x_ed = invert.exp_dist(Lb*A, Lb*b, ...
     lambda, Gd, grid_x); % exponential distance solution
 ```
+
+### (5) Post-processing and visualization
 
 Finally, plot the solutions:
 
