@@ -12,6 +12,8 @@ if isempty(f_before); f_before = 1; end  % assume header
 if ~exist('txt', 'var'); txt = []; end  % if no text, instead format footer
 if isempty(txt); f_before = 0; txt = 'Complete.'; end
 
+% Replacement allows for printing of '%' character.
+txt = strrep(txt, '%', '%%');
 
 dots = ''; % will hold text to display "..." if before
 if f_before
