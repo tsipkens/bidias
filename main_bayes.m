@@ -103,8 +103,7 @@ tools.plot2d_scatter(...
 title('Data: 2D scatter');
 
 figure(6);
-% tools.plot2d_patch(grid_b,b,cm_b);
-tools.plot2d_slices(grid_b,b,cm_b);
+tools.plot2d_patch(grid_b, b, cm_b);
 title('Data: 2D slices');
 
 figure(20);
