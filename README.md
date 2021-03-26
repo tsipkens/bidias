@@ -534,7 +534,7 @@ Transfer function evaluation for a PMA can proceed using one of two inputs eithe
 
 ##### 4.1.1 sp
 
-The `sp` or setpoint structure is a structured array containing the information necessary to define the setpoints for particle mass analyzers, which is described in more detail in the [README](tfer_pma/README.md) for the **tfer_pma** package. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `get_setpoint(...)` function described below and in the README for the **tfer_pma** package. Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
+The `sp` or setpoint structure is a structured array containing the information necessary to define the setpoints for particle mass analyzers, which is described in more detail in the [README](tfer_pma/README.md) for the **tfer_pma** package. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `get_setpoint(...)` function (in the **tfer_pma** folder). Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
 | Fields  | m_star    | V      | Rm  | omega | omega1 | omega2 | alpha | beta  | m_max    |
 | ------- | :-------: | :----: | :-: | :---: | :----: | :----: | :---: | :---: | :------: |
@@ -547,8 +547,9 @@ The `sp` or setpoint structure is a structured array containing the information 
 As an example, the array can be generated from a vector of mass setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified in `kernel.prop_pma` using:
 
 ```Matlab
+addpath('tfer_pma');
 m_star = 1e-18 .* logspace(log10(0.1), log10(100), 25); % mass setpoints
-sp = tfer_pma.get_setpoint(prop_pma,...
+sp = get_setpoint(prop_pma,...
     'm_star', m_star, 'Rm', 10); % get PMA setpoints
 ```
 
