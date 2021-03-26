@@ -32,7 +32,7 @@ R12 = Gd(1,2)/(l1*l2);
 Dm = Gd(1,2)/Gd(2,2); % s1*R12/s2
 %----------------------------------%
 
-tools.textheader('Exponential distance regularization);
+tools.textheader('Exponential distance regularization');
 lambda_ed = 1.0826; % found using other run_inversion* scripts
 [x_ed] = ...
     invert.exp_dist(...
