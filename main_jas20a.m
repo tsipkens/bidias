@@ -19,14 +19,17 @@ cm = viridis;
 
 
 %%
-%== STEP 1: Generate phantom (x_t) =======================================%
+%== (1) ==================================================================%
+%   Phantom and reconstruction grid.
 %   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
-span_t = [10^-1.5,10^1.5;10,10^3]; % range of mobility and mass
+span_t = [...
+    10^-1.5, 10^1.5; ...  % range of masses
+    10, 10^3];  % range of mobilities
 
-phantom = Phantom('1',span_t);
-x_t = phantom.x;
-grid_t = phantom.grid;
+phantom = Phantom('1', span_t);  % get one of the preset phantoms
+x_t = phantom.x;  % evaluated phantom
+grid_t = phantom.grid;  % grid on which phantom is defined
 nmax = max(x_t);
 cmax = nmax;
 
@@ -53,17 +56,21 @@ hold off;
 
 
 %%
-%== STEP 2A: Generate A matrix ===========================================%
-n_b = [14,50]; %[12,50]; %[17,35];
+%== (2) ==================================================================%
+%   Compute kernel.
+
+
+n_b = [14,50]; %[12,50]; %[17,35];  % size of the data
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
-    n_b,'logarithmic'); % should be uniform basis
+    n_b,'logarithmic'); % grid for data
 
-prop_pma = kernel.prop_pma;
-A_t = kernel.gen_grid(grid_b,grid_t,prop_pma,[],'Rm',3);
-    % generate A matrix based on grid for x_t and b
+prop_pma = kernel.prop_pma;  % get default CPMA properties
 
-disp('Transform to discretization in x...');
+% Generate A matrix based on grid for x_t (fine resolution) and b.
+A_t = kernel.gen_pma_dma_grid(grid_b, grid_t, prop_pma, [], 'Rm', 3);
+
+disp('Transform kernel to discretization in x...');
 B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
@@ -78,7 +85,8 @@ caxis([0,cmax*(1+1/256)]);
 
 
 %%
-%== STEP 2b: Generate data ==============================================%
+%== (3) ==================================================================%
+%   Generate data.
 b0 = A_t*x_t; % forward evaluate kernel (high dimension)
 
 
@@ -99,19 +107,22 @@ grid_b.plot2d_sweep(b,cm_b);
 
 
 %%
-%== STEP 3: Perform inversions ============================================%
+%== (4) ==================================================================%
+%   Invert.
+
+% Run inversion for pre-selected regularization settings.
 run_inversions_c;
 
-% % optimize the inversion schemes, incurs longer runtimes
-% run_inversions_a; % optimize regularization parameter
-% run_inversions_b;
+% Optimize inversion schemes, incurs much longer runtimes.
+% run_inversions_a;
 
 
 
 
 %%
-%== STEP 4: Plot solution =================================================%
-x_plot = x_tk1;
+%== (5) ==================================================================%
+%   Post-process / plot.
+x_plot = x_tk1;  % select Tikhonov (or other) reconstructions for plotting
 
 figure(10); % plot reconstruction and marginal distributions
 colormap(gcf,[cm;1,1,1]);

@@ -1,18 +1,39 @@
 
 % GRID  Responsible for discretizing space as a grid and related operations.
-% Author: Timothy Sipkens, 2019-02-03
-%
-% Notes:
-% + The grid class is currently used when a simple discretization of
-%   two-dimensional space is required. It then takes either the span
-%   of spcae to be covered or pre-defined edge vectors to form a grid.
-%
-% + See constructor method for list of other variables required
-%   for creation.
-%=========================================================================%
+%  
+%  Grid is a class developed to discretize a parameter space (e.g., 
+%  mass-mobility space). This is done using a simple rectangular grid that 
+%  can have linear, logarithmic or custom spaced elements along the edges. 
+%  Methods are designed to make it easier to deal with gridded data, 
+%  allowing users to reshape vectorized data back to a 2D grid 
+%  (`Grid.reshape` method) or vice versa. Other methods allow for plotting 
+%  the 2D representation of vector data (`Grid.plot2d` method) or 
+%  calculate the gradient of vector data (`Grid.grad` method).
+%  
+%  G = Grid(SPAN,NE) creates a grid with the domain specified by SPAN, a
+%  2x2 array with [min(dim1),max(dim1); min(dim2),max(dim2)], and with the
+%  number of elements in each dimension specified by NE, a 1x2 array. 
+% 
+%  G = Grid(EDGES) create a grid with edges specified by the entries of
+%  EDGES, a 1x2 cell with the edges for the dim1 and dim2, respectively. 
+%  Some functionality is limited if the edges are not uniform in log or 
+%  linear space. 
+% 
+%  G = GRID(SPAN,NE,DISCRETE) adds an input to specify whether logarithmic
+%  (default), specified using DISCRETE = 'log', or linear spacing, specified 
+%  using DISCRETE = 'linear'. 
+% 
+% 
+%  AUTHOR: Timothy Sipkens, 2019-02-03
+%  
+%  ------------------------------------------------------------------------
+%  
+%  We refer the reader to the <README.md> for more information. 
+%  
+%  For information on partial grids (where some elements are ignored, 
+%  refer to `help Grid.partial` and the <README.md>. 
 
 classdef Grid
-
 
 properties
     discrete = 'log';
@@ -205,6 +226,12 @@ methods
         
         adj = sparse(ind1,ind2,vec,...
             prod(obj.ne),prod(obj.ne));
+        
+        % If grid is partial, remove corresponding elements.
+        if obj.ispartial==1
+            adj(obj.missing, :) = [];
+            adj(:, obj.missing) = [];
+        end
         
         obj.adj = adj;
     end
@@ -447,9 +474,9 @@ methods
     %   Calculates the differential area of the elements in the grid.
     function [dr,dr1,dr2] = dr(obj)
         
-        dr_0 = cell(obj.dim,1);
+        dr_0 = cell(obj.dim, 1);
         for ii=1:obj.dim
-            if strcmp(obj.discrete,'log')
+            if any(strcmp(obj.discrete, {'log', 'logarithmic'}))
                 dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
                     log10(obj.nodes{ii}(1:(end-1)));
             
@@ -504,7 +531,7 @@ methods
     %== MARGINALIZE ==================================================%
     %   Marginalizes over the grid in each dimension.
     %   Uses Euler's method to integrate over domain.
-    function [marg,tot] = marginalize(obj,x)
+    function [marg, tot] = marginalize(obj, x, dim)
         
         x = obj.reshape(x);
         
@@ -517,8 +544,14 @@ methods
         dr2 = dr./dr1;
         dr1 = dr./t0;
         
-        marg{1} = sum(dr2.*x,2); % integrate over diameter
-        marg{2} = sum(dr1.*x,1); % integrate over mass
+        marg{1} = sum(dr2 .* x,2); % integrate over diameter
+        marg{2} = sum(dr1 .* x,1); % integrate over mass
+        
+        % If dim input, output marginalized distribution for 
+        % specific dimension. 
+        if exist('dim', 'var')
+            marg = marg{dim};
+        end
         
     end
     %=================================================================%
@@ -753,7 +786,8 @@ methods
         end
         
         %-- Adjust tick marks for log scale ----%
-        if strcmp('log',obj.discrete)
+        %   'logarithmic' included for backward compatibility.
+        if any(strcmp(obj.discrete, {'log', 'logarithmic'}))
             set(gca,'XScale','log');
             set(gca,'YScale','log');
         end
@@ -864,7 +898,7 @@ methods
         if isfile('cmap/cmap_sweep.m'); cmap_sweep(grid.ne(dim), cm); % set color order to sweep through colormap
         else; warning('The `cmap` package missing.'); end % if package is missing
         
-        x_rs = reshape(x,grid.ne);
+        x_rs = reshape(x, grid.ne);
         if dim==2; x_rs = x_rs'; end
         
         h = semilogx(grid.edges{dim2},x_rs,...
@@ -985,7 +1019,7 @@ methods
     
     %== PLOT2D_SCATTER ===============================================%
     %   Wrapper for tools.plot2d_scatter.
-    %   Author:	Timothy Sipkens, 2020-11-05
+    %   AUTHOR: Timothy Sipkens, 2020-11-05
     %   Note: 'x' can be a cell array containing multiple x vectors
     function [] = plot2d_scatter(obj, x, cm)
         
@@ -1004,10 +1038,21 @@ methods
 %=====================================================================%
     
     %== PARTIAL ======================================================%
-    %   Convert to a partial grid. Currently takes a y-intercept, r0, 
-    %   and slope0 as arguements and cuts upper triangle.
-    %   Added r1 and slope1 arguments will also cut a lower triangle.
-    function obj = partial(obj,r0,slope0,r1,slope1)
+    function obj = partial(obj, r0, slope0, r1, slope1)
+    % PARTIAL  Convert grid to a partial grid, removing elements above or 
+    %  below a line. 
+    % 
+    %  G = Grid.partial(R0,SLOPE0) removes elements above the line that goes
+    %  through the point R0 and having a slope of SLOPE0. For logarithmic
+    %  grids, lines correspond to exponential curves, R0 are given as 
+    %  log10(...) quantities, and slopes correspond to the exponent. For 
+    %  example, Grid.partial([0,2],3) removes all grid elements above the
+    %  exponential curve that passes through [1,100] and having an exponent
+    %  of 3 (e.g., curves that increase volumetrically). 
+    % 
+    %  G = Grid.partial(R0,SLOPE0,R1,SLOPE1) adds a second set of arguments
+    %  analogous to above but remove points below a given line (instead of 
+    %  above). 
         
         %-- Parse inputs ----------------------------%
         if ~exist('slope0','var'); slope0 = []; end
@@ -1065,7 +1110,7 @@ methods
         obj.elements = obj.elements(~f_missing,:);
         obj.nelements = obj.nelements(~f_missing,:);
         obj.Ne = size(obj.elements,1);
-        obj = obj.padjacency;
+        obj = obj.adjacency;
         
     end
     %=================================================================%
@@ -1075,9 +1120,9 @@ methods
     %== PARTIAL2FULL =================================================%
     %   Convert x defined on a partial grid to the full grid equivalent, 
     %   using zeros to fill the removed grid points.
-    function x_full = partial2full(obj,x)
+    function x_full = partial2full(obj ,x)
         x_full = zeros(prod(obj.ne),1);
-        t0 = setdiff((1:prod(obj.ne))',obj.missing);
+        t0 = setdiff((1:prod(obj.ne))', obj.missing);
         x_full(t0) = x;
     end
     %=================================================================%
@@ -1087,23 +1132,8 @@ methods
     %== FULL2PARTIAL =================================================%
     %   Convert x defined on a full grid to the partial grid equivalent, 
     %   removing entries for missing indices.
-    function x = full2partial(obj,x)
+    function x = full2partial(obj, x)
         x(obj.missing,:) = [];
-    end
-    %=================================================================%
-    
-    
-    
-    %== PADJACENCY ===================================================%
-    %   Convert x defined on a partial grid to the full grid equivalent, 
-    %   using zeros to fill the removed grid points.
-    function [obj,adj] = padjacency(obj)
-        [~,adj] = obj.adjacency;
-        
-        adj(obj.missing,:) = [];
-        adj(:,obj.missing) = [];
-        
-        obj.adj = adj;
     end
     %=================================================================%
     

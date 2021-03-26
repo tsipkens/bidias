@@ -10,13 +10,11 @@ results/
 main_x_*.m
 
 main_jas19_noise.m
-main_bayes_sp2.m
 main_kernel_sp2.m
 main_tfer.m
 
 CPMASP2KernelV0.m
 ImportSP2.m
-+kernel/gen_c2.m
 cmap/correct.m
 cmap/rgb2hsl.m
 cmap/hsl2rgb.m

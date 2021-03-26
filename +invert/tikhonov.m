@@ -1,29 +1,49 @@
 
-% TIKHONOV  Performs inversion using various order Tikhonov regularization in 2D.
-% Author:   Timothy Sipkens, 2018-11-21
+% TIKHONOV  Performs inversion using various order Tikhonov regularization. 
+%  Regularization takes place in 2D. The type of regularization or prior
+%  information added depends on the order of Tikhonov applied. 
 % 
-% Inputs:
-%   A           Model matrix
-%   b           Data
-%   lambda      Regularization parameter
-%   order_L     Order of regularization -OR- 
-%               pre-computed Tikhonov matrix structure
-%                   (OPTIONAL, default is set by tikhonov_lpr)
-%   n           The length of first dimension of solution -OR-
-%               a grid, so as to support partial grids
-%                   (ONLY REQUIRED when order is specified)
-%   xi          Initial guess for solver
-%                   (OPTIONAL, default is zeros)
-%   solver      Solver (OPTIONAL, default is interior-point)
-%
-% Outputs:
-%   x           Regularized estimate
-%   D           Inverse operator (x = D*[b;0])
-%   Lpr0        Tikhonov matrix structure
-%   Gpo_inv     Inverse of posterior covariance
-%=========================================================================%
+%  X = invert.tikhonov(A,B,LAMBDA) inverts the system A*X = B using 
+%  Tikhonov regularization, where A is a model matrix or kernel and B is a 
+%  data vector, and appling a regularization parameter LAMBDA. By default, 
+%  the order of Tikhonov and thus the constructed Tikhonov matrix are given 
+%  as the default of the invert.tikhonov_lpr(...) function. 
+% 
+%  X = invert.tikhonov(A,B,LAMBDA,L) uses the pre-computed Tikhonov matrix
+%  L during the inversion. This matrix can be computed using the
+%  invert.tikhonov_lpr(...) function. 
+% 
+%  X = invert.tikhonov(A,B,LAMBDA,ORDER,N) applies Tikhonov regularization
+%  of the order specified by ORDER, where ORDER is an integer in the range 
+%  [0,2]. This requires the quantity N, an integer representing the length 
+%  of the first dimension of the solution, to build the Tikhonov matrix. 
+%  This is relevant for full (not partial) grids. 
+% 
+%  X = invert.tikhonov(A,B,LAMBDA,ORDER,GRID) applies Tikhonov regularization
+%  of the order specified by ORDER, as above. In the case of a partial
+%  grid, an instance of the Grid class is required to build the Tikhonov
+%  matrix in the place of an integer dimension.
+% 
+%  X = invert.tikhonov(...,XI) applies Tikhonov regularization using an
+%  initial guess of XI. The default if not included is zeros. 
+% 
+%  X = invert.tikhonov(...,XI,SOLVER) applies Tikhonov regularization 
+%  using the solver specified by the string in SOLVER. 
+% 
+%  [X,D] = invert.tikhonov(...) applies Tikhonov regularization, outputting
+%  explicit inverse operator implied by this procedure, specifically such
+%  that X = D*([B;0]). 
+%  
+%  [X,D,LPR0] = invert.tikhonov(...) applies Tikhonov regularization, also
+%  outputting the unscaled Tikhonov matrix. 
+% 
+%  [X,D,LPR0,GPO_INV] = invert.tikhonov(...) applies Tikhonov
+%  regularization, also outputting the inverse posterior covariance. 
+% 
+%  AUTHOR: Timothy Sipkens, 2018-11-21
 
-function [x,D,Lpr0,Gpo_inv] = tikhonov(A,b,lambda,order_L,n_grid,xi,solver)
+function [x, D, Lpr0, Gpo_inv] = ... 
+    tikhonov(A, b, lambda, order_L, n_grid, xi, solver)
 
 x_length = size(A,2);
 

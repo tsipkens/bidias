@@ -1,21 +1,31 @@
 
 % TFER_DMA  Evaluates the transfer function of a differential mobility analyzer.
-% Author: Timothy Sipkens, 2018-12-27
-% Adapted: Buckley et al. (2017) and Olfert group
 % 
-% Inputs:
-%   d_star          Particle diameter, measurement set point for DMA [m]
-%   d               Particle diameter, points in integral, can be vector [m]
-%   z               Integer charge state, scalar
-%   prop            DMA properties, struct, generated using prop_DMA function (optional)
-%   opts.diffusion  Indicates whether to include diffusion, boolean (optional)
+%  OMEGA = kernel.tfer_dma(D_STAR,D,Z) uses the mobility diameter set points
+%  specified by D_STAR [m] and evalautes the DMA transfer function at D
+%  [m] for an integer charge state of Z (a scalar, integer). Uses default
+%  properties specified by kernel.prop_dma. Explicitly stating prop_dma is
+%  preferred. Output is transfer function, OMEGA. 
+%  
+%  OMEGA = kernel.tfer_dma(D_STAR,D,Z,PROP_DMA) explicitly specified the
+%  properties of the DMA (e.g., the radii) as a data structure. This is the
+%  preferred usage to the previous call. For structure of PROP_DMA, see
+%  kernel.prop_dma(...). 
+%  
+%  OMEGA = kernel.tfer_dma(...,OPTS) adds an options structure with the
+%  field specified below: 
+%   OPTS.diffusion  Indicates whether to include diffusion, boolean (optional)
 %       .solver     Indicates the method by which diffusion is calculated (optional)
 %       .param      String indicated which parameter set to use (see prop_DMA.m)
-%
-% Outputs:
-%   Omega           Transfer function
-%   Zp_tilde        Non-dimensional electrical mobility, vector
-%=========================================================================%
+%  
+%  [OMEGA,ZP_TILDE] = kernel.tfer_dma(...) adds an output contianing the
+%  non-dimensional electrical mobility as a vector.
+%  
+%  ------------------------------------------------------------------------
+% 
+%  AUTHOR: Timothy Sipkens, 2018-12-27
+%  ADAPTED FROM: Buckley et al. (2017) and Olfert group
+
 
 function [Omega,Zp_tilde] = tfer_dma(d_star,d,z,prop,opts)
 

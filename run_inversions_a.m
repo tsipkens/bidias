@@ -17,7 +17,7 @@ x_init_m = grid_x.marginalize(x_init);
 
 
 %% Least squares
-disp('Performing LS inversion...');
+tools.textheader('LS inversion');
 x_length = length(A(1,:));
 x_lsq = invert.lsq(Lb*A,Lb*b);
 disp('Inversion complete.');
@@ -27,7 +27,7 @@ eps.lsq = norm(x0-x_lsq);
 
 
 %% Tikhonov (0th) implementation
-disp('Performing Tikhonov (0th) regularization...');
+tools.textheader('Tikhonov (0th) regularization');
 tic;
 [x_tk0,lambda_tk0,out_tk0] = optimize.tikhonov_op(...
     Lb*A,Lb*b,[1e-2,1e2],0,grid_x,x0,[],'interior-point');
@@ -39,7 +39,7 @@ eps.tk0 = norm(x0-x_tk0);
 
 
 %% Tikhonov (1st) implementation
-disp('Performing Tikhonov (1st) regularization...');
+tools.textheader('Tikhonov (1st) regularization');
 tic;
 [x_tk1,lambda_tk1,out_tk1] = optimize.tikhonov_op(...
     Lb*A,Lb*b,[1e-2,1e2],1,grid_x,x0,[],'interior-point');
@@ -51,7 +51,7 @@ eps.tk1 = norm(x0-x_tk1);
 
 
 %% Tikhonov (2nd) implementation
-disp('Performing Tikhonov (2nd) regularization...');
+tools.textheader('Performing Tikhonov (2nd) regularization');
 tic;
 [x_tk2,lambda_tk2,out_tk2] = optimize.tikhonov_op(...
     Lb*A,Lb*b,[1e-2,1e2],2,grid_x,x0,[],'interior-point');
@@ -64,7 +64,7 @@ eps.tk2 = norm(x0-x_tk2);
 
 %% MART, Maximum entropy regularized solution
 
-disp('Performing MART...');
+tools.textheader('MART');
 tic;
 [x_mart,iter_mart,out_mart] = ...
     optimize.mart_op(A,b,x_init,1:300,x0);
@@ -76,7 +76,7 @@ eps.mart = norm(x0-x_mart);
 
 
 %% Twomey
-disp('Performing Twomey...');
+tools.textheader('Twomey');
 tic;
 [x_two,iter_two,out_two] = ...
     optimize.twomey_op(A,b,x_init,1:500,x0);
@@ -89,7 +89,7 @@ eps.two = norm(x0-x_two);
 
 
 %% Twomey-Markowski-Buckley
-disp('Performing Twomey-Markowski-Buckley...');
+tools.textheader('Twomey-Markowski-Buckley');
 tic;
 [x_two_mh,Sf_two_mh,out_two_mh] = ...
     optimize.twomark_op(A,b,Lb,grid_x,...
