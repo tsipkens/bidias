@@ -77,8 +77,8 @@ n_z = length(z_vec);
 %== STEP 1: Evaluate SP2 transfer function ===============================%
 %   Note: The SP2 contribution is a boxcar function that takes into 
 %   account discretization only. 
-disp('Computing SP2 contribution:');
-tools.textbar(0); % initiate textbar
+disp(' Computing SP2 contribution:');
+tools.textbar([0, N_b]); % initiate textbar
 Omega_mat = sparse(N_b,n_i(1));% pre-allocate for speed
 for ii=1:N_b
     Omega_mat(ii,:) = max(...
@@ -92,7 +92,7 @@ end
 Omega_mat = Omega_mat(:,jj);
     % repeat transfer function for repeated mass in grid_i
 
-disp('Completed SP2 contribution.');
+disp(' Completed SP2 contribution.');
 disp(' ');
 
 
@@ -118,14 +118,14 @@ disp(' ');
 
 
 %== STEP 3: Combine to compile kernel ====================================%
-disp('Compiling kernel...');
+disp(' Compiling kernel...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
     K = K+f_z(z_vec(kk),:).*... % charging contribution
         Lambda_mat{kk}(:,:).*... % PMA contribution
         Omega_mat; % SP2 contribution
 end
-disp('Completed kernel.');
+disp(' Complete.');
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area

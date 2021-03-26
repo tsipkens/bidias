@@ -83,7 +83,7 @@ f_z = sparse( ...
 %   Note: The DMA transfer function is 1D (only a function of mobility),
 %   which is exploited to speed evaluation. The results is 1 by 3 cell, 
 %   with one entry per charge state.
-disp('Computing DMA contribution:');
+disp(' Computing DMA contribution:');
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 tools.textbar([0, n_b(2), 0, n_z]);
 for kk=1:n_z
@@ -105,13 +105,13 @@ for kk=1:n_z
 	[~,jj] = max(d==grid_i.edges{2},[],2);
     Omega_mat{kk} = Omega_mat{kk}(:,jj);
 end
-disp('Complete.');
+disp(' Complete.');
 disp(' ');
 %=========================================================================%
 
 
 %== STEP 2: Evaluate PMA transfer function ===============================%
-disp('Computing PMA contribution:');
+disp(' Computing PMA contribution:');
 
 tools.textbar([0, n_b(1), 0, n_z]); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
@@ -132,12 +132,13 @@ for kk=1:n_z  % loop over the charge state
         tools.textbar([ii, n_b(1), kk, n_z]);  % update text progress bar
     end
 end
+disp(' Complete.');
 disp(' ');
 %=========================================================================%
 
 
 %== SETP 3: Combine to compile kernel ====================================%
-disp('Compiling kernel...');
+disp(' Compiling kernel...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
     [~,i1] = max(m_star==grid_b.edges{1},[],2); % index corresponding to PMA setpoint
@@ -147,7 +148,7 @@ for kk=1:n_z
         Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat{kk}(i2,:); % DMA contribution
 end
-disp('Kernel compiled.');
+disp(' Kernel compiled.');
 %=========================================================================%
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space

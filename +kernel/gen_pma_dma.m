@@ -67,7 +67,7 @@ n_z = length(z_vec);
 %   Note: The DMA transfer function is 1D (only a function of mobility),
 %   which is exploited to speed evaluation. The results is 1 by 3 cell, 
 %   with one entry per charge state.
-disp('Computing DMA contribution...');
+disp(' Computing DMA contribution...');
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 for kk=1:n_z
     Omega_mat{kk} = sparse(N_b,n_i(2)); % pre-allocate for speed
@@ -87,12 +87,12 @@ for kk=1:n_z
     Omega_mat{kk} = Omega_mat{kk}(:,jj);
         % repeat transfer function for repeated mass setpoint
 end
-disp('Completed DMA contribution.');
+disp(' Completed DMA contribution.');
 disp(' ');
 
 
 %== STEP 2: Evaluate PMA transfer function ===============================%
-disp('Computing PMA contribution:');
+disp(' Computing PMA contribution:');
 tools.textbar(0); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
     % one cell entry per charge state
@@ -108,18 +108,19 @@ for kk=1:n_z % loop over the charge state
         tools.textbar((N_b*(kk-1)+ii)/(n_z*N_b));
     end
 end
+disp(' Complete.');
 disp(' ');
 
 
 %== SETP 3: Combine to compile kernel ====================================%
-disp('Compiling kernel...');
+disp(' Compiling kernel...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
     K = K+f_z(z_vec(kk),:).*... % charging contribution
         Lambda_mat{kk}(:,:).*... % PMA contribution
         Omega_mat{kk}(:,:); % DMA contribution
 end
-disp('Kernel compiled.');
+disp(' Kernel compiled.');
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area

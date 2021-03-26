@@ -85,8 +85,8 @@ n_z = length(z_vec);
 %   Note: The SP2 contribution is 1D and does not depend on the charge
 %   state. It is boxcar function that takes into account discretization
 %   only. 
-disp('Computing SP2 contribution...');
-tools.textbar(0); % initiate textbar
+disp(' Computing SP2 contribution...');
+tools.textbar([0,n_b(1)]); % initiate textbar
 Omega_mat = sparse(n_b(1),n_i(1));% pre-allocate for speed
 for ii=1:n_b(1)
     Omega_mat(ii,:) = max(...
@@ -100,15 +100,15 @@ end
 Omega_mat = Omega_mat(:,jj);
     % repeat transfer function for repeated mass in grid_i
 
-disp('Completed SP2 contribution.');
+disp(' Completed SP2 contribution.');
 disp(' ');
 %=========================================================================%
 
 
 %== STEP 2: Evaluate PMA transfer function ===============================%
-disp('Computing PMA contribution:');
+disp(' Computing PMA contribution:');
 
-tools.textbar(0); % initiate textbar
+tools.textbar([0, (n_z*n_b(2))]); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 sp = get_setpoint(prop_pma,...
     'm_star',grid_b.edges{2}.*1e-18,varargin{:}); % get PMA setpoints
@@ -122,15 +122,16 @@ for kk=1:n_z % loop over the charge state
             z_vec(kk),prop_pma)';
                 % PMA transfer function
         
-        tools.textbar((n_b(2)*(kk-1)+ii)/(n_z*n_b(2)));
+        tools.textbar([(n_b(2)*(kk-1)+ii), (n_z*n_b(2))]);
     end
 end
+disp(' Complete.');
 disp(' ');
 %=========================================================================%
 
 
 %== SETP 3: Combine to compile kernel ====================================%
-disp('Compiling kernel...');
+disp(' Compiling kernel...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
     [~,i1] = max(m_star==grid_b.edges{2},[],2); % index corresponding to PMA setpoint
@@ -140,7 +141,7 @@ for kk=1:n_z
         Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat(i2,:); % SP2 contribution
 end
-disp('Completed kernel.');
+disp(' Completed kernel.');
 %=========================================================================%
 
 
