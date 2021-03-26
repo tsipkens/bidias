@@ -22,9 +22,11 @@ cm = viridis;
 %   Generate phantom (x_t) and reconstruction grid.
 %   High resolution version of the distribution to be projected to coarse
 %   grid to generate x.
-span_t = [10^-1.5, 10^1.5; 20, 10^3]; % range of mobility and mass
+span_t = [ ...
+    10^-1.5, 10^1.5; ...  % range of mobilities
+    20, 10^3]; % range of masses
 
-phantom = Phantom('1',span_t);
+phantom = Phantom('1',span_t);  % choose phantom
 x_t = phantom.x;
 grid_t = phantom.grid;
 nmax = max(x_t);
@@ -97,9 +99,10 @@ b0(0<1e-10.*max(max(b0))) = 0; % zero very small values of b
 Ntot = 1e5;
 [b,Lb] = tools.get_noise(b0,Ntot);
 
+% Plot the data three different ways.
 figure(5);
 tools.plot2d_scatter(...
-    grid_b.elements(:,1),grid_b.elements(:,2),b,cm_b);
+    grid_b.elements(:,1), grid_b.elements(:,2), b, cm_b);
 title('Data: 2D scatter');
 
 figure(6);
@@ -125,13 +128,15 @@ Dmb = pha_b.Sigma(1,2,1)/pha_b.Sigma(2,2,1); % also s1*R12/s2
 %%
 %== (4) ==================================================================%
 %   Invert.
-run_inversions_h; % simple, faster, stand-alone Tikhonov + ED
 
+% Simple stand-alone Tikhonov + exp. dist. (much faster)
+run_inversions_h;
+
+% Schemes to optimize different components of the regularization.
 % run_inversions_g;
 % run_inversions_i;
 % run_inversions_j;
 
-% run_inversions_k; % time methods
 
 
 

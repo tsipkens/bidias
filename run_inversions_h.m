@@ -4,8 +4,6 @@
 %=========================================================================%
 
 
-
-
 %-- Tikhonov (1st order) -------------------------------------------------%
 tools.textheader('Tikhonov (1st) regularization');
 lambda_tk1 = 1.1053; % found using other run_inversion* scripts
@@ -38,7 +36,7 @@ lambda_ed = 1.0826; % found using other run_inversion* scripts
     invert.exp_dist(...
     Lb*A,Lb*b,lambda_ed,Gd,...
     grid_x,[]);
-disp('Complete.');
+disp('Inversion complete.');
 disp(' ');
 
 eps.ed_0 = norm(x_ed-x0);

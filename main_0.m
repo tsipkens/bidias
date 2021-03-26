@@ -26,9 +26,10 @@ grid_x = grid_x.partial(...
     lt_r, lt_m); % convert to a partial grid
 
 
-phantom = Phantom('4'); % get Phantom 4 from Sipkens et al. (2020a)
-x0 = phantom.eval(grid_x);
+phantom = Phantom('4');  % get Phantom 4 from Sipkens et al. (2020a)
+x0 = phantom.eval(grid_x);  % evaluate phantom on grid_x
 
+% Plot the phantom.
 figure(1);
 grid_x.plot2d(x0);
 
@@ -87,7 +88,7 @@ disp(' ');
 
 
 
-%== (5) ===============================================================%
+%== (5) ==================================================================%
 figure(4);
 subplot(1,2,1);
 grid_x.plot2d(x_tk1); % plot Tikhonov solution
