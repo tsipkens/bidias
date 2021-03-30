@@ -270,11 +270,6 @@ methods
         end
         hold off;
         
-        % Reapply grey labels and axes to allow viz against dark and light bgs.
-        set(gca, 'XColor', [0.5, 0.5, 0.5], ...
-            'YColor', [0.5, 0.5, 0.5], ...
-            'linewidth', 0.75);
-        
         if nargout>0; h = gca; end
         
     end
