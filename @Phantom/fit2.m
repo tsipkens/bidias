@@ -68,10 +68,12 @@ end
 % opts = optimoptions(@lsqnonlin,'MaxFunctionEvaluations',1e4,'MaxIterations',1e3);
 % y1 = lsqnonlin(@(y) fun_pha(y,vec1,vec2,n_modes,corr2cov)-...
 %     x, y0, ylow, yup);
+opts.Display = 'off';
 [y1,~,resid,~,~,~,J] = ...
     lsqnonlin(@(y) [max(log(fun_pha(y,vec1,vec2,n_modes,corr2cov)),max(log(x)-4))-...
     max(log(x),max(log(x)-4));...
-    (y-y0)'./sy'], y0, ylow, yup);
+    (y-y0)'./sy'], y0, ylow, yup, ...
+    opts);
 N = exp(y1(1:6:end)); % scaling parameter denoting total number of particles
 y_out = y1;
 
@@ -88,7 +90,16 @@ end
 phantom = Phantom('standard',grid,mu,Sigma,N);
 phantom.type = 'standard-fit';
 
+
+%-- Display mu, Sigma -----%
 disp(' ');
+disp('  p = ');
+for ii=1:length(phantom.p)
+    disp(phantom.p(ii));
+end
+%--------------------------%
+
+
 tools.textheader();
 
 end
