@@ -20,7 +20,7 @@ x_init_m = grid_x.marginalize(x_init);
 disp('LS inversion ...');
 x_length = length(A(1,:));
 x_lsq = invert.lsq(Lb*A,Lb*b);
-fprintf([char(8), ' [', 8, '< <strong>DONE</strong>]', 8, '\n']);
+tools.textdone();
 disp(' ');
 eps.lsq = norm(x0 - x_lsq);
 
