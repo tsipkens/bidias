@@ -133,11 +133,11 @@ Dmb = pha_b.Sigma(1,2,1)/pha_b.Sigma(2,2,1); % also s1*R12/s2
 % (Previously run_inversions_h)
 
 %-- Tikhonov (1st order) -------------------------------------------------%
-tools.textheader('Tikhonov (1st) regularization');
+tools.textheader('Running Tikhonov (1st) ...');
 lambda_tk1 = 1.1053; % found using other run_inversion* scripts
 x_tk1 = invert.tikhonov(...
     Lb*A,Lb*b,lambda_tk1,1,n_x(1));
-disp('Inversion complete.');
+tools.textdone();
 disp(' ');
 
 eps.tk1_0 = norm(x0-x_tk1);
@@ -156,13 +156,13 @@ R12 = Gd(1,2)/(l1*l2);
 Dm = Gd(1,2)/Gd(2,2); % s1*R12/s2
 %----------------------------------%
 
-tools.textheader('Exponential distance regularization');
+disp('Running exponential distance ...');
 lambda_ed = 1.0826; % found using other run_inversion* scripts
 [x_ed] = ...
     invert.exp_dist(...
     Lb*A,Lb*b,lambda_ed,Gd,...
     grid_x,[]);
-disp('Inversion complete.');
+tools.textdone();
 disp(' ');
 
 eps.ed_0 = norm(x_ed-x0);

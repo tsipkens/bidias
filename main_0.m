@@ -68,22 +68,22 @@ ylabel('log_{10}(m_p)');
 
 
 %== (4) ==================================================================%
-tools.textheader('Tikhonov inversion');
+disp('Tikhonov inversion ...');
 lambda = 1; % regularization parameter
 order = 1; % order of Tikhonov matrix to be used
 x_tk1 = invert.tikhonov(Lb*A, Lb*b, ...
     lambda, order, grid_x); % tikhonov solution
-disp('Complete.');
+tools.textdone();
 disp(' ');
 
 
-tools.textheader('Exponential distance inversion');
+disp('Exponential distance inversion ...s');
 lambda = 1; % regularization parameter
 Gd = phantom.Sigma;
 x_ed = invert.exp_dist( ...
     Lb*A, Lb*b, ...
     lambda, Gd, grid_x); % exponential distance solution
-disp('Complete.');
+tools.textdone();
 disp(' ');
 
 

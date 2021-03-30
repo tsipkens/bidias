@@ -59,7 +59,6 @@ hold off;
 %== (2) ==================================================================%
 %   Compute kernel.
 
-
 n_b = [14,50]; %[12,50]; %[17,35];  % size of the data
 span_b = grid_t.span;
 grid_b = Grid(span_b,...
@@ -74,7 +73,7 @@ disp('Transform kernel to discretization in x...');
 B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
-disp('Complete.');
+tools.textdone();
 disp(' ');
 
 figure(2);

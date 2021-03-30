@@ -71,11 +71,11 @@ prop_pma = kernel.prop_pma;
 [A_t,sp] = kernel.gen_pma_sp2_grid(grid_b, grid_t, prop_pma, 'Rm', 3);
     % generate A matrix based on grid for x_t and b
 
-disp('Transform to discretization in x...');
+disp('Transform to discretization in x ...');
 B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
-disp('Complete.');
+tools.textdone();
 disp(' ');
 
 figure(2);
@@ -123,7 +123,7 @@ R12 = 0.99;
 Gd = [s1^2,R12*s1*s2; R12*s1*s2,s2^2];
 lambda_ed = 1.2e0;
 
-tools.textheader('Exponential distance');
+disp('Exponential distance ...');
 Lpr0 = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),grid_x.elements(:,1));
 [x_ed,~,Lpr0] = invert.exp_dist(...
     Lb*A,Lb*b,lambda_ed,Gd,...
@@ -131,7 +131,7 @@ Lpr0 = invert.exp_dist_lpr(Gd,grid_x.elements(:,2),grid_x.elements(:,1));
 % [x_ed,lambda_ed,out] = optimize.exp_dist_op(...
 %         Lb*A,Lb*b,[1e1,1e4],Gd,...
 %         grid_x.elements(:,2),grid_x.elements(:,1));
-disp('Inversion complete.');
+tools.textdone();
 disp(' ');
 
 
