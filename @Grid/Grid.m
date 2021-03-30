@@ -848,8 +848,8 @@ methods
     %== PLOT_CONDITIONAL =============================================%
     function [] = plot_conditional(obj, x, dim, ind, x0)
     % PLOT_CONDITIONAL  Plot conditional distributions
-    %   AUTHOR:	Timothy Sipkens, 2019-07-17
-    %   NOTE: 'x' can be a cell array containing multiple x vectors
+    %  AUTHOR:	Timothy Sipkens, 2019-07-17
+    %  NOTE: 'x' can be a cell array containing multiple x vectors
 
         %-- Parse inputs ---------------------------------------------%
         if ~iscell(x); x = {x}; end
@@ -904,8 +904,8 @@ methods
     %== PLOT2D_SCATTER ===============================================%
     function [] = plot2d_scatter(obj, x, cm)
     % PLOT2D_SCATTER  Wrapper for tools.plot2d_scatter.
-    %   AUTHOR: Timothy Sipkens, 2020-11-05
-    %   NOTE: 'x' can be a cell array containing multiple x vectors
+    %  AUTHOR: Timothy Sipkens, 2020-11-05
+    %  NOTE: 'x' can be a cell array containing multiple x vectors
         
         if ~exist('cm', 'var'); cm = []; end
 
@@ -920,7 +920,7 @@ methods
     %== PLOT2D_SCATTER ===============================================%
     function [] = surf(obj, x, cm)
     % SURF  Wrapper for tools.plot2d_scatter.
-    %   AUTHOR: Timothy Sipkens, 2021-03-30
+    %  AUTHOR: Timothy Sipkens, 2021-03-30
         
         if ~exist('cm', 'var'); cm = gray(255); end
 
