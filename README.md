@@ -21,7 +21,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 - [3.1 Grid class](#31-grid-class)
 
-- [3.3 PartialGrid class](#32-partialgrid-class)
+- [3.2 PartialGrid class](#32-partialgrid-class)
 
 - [3.3 Phantom class](#33-phantom-class)
 
