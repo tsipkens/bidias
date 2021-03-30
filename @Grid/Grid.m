@@ -917,6 +917,30 @@ methods
     
     
     
+    %== PLOT2D_SCATTER ===============================================%
+    function [] = surf(obj, x, cm)
+    % SURF  Wrapper for tools.plot2d_scatter.
+    %   AUTHOR: Timothy Sipkens, 2021-03-30
+        
+        if ~exist('cm', 'var'); cm = gray(255); end
+
+        %-- Parse inputs ---------------------------------------------%
+        surf(obj.edges{2}, obj.edges{1}, obj.reshape(x));
+        colormap(cm);
+        shading interp;
+        
+        set(gca, 'XScale', 'log');
+        set(gca, 'YScale', 'log');
+        
+        set(gca, 'View', [45, 70]);  % set axis view
+        
+        xlim([min(obj.edges{2}),max(obj.edges{2})]);
+        ylim([min(obj.edges{1}),max(obj.edges{1})]);
+    end
+    %=================================================================%
+    
+    
+    
 %=====================================================================%
 %-- SUPPORT FOR PARTIAL GRIDS ----------------------------------------%
 %=====================================================================%

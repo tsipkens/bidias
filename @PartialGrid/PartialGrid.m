@@ -210,7 +210,7 @@ methods
     %== MARGINALIZE_OP ===============================================%
     function [C1,dr0] = marginalize_op(obj, dim)
     % MARGINALIZE_OP  A marginalizing operator, C1, to act on 2D distributions.
-    %   AUTHORS: Timothy Sipkens, Arash Naseri, 2020-03-09
+    %  AUTHORS: Timothy Sipkens, Arash Naseri, 2020-03-09
         
         C1 = marginalize_op@Grid(obj, dim);
         
