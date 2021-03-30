@@ -6,6 +6,16 @@ clear;
 close all;
 clc;
 
+% Get colormap.
+if length(dir('cmap')) == 2  % if `cmap` not downloaded
+    cm = parula;  % use Matlab default
+    cma = gray;  % use grey as alternate colormap
+else
+    cm = viridis;  % otherwise use viridis
+    cma = inferno;  % use inferno as alternate colormap
+    cma = cma(30:end, :);  % adjust dark values
+end
+
 
 
 %== (1) ==================================================================%
@@ -32,6 +42,7 @@ x0 = phantom.eval(grid_x);  % evaluate phantom on grid_x
 % Plot the phantom.
 figure(1);
 grid_x.plot2d(x0);
+colormap(cm);  % apply primary colormap
 
 
 
@@ -50,6 +61,7 @@ A = kernel.gen_pma_dma_grid(grid_b, grid_x, prop_pma);
 
 figure(2);
 grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point
+colormap(cma);  % apply alternative colormap
 
 
 
@@ -61,7 +73,7 @@ b0 = A * x0; % generate a set of data using the forward model
 % plot resultant data as mobility scans at a range of mass setpoint
 figure(3);
 opts.f_lines = 1;
-tools.plot2d_patch(grid_b, b0, [], [], opts);
+tools.plot2d_patch(grid_b, b0, cma, [], opts);
 xlabel('log_{10}(d_m)');
 ylabel('log_{10}(m_p)');
 
@@ -69,21 +81,23 @@ ylabel('log_{10}(m_p)');
 
 %== (4) ==================================================================%
 disp('Tikhonov inversion ...');
-lambda = 1; % regularization parameter
-order = 1; % order of Tikhonov matrix to be used
+lambda = 1;  % regularization parameter
+order = 1;  % order of Tikhonov matrix to be used
 x_tk1 = invert.tikhonov(Lb*A, Lb*b, ...
-    lambda, order, grid_x); % tikhonov solution
+    lambda, order, grid_x);  % Tikhonov solution
 tools.textdone();
+disp(' ');
 disp(' ');
 
 
-disp('Exponential distance inversion ...s');
+disp('Exponential distance inversion ...');
 lambda = 1; % regularization parameter
 Gd = phantom.Sigma;
 x_ed = invert.exp_dist( ...
     Lb*A, Lb*b, ...
-    lambda, Gd, grid_x); % exponential distance solution
+    lambda, Gd, grid_x);  % exponential distance solution
 tools.textdone();
+disp(' ');
 disp(' ');
 
 
@@ -91,10 +105,12 @@ disp(' ');
 %== (5) ==================================================================%
 figure(4);
 subplot(1,2,1);
-grid_x.plot2d(x_tk1); % plot Tikhonov solution
+grid_x.plot2d(x_tk1);  % plot Tikhonov solution
+colormap(cm);  % apply primary colormap
 
 subplot(1,2,2);
-grid_x.plot2d(x_ed); % plot exponential distance solution
+grid_x.plot2d(x_ed);  % plot exponential distance solution
+colormap(cm);
 
 set(gcf, 'Position', [50 300 900 300]); % position and size plot
 
