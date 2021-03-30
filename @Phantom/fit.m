@@ -49,8 +49,10 @@ if ~isempty(logr0)
     y0(2:3) = logr0;
 end
 
+opts.Display = 'off';
 [y1,~,resid,~,~,~,J] = lsqnonlin(@(y) fun_pha(y)-x, y0, ...
-    [0, -10, -10, 0, 0, -pi], [inf, 10, 10, 10, 3, pi]); % search bounds
+    [0, -10, -10, 0, 0, -pi], [inf, 10, 10, 10, 3, pi], ... % search bounds
+    opts); 
 
 ci = nlparci(y1, resid, 'jacobian', J) - y1';
 ci = 2 .* ci(:,2);  % 95% confidence interval
@@ -65,7 +67,14 @@ pha.type = 'standard-fit';
 N = y1(1); % scaling parameter denoting total number of particles
 y_out = y1;
 
+
+%-- Display mu, Sigma -----%
 disp(' ');
+disp('  p = ');
+disp(pha.p);
+%--------------------------%
+
+
 tools.textheader();
 
 end

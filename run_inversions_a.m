@@ -17,13 +17,12 @@ x_init_m = grid_x.marginalize(x_init);
 
 
 %% Least squares
-tools.textheader('LS inversion');
+disp('LS inversion ...');
 x_length = length(A(1,:));
 x_lsq = invert.lsq(Lb*A,Lb*b);
-disp('Inversion complete.');
+tools.textdone();
 disp(' ');
-
-eps.lsq = norm(x0-x_lsq);
+eps.lsq = norm(x0 - x_lsq);
 
 
 %% Tikhonov (0th) implementation

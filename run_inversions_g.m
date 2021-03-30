@@ -4,7 +4,7 @@
 %=========================================================================%
 
 %-- Tikhonov (1st order) -----%
-disp('Performing Tikhonov (1st) regularization...');
+disp('Running Tikhonov (1st) ...');
 tic;
 [x_tk1,lambda_tk1,out_tk1] = optimize.tikhonov_op(...
     Lb*A,Lb*b,[1e-2,1e1],1,n_x(1),x0);
@@ -29,7 +29,7 @@ x_init = sparse(max(0,x_init));
 eps.init = norm(x0-x_init);
 x_init_m = grid_x.marginalize(x_init);
 
-disp('Performing expectation-maximization (attempt no. 1)...');
+disp('Running expectation-maximization (attempt no. 1)...');
 x_em = invert.em(Lb*A,Lb*b,x_init,3,x0);
 disp('Inversion complete.');
 disp(' ');
@@ -55,7 +55,7 @@ x_init2(isinf(x_init2)) = 0;
 x_init2 = sparse(max(0,x_init2));
 eps.init2 = norm(x02-x_init2);
 
-disp('Performing expectation-maximization (attempt no. 2)...');
+disp('Running expectation-maximization (attempt no. 2)...');
 x_em2 = invert.em(Lb*A2,Lb*b,x_init2,250);
 disp('Inversion complete.');
 disp(' ');
@@ -69,7 +69,7 @@ eps.em2 = norm(x02-x_em2);
 % Get initial guess
 x_init3 = ones(size(x02));
 
-disp('Performing expectation-maximization (attempt no. 3)...');
+disp('Running expectation-maximization (attempt no. 3)...');
 x_em3 = invert.em(Lb*A2,Lb*b,x_init3,250);
 disp('Inversion complete.');
 disp(' ');
@@ -79,7 +79,7 @@ eps.em3 = norm(x02-x_em3);
 
 
 %-- Expectation maximization (attempt 4) ----%
-disp('Performing expectation-maximization (attempt no. 1)...');
+disp('Running expectation-maximization (attempt no. 1)...');
 x_em4 = invert.em(Lb*A,Lb*b,ones(size(x_init)),3,x0);
 disp('Inversion complete.');
 disp(' ');
