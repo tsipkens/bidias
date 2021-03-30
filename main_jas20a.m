@@ -69,7 +69,7 @@ prop_pma = kernel.prop_pma;  % get default CPMA properties
 % Generate A matrix based on grid for x_t (fine resolution) and b.
 A_t = kernel.gen_pma_dma_grid(grid_b, grid_t, prop_pma, [], 'Rm', 3);
 
-disp('Transform kernel to discretization in x...');
+disp('Transform to discretization in x ...');
 B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)
 A = sparse(A);
