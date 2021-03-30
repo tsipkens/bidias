@@ -113,14 +113,14 @@ disp(' ');
 
 
 %== SETP 3: Combine to compile kernel ====================================%
-disp(' Compiling kernel...');
+disp(' Compiling kernel ...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
     K = K+f_z(z_vec(kk),:).*... % charging contribution
         Lambda_mat{kk}(:,:).*... % PMA contribution
         Omega_mat{kk}(:,:); % DMA contribution
 end
-disp(' Kernel compiled.');
+tools.textdone();  % print orange DONE
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space
 A = bsxfun(@times,K,dr_log'); % multiply kernel by element area

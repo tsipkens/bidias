@@ -138,7 +138,7 @@ disp(' ');
 
 
 %== SETP 3: Combine to compile kernel ====================================%
-disp(' Compiling kernel...');
+disp(' Compiling kernel ...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
     [~,i1] = max(m_star==grid_b.edges{1},[],2); % index corresponding to PMA setpoint
@@ -148,7 +148,7 @@ for kk=1:n_z
         Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat{kk}(i2,:); % DMA contribution
 end
-disp(' Kernel compiled.');
+tools.textdone();  % print orange DONE
 %=========================================================================%
 
 dr_log = grid_i.dr; % area of integral elements in [logm,logd]T space

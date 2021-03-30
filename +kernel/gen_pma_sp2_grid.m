@@ -131,7 +131,7 @@ disp(' ');
 
 
 %== SETP 3: Combine to compile kernel ====================================%
-disp(' Compiling kernel...');
+disp(' Compiling kernel ...');
 K = sparse(N_b,N_i);
 for kk=1:n_z
     [~,i1] = max(m_star==grid_b.edges{2},[],2); % index corresponding to PMA setpoint
@@ -141,7 +141,7 @@ for kk=1:n_z
         Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat(i2,:); % SP2 contribution
 end
-disp(' Completed kernel.');
+tools.textdone();  % print orange DONE
 %=========================================================================%
 
 
