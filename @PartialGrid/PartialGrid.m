@@ -15,26 +15,25 @@
 %  arguments analogous to above but remove points below a given line 
 %  (instead of above). 
 %  
+%  ------------------------------------------------------------------------
+%  
 %  AUTHOR: Timothy Sipkens, 2021-03-29
 
 classdef PartialGrid < Grid
-   
-    
-    
+
 properties
     
     missing = [];  % global indices of missing grid points for partial grids
     cut = [];      % [y-intercept,slope] used to cut partial grid
     
-end
-    
+end 
 
 
 methods
         
     %== PARTIALGRID ======================================================%
-    %   Constructor class.
     function obj = PartialGrid(span_edges, ne, discrete, r0, slope0, r1, slope1)
+    % PARTIALGRID  Class cosntructor.
         
         % Call Grid constructor.
         obj = obj@Grid(span_edges, ne, discrete);
@@ -101,9 +100,8 @@ methods
     
     
     %== ADJACENCY ====================================================%
-    %   Compute the adjacency matrix for the full grid,
-    %   using a four-point stencil.
     function [obj,adj] = adjacency(obj)
+    % ADJACENCY  Compute the adjacency matrix for the full grid using a four-point stencil.
         
         [~, adj] = adjacency@Grid(obj);
         
@@ -117,10 +115,10 @@ methods
     
     
     %== GLOBAL_IDX ===================================================%
-    %   Convert 2D grid coordinate to a global coordinate in the grid.
-    %   For mass-mobiltiy grids, for example, idx1 is the mass index and 
-    %   idx2 is the mobility index.
     function k = global_idx(obj, idx1, idx2)
+    % GLOBAL_IDX  Convert 2D grid coordinate to a global coordinate in the grid.
+    %  For mass-mobiltiy grids, for example, idx1 is the mass index and 
+    %  idx2 is the mobility index.
         
         k = global_idx@Grid(obj, idx1, idx2);  % use Grid function
         
@@ -138,10 +136,10 @@ methods
     
     
     %== PROJECT ======================================================%
-    %   Project x onto current grid. Uses simple linear.
-    %   interpolation for this purpose. The parameter 'grid_old'
-    %   contains the original grid for the input data x.
     function x = project(obj, grid_old, x)
+    % PROJECT  Project x onto current grid. 
+    %  Uses simple linear interpolation for this purpose. The parameter 
+    %  GRID_OLD contains the original grid for the input data X.
         
         x = project@Grid(obj, grid_old, x);
         
@@ -153,9 +151,9 @@ methods
     
     
     %== TRANSFORM ====================================================%
-    %   Function to transform kernel functions. Output is a matrix to 
-    %   be multiplied by the original kernel, A.
     function B = transform(obj, grid_old)
+    % TRANFORM  Function to transform kernel functions. 
+    %  Output is a matrix to be multiplied by the original kernel, A.
         
         B = transform@Grid(obj, grid_old);
         
@@ -170,8 +168,8 @@ methods
     
     
     %== DR ===========================================================%
-    %   Calculates the differential area of the elements in the grid.
     function [dr,dr1,dr2] = dr(obj)
+    % DR  Calculates the differential area of the elements in the grid.
         
         [dr,dr1,dr2] = dr@Grid(obj);
         
@@ -210,9 +208,9 @@ methods
     
     
     %== MARGINALIZE_OP ===============================================%
-    %   A marginalizing operator, C1, to act on 2D distributions.
-    %   Author: Timothy Sipkens, Arash Naseri, 2020-03-09
     function [C1,dr0] = marginalize_op(obj, dim)
+    % MARGINALIZE_OP  A marginalizing operator, C1, to act on 2D distributions.
+    %   AUTHORS: Timothy Sipkens, Arash Naseri, 2020-03-09
         
         C1 = marginalize_op@Grid(obj, dim);
         
@@ -236,10 +234,10 @@ methods
     
     
     %== RESHAPE ======================================================%
-    %   A simple function to reshape a vector based on the grid.
-    %   Note: If the grid is partial, missing grid points are 
-    %   filled with zeros. 
     function x = reshape(obj, x)
+    % RESHAPE  A simple function to reshape a vector based on the grid.
+    %  NOTE: If the grid is partial, missing grid points are 
+    %   filled with zeros. 
         
         x = obj.partial2full(x);
         
@@ -251,9 +249,9 @@ methods
     
     
     %== PLOT2D =======================================================%
-    %   Plots x as a 2D function on the grid.
-    %   Author: Timothy Sipkens, 2018-11-21
     function [h, x] = plot2d(obj, x, f_contf)
+    % PLOT2D  Plots x as a 2D function on the grid.
+    %  AUTHOR: Timothy Sipkens, 2018-11-21
         
         if ~exist('f_contf', 'var'); f_contf = []; end
         
@@ -285,9 +283,9 @@ methods
     
     
     %== PARTIAL2FULL =================================================%
-    %   Convert x defined on a partial grid to the full grid equivalent, 
-    %   using zeros to fill the removed grid points.
     function x_full = partial2full(obj ,x)
+    % PARTIAL2FULL  Convert x defined on a partial grid to the full grid equivalent. 
+    %  Uses zeros to fill the removed grid points.
         x_full = zeros(prod(obj.ne),1);
         t0 = setdiff((1:prod(obj.ne))', obj.missing);
         x_full(t0) = x;
@@ -297,9 +295,9 @@ methods
     
     
     %== FULL2PARTIAL =================================================%
-    %   Convert x defined on a full grid to the partial grid equivalent, 
-    %   removing entries for missing indices.
     function x = full2partial(obj, x)
+    % FULL2PARTIAL  Convert x defined on a full grid to the partial grid equivalent. 
+    %  Removes entries for missing indices.
         x(obj.missing,:) = [];
     end
     %=================================================================%

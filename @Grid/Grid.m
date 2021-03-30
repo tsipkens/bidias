@@ -23,7 +23,6 @@
 %  (default), specified using DISCRETE = 'log', or linear spacing, specified 
 %  using DISCRETE = 'linear'. 
 % 
-% 
 %  AUTHOR: Timothy Sipkens, 2019-02-03
 %  
 %  ------------------------------------------------------------------------
@@ -31,7 +30,7 @@
 %  We refer the reader to the <README.md> for more information. 
 %  
 %  For information on partial grids (where some elements are ignored, 
-%  refer to `help Grid.partial` and the <README.md>. 
+%  refer to `help PartialGrid` and `help Grid.partial` and the <README.md>. 
 
 classdef Grid
 
@@ -66,8 +65,8 @@ end
 
 methods
     %== GRID =========================================================%
-    %   Class constructor.
     function obj = Grid(span_edges,ne,discrete)
+    % GRID  Class constructor.
         
         %-- Parse inputs ---------------------------------------------%
         if nargin==0; return; end % return empty grid
@@ -105,16 +104,16 @@ methods
     
 
     %== MESH =========================================================%
-    %   Responsible for generating a mesh represented by a series of elements.
-    %   Author:	Timothy Sipkens, 2019-02-03
-    %   
-    %   Currently setup to do simple linear or logarithmic spaced
-    %   quadrilateral mesh.
-    %
-    %   obj.nodes contains the position of each of the nodes as
-    %   a matrix, with a row for each node and a column for each
-    %   dimension.
     function obj = mesh(obj)
+    % MESH  Responsible for generating a mesh represented by a series of elements.
+    %  AUTHOR: Timothy Sipkens, 2019-02-03
+    %  
+    %  Currently setup to do simple linear or logarithmic spaced
+    %  quadrilateral mesh.
+    %
+    %  obj.nodes contains the position of each of the nodes as
+    %  a matrix, with a row for each node and a column for each
+    %  dimension.
     
         %-- If required, generate edge discretization vectors --------%
         if isempty(obj.edges)
@@ -165,9 +164,8 @@ methods
     
     
     %== ADJACENCY ====================================================%
-    %   Compute the adjacency matrix for the full grid,
-    %   using a four-point stencil.
     function [obj,adj] = adjacency(obj)
+    % ADJACENCY  Compute the adjacency matrix for the full grid using a four-point stencil.
         
         ind1 = ones(3*prod(obj.ne),1);
         ind2 = ones(3*prod(obj.ne),1);
@@ -214,9 +212,8 @@ methods
     
     
     %== ADJACENCY8 ===================================================%
-    %   Compute the adjacency matrix for the full grid,
-    %   using an eight-point stencil.
     function [adj] = adjacency8(obj)
+    % ADJACENCY8  Compute the adjacency matrix for the full grid using an eight-point stencil.
         
         ind1 = ones(7*prod(obj.ne),1);
         ind2 = ones(7*prod(obj.ne),1);
@@ -294,10 +291,10 @@ methods
     
     
     %== GLOBAL_IDX ===================================================%
-    %   Convert 2D grid coordinate to a global coordinate in the grid.
-    %   For mass-mobiltiy grids, for example, idx1 is the mass index and 
-    %   idx2 is the mobility index.
     function k = global_idx(obj,idx1,idx2)
+    % GLOBAL_IDX  Convert 2D grid coordinate to a global coordinate in the grid.
+    %  For mass-mobiltiy grids, for example, idx1 is the mass index and 
+    %  idx2 is the mobility index.
         
         k = idx1+(idx2-1)*obj.ne(1);
         
@@ -307,10 +304,11 @@ methods
     
     
     %== TWO_IDX ======================================================%
-    %   Convert global grid coordinate to 2D index on grid.
-    %   For mass-mobiltiy grids, for example, idx1 is the mass index and 
-    %   idx2 is the mobility index.
     function [idx1,idx2] = two_idx(obj,k)
+    % TWO_IDX  Convert global grid coordinate to 2D index on grid.
+    %  For mass-mobiltiy grids, for example, idx1 is the mass index and 
+    %  idx2 is the mobility index.
+    
         idx1 = mod(k,obj.ne(1));
         idx1(idx1==0) = obj.ne(1);
         
@@ -321,9 +319,10 @@ methods
     
     
     %== L1 ===========================================================%
-    %   Compute the first-order Tikhonov operator.
-    %   Form is equiavalent to applying no slope at high-high boundary.
     function [l1] = l1(obj)
+    % L1  Compute the first-order Tikhonov operator.
+    %  Form is equiavalent to applying no slope at high-high boundary.
+    
         l1 = -diag(sum(tril(obj.adj)))+...
             triu(obj.adj);
         l1(size(obj.adj,1),end) = -1;
@@ -336,9 +335,10 @@ methods
     
     
     %== L2 ===========================================================%
-    %   Compute the second-order Tikhonov operator.
-    %   Form is equiavalent to applying no slope at grid boundary.
     function [l2] = l2(obj)
+    % L2  Compute the second-order Tikhonov operator.
+    %  Form is equiavalent to applying no slope at grid boundary.
+    
         l2 = -diag(sum(obj.adj))+...
             triu(obj.adj)+tril(obj.adj);
     end
@@ -347,9 +347,9 @@ methods
     
     
     %== GRAD =========================================================%
-    %   Calculates the gradient in x. Uses simple first order
-    %   differences.
     function out = grad(obj,x)
+    % GRAD  Calculates the gradient in x. 
+    %  Uses simple first order differences.
 
         [~,dr1,dr2] = obj.dr;
 
@@ -365,10 +365,10 @@ methods
     
     
     %== PROJECT ======================================================%
-    %   Project x onto current grid. Uses simple linear.
-    %   interpolation for this purpose. The parameter 'grid_old'
-    %   contains the original grid for the input data x.
     function x = project(obj,grid_old,x)
+    % PROJECT  Project x onto current grid. 
+    %  Uses simple linear interpolation for this purpose. The parameter 
+    %  GRID_OLD contains the original grid for the input data X.
         
         if isa(grid_old, 'PartialGrid')  % added processing for partial grids
             x = grid_old.partial2full(x);
@@ -391,9 +391,9 @@ methods
 
 
     %== TRANSFORM ====================================================%
-    %   Function to transform kernel functions. Output is a matrix to 
-    %   be multiplied by the original kernel, A.
     function B = transform(obj,grid_old)
+    % TRANSFORM  Function to transform kernel functions. Output is a matrix to 
+    %   be multiplied by the original kernel, A.
         
         for ii=1:obj.dim % loop over both dimensions
             dr_inv = 1./(grid_old.nodes{ii}(2:end)-grid_old.nodes{ii}(1:(end-1)));
@@ -424,8 +424,8 @@ methods
 
 
     %== DR ===========================================================%
-    %   Calculates the differential area of the elements in the grid.
     function [dr,dr1,dr2] = dr(obj)
+    % DR  Calculates the differential area of the elements in the grid.
         
         dr_0 = cell(obj.dim, 1);
         for ii=1:obj.dim
@@ -450,9 +450,9 @@ methods
 
     
     %== MARGINALIZE ==================================================%
-    %   Marginalizes over the grid in each dimension.
-    %   Uses Euler's method to integrate over domain.
     function [marg, tot] = marginalize(obj, x, dim)
+    % MARGINALIZE  Marginalizes over the grid in each dimension.
+    %   Uses Euler's method to integrate over domain.
         
         x = obj.reshape(x);
         
@@ -480,9 +480,9 @@ methods
     
     
     %== MARGINALIZE_OP ===============================================%
-    %   A marginalizing operator, C1, to act on 2D distributions.
-    %   Author: Timothy Sipkens, Arash Naseri, 2020-03-09
     function [C1, dr0] = marginalize_op(obj,dim)
+    % MARGINALIZE_OP  A marginalizing operator, C1, to act on 2D distributions.
+    %  AUTHOR: Timothy Sipkens, Arash Naseri, 2020-03-09
         
         if ~exist('dim','var'); dim = []; end
         if isempty(dim); dim = 1; end
@@ -502,10 +502,8 @@ methods
     
     
     %== RESHAPE ======================================================%
-    %   A simple function to reshape a vector based on the grid.
-    %   Note: If the grid is partial, missing grid points are 
-    %   filled with zeros. 
     function x = reshape(obj, x)
+    % RESHAPE  A simple utility to reshape a vector based on the grid.
         x = reshape(x, obj.ne);
     end
     %=================================================================%
@@ -513,14 +511,14 @@ methods
 
 
     %== VECTORIZE ====================================================%
-    %   A simple function to vectorize 2D gridded data.
+    function [x,t1,t2] = vectorize(obj,x)
+    % VECTORIZE  A simple function to vectorize 2D gridded data.
     % 
-    % Outputs:
+    %  OUTPUTS:
     %   x	Vectorized data
     %   t1  Vectorized element centers for first dimension
     %   t2  Vectorized element centers for second dimension
-    %-----------------------------------------------------------------%
-    function [x,t1,t2] = vectorize(obj,x)
+    
         if exist('x','var'); x = x(:); else; x = []; end
         
         if nargout>1; t1 = obj.elements(:,1); end
@@ -531,20 +529,20 @@ methods
 
 
     %== RAY_SUM ======================================================%
-    %   Perfrom a ray sum for a given ray and the current grid.
+    function [C,rmin,rmax] = ray_sum(obj,logr0,slope,f_bar)
+    % RAY_SUM  Perfrom a ray sum for a given ray and the current grid.
     %   Currently assumes uniform, logarithmic grid 
     %   and can accommodate partial grids.
-    %   Based on:	Code from Samuel Grauer
-    %   Author:     Timothy Sipkens, 2019-07-14
+    %   BASIS:  Code from Samuel Grauer
+    %   AUTHOR: Timothy Sipkens, 2019-07-14
     % 
-    % Inputs:
+    %  INPUTS:
     %   logr0   A single point on the line in log-log space, r0 = log10([dim1,dim2])
     %	slope   Slope of the line
     %   f_bar   Flag for progress bar
-    % Outputs:
+    %  
+    %  OUTPUTS:
     %   C       Ray-sum matrix
-    %-----------------------------------------------------------------%
-    function [C,rmin,rmax] = ray_sum(obj,logr0,slope,f_bar)
         
         if ~exist('f_bar','var'); f_bar = []; end
         if isempty(f_bar); f_bar = 0; end
@@ -612,18 +610,17 @@ methods
     
     
     %== CLOSEST_IDX =================================================%
-    %   Returns the pixel in which r0 is located.
+    function [k,idx_2d] = closest_idx(obj,r0)
+    % CLOSEST_IDX  Returns the pixel in which r0 is located.
     %   This function uses vector operations to find multiple points.
     % 
-    % Inputs:
+    %  INPUTS:
     %   r0      Coordinates in grid space, r0 = [dim1,dim2]
     %           Can form N x 2 vector, where N is the number of points
     %           to be found.
-    % Outputs:
+    %  OUTPUTS:
     %   k       Global index on the grid, incorporating missing pixels
     %   idx_2d  Pair of indices of pixel location
-    %-----------------------------------------------------------------%
-    function [k,idx_2d] = closest_idx(obj,r0)
         
         idx_2d = zeros(size(r0,1),2); % pre-allocate
         
@@ -652,9 +649,9 @@ methods
 %=====================================================================%
     
     %== PLOT2D =======================================================%
-    %   Plots x as a 2D function on the grid.
-    %   Author: Timothy Sipkens, 2018-11-21
     function [h,x] = plot2d(obj,x,f_contf)
+    % PLOT2D  Plots x as a 2D function on the grid.
+    %   AUTHOR: Timothy Sipkens, 2018-11-21
         
         if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
         if isempty(f_contf); f_contf = 0; end % set contourf flag to false
@@ -709,9 +706,9 @@ methods
 
 
     %== PLOT2D_MARG ==================================================%
-    %   Plots x as a 2D function on the grid, with marginalized distributions.
-    %   Author: Timothy Sipkens, 2018-11-21
     function [h,x_m] = plot2d_marg(obj,x,obj_t,x_t,f_contf)
+    % PLOT2D_MARG  Plots x as a 2D function on the grid, with marginalized distributions.
+    %   AUTHOR: Timothy Sipkens, 2018-11-21
         
         if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
         if ~exist('x_t','var'); x_t = []; end
@@ -766,9 +763,9 @@ methods
 
 
     %== PLOT2D_SWEEP =================================================%
-    %   Plot data in slices, sweeping through the provided colormap.
-    %   Author: Timothy Sipkens, 2019-11-28
     function [h,x] = plot2d_sweep(grid,x,cm,dim)
+    % PLOT2D_SWEEP  Plot data in slices, sweeping through the provided colormap.
+    %   AUTHOR: Timothy Sipkens, 2019-11-28
         
         if ~exist('dim','var'); dim = []; end
         if isempty(dim); dim = 1; end
@@ -799,10 +796,10 @@ methods
     
     
     %== PLOT_MARGINAL ================================================%
-    %   Plot marginal distributions
-    %   Author:	Timothy Sipkens, 2019-07-17
-    %   Note: 'x' can be a cell array containing multiple x vectors
     function [] = plot_marginal(obj,x,dim,x0)
+    % PLOT_MARGINAL  Plot marginal distributions.
+    %   AUTHOR:	Timothy Sipkens, 2019-07-17
+    %   NOTE: 'x' can be a cell array containing multiple x vectors
 
         %-- Parse inputs ---------------------------------------------%
         if ~iscell(x); x = {x}; end
@@ -849,10 +846,10 @@ methods
 
 
     %== PLOT_CONDITIONAL =============================================%
-    %   Plot conditional distributions
-    %   Author:	Timothy Sipkens, 2019-07-17
-    %   Note: 'x' can be a cell array containing multiple x vectors
-    function [] = plot_conditional(obj,x,dim,ind,x0)
+    function [] = plot_conditional(obj, x, dim, ind, x0)
+    % PLOT_CONDITIONAL  Plot conditional distributions
+    %   AUTHOR:	Timothy Sipkens, 2019-07-17
+    %   NOTE: 'x' can be a cell array containing multiple x vectors
 
         %-- Parse inputs ---------------------------------------------%
         if ~iscell(x); x = {x}; end
@@ -905,10 +902,10 @@ methods
     
     
     %== PLOT2D_SCATTER ===============================================%
-    %   Wrapper for tools.plot2d_scatter.
-    %   AUTHOR: Timothy Sipkens, 2020-11-05
-    %   Note: 'x' can be a cell array containing multiple x vectors
     function [] = plot2d_scatter(obj, x, cm)
+    % PLOT2D_SCATTER  Wrapper for tools.plot2d_scatter.
+    %   AUTHOR: Timothy Sipkens, 2020-11-05
+    %   NOTE: 'x' can be a cell array containing multiple x vectors
         
         if ~exist('cm', 'var'); cm = []; end
 
