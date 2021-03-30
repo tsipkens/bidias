@@ -1,6 +1,20 @@
 
 % PARTIALGRID  A subclass of Grid handling partially truncated grids.
 %  
+%  G = PartialGrid(...,R0,SLOPE0) tkaes the same inputs as the Grid
+%  class constructor, but adds extra inputs to form a partial grid. 
+%  This call removes elements above the line that goes through the 
+%  point R0 and having a slope of SLOPE0. For logarithmic
+%  grids, lines correspond to exponential curves, R0 are given as 
+%  log10(...) quantities, and slopes correspond to the exponent. For 
+%  example, Grid.partial([0,2],3) removes all grid elements above the
+%  exponential curve that passes through [1,100] and having an exponent
+%  of 3 (e.g., curves that increase volumetrically). 
+%  
+%  G = PartialGrid(...,R0,SLOPE0,R1,SLOPE1) adds a second set of 
+%  arguments analogous to above but remove points below a given line 
+%  (instead of above). 
+%  
 %  AUTHOR: Timothy Sipkens, 2021-03-29
 
 classdef PartialGrid < Grid
@@ -18,22 +32,8 @@ end
 
 methods
         
-    % PARTIALGRID  Convert grid to a partial grid, removing elements above or 
-    %  below a line. 
-    % 
-    %  TO DO: Update below defintion.
-    %  
-    %  G = Grid.partial(R0,SLOPE0) removes elements above the line that goes
-    %  through the point R0 and having a slope of SLOPE0. For logarithmic
-    %  grids, lines correspond to exponential curves, R0 are given as 
-    %  log10(...) quantities, and slopes correspond to the exponent. For 
-    %  example, Grid.partial([0,2],3) removes all grid elements above the
-    %  exponential curve that passes through [1,100] and having an exponent
-    %  of 3 (e.g., curves that increase volumetrically). 
-    % 
-    %  G = Grid.partial(R0,SLOPE0,R1,SLOPE1) adds a second set of arguments
-    %  analogous to above but remove points below a given line (instead of 
-    %  above). 
+    %== PARTIALGRID ======================================================%
+    %   Constructor class.
     function obj = PartialGrid(span_edges, ne, discrete, r0, slope0, r1, slope1)
         
         % Call Grid constructor.
@@ -142,10 +142,6 @@ methods
     %   interpolation for this purpose. The parameter 'grid_old'
     %   contains the original grid for the input data x.
     function x = project(obj, grid_old, x)
-        
-        if isa(grid_old, 'PartialGrid') % added processing for partial grids
-            x = grid_old.partial2full(x);
-        end
         
         x = project@Grid(obj, grid_old, x);
         

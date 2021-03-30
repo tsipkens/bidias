@@ -67,17 +67,6 @@ end
 methods
     %== GRID =========================================================%
     %   Class constructor.
-    % 
-    % Inputs:
-    %   span_edges  Either:
-    %                (i) a span over which discretization occurs or
-    %                (ii) a cell of edge vectors
-    %   ne          If a span is specified, this is the number of
-    %               elements/pixels in each dimension
-    %   discrete    Specifies type of discretization, used for
-    %               marginalization and/or discretization
-    %               Possible values: 'linear' or 'logarithmic'/'log' (default)
-    %-----------------------------------------------------------------%
     function obj = Grid(span_edges,ne,discrete)
         
         %-- Parse inputs ---------------------------------------------%
@@ -381,7 +370,7 @@ methods
     %   contains the original grid for the input data x.
     function x = project(obj,grid_old,x)
         
-        if isa(grid_old, 'PartialGrid') % added processing for partial grids
+        if isa(grid_old, 'PartialGrid')  % added processing for partial grids
             x = grid_old.partial2full(x);
         end
         
