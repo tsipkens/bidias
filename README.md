@@ -35,7 +35,7 @@ This code makes use of the [optimization](https://www.mathworks.com/products/opt
 
 In addition to the necessary Matlab toolboxes, this program has two dependences that are included as git submodules: 
 
-1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains Matlab code to compute the transfer function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). As such, while this package is primarily necessary if considering particle mass analyzer transfer functions, the package also includes basic functions for computing particle mobility necessary for computing the DMA transfer function. 
+1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains Matlab code to compute the transfer or response function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). As such, while this package is primarily necessary if considering particle mass analyzer transfer functions, the package also includes basic functions for computing particle mobility necessary for computing the DMA transfer or response function. 
 
 2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds perceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
 
@@ -55,7 +55,7 @@ For **tfer_pma**, functions in the **kernel** package will add this folder to th
 
 ## Getting started: A sample inversion
 
-Scripts associated with this codebase typically have five components: (**1**) a reconstruction grid; (**2**) a mathematical kernel, which contains the device transfer functions and charging fractions, if relevant; (**3**) data, whether built from a synthetic phantom or experiments; (**4**) an inversion step where the previous two components are used to estimate the size distributions; and, finally, (**5**) post-processing and visualization (e.g., plotting, distribution fitting). 
+Scripts associated with this codebase typically have five components: (**1**) a reconstruction grid; (**2**) a mathematical kernel, which contains the device transfer or response functions and charging fractions, if relevant; (**3**) data, whether built from a synthetic phantom or experiments; (**4**) an inversion step where the previous two components are used to estimate the size distributions; and, finally, (**5**) post-processing and visualization (e.g., plotting, distribution fitting). 
 
 > Note that for experimental scenarios, the order of the steps will be altered such that (**3**), importing the experimental data, will likely be the first step. 
 
@@ -117,9 +117,11 @@ grid_x.plot2d(x0); % show the phantom in figure 1
 
 Here the vertical axis corresponds to the mass in fg that we specified at the beginning, and the horizontal axis to the mobility diameter in nm. Note that we chose a very narrow phantom. The white lines indicate the edges of the partial grid that we defined in a previous step. This is what we will try to reconstruct. 
 
-### (2) Compute the kernel / transfer functions
+### (2) Compute the kernel
 
-Next, we need to compute the kernel (or device transfer functions). This first requires us to define the setpoints on which the data will be generated. Here, we defined a new `Grid` for the points at which the measurements will take place:
+**(i.e., the transfer or response functions of the instruments)**
+
+Next, we need to compute the kernel (or device transfer/response functions). This first requires us to define the setpoints on which the data will be generated. Here, we defined a new `Grid` for the points at which the measurements will take place:
 
 ```Matlab
 % Define a new grid for the measurements. 
@@ -245,7 +247,7 @@ where:
 - *a* and *b* are two aerosol properties (e.g., the logarithm of the particle mass and mobility diameter, such that *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*<sub>m</sub>);
 - *N<sub>i</sub>* is some measurement, most often a number of counts of particles, at some *i*<sup>th</sup> measurement setpoint or location;
 - *N*<sub>tot</sub> is the total number of particles in the measured volume of aerosol, that is the product of the particle number concentration, the flow rate, and the total sampling time;
-- *K*(*a<sub>i</sub>*\*,*b<sub>i</sub>*\*,*a*,*b*) is a kernel containing device transfer functions or other discretization information; and *p*(*a*,*b*) is a two-dimensional size distribution.
+- *K*(*a<sub>i</sub>*\*,*b<sub>i</sub>*\*,*a*,*b*) is a kernel containing device transfer or response functions or other discretization information; and *p*(*a*,*b*) is a two-dimensional size distribution.
 
 Inversion refers to finding *p*(*a*,*b*) from some set of measurements, {*N*<sub>1</sub>,*N*<sub>2</sub>,...}. For computation, the two-dimensional size distribution is discretized, most simply by representing the quantity on a regular rectangular grid with *n*<sub>a</sub> discrete points for the first type of particle size (that is for *a*, e.g., particle mass) and *n*<sub>b</sub> for the second type of particle size (that is for *b*, e.g., particle mobility diameter). In this case, we define a global index for the grid, *j*, and vectorize the distribution, such that
 
