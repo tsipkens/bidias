@@ -1,5 +1,5 @@
 
-% LOAD_CONFIG  Loads settings from configuration file (YML). 
+% LOAD_CONFIG  Loads settings from configuration file (YML, YAML, or JSON). 
 %  Files are loaded in order supplied, overwriting properties where
 %  relevant. 
 %  
@@ -12,7 +12,13 @@ if ~iscell(fnames); fnames = {fnames}; end
 config = struct();
 for ii=1:length(fnames)
     
-    config0 = io.read_yml(fnames{ii});  % read new settings
+    if strcmp(fnames{ii}(end-3:end), 'json')
+        config0 = io.read_json(fnames{ii});  % read new settings
+        
+    elseif or(strcmp(fnames{ii}(end-2:end), 'yml'), strcmp(fnames{ii}(end-3:end), 'yaml'))
+        config0 = io.read_yml(fnames{ii});  % read new settings
+        
+    else; error('Failed to load config file.'); end
     
     % Copy (or overwrite) existing settings.
     f = fieldnames(config0);
