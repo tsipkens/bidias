@@ -22,15 +22,9 @@
 %  
 %  AUTHOR: Timothy Sipkens, 2019-05-17
 
-function [y, grid_y] = x2y(x, grid_x, fun, span_y, dim, n_y)
+function [y, grid_y] = x2y(x, grid_x, fun, dim, span_y, n_y)
 
 %-- Parse inputs -----------------------------------%
-if ~exist('n_y', 'var'); n_y = []; end
-if isempty(n_y); n_y = 600; end  % can be large as conversion is simple
-
-if ~exist('span_y', 'var'); span_y = []; end
-if isempty(span_y); span_y = [100, 3000]; end
-
 if ~exist('fun', 'var'); fun = []; end
 if isempty(fun)  % by default use mass-mobility distribution
     fun = @(a, b) 6 .* a ./ (pi .* b .^ 3) .* 1e9;
@@ -40,13 +34,34 @@ end
 if ~exist('dim', 'var'); dim = []; end
 if isempty(dim); dim = 2; end
 dim2 = 3 - dim;  % other dimension, i.e., 2 -> 1 or 1 -> 2
+
+if ~exist('n_y', 'var'); n_y = []; end
+if isempty(n_y); n_y = 600; end  % can be large as conversion is simple
+
+if ~exist('span_y', 'var'); span_y = []; end
+if isempty(span_y)  % estimate from existing spans and x values
+    f0 = fun(grid_x.elements(:, 1), grid_x.elements(:, 2));  % compute fun for all elements
+    f_sig = x > max(x) ./ 1e4;  % flag significant x values
+    
+    f2 = log10(max(f0(f_sig)));  % upper bound
+    f2 = ceil(10 .^ (f2 - floor(f2)) .* 10) ./ 10 .* ...  % pre-factor
+        10 .^ floor(f2);  % exponent
+    
+    f1 = log10(min(f0(f_sig)));  % lower bound
+    if f1 == -Inf; f1 = log10(f2 ./ 1e3); end  % if zero, span 5 orders of magnitude instead
+    f1 = floor(10 .^ (f1 - floor(f1)) .* 10) ./ 10 .* ...  % pre-factor
+        10 .^ floor(f1);  % exponent
+    
+    span_y = [f1, f2];
+end
 %---------------------------------------------------%
 
 
-y_min = span_y(1);  % get span for effective density
+% Quantities relevant for new grid.
+y_min = span_y(1);  % get span for neww quantity
 y_max = span_y(2);
 y_n = logspace(log10(y_min), ...
-               log10(y_max), n_y);  % discretize rho space
+               log10(y_max), n_y);  % discretized y space
 
 % Generate new grid for transformed space.
 % Generate one new dimension while keeping dimension DIM.
@@ -60,11 +75,15 @@ end
 
 x_rs = grid_x.reshape(x);
 
+% Transpose such that second dimension is always the one preserved.
+% Simplifies some of the below procedure.
+if dim == 1; x_rs = x_rs'; end
+
 
 %== Loop over mobility diameter ==========================================%
 %   (i.e., consider conditional mass distributions)
-n_dim = grid_x.ne(dim);
-y = zeros(grid_x.ne(dim), length(y_n));
+n_dim = grid_x.ne(dim);  % number of elements for DIM of grid_x
+y = zeros(grid_x.ne(dim), length(y_n));  % intialize transforms distribution
 
 for ii=1:n_dim
     
@@ -73,21 +92,23 @@ for ii=1:n_dim
     
     % Convert x nodes to effective density for iith mobility.
     if dim == 2
-        y_old = log10( ...
-            fun(grid_x.nodes{1}, grid_x.edges{2}(ii)));
+        y_old = fun(grid_x.nodes{1}, grid_x.edges{2}(ii));
     else
-        y_old = log10( ...
-            fun(grid_x.edges{1}(ii), grid_x.nodes{2}));
+        y_old = fun(grid_x.edges{1}(ii), grid_x.nodes{2});
     end
     
-    % Reverse order if decreasing.
-    % Assumes function in monotonic.
+    % Reverse order if y_old is decreasing.
+    % Overlapping elements considerations below requires 
+    % monotonic increase.
+    f_reverse = 0;
     if y_old(2) < y_old(1)
         y_old = fliplr(y_old);
         f_reverse = 1;
-    else
-        f_reverse = 0;
     end
+    
+    % Take logarithm.
+    y_old = max(y_old, 0);
+    y_old = log10(y_old);
     
     % Loop over masses computing overlap between new and old elements.
     for jj=1:grid_x.ne(dim2)
@@ -99,19 +120,17 @@ for ii=1:n_dim
             log10(grid_y.nodes{dim2}(1:(end-1)))); % normalize by rho bin size
     end
     
-    % Multiply transformation by mass-mobility distr.
+    % Re-flip T if f_reverse flagged above.
     if f_reverse; T = fliplr(T); end
-    if dim == 2
-        y(ii,:) = T * x_rs(:,ii);
-    else
-        y(ii,:) = T * x_rs(ii,:)';
-    end
+    
+    % Multiply transformation by mass-mobility distr.
+    y(ii, :) = T * x_rs(:, ii);
 end
 %=========================================================================%
 
 
 % Format data for output
-if dim == 2; y = y'; end
+if dim == 2; y = y'; end  % transpose for DIM = 2 to preserve original dimension
 y = y(:);
 
 end
