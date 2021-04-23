@@ -1,9 +1,22 @@
 
 % MASS2RHO  Converts a mass-mobility distribution to an effective density-mobility distribution.
-% Author:   Timothy Sipkens, 2019-05-17
-%=========================================================================%
+%  
+%  Y = tools.mass2rho(X, GRID_X) converts a mass-mobility distribtuion to
+%  an effective density-mobility distribution, using effective densities
+%  that span from 100 -> 3,000 kg/m3 and 600 effective density elements.
+%  
+%  Y = tools.mass2rho(X, GRID_X, SPAN_RHO) exclitly states the range of
+%  effective densities for converted space.
+%  
+%  Y = tools.mass2rho(..., N_RHO) explicitly states the number of elements
+%  in the effective density dimension. 
+%  
+%  [Y, GRID_RHO] = tools.mass2rho(...) outputs the grid on which the
+%  effective density-mobility distribution is defined.
+%  
+%  AUTHOR: Timothy Sipkens, 2019-05-17
 
-function [y,grid_rho] = mass2rho(x, grid_x, span_rho, n_rho)
+function [y, grid_rho] = mass2rho(x, grid_x, span_rho, n_rho)
 
 %-- Parse inputs -----------------------------------%
 if ~exist('n_rho','var'); n_rho = []; end
@@ -29,13 +42,17 @@ x_rs = grid_x.reshape(x);
 %   (i.e., consider conditional mass distributions)
 n_d = grid_x.ne(2);
 y = zeros(grid_x.ne(2), length(rho_n));
+
 for ii=1:n_d
-    c4 = zeros(grid_rho.ne(1),grid_x.ne(1)); % initialize transformation kernel
+    % Initialize transformation kernel of appropriate size.
+    c4 = zeros(grid_rho.ne(1),grid_x.ne(1));
     
     % Convert x nodes to effective density for iith mobility.
-    rho_old = log10(6.*grid_x.nodes{1}./(pi.*grid_x.edges{2}(ii).^3).*1e9);
+    rho_old = log10( ...
+        6 .* grid_x.nodes{1} ./ (pi .* grid_x.edges{2}(ii) .^ 3) ...  % eq. for effective density
+        .* 1e9);
     
-    for jj=1:grid_x.ne(1)
+    for jj=1:grid_x.ne(1)  % loop over masses
         c4(:,jj) = max(...
             min(log10(grid_rho.nodes{1}(2:end)), rho_old(jj+1)) - ... % upper bound
             max(log10(grid_rho.nodes{1}(1:(end-1))), rho_old(jj))... % lower bound
@@ -44,7 +61,8 @@ for ii=1:n_d
             log10(grid_rho.nodes{1}(1:(end-1)))); % normalize by rho bin size
     end
     
-    y(ii,:) = c4*x_rs(:,ii);
+    % Multiply transformation by mass-mobility distr.
+    y(ii,:) = c4 * x_rs(:,ii);
 end
 %=========================================================================%
 
