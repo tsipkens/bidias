@@ -65,7 +65,17 @@ switch name
         
         p.dg = 1;
         p.sg = 2.2;
-        p.rhog = 1e9*6/pi;
+        p.mg = 1;
+        p.smd = 1.2;
+        p.Dm = 1;
+        type{1} = 'logn';
+        
+    case {'distr-sp2-2'}
+        name = 'SP2 Distribution';
+        
+        p.dg = 3;
+        p.sg = 2.2;
+        p.mg = 1;
         p.smd = 1.2;
         p.Dm = 1;
         type{1} = 'logn';
