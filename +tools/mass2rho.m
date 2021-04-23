@@ -27,11 +27,12 @@ if isempty(span_rho); span_rho = [100,3000]; end
 %---------------------------------------------------%
 
 
-rho_min = span_rho(1); % get span for effective density
+rho_min = span_rho(1);  % get span for effective density
 rho_max = span_rho(2);
-rho_n = logspace(log10(rho_min), log10(rho_max), n_rho); % discretize rho space
+rho_n = logspace(log10(rho_min), ...
+                 log10(rho_max), n_rho);  % discretize rho space
 
-% Generate new grid for effective density-mobility
+% Generate new grid for effective density-mobility.
 grid_rho = Grid([rho_min,rho_max;grid_x.span(2,:)],...
     [n_rho,length(grid_x.edges{2})], 'logarithmic');
 
@@ -44,6 +45,7 @@ n_d = grid_x.ne(2);
 y = zeros(grid_x.ne(2), length(rho_n));
 
 for ii=1:n_d
+    
     % Initialize transformation kernel of appropriate size.
     c4 = zeros(grid_rho.ne(1),grid_x.ne(1));
     
