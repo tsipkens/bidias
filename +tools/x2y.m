@@ -5,10 +5,25 @@
 %  distributions to frBC-mp distributions. 
 %  
 %  Y = tools.x2y(X, GRID_X) converts a mass-mobility distribtuion to
-%  an effective density-mobility distribution, using effective densities
-%  that span from 100 -> 3,000 kg/m3 and 600 effective density elements.
+%  an effective density-mobility distribution. By default DIM = 2, SPAN_Y
+%  is estimated from the input data and grid span, and N_Y = 600. See notes
+%  below for variable definitions.
 %  
-%  Y = tools.x2y(X, GRID_X, FUN, SPAN_Y) converts 
+%  Y = tools.x2y(X, GRID_X, FUN) add an input for a transformation 
+%  function_handle. Expected format is `FUN = @(A,B)...` where A is the
+%  quantity in the first dimension of the grid and B is the quantity in the
+%  second dimension. FUN must be a linear function in logspace for A and B. 
+%  
+%  Y = tools.x2y(X, GRID_X, FUN, DIM) applies the transformation while
+%  preserving the quantity in the DIM dimension of the input grid. For
+%  example, for mass-mobility distributions and the default of DIM = 2, the
+%  transformation will be applied while preserving the mobility diameter,
+%  which will remain as the second dimension in the output grid.
+%  
+%  Y = tools.x2y(..., SPAN_Y) explicitly states the span of the transformed
+%  quantity on the output grid. By default, the span is estimated based on
+%  the max and min of x values that are within three order-of-magnitude of
+%  max{x}.
 %  
 %  Y = tools.x2y(..., N_Y) explicitly states the number of elements
 %  in the effective density dimension. 
@@ -18,7 +33,8 @@
 %  
 %  ------------------------------------------------------------------------
 %  
-%  NOTE: This function requires that FUN be monotonic within spans.
+%  NOTE: This function requires that FUN be linear in logspace (e.g.,
+%  allowing for power laws) and, by extension, to be monotonic.
 %  
 %  AUTHOR: Timothy Sipkens, 2019-05-17
 
@@ -117,7 +133,7 @@ for ii=1:n_dim
             max(log10(grid_y.nodes{dim2}(1:(end-1))), y_old(jj))... % lower bound
             ,0) ./ ...
             (log10(grid_y.nodes{dim2}(2:end)) - ...
-            log10(grid_y.nodes{dim2}(1:(end-1)))); % normalize by rho bin size
+            log10(grid_y.nodes{dim2}(1:(end-1)))); % normalize by y bin size
     end
     
     % Re-flip T if f_reverse flagged above.
