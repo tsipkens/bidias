@@ -101,7 +101,7 @@ if dim == 1; x_rs = x_rs'; end
 n_dim = grid_x.ne(dim);  % number of elements for DIM of grid_x
 y = zeros(grid_x.ne(dim), length(y_n));  % intialize transforms distribution
 
-for ii=1:n_dim
+for ii = 1:n_dim
     
     % Initialize transformation kernel of appropriate size.
     T = zeros(grid_y.ne(dim2), grid_x.ne(dim2));
@@ -123,15 +123,15 @@ for ii=1:n_dim
     end
     
     % Take logarithm.
-    y_old = max(y_old, 0);
+    y_old = max(y_old, 0);  % remove negative entries (not allowed on log grid)
     y_old = log10(y_old);
     
     % Loop over masses computing overlap between new and old elements.
-    for jj=1:grid_x.ne(dim2)
+    for jj = 1:grid_x.ne(dim2)
         T(:,jj) = max(...
             min(log10(grid_y.nodes{dim2}(2:end)), y_old(jj+1)) - ... % upper bound
-            max(log10(grid_y.nodes{dim2}(1:(end-1))), y_old(jj))... % lower bound
-            ,0) ./ ...
+            max(log10(grid_y.nodes{dim2}(1:(end-1))), y_old(jj)) ... % lower bound
+            , 0) ./ ...
             (log10(grid_y.nodes{dim2}(2:end)) - ...
             log10(grid_y.nodes{dim2}(1:(end-1)))); % normalize by y bin size
     end

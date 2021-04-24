@@ -28,7 +28,7 @@ span_t = [ ...
 grid_t = Grid(span_t,...
     [540,540],'logarithmic');
 grid_t = grid_t.partial(0,1);
-phantom = Phantom('distr-sp2',grid_t);
+phantom = Phantom('distr-sp2-2', grid_t);
 x_t = phantom.x;
 nmax = max(x_t);
 cmax = nmax;
