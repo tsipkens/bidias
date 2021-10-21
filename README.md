@@ -1,5 +1,5 @@
 
-# Matlab tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
+# MATLAB tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
 
 [![DOI](https://img.shields.io/badge/DOI-10.17632/sg2zj5yrvr.3-blue.svg)](10.17632/sg2zj5yrvr.3)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
@@ -31,11 +31,11 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 ## Setup
 
-This code makes use of the [optimization](https://www.mathworks.com/products/optimization.html) and [statistical](https://www.mathworks.com/products/statistics.html) toolboxes from Matlab. Refer to the [Matlab documentation](https://www.mathworks.com/help/matlab/add-ons.html) for information on how to add toolboxes. 
+This code makes use of the [optimization](https://www.mathworks.com/products/optimization.html) and [statistical](https://www.mathworks.com/products/statistics.html) toolboxes from MATLAB. Refer to the [MATLAB documentation](https://www.mathworks.com/help/matlab/add-ons.html) for information on how to add toolboxes. 
 
-In addition to the necessary Matlab toolboxes, this program has two dependences that are included as git submodules: 
+In addition to the necessary MATLAB toolboxes, this program has two dependences that are included as git submodules: 
 
-1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains Matlab code to compute the transfer or response function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). As such, while this package is primarily necessary if considering particle mass analyzer transfer functions, the package also includes basic functions for computing particle mobility necessary for computing the DMA transfer or response function. 
+1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains MATLAB code to compute the transfer or response function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). As such, while this package is primarily necessary if considering particle mass analyzer transfer functions, the package also includes basic functions for computing particle mobility necessary for computing the DMA transfer or response function. 
 
 2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds perceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
 
@@ -45,7 +45,7 @@ As a result, the folders corresponding to these submodules will initially be emp
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
 ```
 
-which will automatically download the submodules when downloading overall program. Alternatively, the submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders. In either case, to be used directly, these packages should then be added to the Matlab path at the beginning of any script using
+which will automatically download the submodules when downloading overall program. Alternatively, the submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders. In either case, to be used directly, these packages should then be added to the MATLAB path at the beginning of any script using
 
 ```Matlab
 addpath('tfer_pma', 'cmap');
@@ -572,13 +572,13 @@ We note that functions that end in `_grid` exploit the structure of gridded data
 
 ### 4.2 tfer_pma
 
-Unlike the other packages, **tfer_pma** corresponds to a submodule that is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). It does not contain a `+` symbol and thus must be explicitly added to the Matlab path using
+Unlike the other packages, **tfer_pma** corresponds to a submodule that is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). It does not contain a `+` symbol and thus must be explicitly added to the MATLAB path using
 
 ```Matlab
 addpath('tfer_pma');
 ```
 
-to be used explicitly in scripts. The package is automatically added to the Matlab path, whenever it is necessary in calling functions in the **kernel** package. 
+to be used explicitly in scripts. The package is automatically added to the MATLAB path, whenever it is necessary in calling functions in the **kernel** package. 
 
 The package is used in evaluating the transfer function of the particle mass analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal particle mass analyzer (CPMA). PMA transfer functions are evaluated using the analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including different approximations for the particle migration velocity and options for transfer functions that include diffusion. For more details on the theory, one is referred to the referenced work. The package also contains some standard reference functions (e.g. `dm2zp(...)`) used in evaluating the DMA transfer function when calling `kernel.tfer_dma(...)`.
 
@@ -654,7 +654,7 @@ Information on the provided colormaps can be found in an associated README in th
 
 [Rawat, V. K., Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., & Hogan Jr, C. J. (2016). Two dimensional size–mass distribution function inversion from differential mobility analyzer–aerosol particle mass analyzer (DMA–APM) measurements. *J. Aerosol Sci.*, 92, 70-82.][rawat]
 
-[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). Matlab tools for PMA transfer function evaluation (mat-tfer-pma).][5_code]
+[Sipkens, T. A., Olfert, J. S., & Rogak, S. N. (2019). MATLAB tools for PMA transfer function evaluation (mat-tfer-pma).][5_code]
 
 [Sipkens, T. A., Hadwin, P. J., Grauer, S. J., & Daun, K. J. (2017). General error model for analysis of laser-induced incandescence signals. *Appl. Opt.* 56, 8436-8445.][6_AO17]
 

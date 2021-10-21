@@ -85,18 +85,13 @@ f_z = sparse( ...
 %   with one entry per charge state.
 disp(' Computing DMA contribution:');
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
-tools.textbar([0, n_b(2), 0, n_z]);
+tools.textbar([0, n_z]);
 for kk=1:n_z
-    Omega_mat{kk} = sparse(n_b(2),n_i(2));  % pre-allocate for speed
-    
-    for ii=1:n_b(2)  % loop over d_star
-        Omega_mat{kk}(ii,:) = kernel.tfer_dma( ...
-            grid_b.edges{2}(ii) .* 1e-9, ...  % DMA setpoints
-            grid_i.edges{2} .* 1e-9, ...  % points for integration
-            z_vec(kk), ...  % integer charge state
-            prop_dma);  % DMA properties
-        tools.textbar([ii, n_b(2), kk, n_z]);
-    end
+    Omega_mat{kk} = kernel.tfer_dma( ...
+        grid_b.edges{2} .* 1e-9, ...  % DMA setpoints
+        grid_i.edges{2}' .* 1e-9, ...  % points for integration
+        z_vec(kk), ...  % integer charge state
+        prop_dma);  % DMA properties
     
     % Remove numerical noise in kernel.
     Omega_mat{kk}(Omega_mat{kk} < (1e-7 .* max(max(Omega_mat{kk})))) = 0;
@@ -104,6 +99,8 @@ for kk=1:n_z
     % Duplicate transfer function for repeated mass in grid_i.
 	[~,jj] = max(d==grid_i.edges{2},[],2);
     Omega_mat{kk} = Omega_mat{kk}(:,jj);
+    
+    tools.textbar([kk, n_z]);
 end
 disp(' Complete.');
 disp(' ');

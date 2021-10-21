@@ -49,31 +49,31 @@ e = 1.6022E-19; % electron charge [C]
 
 %-- Evaluate particle mobility -------------------------------------------%
 if strcmp(opts.solver,'Buckley')
-    [B,Zp] = dm2zp(d,z); % evaluate electrical mobility (Davies)
-    [~,Zp_star] = dm2zp(d_star);
+    [B, Zp] = dm2zp(d,z); % evaluate electrical mobility (Davies)
+    [~, Zp_star] = dm2zp(d_star);
 else
-    [B,Zp] = dm2zp(d,z,prop.T,prop.p); % evaluate electrical mobility (Kim et al.)
-    [~,Zp_star] = dm2zp(d_star,1,prop.T,prop.p);
+    [B, Zp] = dm2zp(d, z, prop.T, prop.p); % evaluate electrical mobility (Kim et al.)
+    [~, Zp_star] = dm2zp(d_star, 1, prop.T, prop.p);
 end
-Zp_tilde = Zp./Zp_star; % array of non-dimensional mobilities
+Zp_tilde = Zp ./ Zp_star; % array of non-dimensional mobilities
 
 
 %-- Evaluate transfer function -------------------------------------------%
 if opts.diffusion
     switch opts.solver
         case 'buckley' % evaluation from Buckley et al.
-            D = prop.D(B).*z; % diffusion
-            sigma = (prop.G_DMA*2*pi*prop.L.*D./prop.Q_c).^0.5;
+            D = prop.D(B) .* z; % diffusion
+            sigma = (prop.G_DMA*2*pi*prop.L .* D ./ prop.Q_c) .^ 0.5;
             
         case 'plug' % Plug flow, Stolzenburg, 2018
-            V = (prop.Q_c/(2*pi*Zp_star*prop.L))*log(prop.R2/prop.R1); % Classifier Voltage (TSI DMA 3080 Manual Equation B-5)
-            sigma_star = sqrt(((kb*prop.T)/(z*e*V))*prop.G_DMA); % Stolzenburg Manuscript Equation 20
+            V = (prop.Q_c ./ (2*pi .* Zp_star .* prop.L)) .* log(prop.R2 / prop.R1); % Classifier Voltage (TSI DMA 3080 Manual Equation B-5)
+            sigma_star = sqrt(((kb*prop.T) / (z*e*V)) * prop.G_DMA); % Stolzenburg Manuscript Equation 20
             sigma = sqrt(sigma_star^2.*Zp_tilde); % Stolzenburg Manuscript Equation 19
             
-        case {'olfert','fullydeveloped'} % Olfert laboratory; Fully developed flow, Stolzenburg, 2018
-            V = (prop.Q_c/(2*pi.*Zp_star.*prop.L)).*log(prop.R2/prop.R1); % Classifier Voltage (TSI DMA 3080 Manual Equation B-5)
-            sigma_star = sqrt(((kb*prop.T)./(z.*e*V))*prop.G_DMA); % Stolzenburg Manuscript Equation 20
-            sigma = sqrt(sigma_star^2.*Zp_tilde); % Stolzenburg Manuscript Equation 19
+        case {'olfert', 'fullydeveloped'} % Olfert laboratory; Fully developed flow, Stolzenburg, 2018
+            V = (prop.Q_c ./ (2*pi .* Zp_star .* prop.L)) .* log(prop.R2 / prop.R1); % Classifier Voltage (TSI DMA 3080 Manual Equation B-5)
+            sigma_star = sqrt(((kb*prop.T) ./ (z .* e .* V)) .* prop.G_DMA); % Stolzenburg Manuscript Equation 20
+            sigma = sqrt(sigma_star .^ 2 .* Zp_tilde); % Stolzenburg Manuscript Equation 19
             
         otherwise
             disp('Invalid solver specified.');

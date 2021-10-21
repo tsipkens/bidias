@@ -69,6 +69,14 @@ prop_pma = kernel.prop_pma;  % get default CPMA properties
 % Generate A matrix based on grid for x_t (fine resolution) and b.
 A_t = kernel.gen_pma_dma_grid(grid_b, grid_t, prop_pma, [], 'Rm', 3);
 
+%{
+% Alternative (MUCH slower) route to computing the transfer function.
+sp = get_setpoint(prop_pma,...  % get PMA setpoints
+    'm_star', grid_b.elements(:,1) .* 1e-18, ...  % mass from the grid
+    'Rm', 3);
+A_ta = kernel.gen_pma_dma(sp, grid_b.elements(:,2), grid_t, prop_pma);
+%}
+
 disp('Transform to discretization in x ...');
 B = grid_x.transform(grid_t); % evaluate matrix modifier to transform kernel
 A = A_t*B; % equivalent to integration, rebases kernel to grid for x (instead of x_t)

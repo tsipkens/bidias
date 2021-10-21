@@ -42,7 +42,7 @@ if ~exist('prop_dma','var'); prop_dma = []; end
 
     
 %-- Parse measurement set points (b) -------------------------------------%
-N_b = length(sp); % length of data vector
+n_b = length(sp); % length of data vector
 
 
 %-- Generate grid for intergration ---------------------------------------%
@@ -67,18 +67,29 @@ n_z = length(z_vec);
 %   Note: The DMA transfer function is 1D (only a function of mobility),
 %   which is exploited to speed evaluation. The results is 1 by 3 cell, 
 %   with one entry per charge state.
-disp(' Computing DMA contribution...');
+disp(' Computing DMA contribution:');
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
+tools.textbar([0, n_z]);
 for kk=1:n_z
-    Omega_mat{kk} = sparse(N_b,n_i(2)); % pre-allocate for speed
+    %{
+    Omega_mat{kk} = sparse(n_b,n_i(2)); % pre-allocate for speed
     
-    for ii=1:N_b % loop over d_star
+    for ii=1:n_b % loop over d_star
         Omega_mat{kk}(ii,:) = kernel.tfer_dma( ...
             d_star(ii).*1e-9, ...
             grid_i.edges{2}.*1e-9, ...
             z_vec(kk), ...
             prop_dma);
     end
+    %}
+    
+    %-{
+    Omega_mat{kk} = kernel.tfer_dma( ...
+        d_star' .* 1e-9, ...
+        grid_i.edges{2}' .* 1e-9, ...
+        z_vec(kk), ...
+        prop_dma);
+    %}
     
     Omega_mat{kk}(Omega_mat{kk}<(1e-7.*max(max(Omega_mat{kk})))) = 0;
         % remove numerical noise in kernel
@@ -86,26 +97,28 @@ for kk=1:n_z
     [~,jj] = max(d==grid_i.edges{2},[],2);
     Omega_mat{kk} = Omega_mat{kk}(:,jj);
         % repeat transfer function for repeated mass setpoint
+    
+    tools.textbar([kk, n_z]);
 end
-disp(' Completed DMA contribution.');
+disp(' Complete.');
 disp(' ');
 
 
 %== STEP 2: Evaluate PMA transfer function ===============================%
 disp(' Computing PMA contribution:');
-tools.textbar(0); % initiate textbar
+tools.textbar([0, n_b, 0, n_z]); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed
     % one cell entry per charge state
 for kk=1:n_z % loop over the charge state
-    Lambda_mat{kk} = sparse(N_b,N_i);% pre-allocate for speed
+    Lambda_mat{kk} = sparse(n_b,N_i);% pre-allocate for speed
     
-    for ii=1:N_b % loop over m_star
+    for ii=1:n_b % loop over m_star
         Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
             sp(ii),m.*1e-18,...
             d.*1e-9,z_vec(kk),prop_pma)';
                 % PMA transfer function
         
-        tools.textbar((N_b*(kk-1)+ii)/(n_z*N_b));
+        tools.textbar([ii, n_b, kk, n_z]);
     end
 end
 disp(' Complete.');
@@ -114,7 +127,7 @@ disp(' ');
 
 %== SETP 3: Combine to compile kernel ====================================%
 disp(' Compiling kernel ...');
-K = sparse(N_b,N_i);
+K = sparse(n_b,N_i);
 for kk=1:n_z
     K = K+f_z(z_vec(kk),:).*... % charging contribution
         Lambda_mat{kk}(:,:).*... % PMA contribution
