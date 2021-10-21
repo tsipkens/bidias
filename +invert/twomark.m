@@ -1,6 +1,7 @@
 
-% TWOMARK  Performs inversion using the iterative Twomey approach with intermediate smoothing.
-% 
+% TWOMARK  Performs inversion using the iterative Twomey-Markowski approach.
+%  This add an intermediate smoothing step to the standard Twomey routine. 
+%  
 %  ------------------------------------------------------------------------
 %  
 %  INPUTS:
