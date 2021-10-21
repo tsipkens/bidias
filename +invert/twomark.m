@@ -1,8 +1,9 @@
 
 % TWOMARK  Performs inversion using the iterative Twomey approach with intermediate smoothing.
-% Author:  Timothy Sipkens, 2018-12-20
-%-------------------------------------------------------------------------%
-% Inputs:
+% 
+%  ------------------------------------------------------------------------
+%  
+%  INPUTS:
 %   A           Model matrix
 %   b           Data
 %   Lb          Cholesky factorization of inverse covariance matrix
@@ -13,9 +14,12 @@
 %   Sf          Smoothing parameter             (Optional, default is 1/300)
 %   SIGMA_end   Mean square error for exit      (Optional, default is 1)
 %
-% Outputs:
+%  OUTPUTS:
 %   x           Estimate
-%=========================================================================%
+%  
+%  ------------------------------------------------------------------------
+% 
+%  AUTHOR:  Timothy Sipkens, 2018-12-20
 
 function x = twomark(A,b,Lb,n_grid,xi,iter,opt_smooth,Sf)
 
