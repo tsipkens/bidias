@@ -41,7 +41,7 @@ n_x = [50,64]; % number of elements per dimension in x
 
 grid_x = Grid([grid_t.span],...
     n_x,'logarithmic');
-x0 = grid_x.project(grid_t,x_t); % project into basis for x
+x0 = grid_x.project(grid_t, x_t); % project into basis for x
 
 figure(1);
 phantom.plot;
@@ -74,7 +74,7 @@ A_t = kernel.gen_pma_dma_grid(grid_b, grid_t, prop_pma, [], 'Rm', 3);
 sp = get_setpoint(prop_pma,...  % get PMA setpoints
     'm_star', grid_b.elements(:,1) .* 1e-18, ...  % mass from the grid
     'Rm', 3);
-A_ta = kernel.gen_pma_dma(sp, grid_b.elements(:,2), grid_t, prop_pma);
+A_ta = kernel.gen_pma_dma(sp, grid_b.elements(:,2), grid_x, prop_pma);
 %}
 
 disp('Transform to discretization in x ...');
@@ -86,7 +86,7 @@ disp(' ');
 
 figure(2);
 colormap(gcf,[cm;1,1,1]);
-grid_x.plot2d_marg(x0,grid_t,x_t);
+grid_x.plot2d_marg(x0, grid_t, x_t);
 caxis([0,cmax*(1+1/256)]);
 
 

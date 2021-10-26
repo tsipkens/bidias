@@ -133,7 +133,7 @@ Dmb = pha_b.Sigma(1,2,1)/pha_b.Sigma(2,2,1); % also s1*R12/s2
 % (Previously run_inversions_h)
 
 %-- Tikhonov (1st order) -------------------------------------------------%
-tools.textheader('Running Tikhonov (1st) ...');
+disp('Running Tikhonov (1st) ...');
 lambda_tk1 = 1.1053; % found using other run_inversion* scripts
 x_tk1 = invert.tikhonov(...
     Lb*A,Lb*b,lambda_tk1,1,n_x(1));
