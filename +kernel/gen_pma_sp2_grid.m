@@ -108,22 +108,18 @@ disp(' ');
 %== STEP 2: Evaluate PMA transfer function ===============================%
 disp(' Computing PMA contribution:');
 
-tools.textbar([0, (n_z*n_b(2))]); % initiate textbar
-Lambda_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
+tools.textbar([0, n_z]); % initiate textbar
+Lambda_mat = cell(1, n_z); % pre-allocate for speed, one cell entry per charge state
 sp = get_setpoint(prop_pma,...
-    'm_star',grid_b.edges{2}.*1e-18,varargin{:}); % get PMA setpoints
+    'm_star', grid_b.edges{2} .* 1e-18, varargin{:}); % get PMA setpoints
 
 for kk=1:n_z % loop over the charge state
-    Lambda_mat{kk} = sparse(n_b(1),N_i);% pre-allocate for speed
-    
-    for ii=1:n_b(2) % loop over m_star
-        Lambda_mat{kk}(ii,:) = kernel.tfer_pma(...
-            sp(ii),m.*1e-18,d.*1e-9,...
-            z_vec(kk),prop_pma)';
-                % PMA transfer function
-        
-        tools.textbar([(n_b(2)*(kk-1)+ii), (n_z*n_b(2))]);
-    end
+    Lambda_mat{kk} = kernel.tfer_pma(...
+        sp, m' .* 1e-18, d' .* 1e-9,...
+        z_vec(kk), prop_pma)';
+            % PMA transfer function
+
+    tools.textbar([kk, n_z]);
 end
 disp(' Complete.');
 disp(' ');
