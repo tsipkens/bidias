@@ -504,6 +504,7 @@ methods
     %== RESHAPE ======================================================%
     function x = reshape(obj, x)
     % RESHAPE  A simple utility to reshape a vector based on the grid.
+    %  X = Grid.reshape(X) reshapes X based on the structure of Grid.
         x = reshape(x, obj.ne);
     end
     %=================================================================%
