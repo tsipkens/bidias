@@ -1,18 +1,18 @@
 
-% GEN_DMA_DMA_GRID  Evaluate kernel/transfer functions for DMA-DMA. 
+% GEN_DMAS_GRID  Evaluate kernel/transfer functions for DMA-DMA. 
 %  This function exploits the grid structure of the data and 
 %  reconstruction domain to speed computation.
 % 
-%  A = kernel.gen_pma_dma_grid(GRID_B,GRID_I) uses the data grid, GRID_B,
+%  A = kernel.gen_dmas_grid(GRID_B,GRID_I) uses the data grid, GRID_B,
 %  and integration grid, GRID_I, which is generally higher resolution. 
 % 
-%  A = kernel.gen_pma_dma_grid(GRID_B,GRID_I,PROP_DMA1) uses the 
+%  A = kernel.gen_dmas_grid(GRID_B,GRID_I,PROP_DMA1) uses the 
 %  pre-computed DMA properties in PROP_DMA1 for the first DMA. 
 % 
-%  A = kernel.gen_pma_dma_grid(GRID_B,GRID_I,PROP_DMA1,PROP_DMA2) adds an
+%  A = kernel.gen_dmas_grid(GRID_B,GRID_I,PROP_DMA1,PROP_DMA2) adds an
 %  inputs for the properties of the second DMA. 
 % 
-%  A = kernel.gen_pma_dma_grid(...,B_NEUT) adds a boolean flag of whether
+%  A = kernel.gen_dmas_grid(...,B_NEUT) adds a boolean flag of whether
 %  the particles are reneutralized. 
 %  
 %  ------------------------------------------------------------------------
@@ -24,7 +24,7 @@
 % 
 %  AUTHOR: Timothy Sipkens, 2018-11-27
 
-function A = gen_dma_dma_grid(grid_b, grid_i, prop_dma1, prop_dma2, b_neut, varargin)
+function A = gen_dmas_grid(grid_b, grid_i, prop_dma1, prop_dma2, b_neut, varargin)
 
 if ~exist('prop_dma1','var'); prop_dma1 = []; end
 if ~exist('prop_dma2','var'); prop_dma2 = []; end

@@ -1,9 +1,8 @@
 
-% MAIN_DMA_DMA  Script for doing tandem DMA inversion.
+% MAIN_DMAS  Script for doing tandem DMA inversion.
 % This case is for a HTDMA setup also showing growth factors.
 % 
 % Author: Timothy Sipkens, 2022-06-28
-%=========================================================================%
 
 clear;
 clc;
@@ -31,7 +30,7 @@ span_x = [...
 
 %== Generate x vector on coarser grid ====================================%
 %   This will be used later to gauge accuracy of reconstructions
-n_x = [70,80]; % number of elements per dimension in x
+n_x = [20,32]; % number of elements per dimension in x
     % [20,32]; % used for plotting projections of basis functions
     % [40,64]; % used in evaluating previous versions of regularization
 
@@ -63,8 +62,8 @@ grid_b = Grid(span_b,...
 prop_dma = kernel.prop_dma
 
 % Generate A matrix based on grid for x and b.
-A = kernel.gen_dma_dma_grid(grid_b, grid_x, prop_dma, prop_dma);
-A2 = kernel.gen_dma_dma_grid(grid_b, grid_x, prop_dma, prop_dma, 0);
+A = kernel.gen_dmas_grid(grid_b, grid_x, prop_dma, prop_dma);
+A2 = kernel.gen_dmas_grid(grid_b, grid_x, prop_dma, prop_dma, 0);
 
 idx = round(2 * grid_b.Ne / 3);
 grid_b.elements(idx,:)
