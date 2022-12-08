@@ -11,6 +11,7 @@ if length(dir('cmap')) == 2  % if `cmap` not downloaded
     cm = parula;  % use Matlab default
     cma = gray;  % use grey as alternate colormap
 else
+    addpath cmap;
     cm = viridis;  % otherwise use viridis
     cma = inferno;  % use inferno as alternate colormap
     cma = cma(30:end, :);  % adjust dark values
