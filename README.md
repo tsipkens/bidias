@@ -331,189 +331,53 @@ Finally, one can post-process and visualize the results as desired. The **[Grid]
 
 ### 2.2 Scripts to run a series of inversion methods (run_inversions*.m)
 
-As noted above, these scripts are intend to bundle a series of inversion methods into a single line of code in the `main*` scripts. This can include optimization routines, included in the **optimize** package, which run through several values of the regularization parameters. The lettered scripts each denote different combinations of techniques. The `run_inversions_a` script, for example, attempts to optimize the regularization parameter in the Tikhonov, MART, Twomey, and Twomey-Markowski approaches. Other lettered scripts combine other sets of inversion techniques. 
+As noted above, these scripts are intend to bundle a series of inversion methods into a single line of code in the `main*` scripts. This can include optimization routines, included in the **optimize** package, which run through several values of the regularization parameters. The lettered scripts each denote different combinations of techniques. 
 
 ## 3. CLASSES
 
 ### 3.1 Grid class
 
-Grid is a class developed to discretize a parameter space (e.g., mass-mobility space). This is done using a simple rectangular grid that can have linear, logarithmic or custom spaced elements along the edges. Methods are designed to make it easier to deal with gridded data, allowing users to reshape vectorized data back to a 2D grid (`Grid.reshape(...)` method) or vice versa. Other methods allow for plotting the 2D representation of vector data (`Grid.plot2d(...)` method) or calculate the gradient of vector data (`Grid.grad(...)` method).
-
-Instances of the Grid class can primarily be constructed in two ways. First, one can specify a `Grid.span` for the grid to cover in the parameter space. The span is specified using a 2 x 2 matrix, where the first row corresponds to the span for the first dimension of the parameter space (e.g., mass) and the second row corresponds to the span for the second dimension of the parameter space (e.g., mobility diameter). For example, if one wanted to logarithmically discretize mass space between 0.01 and 100 fg and mobility space between 10 and 1000 nm, one could call:
-
-```Matlab
-span = [0.01,100; 10,1000]; % span of space to be covered
-ne = [10,12]; % number of elements for each dimension
-grid = Grid(span, ne, 'log'); % create instance of Grid
-```
-
-Second, one can supply a 1 x 2 cell array of edges, where the first entry is the center of the elements in the first dimension of parameter space and the second entry of the elements in the second dimension of parameter space. For example, to make a simple grid with elements at 0.1 and 1 fg in mass space and 10, 200, and 1000 nm in mobility space, one would call:
-
-```Matlab
-edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors
-grid = Grid(edges, [], 'log'); % create instance of Grid
-```
-
-Note that the number of elements is not required in this instance, as it is implied by the length of the vectors given in `edges`. The `'log'` (or equivalently `'logarithm'`) argument is still required to specify where nodes would be placed between the elements.
-
-Both the data, **b**, and two-dimensional size distribution, **x**, vectors can be defined with respect to an instance of this class. Generally, the data will only rely on the center of the elements on the grid (the width of the grid elements has little meaning for data). The vectors are arranged such that the first entry corresponds to the smallest size in both dimensions. The vector proceeds, first with increasing the first size dimension (e.g., for mass-mobility distributions this is mass by default) and then with increasing the second size dimension. Vectorizing the 2D gridded data can be done using the colon operand, i.e., `x(:)`, or using the `Grid.vectorize` method.
+Grid is a class developed to discretize a parameter space (e.g., mass-mobility space). This is done using a simple rectangular grid that can have linear, logarithmic or custom spaced elements along the edges. Methods are designed to make it easier to deal with gridded data, allowing users to reshape vectorized data back to a 2D grid (`Grid.reshape(...)` method) or vice versa. Other methods allow for plotting the 2D representation of vector data (`Grid.plot2d(...)` method) or calculate the gradient of vector data (`Grid.grad(...)` method). For more information, see information in the [class definition](%40Grid/Grid.m) header. 
 
 ### 3.2 PartialGrid class
 
-The current program also supports creating partially truncated grids, made up of a regular grid where certain elements are ignored or missing. This allows practitioners to ignore certain regions in the grid that may have higher uncertainties or are otherwise unphysical. Quantities defined on partial grids have a reduced dimension, often speeding inversion. For mass-mobility measurements, this can be used to block out particles with extraordinarily high or low densities. These partial grids are also useful for PMA-SP2 inversion, where part of the grid will be unphysical. 
-
-Partial grids can be created two ways. First, if one has already created an instance of the **Grid** class, one can generate a **PartialGrid** using the `Grid.partial(...)` method, which cuts the grid about a line specified by a y-intercept and slope. Second, one can call the `PartialGrid(...)` constructor method directly, which takes that same first three arguments as the **Grid** class and appends the arguments from the `Grid.partial(...)` method. In either case, all of the grid elements with a center above this line is removed from the grid. For example, if one wanted to create a grid where all of the points above the 1-1 line should be removed (as is relevant for PMA-SP2 inversion), one can call
-
-```Matlab
-grid = PartialGrid(0, 1);
-```
-
-which replaces the current **Grid** with a **PartialGrid** with the same span. Equivalently, assuming one is using the **Grid** created in [3.1](#31-grid-class), one can generate this **PartialGrid** using
-
-```Matlab
-span = [0.01,100; 10,1000]; % span of space to be covered
-ne = [10,12]; % number of elements for each dimension
-grid = PartialGrid(span, ne, 'log', 0, 1);
-```
-
-For partial grids:
-
-1. `Grid.missing` contains a list of the global indices for the missing pixels;
-2. `Grid.cut` contains the y-intercept and slope of the line used in making the cut (which is used in marginalization to only partially weight points that are cut off);
-3.	`Grid.elements` is updated to only list the center of the elements that
-are left in the grid (i.e., have indices that are not listed in `Grid.ismissing`);
-4.	`Grid.nelements` similarly only lists the edges of pixels that remain in the partial grid; and
-5.	`Grid.adj` is updated to only list the elements/pixels that are adjacent on the partial grid.
-
-The `PartialGrid.edges` and `PartialGrid.nodes` are inherited from the parent **Grid** and refer to the underlying grid structure prior to any of the grid points being removed.
-
-Methods specific to partial grids include:
-1.	`PartialGrid.partial2full(x)` will convert a partial x (resolved with only the remaining points on the grid) to one resolved on the original grid, filling the missing points with zeros. I use this to plot and marginalize the distributions (i.e., plots will have zeros in all of the missing elements/pixels) and
-2.	`PartialGrid.full2partial(x)` will do the reverse of above, converting a full x (with all of the points from the original grid) to one resolved on the partial grid.
-
-Most other Grid methods will operate on partial grids. For example, the `PartialGrid.marginalization(...)` method will only sum the pixels that are still on the grid (exploiting the fact that the other pixels are necessarily zero), including accounting for the fact that pixels on the diagonal are only half pixels (i.e., they are triangles rather than rectangular elements). The `PartialGrid.plot2d(...)` method, equally, will plot zeros in the upper left triangle. The `PartialGrid.l1(...)` method will generate the first-order Tikhonov matrix, **L**<sub>pr</sub>, for the modified grid (only considering pixels that are adjacent on the partial grid). The list goes on, and we refer the reader to the [**PartialGrid**](@PartialGrid/PartialGrid.m) class definition to view the modified methods. 
+The current program also supports creating partially truncated grids, made up of a regular grid where certain elements are ignored or missing. This allows practitioners to ignore certain regions in the grid that may have higher uncertainties or are otherwise unphysical. Quantities defined on partial grids have a reduced dimension, often speeding inversion. For mass-mobility measurements, this can be used to block out particles with extraordinarily high or low densities. These partial grids are also useful for PMA-SP2 inversion, where part of the grid will be unphysical. This class largely acts as a drop-in replacement for the `Grid` class, sharing many of the same methods, but requires more arguments to create. For more information, see information in the [class definition](%40PartialGrid/PartialGrid.m) header. 
 
 ### 3.3 Phantom class
 
-Phantom is a class developed to contain the parameters and other information for the phantom distributions that are used in testing the different inversion methods. Currently, the phantom class is programmed to primarily produce bivariate lognormal distributions and secondarily distributions that are lognormal with mobility and conditionally normal for mass following [Buckley et al. (2017)][3_Buck]. Bivariate normal distributions can also be represented by the class but will suffer from a loss of support from some of the class's methods. 
+Phantom is a class developed to contain the parameters and other information for the phantom distributions that are used in testing the different inversion methods. Currently, the phantom class is programmed to primarily produce bivariate lognormal distributions and secondarily distributions that are lognormal with mobility and conditionally normal for mass following [Buckley et al. (2017)][3_Buck]. Bivariate normal distributions can also be represented by the class but will suffer from a loss of support from some of the class's methods. For more information, see information in the [class definition](%40Phantom/Phantom.m) header. 
 
-Instances of the Phantom class can be created in four ways. We explicitly note that *the first two options are unique in that they represent different parameterizations of the phantom*. 
+Instances of the Phantom class can be created in four ways. We explicitly note that *the first two options are unique in that they represent different parameterizations of the phantom*: 
 
-##### 3.2.2 OPTION 1: The 'standard' parameterization
+##### OPTION 1: The 'standard' parameterization
 
-The '**standard**' parameterization is explicitly for bivariate lognormal distributions (though it can equally be used for standard bivariate normal distributions). In this case, the user specifies a mean, `Phantom.mu`, and covariance, `Phantom.Sigma`, defined in [*a*, *b*]<sup>T</sup> space, where, as before, *a* and *b* are two aerosol size parameters. The bivariate lognormal form, such as when *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*, generally receives more support across this program. 
+The '**standard**' parameterization is explicitly for bivariate lognormal distributions (though it can equally be used for standard bivariate normal distributions). In this case, the user specifies a mean, `Phantom.mu`, and covariance, `Phantom.Sigma`, defined in [*a*, *b*]<sup>T</sup> space, where, as before, *a* and *b* are two aerosol size parameters. The bivariate lognormal form, such as when *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*, generally receives more support across this program.  
 
-For this scenario, instances of the class are created by calling:
-
-```Matlab
-phantom = Phantom('standard', grid, mu, Sigma);
-```
-
-where `grid` is an instance of the Grid class described above. For example, for a mass-mobility distribution,
-
-```Matlab
-span = [0.01,100; 10,1000]; % span of grid
-ne = [550, 600]; % elements in grid
-grid = Grid(span, ne, 'log'); % create instance of Grid
-
-phantom = Phantom('standard', grid, [-0.105,1.70],... % distribution mean
-	[0.205,0.0641;0.0641,0.0214]); % covariance information
-
-grid.plot2d_marg(phantom.x); % plot the resultant phantom
-```
-
-will produce and plot a bivariate lognormal distribution centered at *m* = 0.785 fg and *d* = 50 nm and with covariance information corresponding to geometric standard deviations of σ<sub>d</sub> = 10<sup>sqrt(0.0214)</sup> = 1.4 and σ<sub>m</sub> = 10<sup>sqrt(0.205)</sup> = 2.84 and a correlation of *R* = 0.968. Similarly, for a bimodal, bivariate lognormal phantom, 
-
-```Matlab
-span = [0.01,100; 10,1000]; % span of grid
-ne = [550,600]; % elements in grid
-grid = Grid(span, ne, 'log'); % create instance of Grid
-
-phantom = Phantom('standard', grid, ...
-	{[0,2],[1,2.5]},... % distribution means
-	{[0.205,0.0641;0.0641,0.0214],... % covaraince of mode no. 1
-	[0.126,0.0491;0.0491,0.0214]}); % covaraince of mode no. 2
-
-grid.plot2d_marg(phantom.x); % plot the resultant phantom
-```
-
-adds a second mode at *m* = 2.09 fg and *d* = 200 nm to the distribution produced in the first example. We note that this latter example is Phantom no. 1 (i.e. the demonstration phantom) from [Sipkens et al. (2020a)][1_JAS1]. 
-
-##### 3.2.1 OPTION 2: The 'mass-mobility' parameterization
+##### OPTION 2: The 'mass-mobility' parameterization
 
 The '**mass-mobility**' parameterization uses a `p` structured array, which is built specifically for mass-mobility distributions. The required fields for this structure are: 
 
 1.  `dg` -  Mean mobility diameter
-2. `sg` -  Standard deviation of the mobility diameter 
-3. `Dm` -  Mass-mobility exponent
-4. *Either:*
+2.  
+3. `sg` -  Standard deviation of the mobility diameter 
+4. 
+5. `Dm` -  Mass-mobility exponent
+6. 
+7. *Either:*
 
     `sm` - Standard deviation of the particle mass
     
     `smd` - Standard deviation of the conditional mass distribution
     
-5.  *Either:*
+8.  *Either:*
     
     `mg` -  Mean particle mass
     
     `rhog` - Effective density of at the mean mobility diameter
 
-For lognormal modes, means should be geometric means and standard deviations should be geometric standard deviations. Remaining entries of the `p` structure will be filled using the `Phantom.fill_p(...)` method. (We note that `p = Phantom.fill_p(p);` can be used to fill out the `p` structure without the need to create an instance of the Phantom class.)
+For lognormal modes, means should be geometric means and standard deviations should be geometric standard deviations. 
 
-For this scenario, instances of the class are generated by calling:
-
-```Matlab
-phantom = Phantom('mass-mobility', grid, p, modes);
-```
-
-where, as before, `grid` is an instance of the Grid class described above, `p` is the structured array containing the mass-mobility properties, and, `modes` indicates the type of mode that the `p` structure represents. The final argument is a cell of strings, with one cell entry per mode and where each string can be either:
-
-1. `'logn'` - indicating a bivariate lognormal mode and
-2. `'norm'` - indicating a conditionally-normal distribution, where the mobility diameter distribution is lognormal and the conditional mass distribution is normal. This mode type represents the type of phantoms defined by [Buckley et al. (2017)][3_Buck]. 
-
-To exemplify this procedure, the unimodal phantom from the previous section can generated by
-
-```Matlab
-span = [0.01,100; 10,1000]; % span of grid
-ne = [550,600]; % elements in grid
-grid = Grid(span,ne,'log'); % create instance of Grid
-
-p.dg = 50; p.rhog = 12000; % geometric means
-p.sg = 1.4; p.smd = 1.3; % geometric standard deviations
-p.Dm = 3; % mass-mobility exponent
-phantom = Phantom('mass-mobility',grid,p,{'logn'}); % create phantom
-
-grid.plot2d_marg(phantom.x); % plot the resultant phantom
-```
-
-noting that the final entry must still be enclosed by curly braces. One can generate a multimodal phantom by stacking multiple entries in the `p` structure and adding the same number of entire to the `modes` cell. For example, to produce Phantom no. 1, 
-
-```Matlab
-span = [0.01,100; 10,1000]; % span of grid
-ne = [550,600]; % elements in grid
-grid = Grid(span,ne,'log'); % create instance of Grid
-
-% distribution parameters:
-% mode 1           mode 2
-p(1).dg = 50;      p(2).dg = 200;
-p(1).rhog = 12000; p(2).rhog = 500;
-p(1).sg = 1.4;     p(2).sg = 1.4;
-p(1).smd = 1.3;    p(2).smd = 1.3;
-p(1).Dm = 3;       p(2).Dm = 2.3;
-
-phantom = Phantom('mass-mobility',grid,p,{'logn','logn'});
-	% create phantom
-
-grid.plot2d_marg(phantom.x); % plot the resultant phantom
-```
-
-where the distribution parameters match those from [Sipkens et al. (2020a)][1_JAS1]. 
-
-##### 3.2.3 Converting between the 'standard' and 'mass-mobility' parameterizations
-
-In both cases, creating an instance of the class will also contain the information corresponding to the other creation method (e.g. using a `p` structure, the class constructor will determined the corresponding mean and covariance information and store this in `Phantom.mu` and `Phantom.Sigma`). This can be demonstrated by investigating the examples provided in the proceeding sections, which generate the same phantom, save for rounding errors.  Conversion between the '**standard**' parameterization and the '**mass-mobility**' parameterizations can be accomplished using the `Phantom.cov2p(...)` method of the Phantom class and vice versa using the `Phantom.p2cov(...)` method of the Phantom class. 
-
-##### 3.2.4 OPTION 3: Preset phantoms
+##### OPTION 3: Preset phantoms
 
 Use a preset or sample distribution, which are loaded using a string and the `presets` function, which is defined external to the main Phantom class definition for easier access. For example, the four sample phantoms from [Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing the distribution numbers or names from that work (e.g., the demonstration phantom can be generated using `'1'` or `'demonstration'`). The demonstration phantom is indicated in the image below.
 
@@ -527,13 +391,9 @@ phantom = Phantom('3');
 
 corresponds to the one used by [Buckley et al. (2017)][3_Buck] and demonstrates a scenario which uses a conditionally-normal mass distribution. 
 
-##### 3.2.4 OPTION 4: Using the Phantom class's fit methods
+##### OPTION 4: Using the Phantom class's fit methods
 
-For experimental data, the Phantom class can also be used to derive morphological parameters from the reconstructions. 
-
-Of particular note, the `Phantom.fit(...)` method, which is defined external to the main definition of the Phantom class, takes a reconstruction, `x` and the grid on which it is defined and creates a bivariate lognormal phantom that most resembles the data. This done using least squares analysis. The `p` structure of the Phantom class then contains many of the morphological parameters of interest to practitioners measuring mass-mobility distributions. 
-
-The `Phantom.fit2(...)` method can be used in an attempt to derive multimodal phantoms for the data. This task is often challenging, such that the method may need tuning in order to get distributions that appropriately resemble the data. 
+For experimental data, the Phantom class can also be used to derive morphological parameters from the reconstructions. Of particular note, the `Phantom.fit(...)` method, which is defined external to the main definition of the Phantom class, takes a reconstruction, `x` and the grid on which it is defined and creates a bivariate lognormal phantom that most resembles the data. This done using least squares analysis. The `p` structure of the Phantom class then contains many of the morphological parameters of interest to practitioners measuring mass-mobility distributions. The `Phantom.fit2(...)` method can be used in an attempt to derive multimodal phantoms for the data. This task is often challenging, such that the method may need tuning in order to get distributions that appropriately resemble the data. 
 
 ## 4. PACKAGES
 

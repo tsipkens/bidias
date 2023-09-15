@@ -27,10 +27,53 @@
 %  
 %  ------------------------------------------------------------------------
 %  
-%  We refer the reader to the <README.md> for more information. 
+%  Instances of the Grid class can primarily be constructed in two ways. 
+%  First, one can specify a `Grid.span` for the grid to cover in the 
+%  parameter space. The span is specified using a 2 x 2 matrix, where the 
+%  first row corresponds to the span for the first dimension of the 
+%  parameter space (e.g., mass) and the second row corresponds to the span 
+%  for the second dimension of the parameter space (e.g., mobility 
+%  diameter). For example, if one wanted to logarithmically discretize 
+%  mass space between 0.01 and 100 fg and mobility space between 10 and 
+%  1000 nm, one could call:
 %  
-%  For information on partial grids (where some elements are ignored, 
-%  refer to `help PartialGrid` and `help Grid.partial` and the <README.md>. 
+%  ```Matlab
+%  span = [0.01,100; 10,1000]; % span of space to be covered
+%  ne = [10,12]; % number of elements for each dimension
+%  grid = Grid(span, ne, 'log'); % create instance of Grid
+%  ```
+%  
+%  Second, one can supply a 1 x 2 cell array of edges, where the first 
+%  entry is the center of the elements in the first dimension of parameter 
+%  space and the second entry of the elements in the second dimension of 
+%  parameter space. For example, to make a simple grid with elements at 
+%  0.1 and 1 fg in mass space and 10, 200, and 1000 nm in mobility space, 
+%  one would call:
+%  
+%  ```Matlab
+%  edges = {[0.1,1], [10,200,1000]}; % cell array of edge vectors
+%  grid = Grid(edges, [], 'log'); % create instance of Grid
+%  ```
+%  
+%  Note that the number of elements is not required in this instance, as 
+%  it is implied by the length of the vectors given in `edges`. The 
+%  `'log'` (or equivalently `'logarithm'`) argument is still required to 
+%  specify where nodes would be placed between the elements.
+%  
+%  Both the data, **b**, and two-dimensional size distribution, **x**, 
+%  vectors can be defined with respect to an instance of this class. 
+%  Generally, the data will only rely on the center of the elements on the 
+%  grid (the width of the grid elements has little meaning for data). 
+%  The vectors are arranged such that the first entry corresponds to the 
+%  smallest size in both dimensions. The vector proceeds, first with 
+%  increasing the first size dimension (e.g., for mass-mobility 
+%  distributions this is mass by default) and then with increasing the 
+%  second size dimension. Vectorizing the 2D gridded data can be done 
+%  using the colon operand, i.e., `x(:)`, or using the `Grid.vectorize` 
+%  method.
+%  
+%  For information on partial grids (where some elements are ignored), 
+%  refer to `help PartialGrid` and `help Grid.partial`.
 
 classdef Grid
 

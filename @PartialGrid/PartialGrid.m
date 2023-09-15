@@ -15,9 +15,75 @@
 %  arguments analogous to above but remove points below a given line 
 %  (instead of above). 
 %  
+%  AUTHOR: Timothy Sipkens, 2021-03-29
+%  
 %  ------------------------------------------------------------------------
 %  
-%  AUTHOR: Timothy Sipkens, 2021-03-29
+%  Partial grids can be created two ways. First, if one has already 
+%  created an instance of the **Grid** class, one can generate a 
+%  **PartialGrid** using the `Grid.partial(...)` method, which cuts the 
+%  grid about a line specified by a y-intercept and slope. Second, one can 
+%  call the `PartialGrid(...)` constructor method directly, which takes 
+%  that same first three arguments as the **Grid** class and appends the 
+%  arguments from the `Grid.partial(...)` method. In either case, all of 
+%  the grid elements with a center above this line is removed from the 
+%  grid. For example, if one wanted to create a grid where all of the 
+%  points above the 1-1 line should be removed (as is relevant for PMA-SP2 
+%  inversion), one can call
+%  
+%  ```Matlab
+%  grid = PartialGrid(0, 1);
+%  ```
+%  
+%  which replaces the current **Grid** with a **PartialGrid** with the 
+%  same span. Equivalently, assuming one is using the **Grid** class, one 
+%  can generate this **PartialGrid** using
+%  
+%  ```Matlab
+%  span = [0.01,100; 10,1000]; % span of space to be covered
+%  ne = [10,12]; % number of elements for each dimension
+%  grid = PartialGrid(span, ne, 'log', 0, 1);
+%  ```
+%  
+%  For partial grids:
+%  
+%  1. `Grid.missing` contains a list of the global indices for the missing pixels;
+%  2. `Grid.cut` contains the y-intercept and slope of the line used in 
+%     making the cut (which is used in marginalization to only partially 
+%     weight points that are cut off);
+%  3. `Grid.elements` is updated to only list the center of the elements 
+%     that are left in the grid (i.e., have indices that are not listed in 
+%     `Grid.ismissing`);
+%  4. `Grid.nelements` similarly only lists the edges of pixels that remain 
+%     in the partial grid; and
+%  5. `Grid.adj` is updated to only list the elements/pixels that are 
+%     adjacent on the partial grid.
+%  
+%  The `PartialGrid.edges` and `PartialGrid.nodes` are inherited from the 
+%  parent **Grid** and refer to the underlying grid structure prior to any 
+%  of the grid points being removed.
+%  
+%  Methods specific to partial grids include:
+%  1. `PartialGrid.partial2full(x)` will convert a partial x (resolved 
+%     with only the remaining points on the grid) to one resolved on the 
+%     original grid, filling the missing points with zeros. I use this to 
+%     plot and marginalize the distributions (i.e., plots will have zeros 
+%     in all of the missing elements/pixels) and
+%  2. `PartialGrid.full2partial(x)` will do the reverse of above, 
+%     converting a full x (with all of the points from the original grid) 
+%     to one resolved on the partial grid.
+%  
+%  Most other Grid methods will operate on partial grids. For example, 
+%  the `PartialGrid.marginalization(...)` method will only sum the pixels 
+%  that are still on the grid (exploiting the fact that the other pixels 
+%  are necessarily zero), including accounting for the fact that pixels on 
+%  the diagonal are only half pixels (i.e., they are triangles rather than 
+%  rectangular elements). The `PartialGrid.plot2d(...)` method, equally, 
+%  will plot zeros in the upper left triangle. The `PartialGrid.l1(...)` 
+%  method will generate the first-order Tikhonov matrix, 
+%  **L**<sub>pr</sub>, for the modified grid (only considering pixels that 
+%  are adjacent on the partial grid). The list goes on, and we refer the 
+%  reader to the class definition below to view the modified methods. 
 
 classdef PartialGrid < Grid
 
