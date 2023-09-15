@@ -5,7 +5,7 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Version](https://img.shields.io/badge/Version-3.0+-blue.svg)]()
 
-This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. This includes the inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution but can be generalized to other applications (e.g., inversion of PMA-SP2 data). 
+This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is designed to invert tandem measurements of aerosol size distributions. Initially, this code was developed for inversion of particle mass analyzer-differential mobility analyzer (PMA-DMA) data to find the two-dimensional mass-mobility distribution. However, the code has since been generalized to other applications, e.g., the inversion of PMA-SP2 data as in Naseri et al. ([2021][naseri21], [2022][naseri22]). 
 
 ## Table of contents
 
@@ -495,7 +495,7 @@ to [Buckley et al. (2017)][3_Buck] and [Sipkens et al. (2020b)][2_AST] should al
 #### Contact information and acknowledgements
 
 This program was largely written and compiled by Timothy Sipkens ([@tsipkens](https://github.com/tsipkens), [tsipkens@uwaterloo.ca](mailto:tsipkens@uwaterloo.ca)) while at the
-University of British Columbia and the University of Alberta. Code excerpts were contributed by [@ArashNaseri](https://github.com/ArashNaseri) from the University of Alberta, including implementation of the L-curve optimization method of [Cultrera and Callegaro (2016)][7_CC_Lcurve] among other optimizations. 
+University of British Columbia and the University of Alberta. Some code was also contributed by [@ArashNaseri](https://github.com/ArashNaseri) from the University of Alberta, including implementation of the L-curve optimization method of [Cultrera and Callegaro (2016)][7_CC_Lcurve] among other optimizations. 
 
 Also included is a reference to code designed to quickly evaluate the transfer function of particle mass analyzers (e.g. APM, CPMA) by [Sipkens et al. (2020b)][2_AST]. See the parallel repository parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma) for more details. 
 
@@ -511,6 +511,10 @@ Information on the provided colormaps can be found in an associated README in th
 [Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., & Hogan Jr, C. J. (2017). Technical note: A corrected two dimensional data inversion routine for tandem mobility-mass measurements. *J. Aerosol Sci.* 114, 157-168.][3_Buck]
 
 [Cultrera, A., & Callegaro, L. (2016). A simple algorithm to find the L-curve corner in the regularization of inverse problems. arXiv preprint arXiv:1608.04571.][7_CC_Lcurve]
+
+[Naseri, A., Sipkens, T. A., Rogak, S. N., Olfert, J. S. (2021). An improved inversion method for determining two-dimensional mass distributions of non-refractory materials on refractory black carbon. *Aerosol Sci. Technol.* 55, 104-118.][naseri21]
+
+[Naseri, A., Sipkens, T. A., Rogak, S. N., Olfert, J. S. (2022). Optimized instrument configurations for tandem particle mass analyzer and single particle-soot photometer experiments. *J. Aerosol Sci.* 160, 105897.][naseri22]
 
 [Rawat, V. K., Buckley, D. T., Kimoto, S., Lee, M. H., Fukushima, N., & Hogan Jr, C. J. (2016). Two dimensional size–mass distribution function inversion from differential mobility analyzer–aerosol particle mass analyzer (DMA–APM) measurements. *J. Aerosol Sci.*, 92, 70-82.][rawat]
 
@@ -533,6 +537,8 @@ Information on the provided colormaps can be found in an associated README in th
 [5_code]: https://github.com/tsipkens/mat-tfer-pma
 [6_AO17]: https://doi.org/10.1364/AO.56.008436
 [7_CC_Lcurve]: https://arxiv.org/abs/1608.04571
+[naseri21]: https://doi.org/10.1080/02786826.2020.1825615
+[naseri22]: https://doi.org/10.1016/j.jaerosci.2021.105897
 [rawat]: https://www.sciencedirect.com/science/article/abs/pii/S0021850215300306
 [Stolz18]: https://www.tandfonline.com/doi/full/10.1080/02786826.2018.1514101
 [code_v11]: https://github.com/tsipkens/mat-2d-aerosol-inversion/releases/tag/v1.1
