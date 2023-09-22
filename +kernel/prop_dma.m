@@ -39,12 +39,15 @@ switch opts.params
         prop.T = 294; % temperature [K]
         prop.p = 1;
         
-    case{' Electrostatic Classifier Model 3080'}
+    case {' Electrostatic Classifier Model 3080'}
         prop.L = 0.44369; % length of chamber [m]
         prop.R2 = 0.00937; % outer electrode radius [m]
         prop.R1 = 0.01961; % inner electrode radius [m]
         prop.T = 293; % default temperature [K]
         prop.p = 1;
+
+    case 'custom'
+        prop = opts.prop; % read in from opts
         
 end
 
