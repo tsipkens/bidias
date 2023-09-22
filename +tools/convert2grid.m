@@ -4,7 +4,7 @@
 % Author: Timothy Sipkens, 2020-07-16
 %=========================================================================%
 
-function [grid,idx] = convert2grid(sp_m, d_star)
+function [grid,idx] = convert2grid(sp_m, d_star, b)
 
 % adjust mass setpoint
 if isstruct(sp_m); m_star = [sp_m.m_star] .* 1e18; % if setpoint structure

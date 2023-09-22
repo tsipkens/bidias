@@ -6,7 +6,7 @@
 function [pha, N, ci] = overlay_phantom(x_pha,grid,iso_levels,varargin)
 
 %-- Parse inputs ---------------------------------------------------------%
-if isa(x_pha,'Phantom')
+if isa(x_pha, 'Phantom')
     pha = x_pha;
     grid = pha.grid;
     N = [];
@@ -14,8 +14,7 @@ else
     [pha, N, ~, ci] = Phantom.fit(x_pha, grid);
 end
 
-if ~exist('iso_levels','var'); iso_levels = []; end
-if isempty(iso_levels); iso_levels = [1,2,3]; end % plot 1, 2, and 3 sigma
+if ~exist('iso_levels', 'var'); iso_levels = [1,2,3]; end  % plot 1, 2, and 3 sigma
 
 if isempty(varargin); varargin = {'Color',[1,1,0,1]}; end
     % specify line properties (default: yellow, no transparency)

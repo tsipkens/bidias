@@ -26,15 +26,20 @@ m_vec = grid_b.edges{1};
 %-- Fit normal distribution to data in log(d) space --------%
 opts = optimset('Display','none');
 for bb=length(grid_b.edges{1}):-1:1
-    fun0 = @(x) x(1).*normpdf(log10(grid_b.edges{2}),x(2),x(3));
-    x0 = [max(b_plot_rs(bb,:))/5,log10(d_med(bb)),0.1];
-    [x2(bb,:),~,~,~,~,~,jacob] = ...
-        lsqnonlin(@(x) (fun0(x)-b_plot_rs(bb,:)).^2,x0,[],[],opts);
+    % Function to fit, normal in log-space.
+    fun0 = @(x) x(1) .* normpdf(log10(grid_b.edges{2}),x(2),x(3));
     
-    t0 = inv(jacob'*jacob);
+    % Initialize x0, using max. in scan.
+    x0 = [max(b_plot_rs(bb,:))/5 , log10(d_med(bb)), 0.1];
+
+    % Fitting procedure.
+    [x2(bb,:),~,~,~,~,~,jacob] = ...
+        lsqnonlin(@(x) (fun0(x) - b_plot_rs(bb,:)).^2, x0, [], [], opts);
+    
+    t0 = inv(jacob' * jacob);  % use jacobian to get uncertainties
     sx2(bb,1) = sqrt(t0(2,2)); % error in median, used to weight other analysis
 end
-d_med = 10.^x2(:,2);
+d_med = 10 .^ x2(:,2);
 
 
 %-- Linear regression on median/mode diameter --------------%

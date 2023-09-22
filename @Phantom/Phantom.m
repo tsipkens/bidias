@@ -307,7 +307,7 @@ methods
                 
             %-- OPTION 2: Using a mass-mobility parameter set (p) ----%
             case {'mass-mobility'} % for custom mass-mobility phantom
-                                   % sepcified using a p structure
+                                   % specified using a p structure
                 obj.type = 'mass-mobility';
                 obj.modes = Sigma_modes;
                 obj.p = obj.fill_p(mu_p); % fill out p structure
