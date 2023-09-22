@@ -1,10 +1,9 @@
 
 % IMPORT_TDF  Import general tandem data files. 
 %  
-%  TDF are tab-delimited files that contain particle counts alongside a
-%  large range of classifier information. 
+%  Cambustion file format containing 
 %  
-%  AUTHOR: Timothy Sipkens, 2022-12-13
+%  AUTHOR: Timothy Sipkens, 2023-09-22
 
 function [data, dm, sp, prop1, prop2] = import_tdf(fname)
 
@@ -13,52 +12,52 @@ addpath tfer_pma;  % in case not already added
 opts = detectImportOptions(fname, 'FileType', 'text');
 read = readmatrix(fname, 'FileType', 'text');
 
-% Read components of header.
-fid = fopen(fname);
-tt = 1;
-tline = fgetl(fid);
-while ischar(tline)
-    if tt == 4
-        hline = split(tline, '	');
-        l1 = str2num(hline{3});  % read number of reported data columns
-        Q1 = str2num(hline{5});
-    end
+in = readtable(fname);
 
-    if tt == 8
-        hline = split(tline, '	');
-        l2 = str2num(hline{3});  % read number of reported data columns
-        Q2 = str2num(hline{4});
-    end
-    
-    tt = tt + 1;
-    tline = fgetl(fid);
-end
-fclose(fid);
+head = readcell(fname);
+head = head(1:opts.VariableNamesLine-1, :);
 
-% For CPMA.
-s1 = read(:,1);
-dim1 = length(s1);
-w = read(:, 2);
-V = read(:, 3);
+class1 = head(2:3, :);
+class2 = head(4:5, 1:end-1);
 
-% Setup prop for the PMA.
-prop1 = prop_pma('tfer_pma/prop/olfert');
-prop1 = prop_update_flow(prop1, Q1 / 1000 / 60);
-prop1 = prop_update_massmob(prop1, 'Dm', 2.48, 'rho100', 510);
-sp = get_setpoint(prop1, 'V', V, 'omega', w);
 
-%-- DMA properties ---------%
-dim2 = (size(read, 2) - l1) / l2;
-dm = read(:, l1 + 1:l2:end);
-dm = dm(1,:);
+% Assume CPMA, then DMA...
 
-Qsh = mean(mean(read(:, l1 + 2:l2:end))) / 1000 / 60;
-prop2 = kernel.prop_dma();
-prop2.Q_c = Qsh;
-prop2.Q_m = Qsh;
-prop2.Q_s = Q2 / 1000 / 60;
-prop2.Q_a = Q2 / 1000 / 60;
+%== CPMA read =============================================%
+idx = find(contains(class1(1,:), 'Sample flow'));
+Qsmpl = class1{2, idx};
 
-data = read(:, l1 + l2:l2:end);
+prop1 = kernel.prop_pma;
+prop1 = prop_update_flow(prop1, Qsmpl/1000/60);
+prop1.T = mean(in.Temperature_C_) + 273;  %  use average for now
+prop1.p = mean(in.Pressure_Pa_) ./ 101325;
+
+sp = get_setpoint(prop1,...
+    'omega', in.Speed_rad_s_, 'V', in.Voltage_V_); % get CPMA setpoint information
+
+
+%== DMA read ==============================================%
+idx = find(contains(class2(1,:), 'Sample flow'));
+Qsmpl = class2{2, idx};
+
+idx = find(contains(class2(1,:), 'Sheath flow'));
+Qsheath = class2{2, idx};
+
+opts = struct();
+opts.params = 'custom';
+opts.prop.Q_s = Qsmpl/60/1000;  % sample flow [m^3/s]
+opts.prop.Q_a = Qsmpl/60/1000;  % aerosol flow [m^3/s]
+opts.prop.Q_c = Qsheath/60/1000;  % sheath flow [m^3/s]
+opts.prop.Q_m = Qsheath/60/1000;  % exhaust flow [m^3/s]
+opts.prop.T = mean(in.Temperature_C_2);
+opts.prop.p = mean(in.Pressure_kPa_2) ./ 101.325;
+opts.prop.L = 0.44369;  % length of chamber [m]
+opts.prop.R2 = 0.00937; % outer electrode radius [m]
+opts.prop.R1 = 0.01961; % inner electrode radius [m]
+prop2 = kernel.prop_dma(opts);  % fill out rest of the parameters
+
+dm = in.Dm_nm_2;
+
+data = in.Conc;
 
 end
