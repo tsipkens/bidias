@@ -207,48 +207,54 @@ methods
     
     
     %== ADJACENCY ====================================================%
-    function [obj,adj] = adjacency(obj)
+    function [obj, adj] = adjacency(obj, w)
     % ADJACENCY  Compute the adjacency matrix for the full grid using a four-point stencil.
+    %  W is an optional that adds a weight for vertical pixels.
         
-        ind1 = ones(3*prod(obj.ne),1);
-        ind2 = ones(3*prod(obj.ne),1);
-        vec = zeros(3*prod(obj.ne),1);
+        if ~exist('w', 'var'); w = []; end
+        if isempty(w); w = 1; end
+        
+        ind1 = ones(3 * prod(obj.ne), 1);
+        ind2 = ones(3 * prod(obj.ne), 1);
+        vec = zeros(3 * prod(obj.ne), 1);
         ll = 0;
         
         for jj=1:prod(obj.ne)
-            if ~(mod(jj,obj.ne(1))==0) % up pixels
-                ll = ll+1;
+            if ~(mod(jj, obj.ne(1))==0) % up pixels
+                ll = ll + 1;
                 ind1(ll) = jj;
-                ind2(ll) = jj+1;
-                vec(ll) = 1;
+                ind2(ll) = jj + 1;
+                vec(ll) = w;
             end
             
             if ~(mod(jj-1,obj.ne(1))==0) % down pixels
-                ll = ll+1;
+                ll = ll + 1;
                 ind1(ll) = jj;
-                ind2(ll) = jj-1;
-                vec(ll) = 1;
+                ind2(ll) = jj - 1;
+                vec(ll) = w;
             end
             
             if jj>obj.ne(1) % left pixels
-                ll = ll+1;
+                ll = ll + 1;
                 ind1(ll) = jj;
-                ind2(ll) = jj-obj.ne(1);
+                ind2(ll) = jj - obj.ne(1);
                 vec(ll) = 1;
             end
             
-            if jj<=(prod(obj.ne)-obj.ne(1)) % right pixels
-                ll = ll+1;
+            if jj <= (prod(obj.ne) - obj.ne(1)) % right pixels
+                ll = ll + 1;
                 ind1(ll) = jj;
-                ind2(ll) = jj+obj.ne(1);
+                ind2(ll) = jj + obj.ne(1);
                 vec(ll) = 1;
             end
         end
         
-        adj = sparse(ind1,ind2,vec,...
-            prod(obj.ne),prod(obj.ne));
+        adj = sparse(ind1, ind2, vec,...
+            prod(obj.ne), prod(obj.ne));
         
-        obj.adj = adj;
+        if isempty(obj.adj)  % for first run
+            obj.adj = adj;
+        end
     end
     %=================================================================%
     
@@ -334,7 +340,7 @@ methods
     
     
     %== GLOBAL_IDX ===================================================%
-    function k = global_idx(obj,idx1,idx2)
+    function k = global_idx(obj, idx1, idx2)
     % GLOBAL_IDX  Convert 2D grid coordinate to a global coordinate in the grid.
     %  For mass-mobiltiy grids, for example, idx1 is the mass index and 
     %  idx2 is the mobility index.
@@ -362,13 +368,22 @@ methods
     
     
     %== L1 ===========================================================%
-    function [l1] = l1(obj)
+    function [l1] = l1(obj, w)
     % L1  Compute the first-order Tikhonov operator.
     %  Form is equiavalent to applying no slope at high-high boundary.
+    %  
+    %  W adds a weight used to reevaluate the adjacency matrix.
     
-        l1 = -diag(sum(tril(obj.adj)))+...
-            triu(obj.adj);
-        l1(size(obj.adj,1),end) = -1;
+        if ~exist('w', 'var'); w = []; end
+        if ~isempty(w)
+            [~, adj_local] = obj.adjacency(w);  % re-evaluate adjacency with weight
+        else
+            adj_local = obj.adj;
+        end
+    
+        l1 = -diag(sum(tril(adj_local)))+...
+            triu(adj_local);
+        l1(size(adj_local, 1), end) = -1;
             % unity on diagonal in final row for stability in square matrix
             % alternatively, this row can be deleted, however this causes
             % issues during Tikhonov inversion using this method
@@ -624,20 +639,20 @@ methods
             
             
             %-- Convert back to [x,y] --%
-            rmin = logr0+tmin.*dv; % location of intersect with min. of pixel
-            rmax = logr0+tmax.*dv; % location of intersect with max. of pixel
+            rmin = logr0 + tmin.*dv; % location of intersect with min. of pixel
+            rmax = logr0 + tmax.*dv; % location of intersect with max. of pixel
             
-            rmin = min(rmin,log10(obj.nelements(:,[4,2])));
-            rmax = max(rmax,log10(obj.nelements(:,[3,1])));
+            rmin = min(rmin, log10(obj.nelements(:, [4,2])));
+            rmax = max(rmax, log10(obj.nelements(:, [3,1])));
             
-            chord = sqrt(sum((rmax-rmin).^2,2)); % chord length
+            chord = sqrt(sum((rmax - rmin).^2,2)); % chord length
             chord(chord<1e-15) = 0; % truncate small values
             
             
             %-- Ray-sum matrix ---------%
             [~,jj,a] = find(chord');
             if ~isempty(a)
-                C(ii,:) = sparse(1,jj,a,1,obj.Ne,ceil(0.6*obj.Ne));
+                C(ii,:) = sparse(1, jj, a, 1, obj.Ne, ceil(0.6 * obj.Ne));
             end
             if f_bar, tools.textbar(ii/m); end
             

@@ -129,10 +129,10 @@ methods
         else
             tup = obj.nelements(:,[1,4]);
         end
-        tup = tup+abs(1e-3.*mean(tup(2:end,:)-tup(1:(end-1),:))).*[1,0];
+        tup = tup + abs(1e-3 .* mean(tup(2:end,:) - tup(1:(end-1),:))) .* [1,0];
             % avoids minimially overlapping elements
 
-        f_missing = tup(:,1) > (tup(:,2).*slope0 + b0);
+        f_missing = tup(:,1) > (tup(:,2) .* slope0 + b0);
         t1 = 1:prod(obj.ne);
         obj.cut = [b0, slope0];
 
@@ -166,10 +166,13 @@ methods
     
     
     %== ADJACENCY ====================================================%
-    function [obj,adj] = adjacency(obj)
+    function [obj,adj] = adjacency(obj, w)
     % ADJACENCY  Compute the adjacency matrix for the full grid using a four-point stencil.
+    %  W is an optional that adds a weight for vertical pixels.
         
-        [~, adj] = adjacency@Grid(obj);
+        if ~exist('w', 'var'); w = []; end
+        
+        [~, adj] = adjacency@Grid(obj, w);
         
         adj(obj.missing, :) = [];
         adj(:, obj.missing) = [];
@@ -234,38 +237,38 @@ methods
     
     
     %== DR ===========================================================%
-    function [dr,dr1,dr2] = dr(obj)
+    function [dr, dr1, dr2] = dr(obj)
     % DR  Calculates the differential area of the elements in the grid.
         
-        [dr,dr1,dr2] = dr@Grid(obj);
+        [dr, dr1, dr2] = dr@Grid(obj);
         
         %-- Added processing for partial grids -----------------------%
         dr0 = obj.full2partial(dr); % used if lower cut is employed
 
-        [~,rmin,rmax] = obj.ray_sum([0,obj.cut(1)],obj.cut(2),0);
-        t0 = (rmin(:,1)-log10(obj.nelements(:,1))).*...
-            (log10(obj.nelements(:,4))-log10(obj.nelements(:,3)));
+        [~,rmin,rmax] = obj.ray_sum([0, obj.cut(1)], obj.cut(2), 0);
+        t0 = (rmin(:,1) - log10(obj.nelements(:,1))) .* ...
+            (log10(obj.nelements(:,4)) - log10(obj.nelements(:,3)));
                 % lower rectangle
-        t1 = (log10(obj.nelements(:,4))-rmax(:,2)).*...
-            (log10(obj.nelements(:,2))-rmin(:,1));
+        t1 = (log10(obj.nelements(:,4)) - rmax(:,2)).*...
+            (log10(obj.nelements(:,2)) - rmin(:,1));
                 % right rectangle
-        t2 = 1/2.*(rmax(:,1)-rmin(:,1)).*...
-            (rmax(:,2)-rmin(:,2));
+        t2 = 1/2 .* (rmax(:,1) - rmin(:,1)) .* ...
+            (rmax(:,2) - rmin(:,2));
                 % upper, left triangle
         dr = t0+t1+t2;
 
         if length(obj.cut)==4 % consider cutting lower triangle
-            [~,rmin,rmax] = obj.ray_sum([0,obj.cut(3)],obj.cut(4),0);
-            t0 = (log10(obj.nelements(:,2))-rmax(:,1)).*...
-                (log10(obj.nelements(:,4))-log10(obj.nelements(:,3)));
+            [~, rmin, rmax] = obj.ray_sum([0, obj.cut(3)], obj.cut(4), 0);
+            t0 = (log10(obj.nelements(:,2)) - rmax(:,1)) .* ...
+                (log10(obj.nelements(:,4)) - log10(obj.nelements(:,3)));
                     % upper rectangle
-            t1 = (rmin(:,2)-log10(obj.nelements(:,3))).*...
-                (rmax(:,1)-log10(obj.nelements(:,1)));
+            t1 = (rmin(:,2) - log10(obj.nelements(:,3))) .* ...
+                (rmax(:,1) - log10(obj.nelements(:,1)));
                     % left rectangle
-            t2 = 1/2.*(rmax(:,1)-rmin(:,1)).*...
-                (rmax(:,2)-rmin(:,2));
+            t2 = 1/2 .* (rmax(:,1) - rmin(:,1)).*...
+                (rmax(:,2) - rmin(:,2));
                     % lower, right triangle
-            dr = dr.*(t0+t1+t2)./dr0; % accounts for element that are discected twice
+            dr = dr .* (t0+t1+t2) ./ dr0; % accounts for element that are discected twice
         end
         %-------------------------------------------------------------%
     end
