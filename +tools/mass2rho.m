@@ -68,10 +68,17 @@ for ii=1:n_d
 end
 %=========================================================================%
 
+% Convert to partial grid (due to missing entries).
+% rho0 = 6/pi .* grid_x.span(1,1) .* 100.^(-3) .* 1e9;  % lower bound
+% rho1 = 6/pi .* grid_x.span(1,2) .* 100.^(-3) .* 1e9;  % upper bound
+% grid_rho = grid_rho.partial(...
+%     log10([rho0, 100]), 3, ...
+%     log10([rho1, 100]), 3);
 
 % Format data for output
 y = y';
 y = y(:);
+% y = grid_rho.full2partial(y);
 
 end
 
