@@ -46,7 +46,7 @@ addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
 if ~exist('prop_pma','var'); prop_pma = []; end
 if isempty(prop_pma); prop_pma = kernel.prop_pma; end
     
-if or(isempty(varargin),length(varargin)~=2) % parse extra information for PMA
+if or(isempty(varargin), length(varargin)~=2) % parse extra information for PMA
     error('Invalid additional information for PMA setpoint.');
 end
 %-------------------------------------------------------------------------%
@@ -76,8 +76,8 @@ d = (m.*1e-18./prop_pma.rho0).^...
 tools.textheader('Computing PMA-SP2 kernel');
 
 %== Evaluate particle charging fractions =================================%
-z_vec = (1:3)';
-f_z = sparse(kernel.tfer_charge(d.*1e-9,z_vec)); % get fraction charged for d
+z_vec = (0:3)';
+f_z = sparse(kernel.tfer_charge(d.*1e-9, z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
@@ -123,6 +123,15 @@ for kk=1:n_z % loop over the charge state
 end
 disp(' Complete.');
 disp(' ');
+
+%{
+% Diagnostic plot. 
+tmp = Lambda_mat{1};
+for ii=2:length(Lambda_mat)
+    tmp = tmp + Lambda_mat{ii};
+end
+imagesc(tmp);
+%}
 %=========================================================================%
 
 
@@ -133,7 +142,7 @@ for kk=1:n_z
     [~,i1] = max(m_star==grid_b.edges{2},[],2); % index corresponding to PMA setpoint
     [~,i2] = max(mrbc_star==grid_b.edges{1},[],2); % index correspondng to SP2 setpoint
     
-    K = K+f_z(z_vec(kk),:).*... % charging contribution
+    K = K+f_z(kk,:).*... % charging contribution
         Lambda_mat{kk}(i1,:).*... % PMA contribution
         Omega_mat(i2,:); % SP2 contribution
 end
