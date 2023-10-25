@@ -35,7 +35,7 @@ n1 = floor(size(cm,1)/grid.ne(dim));
 n2 = length(cm)-grid.ne(dim)*n1+1;
 cm2 = cm(n2:n1:end,:); % adjust colormap to appropriate size
 
-clf;
+cla;
 hold on;
 for ii=1:grid.ne(dim)   
     p = tools.stairs(grid.edges{dim2}(1:end), ...
@@ -53,5 +53,6 @@ end
 hold off;
 
 set(gca, 'YScale', 'log', 'XScale', 'log');
+xlim(grid.span(dim2,:));
 
 end
