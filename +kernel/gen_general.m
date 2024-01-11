@@ -63,10 +63,9 @@ for ii=1:nc
             d_star2 = varargin{jj+1}{1};
             d_star = unique(d_star2)';
             d = grid_i.edges{dm_idx};  % points for integration
-            prop_dma = varargin{jj+1}{2};  % DMA properties
             
             % Evaluate transfer function.
-            Lambda{ii} = tfer_dma(d_star, d', z_vec, prop_dma);
+            Lambda{ii} = tfer_dma(d_star, d', z_vec, varargin{jj+1}{2:end});
 
             % Duplicate over other grid dimensions.
             d2 = grid_i.elements(:, dm_idx);
