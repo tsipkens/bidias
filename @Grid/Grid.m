@@ -83,6 +83,7 @@ properties
                 % ('log'/'logarithmic' or 'linear')
     
     dim = 2;    % number of dimensions of mesh
+    type = {};  % type of particle size on each dimension (e.g., mass, mobility)
     
     span = [];  % span covered by the grid in each dimension
                 % Span applies to the center of the elements, i.e.
