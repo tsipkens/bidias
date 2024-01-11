@@ -139,11 +139,12 @@ addpath('tfer');
 prop_p = prop_pma()
 ```
 
-Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_pma_dma_grid(...)` method: 
+Then, use the `kernel.gen_grid(...)` method to compute a kernel contain PMA, DMA, and charging contributions (largely using the default settings): 
 
 ```Matlab
 % Generate the kernel, use the above CPMA properties. 
-A = kernel.gen_pma_dma_grid(grid_b, grid_x, prop_p);
+A = kernel.gen_grid(grid_b, grid_x, 1:3, ...
+    'pma', {prop_p}, 'dma', {}, 'charger', {});
 ```
 
 One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point using: 
@@ -299,9 +300,16 @@ The first main step involves defining a reconstruction grid, which corresponds t
 One must now generate a model matrix, `A`, which relates the distribution, `x`, to the data, `b`, such that **Ax** = **b**. This requires one to compute the transfer functions of all of the devices involved in the measurement for the points on which `x` and `b` are to be defined. This generally involves invoking the `kernel.gen*(...)` methods. For example, 
 
 ```Matlab
+A = kernel.gen_grid(grid_b, grid_x, 1:3, ...
+    'pma', {prop_p}, 'dma', {}, 'charger', {});
+```
+
+or 
+
+```Matlab
 A = kernel.gen_pma_dma_grid(...
-    grid_b, grid_x, prop_pma, ...
-    [], 'omega', omega);
+    grid_b, grid_x, prop_p, ...
+    [], 'Rm', 3);
 ```
 
 will generate a kernel for a reconstruction gird, `grid_x`, and gridded data, on `grid_b`. 
