@@ -57,9 +57,9 @@ tools.textheader('Computing DMA-DMA kernel');
 z_vec = (1:3)';  % evaluate charge states 1 -> 3
 n_z = length(z_vec);  % length of charge state vector
 f_z1 = sparse( ...
-    charger(d1.*1e-9,z_vec)); % get fraction charged for d1 vector
+    charger(d1, z_vec)); % get fraction charged for d1 vector
 f_z2 = sparse( ...
-    charger(d2.*1e-9,z_vec)); % get fraction charged for d2 vector
+    charger(d2, z_vec)); % get fraction charged for d2 vector
 
 %== STEP 1: Evaluate DMA transfer function ===============================%
 %   Note: The DMA transfer function is 1D (only a function of mobility),
@@ -70,8 +70,8 @@ Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge sta
 tools.textbar([0, n_z]);
 for kk=1:n_z
     Omega_mat{kk} = tfer_dma( ...
-        grid_b.edges{2} .* 1e-9, ...  % DMA setpoints
-        grid_i.edges{2}' .* 1e-9, ...  % points for integration
+        grid_b.edges{2}, ...  % DMA setpoints
+        grid_i.edges{2}', ...  % points for integration
         z_vec(kk), ...  % integer charge state
         prop_dma1);  % DMA properties
     
@@ -103,8 +103,8 @@ Lambda_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge st
 tools.textbar([0, n_z]);
 for kk=1:n_z
     Lambda_mat{kk} = tfer_dma( ...
-        grid_b.edges{1} .* 1e-9, ...  % DMA setpoints
-        grid_i.edges{1}' .* 1e-9, ...  % points for integration
+        grid_b.edges{1}, ...  % DMA setpoints
+        grid_i.edges{1}', ...  % points for integration
         z_vec(kk), ...  % integer charge state
         prop_dma2);  % DMA properties
     

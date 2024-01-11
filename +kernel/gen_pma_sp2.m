@@ -38,12 +38,13 @@
 %  
 %  AUTHOR: Timothy Sipkens, Arash Naseri, 2020-02-19
 
-function A = gen_pma_sp2(sp, mrbc_nodes, grid_i, prop_pma)
+function A = gen_pma_sp2(sp, mrbc_nodes, grid_i, prop_p)
 
 % If not given, import default properties of PMA, 
 % as selected by prop_pma function.
-if ~exist('prop_pma','var'); prop_pma = []; end
-if isempty(prop_pma); prop_pma = kernel.prop_pma; end
+addpath tfer; % add mat-tfer-pma package to MATLAB path
+if ~exist('prop_p','var'); prop_p = []; end
+if isempty(prop_p); prop_p = prop_pma(); end
     
 if length(sp)~=length(mrbc_nodes); error('Setpoint / mrbc_edges mismatch.'); end
 
@@ -59,8 +60,8 @@ N_i = grid_i.Ne; % length of integration vector
 r = grid_i.elements;
 m = r(:,2);
 mrbc = r(:,1);
-d = (m.*1e-18./prop_pma.rho0).^...
-    (1/prop_pma.Dm).*1e9;
+d = (m.*1e-18./prop_p.rho0).^...
+    (1/prop_p.Dm).*1e9;
     % invoke mass-mobility relation
 
 
@@ -69,7 +70,7 @@ tools.textheader('Computing PMA-SP2 kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
-f_z = sparse(kernel.tfer_charge(d.*1e-9,z_vec)); % get fraction charged for d
+f_z = sparse(kernel.tfer_charge(d, z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
@@ -106,7 +107,7 @@ for kk=1:n_z % loop over the charge state
     
     Lambda_mat{kk} = kernel.tfer_pma(...
         sp, m,...
-        d, z_vec(kk), prop_pma);
+        d, z_vec(kk), prop_p);
             % PMA transfer function
 
     tools.textbar([kk, n_z]);

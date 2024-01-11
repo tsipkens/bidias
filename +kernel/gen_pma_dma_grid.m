@@ -39,15 +39,16 @@
 % 
 %  AUTHOR: Timothy Sipkens, 2018-11-27
 
-function [A, sp] = gen_pma_dma_grid(grid_b, grid_i, prop_pma, prop_dma, varargin)
+function [A, sp] = gen_pma_dma_grid(grid_b, grid_i, prop_p, prop_dma, varargin)
 
 % Add mat-tfer-pma package to MATLAB path.
 addpath tfer;
 
 % If not given, import default properties of PMA, 
 % as selected by prop_pma function.
-if ~exist('prop_pma','var'); prop_pma = []; end
-if isempty(prop_pma); prop_pma = kernel.prop_pma; end
+addpath tfer; % add mat-tfer-pma package to MATLAB path
+if ~exist('prop_p','var'); prop_p = []; end
+if isempty(prop_p); prop_p = prop_pma(); end
 
 if ~exist('prop_dma','var'); prop_dma = []; end
 
@@ -76,7 +77,7 @@ tools.textheader('Computing PMA-DMA kernel');
 z_vec = (1:3)';  % evaluate charge states 1 -> 3
 n_z = length(z_vec);  % length of charge state vector
 f_z = sparse( ...
-    charger(d.*1e-9,z_vec)); % get fraction charged for d vector
+    charger(d, z_vec)); % get fraction charged for d vector
 
 
 %== STEP 1: Evaluate DMA transfer function ===============================%
@@ -88,8 +89,8 @@ Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge sta
 tools.textbar([0, n_z]);
 for kk=1:n_z
     Omega_mat{kk} = tfer_dma( ...
-        grid_b.edges{2} .* 1e-9, ...  % DMA setpoints
-        grid_i.edges{2}' .* 1e-9, ...  % points for integration
+        grid_b.edges{2}, ...  % DMA setpoints
+        grid_i.edges{2}', ...  % points for integration
         z_vec(kk), ...  % integer charge state
         prop_dma);  % DMA properties
     
@@ -112,14 +113,14 @@ disp(' Computing PMA contribution:');
 
 tools.textbar([0, n_z]); % initiate textbar
 Lambda_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
-sp = get_setpoint(prop_pma,...  % get PMA setpoints
+sp = get_setpoint(prop_p,...  % get PMA setpoints
     'm_star', grid_b.edges{1} .* 1e-18, ...  % mass from the grid
     varargin{:});  % extra name-value pair to specify setpoint
 
 for kk=1:n_z  % loop over the charge state
     % Evaluate PMA transfer function.
     Lambda_mat{kk} = tfer_pma( ...
-        sp, m, d, z_vec(kk), prop_pma);
+        sp, m, d, z_vec(kk), prop_p);
 
     tools.textbar([kk, n_z]);  % update text progress bar
 end
