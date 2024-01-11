@@ -21,7 +21,7 @@ Lambda{nc} = [];  % initialize Lambda_ii
 dm_idx = find(strcmp(grid_i.type, 'dm'));
 mp_idx = find(strcmp(grid_i.type, 'mp'));
 
-if isempty(dm_idx)  % set default indices, if type not specified
+if isempty(grid_i.type)  % set default indices, if type not specified (mass-mobility grid)
     dm_idx = 2;
     mp_idx = 1;
 end
@@ -39,14 +39,19 @@ for ii=1:nc
             disp(' Computing charger contribution...');
             
             % Assign inputs.
-            d = grid_i.edges{dm_idx};
-            f_z = charger(d', z_vec, varargin{jj+1}{1:end}); % get fraction charged for d vector
+            if isempty(dm_idx)  % then PMA without DMA
+                dm = dm';  % inherit from previous PMA calc.
+                dm2 = dm';
+            else
+                dm = grid_i.edges{dm_idx};
+                dm2 = grid_i.elements(:, dm_idx);
+            end
             
+            f_z = charger(dm', z_vec, varargin{jj+1}{1:end}); % get fraction charged for d vector
             Lambda{ii} = permute(f_z, [3, 2, 1]);
-
+            
             % Duplicate over other grid dimensions.
-            d2 = grid_i.elements(:, dm_idx);
-            [~,kk] = max(d == d2, [], 2);
+            [~,kk] = max(dm == dm2, [], 2);
             Lambda{ii} = Lambda{ii}(:,kk,:);
             
             tools.textdone();
@@ -84,28 +89,32 @@ for ii=1:nc
             disp(' Computing PMA contribution...');
 
             % Unpack inputs.
-            % Points for integration.
-            r = grid_i.elements;  % get elements from the grid
-            m = r(:, mp_idx);  % masses at which to compute the transfer function (not setpoints)
-            d = r(:, dm_idx);  % mobilities at which to compute the transfer function (not setpoints)
-            
-            % Other inputs. 
             m_star = grid_b.edges{mp_idx};  % DMA setpoints
             prop_p = varargin{jj+1}{1};  % DMA properties
 
+            % Points for integration.
+            m = grid_i.elements(:, mp_idx);  % masses at which to compute the transfer function (not setpoints)
+            if isempty(dm_idx)  % then PMA without DMA
+                dm = (m .* 1e-18 ./ prop_p.rho0) .^ ...
+                    (1./prop_p.Dm) .* 1e9;  % use mass-mobility
+                disp('  Invoking mass-mobility relation for PMA.')
+            else
+                dm = grid_i.elements(:, dm_idx);
+            end
+            
             addpath 'tfer\tfer-pma';  % added to calculate sp
             sp = get_setpoint(prop_p,...  % get PMA setpoints
                 'm_star', m_star .* 1e-18, ...  % mass from the grid
                 varargin{jj+1}{2:end});  % extra name-value pair to specify setpoint
             
             Lambda{ii} = tfer_pma(...
-                sp, m, d, z_vec, prop_p);
-
+                sp, m, dm, z_vec, prop_p);
+            
             % Duplicate over other grid dimensions.
             m_star2 = grid_b.elements(:, mp_idx);
             [~,kk] = max(m_star == m_star2, [], 2);
             Lambda{ii} = Lambda{ii}(kk,:,:);
-
+    
             tools.textdone();
             
 
@@ -115,15 +124,23 @@ for ii=1:nc
         
         %== BIN ==========================================================%
         %   When data input is binned (e.g., SP2 data).
-        case 'bin'
+        case {'bin', 'sp2'}
             disp(' Computing binned contribution...');
 
             % Unpack inputs.
-            Lambda{ii} = 1;
-
+            s_idx = varargin{jj+1}{1};  % DMA properties
+            s_star = grid_b.edges{s_idx};  % DMA setpoints
+            s = grid_i.edges{s_idx};  % points for integration
+            
+            Lambda{ii} = full(tfer_bin(s_star', s'));
+            
             % Duplicate over other grid dimensions.
-            m_star2 = grid_b.elements(:, ii);
-            [~,kk] = max(m_star == m_star2, [], 2);
+            s2 = grid_i.elements(:, s_idx);
+            [~,kk] = max(s == s2, [], 2);
+            Lambda{ii} = Lambda{ii}(:,kk,:);
+            
+            s_star2 = grid_b.elements(:, s_idx);
+            [~,kk] = max(s_star == s_star2, [], 2);
             Lambda{ii} = Lambda{ii}(kk,:,:);
 
             tools.textdone();
