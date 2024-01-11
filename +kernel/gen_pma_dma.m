@@ -15,7 +15,7 @@
 % 
 %  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA) specifies a
 %  pre-computed PMA property data structure. If not given, the function
-%  uses the defaults of kernel.prop_pma(...).
+%  uses the defaults of prop_pma(...).
 % 
 %  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA,PROP_DMA) specifies a
 %  pre-computed DMA property data structure. 
@@ -97,7 +97,7 @@ Lambda_mat = cell(1,n_z); % pre-allocate for speed
     % one cell entry per charge state
 for kk=1:n_z % loop over the charge state
     % Evaluate PMA transfer function.
-    Lambda_mat{kk} = kernel.tfer_pma(...
+    Lambda_mat{kk} = tfer_pma(...
         sp, m, d, z_vec(kk), prop_p);
             % PMA transfer function
 
