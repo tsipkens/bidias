@@ -42,7 +42,7 @@
 function [A, sp] = gen_pma_dma_grid(grid_b, grid_i, prop_pma, prop_dma, varargin)
 
 % Add mat-tfer-pma package to MATLAB path.
-addpath tfer_pma;
+addpath tfer;
 
 % If not given, import default properties of PMA, 
 % as selected by prop_pma function.
@@ -76,7 +76,7 @@ tools.textheader('Computing PMA-DMA kernel');
 z_vec = (1:3)';  % evaluate charge states 1 -> 3
 n_z = length(z_vec);  % length of charge state vector
 f_z = sparse( ...
-    kernel.tfer_charge(d.*1e-9,z_vec)); % get fraction charged for d vector
+    charger(d.*1e-9,z_vec)); % get fraction charged for d vector
 
 
 %== STEP 1: Evaluate DMA transfer function ===============================%
@@ -87,7 +87,7 @@ disp(' Computing DMA contribution:');
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 tools.textbar([0, n_z]);
 for kk=1:n_z
-    Omega_mat{kk} = kernel.tfer_dma( ...
+    Omega_mat{kk} = tfer_dma( ...
         grid_b.edges{2} .* 1e-9, ...  % DMA setpoints
         grid_i.edges{2}' .* 1e-9, ...  % points for integration
         z_vec(kk), ...  % integer charge state
@@ -118,9 +118,8 @@ sp = get_setpoint(prop_pma,...  % get PMA setpoints
 
 for kk=1:n_z  % loop over the charge state
     % Evaluate PMA transfer function.
-    Lambda_mat{kk} = kernel.tfer_pma( ...
-        sp, m' .* 1e-18, ... 
-        d' .* 1e-9, z_vec(kk), prop_pma)';
+    Lambda_mat{kk} = tfer_pma( ...
+        sp, m, d, z_vec(kk), prop_pma);
 
     tools.textbar([kk, n_z]);  % update text progress bar
 end

@@ -98,8 +98,7 @@ Lambda_mat = cell(1,n_z); % pre-allocate for speed
 for kk=1:n_z % loop over the charge state
     % Evaluate PMA transfer function.
     Lambda_mat{kk} = kernel.tfer_pma(...
-        sp, m' .* 1e-18,...
-        d' .* 1e-9, z_vec(kk), prop_pma)';
+        sp, m, d, z_vec(kk), prop_pma);
             % PMA transfer function
 
     tools.textbar([kk, n_z]);

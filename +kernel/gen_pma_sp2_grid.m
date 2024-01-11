@@ -77,7 +77,7 @@ tools.textheader('Computing PMA-SP2 kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (0:3)';
-f_z = sparse(kernel.tfer_charge(d.*1e-9, z_vec)); % get fraction charged for d
+f_z = sparse(charger(d.*1e-9, z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
@@ -114,9 +114,8 @@ sp = get_setpoint(prop_pma,...
     'm_star', grid_b.edges{2} .* 1e-18, varargin{:}); % get PMA setpoints
 
 for kk=1:n_z % loop over the charge state
-    Lambda_mat{kk} = kernel.tfer_pma(...
-        sp, m' .* 1e-18, d' .* 1e-9,...
-        z_vec(kk), prop_pma)';
+    Lambda_mat{kk} = tfer_pma(...
+        sp, m, d, z_vec(kk), prop_pma);
             % PMA transfer function
 
     tools.textbar([kk, n_z]);

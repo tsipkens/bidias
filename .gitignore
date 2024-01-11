@@ -6,6 +6,7 @@ results/
 +olfert/
 +uncertainty/
 +working/
+config_local/
 *.asv
 
 main_x_*.m

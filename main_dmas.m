@@ -10,7 +10,7 @@ close all;
 
 
 %-- Load colour schemes --------------------------------------------------%
-addpath cmap;
+addpath cmap tfer;
 cm = inferno;
 cm = cm(40:end,:);
 cm_b = cm;
@@ -59,11 +59,11 @@ span_b = grid_x.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % grid for data
 
-prop_dma = kernel.prop_dma
+prop = prop_dma;
 
 % Generate A matrix based on grid for x and b.
-A = kernel.gen_dmas_grid(grid_b, grid_x, prop_dma, prop_dma);
-A2 = kernel.gen_dmas_grid(grid_b, grid_x, prop_dma, prop_dma, 0);
+A = kernel.gen_dmas_grid(grid_b, grid_x, prop, prop);
+A2 = kernel.gen_dmas_grid(grid_b, grid_x, prop, prop, 0);
 
 idx = round(2 * grid_b.Ne / 3);
 grid_b.elements(idx,:)
