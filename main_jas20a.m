@@ -10,7 +10,7 @@ close all;
 
 
 %-- Load colour schemes --------------------------------------------------%
-addpath cmap;
+addpath cmap tfer;
 cm = inferno;
 cm = cm(40:end,:);
 cm_b = cm;
@@ -64,10 +64,10 @@ span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % grid for data
 
-prop_pma = kernel.prop_pma;  % get default CPMA properties
+prop = prop_pma;  % get default CPMA properties
 
 % Generate A matrix based on grid for x_t (fine resolution) and b.
-A_t = kernel.gen_pma_dma_grid(grid_b, grid_t, prop_pma, [], 'Rm', 3);
+A_t = kernel.gen_pma_dma_grid(grid_b, grid_t, prop, [], 'Rm', 3);
 
 %{
 % Alternative (MUCH slower) route to computing the transfer function.

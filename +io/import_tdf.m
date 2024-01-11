@@ -7,7 +7,7 @@
 
 function [data, dm, sp, prop1, prop2] = import_tdf(fname)
 
-addpath tfer_pma;  % in case not already added
+addpath tfer;  % in case not already added
 
 opts = detectImportOptions(fname, 'FileType', 'text');
 read = readmatrix(fname, 'FileType', 'text');
@@ -27,7 +27,7 @@ class2 = head(4:5, 1:end-1);
 idx = find(contains(class1(1,:), 'Sample flow'));
 Qsmpl = class1{2, idx};
 
-prop1 = kernel.prop_pma;
+prop1 = prop_pma;
 prop1 = prop_update_flow(prop1, Qsmpl/1000/60);
 prop1.T = mean(in.Temperature_C_) + 273;  %  use average for now
 prop1.p = mean(in.Pressure_Pa_) ./ 101325;
@@ -54,7 +54,7 @@ opts.prop.p = mean(in.Pressure_kPa_2) ./ 101.325;
 opts.prop.L = 0.44369;  % length of chamber [m]
 opts.prop.R2 = 0.00937; % outer electrode radius [m]
 opts.prop.R1 = 0.01961; % inner electrode radius [m]
-prop2 = kernel.prop_dma(opts);  % fill out rest of the parameters
+prop2 = prop_dma(opts);  % fill out rest of the parameters
 
 dm = in.Dm_nm_2;
 

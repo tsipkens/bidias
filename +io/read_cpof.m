@@ -7,13 +7,15 @@
 
 function [sp, prop, m_star, t_span] = read_cpof(fn, prop, off)
 
+addpath tfer;
+
 % Check whether to ignore when the SP2 is off. 
 if ~exist('off', 'var'); off = []; end
 if isempty(off); off = 1; end
 
 if ~exist('prop', 'var'); prop = []; end
 if isempty(prop)
-    prop = kernel.prop_pma('cpma');
+    prop = prop_pma('cpma');
 end
 
 % Open CPMA CPOF file and read data.
@@ -98,7 +100,7 @@ end
 
 % Add tfer_pma submodule. 
 % Used to interpret setpoints below.
-addpath('tfer_pma');
+addpath('tfer/tfer-pma');
 sp = get_setpoint(prop, 'V', V, 'omega', omega);
 
 

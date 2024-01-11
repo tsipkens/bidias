@@ -9,7 +9,7 @@ clc;
 close all;
 
 %-- Load colour maps -----------------------------------------------------%
-addpath cmap;
+addpath cmap tfer;
 cm_b = inferno(255);
 cm_b = cm_b(40:end,:);
 cm_div = rdbu(200);
@@ -66,8 +66,8 @@ span_b = grid_t.span;
 grid_b = Grid(span_b,...
     n_b,'logarithmic'); % grid for data
 
-prop_pma = kernel.prop_pma;
-[A_t,sp] = kernel.gen_pma_dma_grid(grid_b,grid_t,prop_pma,[],'Rm',3);
+prop = prop_pma;
+[A_t,sp] = kernel.gen_pma_dma_grid(grid_b,grid_t,prop,[],'Rm',3);
     % generate A matrix based on grid for x_t and b
 
 disp('Transform to discretization in x ...');

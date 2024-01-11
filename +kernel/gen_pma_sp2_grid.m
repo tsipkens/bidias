@@ -36,15 +36,15 @@
 %  
 %  AUTHOR: Timothy Sipkens, 2018-11-27
 
-function [A,sp] = gen_pma_sp2_grid(grid_b, grid_i, prop_pma, varargin)
+function [A,sp] = gen_pma_sp2_grid(grid_b, grid_i, prop_p, varargin)
 
 
 %-- Parse inputs ---------------------------------------------------------%
 % If not given, import default properties of PMA, 
 % as selected by prop_pma function.
-addpath tfer_pma; % add mat-tfer-pma package to MATLAB path
-if ~exist('prop_pma','var'); prop_pma = []; end
-if isempty(prop_pma); prop_pma = kernel.prop_pma; end
+addpath tfer; % add mat-tfer-pma package to MATLAB path
+if ~exist('prop_p','var'); prop_p = []; end
+if isempty(prop_p); prop_p = prop_pma(); end
     
 if or(isempty(varargin), length(varargin)~=2) % parse extra information for PMA
     error('Invalid additional information for PMA setpoint.');
@@ -67,8 +67,8 @@ N_i = grid_i.Ne; % length of integration vector
 r = grid_i.elements;
 m = r(:,2);
 mrbc = r(:,1);
-d = (m.*1e-18./prop_pma.rho0).^...
-    (1/prop_pma.Dm).*1e9;
+d = (m.*1e-18./prop_p.rho0).^...
+    (1/prop_p.Dm).*1e9;
     % invoke mass-mobility relation
 
 
@@ -77,7 +77,7 @@ tools.textheader('Computing PMA-SP2 kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (0:3)';
-f_z = sparse(kernel.tfer_charge(d.*1e-9, z_vec)); % get fraction charged for d
+f_z = sparse(charger(d, z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
@@ -110,13 +110,12 @@ disp(' Computing PMA contribution:');
 
 tools.textbar([0, n_z]); % initiate textbar
 Lambda_mat = cell(1, n_z); % pre-allocate for speed, one cell entry per charge state
-sp = get_setpoint(prop_pma,...
+sp = get_setpoint(prop_p,...
     'm_star', grid_b.edges{2} .* 1e-18, varargin{:}); % get PMA setpoints
 
 for kk=1:n_z % loop over the charge state
-    Lambda_mat{kk} = kernel.tfer_pma(...
-        sp, m' .* 1e-18, d' .* 1e-9,...
-        z_vec(kk), prop_pma)';
+    Lambda_mat{kk} = tfer_pma(...
+        sp, m, d, z_vec(kk), prop_p);
             % PMA transfer function
 
     tools.textbar([kk, n_z]);

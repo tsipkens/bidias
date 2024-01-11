@@ -25,7 +25,7 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 - [3.3 Phantom class](#33-phantom-class)
 
-[4. PACKAGES](#4-packages): +kernel, +invert, +optimize, tfer_pma, etc.
+[4. PACKAGES](#4-packages): +kernel, +invert, +optimize, tfer/tfer-pma, etc.
 
 [License, how to cite, and acknowledgements](#license)
 
@@ -35,7 +35,7 @@ This code makes use of the [optimization](https://www.mathworks.com/products/opt
 
 In addition to the necessary MATLAB toolboxes, this program has two dependences that are included as git submodules: 
 
-1. The **tfer_pma** submodule, available at https://github.com/tsipkens/mat-tfer-pma, contains MATLAB code to compute the transfer or response function of particle mass analyzers (including the centrifugal particle mass analyzer and aerosol particle mass analyzer) and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements  by a range of instruments to their underlying particle size distributions). As such, while this package is primarily necessary if considering particle mass analyzer transfer functions, the package also includes basic functions for computing particle mobility necessary for computing the DMA transfer or response function. 
+1. The **tfer** submodule, available at https://github.com/tsipkens/tfer, contains MATLAB code to compute the transfer or response functions of classifiers and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements by a range of instruments to their underlying particle size distributions). 
 
 2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds perceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
 
@@ -45,13 +45,13 @@ As a result, the folders corresponding to these submodules will initially be emp
 git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
 ```
 
-which will automatically download the submodules when downloading overall program. Alternatively, the submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer_pma/` folders. In either case, to be used directly, these packages should then be added to the MATLAB path at the beginning of any script using
+which will automatically download the submodules when downloading overall program. Alternatively, the submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer/` folders. In either case, to be used directly, these packages should then be added to the MATLAB path at the beginning of any script using
 
 ```Matlab
-addpath('tfer_pma', 'cmap');
+addpath('tfer', 'cmap');
 ```
 
-For **tfer_pma**, functions in the **kernel** package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. 
+For **tfer**, functions in the **kernel** package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. 
 
 ## Getting started: A sample inversion
 
@@ -130,19 +130,21 @@ ne_b = [20, 65];  % correspond to 20 masses and 65 mobilities
 grid_b = Grid(span_b, ne_b, 'log');
 ```
 
-However, before actually generating data, we must first compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `kernel.prop_pma(...)` to get a set of CPMA parameters: 
+However, before actually generating data, we must first compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `prop_pma(...)` to get a set of CPMA parameters. This first requires adding the **tfer** submodule to the path:  
 
 ```Matlab
 % Use the default CPMA properties
 % (will display in command line).
-prop_pma = kernel.prop_pma
+addpath('tfer');
+prop_p = prop_pma()
 ```
 
-Then, since we have a grid for the mass-mobility distribution and the data, use the `kernel.gen_pma_dma_grid(...)` method: 
+Then, use the `kernel.gen_grid(...)` method to compute a kernel contain PMA, DMA, and charging contributions (largely using the default settings): 
 
 ```Matlab
 % Generate the kernel, use the above CPMA properties. 
-A = kernel.gen_pma_dma_grid(grid_b, grid_x, prop_pma);
+A = kernel.gen_grid(grid_b, grid_x, 1:3, ...
+    'pma', {prop_p}, 'dma', {}, 'charger', {});
 ```
 
 One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point using: 
@@ -295,12 +297,19 @@ The first main step involves defining a reconstruction grid, which corresponds t
 
 ### (2) Compute the kernel / transfer functions
 
-One must now generate a model matrix, `A`, which relates the distribution, `x`, to the data, `b`, such that **Ax** = **b**. This requires one to compute the transfer functions of all of the devices involved in the measurement for the points on which `x` and `b` are to be defined. This generally involves invoking the `kernel.gen_*(...)` methods. For example, 
+One must now generate a model matrix, `A`, which relates the distribution, `x`, to the data, `b`, such that **Ax** = **b**. This requires one to compute the transfer functions of all of the devices involved in the measurement for the points on which `x` and `b` are to be defined. This generally involves invoking the `kernel.gen*(...)` methods. For example, 
+
+```Matlab
+A = kernel.gen_grid(grid_b, grid_x, 1:3, ...
+    'pma', {prop_p}, 'dma', {}, 'charger', {});
+```
+
+or 
 
 ```Matlab
 A = kernel.gen_pma_dma_grid(...
-    grid_b, grid_x, prop_pma, ...
-    [], 'omega', omega);
+    grid_b, grid_x, prop_p, ...
+    [], 'Rm', 3);
 ```
 
 will generate a kernel for a reconstruction gird, `grid_x`, and gridded data, on `grid_b`. 
@@ -399,15 +408,15 @@ For experimental data, the Phantom class can also be used to derive morphologica
 
 ### 4.1 +kernel
 
-This package is used to evaluate the transfer function of the different instruments, such as the differential mobility analyzer (DMA), particle mass analyzer (such as the CPMA or APM), single particle soot photometer (SP2), and charging fractions to generate discrete kernels useful for computation. In general, functions starting with `gen` are upper level functions that can generate the matrix `A` that acts as the forward model ins subsequent steps. Other functions (e.g., `kernel.tfer_dma(...)`) act as supporting methods (e.g., in evaluating the transfer function for just the DMA). 
+This package is used to evaluate the transfer function of the different instruments, such as the differential mobility analyzer (DMA), particle mass analyzer (such as the CPMA or APM), single particle soot photometer (SP2), and charging fractions to generate discrete kernels useful for computation. In general, functions starting with `gen` are upper level functions that can generate the matrix `A` that acts as the forward model ins subsequent steps. 
 
 The transfer function for the DMA uses the analytical expressions of [Stozenburg et al. (2018)][Stolz18].
 
-Transfer function evaluation for a PMA can proceed using one of two inputs either (*i*) a `sp` structure or (*ii*) an instance of the Grid class defined for the data setpoints. Evaluation proceeds using the analytical expressions of [Sipkens et al. (2020b)][2_AST] and the **tfer_pma** package provided with that work. The package uses a `sp` structure to define the PMA setpoints.
+Transfer function evaluation for a PMA can proceed using one of two inputs either (*i*) a `sp` structure or (*ii*) an instance of the Grid class defined for the data setpoints. Evaluation proceeds using the analytical expressions of [Sipkens et al. (2020b)][2_AST] and the **tfer/tfer-pma** folders, which have functions associated with that work. The package uses a `sp` structure to define the PMA setpoints.
 
 ##### 4.1.1 sp
 
-The `sp` or setpoint structure is a structured array containing the information necessary to define the setpoints for particle mass analyzers, which is described in more detail in the [README](tfer_pma/README.md) for the **tfer_pma** package. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `get_setpoint(...)` function (in the **tfer_pma** folder). Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
+The `sp` or setpoint structure is a structured array containing the information necessary to define the setpoints for particle mass analyzers, which is described in more detail in the [README](tfer/tfer-pma/README.md) for the **tfer/tfer-pma** folder. Defining the quantity requires a pair of parameters and a property structure defining the physical dimensions of the PMA. Pairings can be converted into a `sp` structured array using the `get_setpoint(...)` function (in the **tfer** folder). Generally, this function can be placed inside a loop that generates an entry in `sp` for each available setpoint. The output structure will contain all of the relevant parameters that could be used to specify that setpoint, including mass setpoint (assuming a singly charged particle), `m_star`; the resolution, `Rm`; the voltage, `V`; and the electrode speeds, `omega*`. A sample `sp` is shown below.
 
 | Fields  | m_star    | V      | Rm  | omega | omega1 | omega2 | alpha | beta  | m_max    |
 | ------- | :-------: | :----: | :-: | :---: | :----: | :----: | :---: | :---: | :------: |
@@ -417,12 +426,12 @@ The `sp` or setpoint structure is a structured array containing the information 
 | 4       | 2.22×10<sup>-18</sup> |	198.02 | 3  | 486.1 | 493.7  | 478.7 |	33.63 |	1.656 |	2.96×10<sup>-18</sup> |
 | ... ||||||||||
 
-As an example, the array can be generated from a vector of mass setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified in `kernel.prop_pma` using:
+As an example, the array can be generated from a vector of mass setpoints assuming a resolution of *R*<sub>m</sub> = 10 and PMA properties specified in `prop_pma(...)` using:
 
 ```Matlab
-addpath('tfer_pma');
+addpath('tfer');
 m_star = 1e-18 .* logspace(log10(0.1), log10(100), 25); % mass setpoints
-sp = get_setpoint(prop_pma,...
+sp = get_setpoint(prop_p,...
     'm_star', m_star, 'Rm', 10); % get PMA setpoints
 ```
 
@@ -430,17 +439,17 @@ sp = get_setpoint(prop_pma,...
 
 We note that functions that end in `_grid` exploit the structure of gridded data to speed transfer function evaluation. This is particularly useful when the transfer function may not be a function of both aerosol size parameters (e.g., for SP2 data, the SP2 binning process does not depend on the total particle mass). 
 
-### 4.2 tfer_pma
+### 4.2 tfer
 
-Unlike the other packages, **tfer_pma** corresponds to a submodule that is imported from a package distributed with [Sipkens et al. (2020b)][2_AST] and is available in a parallel repository [https://github.com/tsipkens/mat-tfer-pma](https://github.com/tsipkens/mat-tfer-pma). It does not contain a `+` symbol and thus must be explicitly added to the MATLAB path using
+Unlike the other packages, **tfer** corresponds to a submodule that is imported from a package (which itself contains a reference to the package released with [Sipkens et al. (2020b)][2_AST]) and is available in a parallel repository [https://github.com/tsipkens/tfer](https://github.com/tsipkens/tfer). It does not contain a `+` symbol and thus must be explicitly added to the MATLAB path using
 
 ```Matlab
-addpath('tfer_pma');
+addpath('tfer');
 ```
 
 to be used explicitly in scripts. The package is automatically added to the MATLAB path, whenever it is necessary in calling functions in the **kernel** package. 
 
-The package is used in evaluating the transfer function of the particle mass analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal particle mass analyzer (CPMA). PMA transfer functions are evaluated using the analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including different approximations for the particle migration velocity and options for transfer functions that include diffusion. For more details on the theory, one is referred to the referenced work. The package also contains some standard reference functions (e.g. `dm2zp(...)`) used in evaluating the DMA transfer function when calling `kernel.tfer_dma(...)`.
+The package is used in evaluating the transfer function of the particle mass analyzers (PMAs), such as the aerosol particle mass analyzer (APM) and centrifugal particle mass analyzer (CPMA). PMA transfer functions are evaluated using the analytical transfer functions derived by [Sipkens et al. (2020b)][2_AST], including different approximations for the particle migration velocity and options for transfer functions that include diffusion. For more details on the theory, one is referred to the referenced work. The package also contains some standard reference functions in the **tfer/tfer-pma** subfolder (e.g. `dm2zp(...)`) that are used in evaluating the DMA transfer function when calling `tfer_dma(...)`.
 
 ### 4.3 +invert
 

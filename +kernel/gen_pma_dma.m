@@ -15,7 +15,7 @@
 % 
 %  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA) specifies a
 %  pre-computed PMA property data structure. If not given, the function
-%  uses the defaults of kernel.prop_pma(...).
+%  uses the defaults of prop_pma(...).
 % 
 %  A = kernel.gen_pma_dma(SP,D_STAR,GRID_I,PROP_PMA,PROP_DMA) specifies a
 %  pre-computed DMA property data structure. 
@@ -29,12 +29,12 @@
 % 
 %  AUTHOR: Timothy Sipkens, 2020-02-04
 
-function A = gen_pma_dma(sp, d_star, grid_i, prop_pma, prop_dma)
+function A = gen_pma_dma(sp, d_star, grid_i, prop_p, prop_dma)
 
 % If not given, import default properties of PMA, 
 % as selected by prop_pma function.
-if ~exist('prop_pma','var'); prop_pma = []; end
-if isempty(prop_pma); prop_pma = kernel.prop_pma; end
+if ~exist('prop_p','var'); prop_p = []; end
+if isempty(prop_p); prop_p = prop_pma(); end
 
 if length(sp)~=length(d_star); error('Setpoint / d_star mismatch.'); end
 
@@ -59,7 +59,7 @@ tools.textheader('Computing PMA-DMA kernel');
 
 %== Evaluate particle charging fractions =================================%
 z_vec = (1:3)';
-f_z = sparse(kernel.tfer_charge(d.*1e-9,z_vec)); % get fraction charged for d
+f_z = sparse(charger(d,z_vec)); % get fraction charged for d
 n_z = length(z_vec);
 
 
@@ -71,9 +71,9 @@ disp(' Computing DMA contribution:');
 Omega_mat = cell(1,n_z); % pre-allocate for speed, one cell entry per charge state
 tools.textbar([0, n_z]);
 for kk=1:n_z
-    Omega_mat{kk} = kernel.tfer_dma( ...
-        d_star' .* 1e-9, ...
-        grid_i.edges{2}' .* 1e-9, ...
+    Omega_mat{kk} = tfer_dma( ...
+        d_star', ...
+        grid_i.edges{2}', ...
         z_vec(kk), ...
         prop_dma);
     
@@ -97,9 +97,8 @@ Lambda_mat = cell(1,n_z); % pre-allocate for speed
     % one cell entry per charge state
 for kk=1:n_z % loop over the charge state
     % Evaluate PMA transfer function.
-    Lambda_mat{kk} = kernel.tfer_pma(...
-        sp, m' .* 1e-18,...
-        d' .* 1e-9, z_vec(kk), prop_pma)';
+    Lambda_mat{kk} = tfer_pma(...
+        sp, m, d, z_vec(kk), prop_p);
             % PMA transfer function
 
     tools.textbar([kk, n_z]);

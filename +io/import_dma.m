@@ -3,9 +3,9 @@
 % Author: Timothy Sipkens, 2020-04-12
 %=========================================================================%
 
-function [data,d_star,prop_dma,time_dma] = import_dma(fn)
+function [data,d_star,prop_d,time_dma] = import_dma(fn)
 
-prop_dma = kernel.prop_dma;
+prop_d = prop_dma;
 
 n = io.linecount(fn); % total line counts in file, sub-function below
 
@@ -44,30 +44,30 @@ ta = readtable(fn, opts, 'ReadVariableNames', false);
 ta = table2array(ta);
 
 % DMA inner radius (file is nominally normally in cm, covert to m).
-prop_dma.R1 = ta(1,2);
-if prop_dma.R1>0.1 % correct if illogical value for m, likely in cm then
-    prop_dma.R1 = prop_dma.R1 / 100;
+prop_d.R1 = ta(1,2);
+if prop_d.R1>0.1 % correct if illogical value for m, likely in cm then
+    prop_d.R1 = prop_d.R1 / 100;
     disp('  Note: Converted R1 to m due to unexpected magnitude.');
 end
-disp(['    R1 = ', num2str(prop_dma.R1 * 100),' cm']);
+disp(['    R1 = ', num2str(prop_d.R1 * 100),' cm']);
 
 
 % DMA outer radius.
-prop_dma.R2 = ta(2,2);
-if prop_dma.R2>0.1 % correct if illogical value for m, likely in cm then
-    prop_dma.R2 = prop_dma.R2 / 100;
+prop_d.R2 = ta(2,2);
+if prop_d.R2>0.1 % correct if illogical value for m, likely in cm then
+    prop_d.R2 = prop_d.R2 / 100;
     disp('   Note: Converted R2 to m due to unexpected magnitude.');
 end
-disp(['    R2 = ', num2str(prop_dma.R2 * 100),' cm']);
+disp(['    R2 = ', num2str(prop_d.R2 * 100),' cm']);
 
 
 % DMA column length. 
-prop_dma.L = ta(3,2);
-if prop_dma.L>1 % correct if illogical value for m, likely in cm then
-    prop_dma.L = prop_dma.L / 100;
+prop_d.L = ta(3,2);
+if prop_d.L>1 % correct if illogical value for m, likely in cm then
+    prop_d.L = prop_d.L / 100;
     disp('  Note: Converted L to m due to unexpected magnitude.');
 end
-disp(['    L = ', num2str(prop_dma.L * 100),' cm']);
+disp(['    L = ', num2str(prop_d.L * 100),' cm']);
 
 
 % Read flow rates.
@@ -75,17 +75,17 @@ if ~isempty(n_flow)
     opts.DataLines = [n_flow,n_flow]; % this is unreliable (i.e. row may vary)
     ta = readtable(fn, opts, 'ReadVariableNames', false);
     ta = table2array(ta);
-    prop_dma.Q_a = ta(1,2)/60/1000;
-    prop_dma.Q_s = prop_dma.Q_a; % equal flow assumption
-    prop_dma.Q_c = ta(1,4)/60/1000;
-    prop_dma.Q_m = prop_dma.Q_c; % equal flow assumption
+    prop_d.Q_a = ta(1,2)/60/1000;
+    prop_d.Q_s = prop_d.Q_a; % equal flow assumption
+    prop_d.Q_c = ta(1,4)/60/1000;
+    prop_d.Q_m = prop_d.Q_c; % equal flow assumption
     disp('  Note: Applied equal flow assumption for Q_s and Q_m.');
     disp('  Note: Reading flow information from the header is unreliable.');
     
-    disp(['    Q_a = ', num2str(prop_dma.Q_a),' m3/s = ', ...
-        num2str(prop_dma.Q_a*60*1000), ' LPM']);
-    disp(['    Q_c = ', num2str(prop_dma.Q_c),' m3/s = ', ...
-        num2str(prop_dma.Q_c*60*1000), ' LPM']);
+    disp(['    Q_a = ', num2str(prop_d.Q_a),' m3/s = ', ...
+        num2str(prop_d.Q_a*60*1000), ' LPM']);
+    disp(['    Q_c = ', num2str(prop_d.Q_c),' m3/s = ', ...
+        num2str(prop_d.Q_c*60*1000), ' LPM']);
 end
 
 
@@ -94,11 +94,11 @@ if ~isempty(n_T)
     opts.DataLines = [n_T,n_T+1];
     ta = readtable(fn, opts, 'ReadVariableNames', false);
     ta = table2array(ta);
-    prop_dma.T = ta(1,2); % more DMA properties
-    prop_dma.p = ta(2,2)/101.325;
+    prop_d.T = ta(1,2); % more DMA properties
+    prop_d.p = ta(2,2)/101.325;
     
-    disp(['    T = ', num2str(prop_dma.T),' K']);
-    disp(['    p = ', num2str(prop_dma.p),' atm']);
+    disp(['    T = ', num2str(prop_d.T),' K']);
+    disp(['    p = ', num2str(prop_d.p),' atm']);
 end
 disp('Complete.');
 disp(' ');
@@ -166,9 +166,9 @@ tools.textheader();
 
 %-- Set remaining prop_dma parameters --------%
 %   Note: update these after this function call, if necessary.
-prop_dma.G_DMA = 3.0256;
-prop_dma.bet = 0.1000;
-prop_dma.del = 0;
+prop_d.G_DMA = 3.0256;
+prop_d.bet = 0.1000;
+prop_d.del = 0;
 %---------------------------------------------%
 
 
