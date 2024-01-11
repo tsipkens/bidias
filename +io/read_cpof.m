@@ -44,7 +44,15 @@ for ii=2:height(in)
     end
 end
 idx2 = [idx2; height(in)];
-idx1(1) = 15;  % avoids some of initial ramp
+if idx1(2) > 15
+    idx1(1) = 15;  % avoids some of initial ramp
+else  % otherwise remove first "setpoint"
+    idx1(1) = [];
+    idx2(1) = [];
+    m_star(1) = [];
+    Rm(1)= [];
+end
+
 
 % Take flow rate as global median.
 % This does not allow for flow rates to change in a given file.
