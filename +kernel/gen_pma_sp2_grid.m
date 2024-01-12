@@ -67,8 +67,8 @@ N_i = grid_i.Ne; % length of integration vector
 r = grid_i.elements;
 m = r(:,2);
 mrbc = r(:,1);
-d = (m.*1e-18./prop_p.rho0).^...
-    (1/prop_p.Dm).*1e9;
+d = (m.*1e-18./prop_p.m0).^...
+    (1/prop_p.Dm);
     % invoke mass-mobility relation
 
 
