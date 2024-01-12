@@ -1023,6 +1023,7 @@ methods
     %  above). 
         
         partialgrid = PartialGrid(obj.span, obj.ne, obj.discrete, varargin{:});
+        partialgrid.type = obj.type;
         
     end
     %=================================================================%
