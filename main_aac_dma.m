@@ -6,7 +6,7 @@ clear;
 close all;
 clc;
 
-addpath tfer cmap;
+addpath tfer autils cmap;
 
 
 %== (1) ==================================================================%
@@ -66,7 +66,7 @@ b0 = A * x0; % generate a set of data using the forward model
 
 %== (4) ==================================================================%
 disp('Tikhonov inversion ...');
-lambda = 1;  % regularization parameter
+lambda = 0.2;  % regularization parameter
 order = 1;  % order of Tikhonov matrix to be used
 x_tk1 = invert.tikhonov(Lb*A, Lb*b, ...
     lambda, order, grid_x);  % Tikhonov solution
