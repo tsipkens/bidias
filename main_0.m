@@ -60,7 +60,7 @@ grid_b = Grid(span_b, ne_b, 'log');
 prop_p = prop_pma();
 
 % Generate the kernel, use default CPMA properties. 
-A = kernel.gen_grid(grid_b, grid_x, 1:3, ...
+A = kernel.build_grid(grid_b, grid_x, 1:3, ...
     'pma', {prop_p}, 'dma', {}, 'charger', {});
 
 figure(2);
