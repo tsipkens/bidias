@@ -20,6 +20,7 @@ Lambda{nc} = [];  % initialize Lambda_ii
 
 dm_idx = find(strcmp(grid_i.type, 'dm'));
 mp_idx = find(strcmp(grid_i.type, 'mp'));
+da_idx = find(strcmp(grid_i.type, 'da'));
 
 if isempty(grid_i.type)  % set default indices, if type not specified (mass-mobility grid)
     dm_idx = 2;
@@ -119,6 +120,27 @@ for ii=1:nc
 
         %== AAC ==========================================================%
         case 'aac'
+            disp(' Computing AAC contribution...');
+            
+            addpath 'autils';
+            
+            % Assign inputs.
+            d_star = grid_b.edges{da_idx};  % DMA setpoints
+            d = grid_i.edges{da_idx};  % points for integration
+            
+            % Evaluate transfer function.
+            Lambda{ii} = tfer_aac(d_star, d', varargin{jj+1}{1:end});
+
+            % Duplicate over other grid dimensions.
+            d2 = grid_i.elements(:, da_idx);
+            [~,kk] = max(d == d2, [], 2);
+            Lambda{ii} = Lambda{ii}(:,kk,:);
+            
+            d_star2 = grid_b.elements(:, da_idx);
+            [~,kk] = max(d_star == d_star2, [], 2);
+            Lambda{ii} = Lambda{ii}(kk,:,:);
+            
+            tools.textdone();
             
         
         %== BIN ==========================================================%
