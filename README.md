@@ -139,11 +139,11 @@ addpath('tfer');
 prop_p = prop_pma()
 ```
 
-Then, use the `kernel.gen_grid(...)` method to compute a kernel contain PMA, DMA, and charging contributions (largely using the default settings): 
+Then, use the `kernel.build_grid(...)` method to compute a kernel contain PMA, DMA, and charging contributions (largely using the default settings): 
 
 ```Matlab
 % Generate the kernel, use the above CPMA properties. 
-A = kernel.gen_grid(grid_b, grid_x, 1:3, ...
+A = kernel.build_grid(grid_b, grid_x, 1:3, ...
     'pma', {prop_p}, 'dma', {}, 'charger', {});
 ```
 
@@ -297,10 +297,10 @@ The first main step involves defining a reconstruction grid, which corresponds t
 
 ### (2) Compute the kernel / transfer functions
 
-One must now generate a model matrix, `A`, which relates the distribution, `x`, to the data, `b`, such that **Ax** = **b**. This requires one to compute the transfer functions of all of the devices involved in the measurement for the points on which `x` and `b` are to be defined. This generally involves invoking the `kernel.gen*(...)` methods. For example, 
+One must now generate a model matrix, `A`, which relates the distribution, `x`, to the data, `b`, such that **Ax** = **b**. This requires one to compute the transfer functions of all of the devices involved in the measurement for the points on which `x` and `b` are to be defined. This generally involves invoking the `kernel.gen*(...)` or `kernel.build(...)` methods. For example, 
 
 ```Matlab
-A = kernel.gen_grid(grid_b, grid_x, 1:3, ...
+A = kernel.build_grid(grid_b, grid_x, 1:3, ...
     'pma', {prop_p}, 'dma', {}, 'charger', {});
 ```
 
@@ -408,7 +408,7 @@ For experimental data, the Phantom class can also be used to derive morphologica
 
 ### 4.1 +kernel
 
-This package is used to evaluate the transfer function of the different instruments, such as the differential mobility analyzer (DMA), particle mass analyzer (such as the CPMA or APM), single particle soot photometer (SP2), and charging fractions to generate discrete kernels useful for computation. In general, functions starting with `gen` are upper level functions that can generate the matrix `A` that acts as the forward model ins subsequent steps. 
+This package is used to evaluate the transfer function of the different instruments, such as the differential mobility analyzer (DMA), particle mass analyzer (such as the CPMA or APM), single particle soot photometer (SP2), and charging fractions to generate discrete kernels useful for computation. In general, functions starting with `gen` or `build` are upper level functions that can generate the matrix `A` that acts as the forward model ins subsequent steps. 
 
 The transfer function for the DMA uses the analytical expressions of [Stozenburg et al. (2018)][Stolz18].
 
