@@ -20,11 +20,38 @@ Lambda{nc} = [];  % initialize Lambda_ii
 
 dm_idx = find(strcmp(grid_i.type, 'dm'));
 mp_idx = find(strcmp(grid_i.type, 'mp'));
+da_idx = find(strcmp(grid_i.type, 'da'));
 
 if isempty(grid_i.type)  % set default indices, if type not specified (mass-mobility grid)
     dm_idx = 2;
     mp_idx = 1;
 end
+
+% Handle if mobility diameter is not given directly (req'd for charging/PMA).
+% Compute using known relationships.
+if isempty(dm_idx)
+    addpath autils;  % add aerosol utilities (autils) package
+    
+    % OPTION 1: Use da and mp to directly compute dm.
+    if and(~isempty(da_idx), ~isempty(mp_idx))
+        m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
+        da = grid_i.elements(:, da_idx);  % get da from relevant dimension
+        dm = mp_da2dm(m, da);  % fully constrained calculation
+    
+    % OPTION 2: Apply assumption of a mass-mobility relationship, 
+    % which will be less precise. Necessary for PMA-SP2.
+    elseif ~isempty(mp_idx)
+        idx_p = find(strcmp(varargin, 'pma')) + 1;  % first find PMA inputs
+        prop_p = varargin{idx_p}{1};  % extract prop_pma from PMA input
+        
+        % Then convert using mass-mobility relationship. 
+        disp(' Invoking mass-mobility relationship to determine dm.');
+        m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
+        dm = mp2dm(m .* 1e-18, prop_p) .* 1e9;
+    end
+    dm2 = dm';
+end
+
 
 % Loop over the various classifiers. 
 for ii=1:nc

@@ -27,6 +27,32 @@ if isempty(grid_i.type)  % set default indices, if type not specified (mass-mobi
     mp_idx = 1;
 end
 
+% Handle if mobility diameter is not given directly (req'd for charging/PMA).
+% Compute using known relationships.
+if isempty(dm_idx)
+    addpath autils;  % add aerosol utilities (autils) package
+    
+    % OPTION 1: Use da and mp to directly compute dm.
+    if and(~isempty(da_idx), ~isempty(mp_idx))
+        m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
+        da = grid_i.elements(:, da_idx);  % get da from relevant dimension
+        dm = mp_da2dm(m, da);  % fully constrained calculation
+    
+    % OPTION 2: Apply assumption of a mass-mobility relationship, 
+    % which will be less precise. Necessary for PMA-SP2.
+    elseif ~isempty(mp_idx)
+        idx_p = find(strcmp(varargin, 'pma')) + 1;  % first find PMA inputs
+        prop_p = varargin{idx_p}{1};  % extract prop_pma from PMA input
+        
+        % Then convert using mass-mobility relationship. 
+        disp(' Invoking mass-mobility relationship to determine dm.');
+        m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
+        dm = mp2dm(m .* 1e-18, prop_p) .* 1e9;
+    end
+    dm2 = dm';
+end
+
+
 % Loop over the various classifiers. 
 for ii=1:nc
     jj = 2*ii - 1;  % index of classifier
@@ -40,19 +66,20 @@ for ii=1:nc
             disp(' Computing charger contribution...');
             
             % Assign inputs.
-            if isempty(dm_idx)  % then PMA without DMA
-                dm = dm';  % inherit from previous PMA calc.
-                dm2 = dm';
-            else
-                dm = grid_i.edges{dm_idx};
-                dm2 = grid_i.elements(:, dm_idx);
+            if ~isempty(dm_idx)  % then PMA without DMA
+                d = grid_i.edges{dm_idx};
+                d2 = grid_i.elements(:, dm_idx);
+                
+            else  % otherwise inherit pre-computed value above
+                d = dm';
+                d2 = dm2';
             end
             
-            f_z = charger(dm', z_vec, varargin{jj+1}{1:end}); % get fraction charged for d vector
+            f_z = charger(d', z_vec, varargin{jj+1}{1:end}); % get fraction charged for d vector
             Lambda{ii} = permute(f_z, [3, 2, 1]);
             
             % Duplicate over other grid dimensions.
-            [~,kk] = max(dm == dm2, [], 2);
+            [~,kk] = max(d == d2, [], 2);
             Lambda{ii} = Lambda{ii}(:,kk,:);
             
             tools.textdone();
@@ -94,13 +121,9 @@ for ii=1:nc
 
             % Points for integration.
             m = grid_i.elements(:, mp_idx);  % masses at which to compute the transfer function (not setpoints)
-            if isempty(dm_idx)  % then PMA without DMA
-                dm = (m .* 1e-18 ./ prop_p.rho0) .^ ...
-                    (1./prop_p.Dm) .* 1e9;  % use mass-mobility
-                disp('  Invoking mass-mobility relation for PMA.')
-            else
+            if ~isempty(dm_idx)  % then PMA without DMA
                 dm = grid_i.elements(:, dm_idx);
-            end
+            end  % otherwise inherit pre-computed value above
             
             addpath 'tfer\tfer-pma';  % added to calculate sp
             sp = get_setpoint(prop_p,...  % get PMA setpoints
