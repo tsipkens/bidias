@@ -33,11 +33,13 @@ This program, originally released with [Sipkens et al. (2020a)][1_JAS1], is desi
 
 This code makes use of the [optimization](https://www.mathworks.com/products/optimization.html) and [statistical](https://www.mathworks.com/products/statistics.html) toolboxes from MATLAB. Refer to the [MATLAB documentation](https://www.mathworks.com/help/matlab/add-ons.html) for information on how to add toolboxes. 
 
-In addition to the necessary MATLAB toolboxes, this program has two dependences that are included as git submodules: 
+In addition to the necessary MATLAB toolboxes, this program has three dependencies that are included as git submodules: 
 
 1. The **tfer** submodule, available at https://github.com/tsipkens/tfer, contains MATLAB code to compute the transfer or response functions of classifiers and to compute basic aerosol properties. Functions in this submodule are necessary to compute the kernel (the quantity that related aerosol measurements by a range of instruments to their underlying particle size distributions). 
 
 2. The **cmap** submodule, available at https://github.com/tsipkens/cmap, adds perceptually uniform colormaps to the program. This submodule is optional in that one could also replace references in existing scripts to the colormaps that would otherwise be in that package. 
+
+2. The **autils** submodule, available at https://github.com/tsipkens/autils, adds numerous utilities for converting between and evaluating aerosol-related quantities (e.g., to handle mass-mobility relationships or convert between particle diameters).
 
 As a result, the folders corresponding to these submodules will initially be empty. Their are multiple routes to downloading these submodules. If using git, one can initially clone the repository using 
 
@@ -48,7 +50,7 @@ git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodule
 which will automatically download the submodules when downloading overall program. Alternatively, the submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer/` folders. In either case, to be used directly, these packages should then be added to the MATLAB path at the beginning of any script using
 
 ```Matlab
-addpath('tfer', 'cmap');
+addpath('tfer', 'cmap', 'autils');
 ```
 
 For **tfer**, functions in the **kernel** package will add this folder to the path automatically, whenever necessary, such that it is not necessary to explicitly include the above command in high level scripts. 
