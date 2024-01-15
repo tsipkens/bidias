@@ -369,12 +369,11 @@ methods
     
     
     %== L1 ===========================================================%
-    function [l1] = l1(obj, w)
+    function [l1] = l1(obj, w, bc)
     % L1  Compute the first-order Tikhonov operator.
-    %  Form is equiavalent to applying no slope at high-high boundary.
-    %  
     %  W adds a weight used to reevaluate the adjacency matrix.
-    
+        
+        if ~exist('bc', 'var'); bc = []; end
         if ~exist('w', 'var'); w = []; end
         if ~isempty(w)
             [~, adj_local] = obj.adjacency(w);  % re-evaluate adjacency with weight
@@ -382,12 +381,20 @@ methods
             adj_local = obj.adj;
         end
     
-        l1 = -diag(sum(tril(adj_local)))+...
+        l1 = -diag(sum(tril(adj_local))) + ...
             triu(adj_local);
+
+        % Add unity on diagonal in final row for stability in square matrix
+        % alternatively, this row can be deleted, however this causes
+        % issues during Tikhonov inversion using this method
         l1(size(adj_local, 1), end) = -1;
-            % unity on diagonal in final row for stability in square matrix
-            % alternatively, this row can be deleted, however this causes
-            % issues during Tikhonov inversion using this method
+        
+        if bc == 0  % force zeros at BC. (update Jan. 2024)
+            isedge = find(obj.elements(:,2) == obj.edges{2}(end));
+            isedge = [isedge; find(obj.elements(:,1) == obj.edges{1}(end))];
+            l1(isedge, isedge) = eye(length(isedge));  % replace entries with identity
+        end
+        
     end
     %=================================================================%
     
@@ -489,19 +496,19 @@ methods
         dr_0 = cell(obj.dim, 1);
         for ii=1:obj.dim
             if any(strcmp(obj.discrete, {'log', 'logarithmic'}))
-                dr_0{ii} = log10(obj.nodes{ii}(2:end))-...
+                dr_0{ii} = log10(obj.nodes{ii}(2:end)) - ...
                     log10(obj.nodes{ii}(1:(end-1)));
             
             elseif strcmp(obj.discrete,'linear')
-                dr_0{ii} = obj.nodes{ii}(2:end)-...
+                dr_0{ii} = obj.nodes{ii}(2:end) - ...
                     obj.nodes{ii}(1:(end-1));
             end
         end
         
-        [dr1,dr2] = ndgrid(dr_0{1},dr_0{2});
+        [dr1,dr2] = ndgrid(dr_0{1}, dr_0{2});
         dr1 = abs(dr1); % in case edges vector is reversed
         dr2 = abs(dr2);
-        dr = dr1(:).*dr2(:);
+        dr = dr1(:) .* dr2(:);
         
     end
     %=================================================================%

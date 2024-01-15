@@ -7,15 +7,19 @@
 %   n_grid      Length of first dimension of solution or Grid for x
 %   x_length    Length of x vector
 %               (only used if a Grid is not specified for n_grid)
+%   bc          Boundary condition input
 %
 % Outputs:
 %   Lpr0        Tikhonov matrix
 %=========================================================================%
 
-function Lpr0 = tikhonov_lpr(order, n_grid, x_length)
+function Lpr0 = tikhonov_lpr(order, n_grid, x_length, bc)
 
 if ~exist('order','var'); order = []; end
 if isempty(order); order = 1; end
+
+if ~exist('bc','var'); order = []; end
+if isempty(bc); bc = order; end  % by default, match order
 
 if ~isa(n_grid,'Grid')
     n = n_grid;
@@ -33,7 +37,7 @@ switch order
         end
         
     case 1 % 1st order Tikhonov
-        if isa(n_grid,'Grid'); Lpr0 = n_grid.l1; % use Grid method (for partial grid support)
+        if isa(n_grid,'Grid'); Lpr0 = n_grid.l1([], bc); % use Grid method (for partial grid support)
         else
             I1 = 0.5 .* speye(n, n);
             E1 = full(sparse(1:n-1, 2:n, 1, n, n));
@@ -52,7 +56,7 @@ switch order
         
     case 1.3  % 1st order Tikhonov with rotated matrix
         slope = 3;
-        if isa(n_grid,'Grid'); Lpr0 = n_grid.l1(slope); % use Grid method (for partial grid support)
+        if isa(n_grid,'Grid'); Lpr0 = n_grid.l1(slope, bc); % use Grid method (for partial grid support)
         else
             I1 = 1/2 .* speye(n, n);
             E1 = full(sparse(1:n-1, 2:n, 1, n, n));

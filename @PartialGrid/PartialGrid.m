@@ -166,13 +166,18 @@ methods
     
     
     %== ADJACENCY ====================================================%
-    function [obj,adj] = adjacency(obj, w)
+    function [obj, adj, isedge] = adjacency(obj, w)
     % ADJACENCY  Compute the adjacency matrix for the full grid using a four-point stencil.
     %  W is an optional that adds a weight for vertical pixels.
         
         if ~exist('w', 'var'); w = []; end
         
         [~, adj] = adjacency@Grid(obj, w);
+
+        % Flags whether element is next to new edge.
+        adju = triu(adj, 2);
+        isedge = any(adju(:, obj.missing), 2);
+        isedge(obj.missing) = [];
         
         adj(obj.missing, :) = [];
         adj(:, obj.missing) = [];
@@ -199,6 +204,29 @@ methods
 
         k = k-t0(k); % reduce indices based on missing indices
         k(i0) = NaN; % return NaN for indices that are missing
+    end
+    %=================================================================%
+
+
+
+    %== L1 ===========================================================%
+    function [l1] = l1(obj, w, bc)
+    % L1  Bridge to compute the first-order Tikhonov operator.
+    %  Handles zeroing BC for particle grid boundaries.
+        
+        if ~exist('w', 'var'); w = []; end
+        if ~exist('bc', 'var'); bc = []; end
+        
+        l1 = l1@Grid(obj, w);  % use inherited function
+        
+        % Force zeros at BC.
+        % Requires determining which pixels are adjacent to remove points.
+        if bc == 0
+            [~, ~, isedge] = obj.adjacency(w);  % get missing elements from adj
+            isedge = find(isedge);
+            l1(isedge, isedge) = eye(length(isedge));
+        end
+        
     end
     %=================================================================%
     

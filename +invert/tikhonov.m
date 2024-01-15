@@ -24,6 +24,9 @@
 %  grid, an instance of the Grid class is required to build the Tikhonov
 %  matrix in the place of an integer dimension.
 % 
+%  X = invert.tikhonov(...,BC) adds an input to control boundary
+%  conditions.
+% 
 %  X = invert.tikhonov(...,XI) applies Tikhonov regularization using an
 %  initial guess of XI. The default if not included is zeros. 
 % 
@@ -43,7 +46,7 @@
 %  AUTHOR: Timothy Sipkens, 2018-11-21
 
 function [x, D, Lpr0, Gpo_inv] = ... 
-    tikhonov(A, b, lambda, order_L, n_grid, xi, solver)
+    tikhonov(A, b, lambda, order_L, n_grid, bc, xi, solver)  % BC before XI
 
 x_length = size(A,2);
 
@@ -51,6 +54,7 @@ x_length = size(A,2);
 if ~exist('order_L','var'); order_L = []; end
     % if order not specified, use default of tikhonov_lpr
 
+if ~exist('bc','var'); bc = []; end
 if ~exist('xi','var'); xi = []; end % if initial guess is not specified
 if ~exist('solver','var'); solver = []; end
 %-------------------------------------------------------------------------%
@@ -59,7 +63,7 @@ if ~exist('solver','var'); solver = []; end
 %-- Get Tikhonov smoothing matrix ----------------------------------------%
 if all(size(order_L)==[1,1]) % if order is specified, build Lpr0
     Lpr0 = invert.tikhonov_lpr(...
-        order_L,n_grid,x_length);
+        order_L, n_grid, x_length, bc);
 else % is Lpr0 strucutre is provided directly
     Lpr0 = order_L;
 end
