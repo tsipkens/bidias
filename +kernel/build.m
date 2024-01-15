@@ -13,6 +13,8 @@
 
 function A = build(grid_i, z_vec, varargin)
 
+if mod(length(varargin), 2) ~= 0; error('Wrong number of inputs.'); end
+
 tools.textheader('Computing kernel')
 
 nc = (length(varargin)/2);  % number of classifiers
@@ -37,19 +39,20 @@ if isempty(dm_idx)
         m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
         da = grid_i.elements(:, da_idx);  % get da from relevant dimension
         dm = mp_da2dm(m, da);  % fully constrained calculation
+        dm2 = dm';
     
     % OPTION 2: Apply assumption of a mass-mobility relationship, 
     % which will be less precise. Necessary for PMA-SP2.
     elseif ~isempty(mp_idx)
         idx_p = find(strcmp(varargin, 'pma')) + 1;  % first find PMA inputs
-        prop_p = varargin{idx_p}{1};  % extract prop_pma from PMA input
+        prop_p = varargin{idx_p}{2};  % extract prop_pma from PMA input
         
         % Then convert using mass-mobility relationship. 
         disp(' Invoking mass-mobility relationship to determine dm.');
         m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
         dm = mp2dm(m .* 1e-18, prop_p) .* 1e9;
+        dm2 = dm';
     end
-    dm2 = dm';
 end
 
 
@@ -144,6 +147,27 @@ for ii=1:nc
 
         %== AAC ==========================================================%
         case 'aac'
+            disp(' Computing AAC contribution...');
+            
+            addpath 'autils';
+            
+            % Assign inputs.
+            d_star2 = varargin{jj+1}{1};
+            d_star = unique(d_star2)';
+            d = grid_i.edges{da_idx};  % points for integration
+            
+            % Evaluate transfer function.
+            Lambda{ii} = tfer_aac(d_star, d', varargin{jj+1}{2:end});
+
+            % Duplicate over other grid dimensions.
+            d2 = grid_i.elements(:, da_idx);
+            [~,kk] = max(d == d2, [], 2);
+            Lambda{ii} = Lambda{ii}(:,kk,:);
+            
+            [~,kk] = max(d_star == d_star2, [], 2);
+            Lambda{ii} = Lambda{ii}(kk,:,:);
+            
+            tools.textdone();
             
         
         %== BIN ==========================================================%
@@ -152,8 +176,8 @@ for ii=1:nc
             disp(' Computing binned contribution...');
 
             % Unpack inputs.
-            s_idx = varargin{jj+1}{1};  % DMA properties
-            s_star2 = varargin{jj+1}{2};  % DMA setpoints
+            s_idx = varargin{jj+1}{1};
+            s_star2 = varargin{jj+1}{2};
             s_star = unique(s_star2)';
             s = grid_i.edges{s_idx};  % points for integration
             

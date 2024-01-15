@@ -13,6 +13,8 @@
 
 function A = build_grid(grid_b, grid_i, z_vec, varargin)
 
+if mod(length(varargin), 2) ~= 0; error('Wrong number of inputs.'); end
+
 tools.textheader('Computing kernel')
 
 nc = (length(varargin)/2);  % number of classifiers
@@ -37,6 +39,7 @@ if isempty(dm_idx)
         m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
         da = grid_i.elements(:, da_idx);  % get da from relevant dimension
         dm = mp_da2dm(m, da);  % fully constrained calculation
+        dm2 = dm';
     
     % OPTION 2: Apply assumption of a mass-mobility relationship, 
     % which will be less precise. Necessary for PMA-SP2.
@@ -48,8 +51,8 @@ if isempty(dm_idx)
         disp(' Invoking mass-mobility relationship to determine dm.');
         m = grid_i.elements(:, mp_idx);  % get mass from relevant dimension
         dm = mp2dm(m .* 1e-18, prop_p) .* 1e9;
+        dm2 = dm';
     end
-    dm2 = dm';
 end
 
 
@@ -148,7 +151,7 @@ for ii=1:nc
             addpath 'autils';
             
             % Assign inputs.
-            d_star = grid_b.edges{da_idx};  % DMA setpoints
+            d_star = grid_b.edges{da_idx};
             d = grid_i.edges{da_idx};  % points for integration
             
             % Evaluate transfer function.
@@ -172,8 +175,8 @@ for ii=1:nc
             disp(' Computing binned contribution...');
 
             % Unpack inputs.
-            s_idx = varargin{jj+1}{1};  % DMA properties
-            s_star = grid_b.edges{s_idx};  % DMA setpoints
+            s_idx = varargin{jj+1}{1};
+            s_star = grid_b.edges{s_idx};
             s = grid_i.edges{s_idx};  % points for integration
             
             Lambda{ii} = full(tfer_bin(s_star', s'));

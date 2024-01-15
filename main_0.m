@@ -6,8 +6,6 @@ clear;
 close all;
 clc;
 
-addpath tfer;
-
 % Get colormap.
 if length(dir('cmap')) == 2  % if `cmap` not downloaded
     cm = parula;  % use Matlab default
@@ -56,12 +54,14 @@ ne_b = [20, 65];
 grid_b = Grid(span_b, ne_b, 'log');
 
 
-% Use default CPMA properties (will display in command line). 
-prop_p = prop_pma();
+% Use default CPMA and DMA properties (will display in command line).
+addpath('tfer');
+prop_p = prop_pma()
+prop_d = prop_dma()
 
 % Generate the kernel, use default CPMA properties. 
 A = kernel.build_grid(grid_b, grid_x, 1:3, ...
-    'pma', {prop_p}, 'dma', {}, 'charger', {});
+    'pma', {prop_p}, 'dma', {prop_d}, 'charger', {});
 
 figure(2);
 grid_x.plot2d_marg(A(527,:)); % plot kernel for 527th data point

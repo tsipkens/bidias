@@ -1,7 +1,4 @@
 
-% MAIN_0  A simple script demonstrating a simple inversion. 
-
-
 clear;
 close all;
 clc;

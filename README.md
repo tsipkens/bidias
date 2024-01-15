@@ -135,10 +135,11 @@ grid_b = Grid(span_b, ne_b, 'log');
 However, before actually generating data, we must first compute the kernel, in this example composed of the PMA and DMA transfer functions. First, we call the `prop_pma(...)` to get a set of CPMA parameters. This first requires adding the **tfer** submodule to the path:  
 
 ```Matlab
-% Use the default CPMA properties
-% (will display in command line).
+% Use default CPMA and DMA properties (will display in command line). 
+% Use default CPMA and DMA properties (will display in command line).
 addpath('tfer');
 prop_p = prop_pma()
+prop_d = prop_dma()
 ```
 
 Then, use the `kernel.build_grid(...)` method to compute a kernel contain PMA, DMA, and charging contributions (largely using the default settings): 
@@ -146,7 +147,7 @@ Then, use the `kernel.build_grid(...)` method to compute a kernel contain PMA, D
 ```Matlab
 % Generate the kernel, use the above CPMA properties. 
 A = kernel.build_grid(grid_b, grid_x, 1:3, ...
-    'pma', {prop_p}, 'dma', {}, 'charger', {});
+    'pma', {prop_p}, 'dma', {prop_d}, 'charger', {});
 ```
 
 One can visualize the two-dimensional kernel for the 530<sup>th</sup> data point using: 
