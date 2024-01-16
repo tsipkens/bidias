@@ -19,7 +19,7 @@ if ~exist('order','var'); order = []; end
 if isempty(order); order = 1; end
 
 if ~exist('bc','var'); order = []; end
-if isempty(bc); bc = order; end  % by default, match order
+if isempty(bc); bc = floor(order); end  % by default, match order
 
 if ~isa(n_grid,'Grid')
     n = n_grid;
