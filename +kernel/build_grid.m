@@ -156,6 +156,7 @@ for ii=1:nc
             
             % Evaluate transfer function.
             Lambda{ii} = tfer_aac(d_star, d', varargin{jj+1}{1:end});
+            Lambda{ii} = permute(Lambda{ii}, [2,1]);
 
             % Duplicate over other grid dimensions.
             d2 = grid_i.elements(:, da_idx);
