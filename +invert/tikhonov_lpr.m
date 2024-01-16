@@ -54,8 +54,8 @@ switch order
             Lpr0(end,:) = [];
         end
         
-    case 1.3  % 1st order Tikhonov with rotated matrix
-        slope = 3;
+    case {1.1, 1.248, 1.3}  % 1st order Tikhonov with rotated matrix
+        slope = (order - 1) * 10;
         if isa(n_grid,'Grid'); Lpr0 = n_grid.l1(slope, bc); % use Grid method (for partial grid support)
         else
             I1 = 1/2 .* speye(n, n);
