@@ -64,7 +64,7 @@ for ii=1:nc
         
         %== CHARGER ======================================================%
         case 'charger'
-            disp(' Computing charger contribution...');
+            disp(' Computing charger contribution ...');
             
             % Assign inputs.
             if isempty(dm_idx)  % then PMA without DMA
@@ -87,7 +87,7 @@ for ii=1:nc
 
         %== SMPS =========================================================%
         case {'dma', 'smps'}
-            disp(' Computing DMA contribution...');
+            disp(' Computing DMA contribution ...');
             
             % Unpack inputs.
             d_star2 = varargin{jj+1}{1};
@@ -111,7 +111,7 @@ for ii=1:nc
         %== PMA ==========================================================%
         %   Currently assumes other dimension is mobility diameter. 
         case 'pma'
-            disp(' Computing PMA contribution...');
+            disp(' Computing PMA contribution ...');
 
             % Unpack inputs.
             m_star = varargin{jj+1}{1};  % don't use unique(), as resolution may change
@@ -147,7 +147,7 @@ for ii=1:nc
 
         %== AAC ==========================================================%
         case 'aac'
-            disp(' Computing AAC contribution...');
+            disp(' Computing AAC contribution ...');
             
             addpath 'autils';
             
@@ -174,7 +174,7 @@ for ii=1:nc
         %== BIN ==========================================================%
         %   When data input is binned (e.g., SP2 data).
         case {'bin', 'sp2'}
-            disp(' Computing binned contribution...');
+            disp(' Computing binned contribution ...');
 
             % Unpack inputs.
             s_idx = varargin{jj+1}{1};
@@ -198,6 +198,7 @@ for ii=1:nc
 end
 
 % Loop over the various classifiers again to compile kernel.
+disp(' Compiling kernel ...')
 A = Lambda{1};  % initialize with first contribution
 for ii=2:nc  % loop over other contributions
     A = A .* Lambda{ii};
@@ -207,6 +208,7 @@ A = sum(A, 3);  % sum over charge states
 A = A .* grid_i.dr';  % multiply kernel by element area
 A = sparse(A);  % exploit sparse structure in subsequent calculations
 
+tools.textdone();
 tools.textheader();
 
 end
