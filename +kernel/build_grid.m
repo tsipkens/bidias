@@ -11,7 +11,7 @@
 %  
 %  AUTHOR: Timothy Sipkens, 2024-01-11
 
-function A = build_grid(grid_b, grid_i, z_vec, varargin)
+function [A, Ac] = build_grid(grid_b, grid_i, z_vec, varargin)
 
 if mod(length(varargin), 2) ~= 0; error('Wrong number of inputs.'); end
 
@@ -202,6 +202,12 @@ A = Lambda{1};  % initialize with first contribution
 for ii=2:nc  % loop over other contributions
     A = A .* Lambda{ii};
 end
+
+% If second output selected, provide output prior to summing over charge.
+if nargout > 1
+    Ac = A;
+end
+
 A = sum(A, 3);  % sum over charge states
 
 A = A .* grid_i.dr';  % multiply kernel by element area
