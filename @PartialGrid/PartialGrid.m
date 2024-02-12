@@ -355,15 +355,19 @@ methods
         
         % Use default method to start plot.
         [h, x] = plot2d@Grid(obj, x, f_tr, f_contf);
+
+        % Default for order of indices. Plus transpose if flagged.
+        idx1 = 1;  idx2 = 2;
+        if f_tr; idx1 = 2; idx2 = 1; x = x'; end
         
         % Add lines marking the edges of the partial grid.
         hold on;
-        tools.overlay_line(obj, [0,obj.cut(1)], obj.cut(2), ...
+        tools.overlay_line(obj, [0,obj.cut(idx1)], obj.cut(idx2), ...
             'Color', [0.5,0.5,0.5]); % overlay partial grid limits, gray lines
 
          % If also a bottom cut.
         if length(obj.cut)>2
-            tools.overlay_line(obj, [0,obj.cut(3)], obj.cut(4), ...
+            tools.overlay_line(obj, [0,obj.cut(idx1+2)], obj.cut(idx2+2), ...
                 'Color', [0.5,0.5,0.5]); % add a gray line
         end
         hold off;

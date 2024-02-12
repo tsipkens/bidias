@@ -741,13 +741,8 @@ methods
         x = obj.reshape(x);  % reshape
 
         % Default for order of indices. Plus transpose if flagged.
-        idx1 = 1;
-        idx2 = 2;
-        if f_tr
-            idx1 = 2;
-            idx2 = 1;
-            x = x';
-        end
+        idx1 = 1;  idx2 = 2;
+        if f_tr; idx1 = 2; idx2 = 1; x = x'; end
         
         %-- Plot -------------------------------%
         if f_contf==0 % plot as image
