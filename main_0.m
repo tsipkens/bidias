@@ -26,6 +26,7 @@ ne = [100, 125]; % number of elements in grid for each dimension
 
 % Create an instance of Grid, with logarithmic spacing.
 grid_x = Grid(span, ne, 'log');
+grid_x.type = {'mp', 'dm'};  % adds identity of the size type of each dim.
 
 
 ut_r = [0.5,2]; % point in line to cut upper triangle

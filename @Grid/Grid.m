@@ -457,7 +457,7 @@ methods
 
 
     %== TRANSFORM ====================================================%
-    function B = transform(obj,grid_old)
+    function B = transform(obj, grid_old)
     % TRANSFORM  Function to transform kernel functions. Output is a matrix to 
     %   be multiplied by the original kernel, A.
         
@@ -716,38 +716,45 @@ methods
 %=====================================================================%
     
     %== PLOT2D =======================================================%
-    function [h,x] = plot2d(obj,x,f_contf)
+    function [h,x] = plot2d(obj, x, f_tr, f_contf)
     % PLOT2D  Plots x as a 2D function on the grid.
     %   AUTHOR: Timothy Sipkens, 2018-11-21
         
         if ~exist('f_contf','var'); f_contf = []; end % set empty contourf flag
         if isempty(f_contf); f_contf = 0; end % set contourf flag to false
         
+        if ~exist('f_tr','var'); f_tr = []; end
+        if isempty(f_tr); f_tr = 0; end % set transpose flag to false
+        
         cla; % clear existing axis
         
         %-- Issue warning if grid edges are not be uniform -----------%
         %   The imagesc function used here does not conserve proportions.
-        [~,dr1,dr2] = obj.dr; % used to give warning below
-        dr0 = dr1(:).*dr2(:);
-        if ~all(abs(dr0(2:end)-dr0(1))<1e-10)
+        [~, dr1, dr2] = obj.dr;  % used to give warning below
+        dr0 = dr1(:) .* dr2(:);
+        if ~all(abs(dr0(2:end) - dr0(1)) < 1e-10)
             warning(['The plot2d method does not necessarily display ',...
                 'correct proportions for non-uniform grids. ', ...
                 'Use a regularily-spaced grid for best results.']);
         end
         
-        mod = 1; % min(obj.full2partial(dr0)./dr,1e2);
-            % used to rewieght according to element size (for partial grids only)
-            % limit modification limit to 100x
-            
-        x = obj.reshape(x.*mod);
-            % reshape, multiplied factor accounts for size of elements
+        x = obj.reshape(x);  % reshape
+
+        % Default for order of indices. Plus transpose if flagged.
+        idx1 = 1;
+        idx2 = 2;
+        if f_tr
+            idx1 = 2;
+            idx2 = 1;
+            x = x';
+        end
         
         %-- Plot -------------------------------%
         if f_contf==0 % plot as image
-            imagesc(obj.edges{2},obj.edges{1},x);
+            imagesc(obj.edges{idx2}, obj.edges{idx1},x);
             set(gca,'YDir','normal');
         else % plot as contourf
-            contourf(obj.edges{2},obj.edges{1},x,35,'EdgeColor','none');
+            contourf(obj.edges{idx2},obj.edges{idx1},x,35,'EdgeColor','none');
         end
         
         %-- Adjust tick marks for log scale ----%
@@ -757,8 +764,13 @@ methods
             set(gca,'YScale','log');
         end
         
-        xlim(obj.span(2,:));  % set plot limits bsed on grid limits
-        ylim(obj.span(1,:));
+        xlim(obj.span(idx2,:));  % set plot limits bsed on grid limits
+        ylim(obj.span(idx1,:));
+
+        if ~isempty(obj.type)
+            xlabel(obj.type{idx2});
+            ylabel(obj.type{idx1});
+        end
         
         % Grey labels and axes to allow viz against dark and light bgs.
         set(gca, 'XColor', [0.5, 0.5, 0.5], ...

@@ -346,14 +346,15 @@ methods
     
     
     %== PLOT2D =======================================================%
-    function [h, x] = plot2d(obj, x, f_contf)
+    function [h, x] = plot2d(obj, x, f_tr, f_contf)
     % PLOT2D  Plots x as a 2D function on the grid.
     %  AUTHOR: Timothy Sipkens, 2018-11-21
         
         if ~exist('f_contf', 'var'); f_contf = []; end
+        if ~exist('f_tr', 'var'); f_tr = []; end
         
         % Use default method to start plot.
-        [h, x] = plot2d@Grid(obj, x, f_contf);
+        [h, x] = plot2d@Grid(obj, x, f_tr, f_contf);
         
         % Add lines marking the edges of the partial grid.
         hold on;

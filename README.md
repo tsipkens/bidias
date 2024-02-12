@@ -76,6 +76,7 @@ ne = [100, 125]; % number of elements in grid for each dimension
 
 % Create an instance of Grid, with logarithmic spacing.
 grid_x = Grid(span, ne, 'log');
+grid_x.type = {'mp', 'dm'};  % adds identity of the size type of each dim.
 ```
 
 The first variable defines the range of masses and mobility diameters to be considered. To speed computation, we can also truncate the grid (which is *optional*) by removing elements in the upper left and lower right corners from the reconstruction domain:
