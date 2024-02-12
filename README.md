@@ -371,18 +371,18 @@ The '**standard**' parameterization is explicitly for bivariate lognormal distri
 The '**mass-mobility**' parameterization uses a `p` structured array, which is built specifically for mass-mobility distributions. The required fields for this structure are: 
 
 1.  `dg` -  Mean mobility diameter
-2.  
-3. `sg` -  Standard deviation of the mobility diameter 
-4. 
-5. `Dm` -  Mass-mobility exponent
-6. 
-7. *Either:*
+   
+2. `sg` -  Standard deviation of the mobility diameter 
+
+3. `Dm` -  Mass-mobility exponent
+   
+4. *Either:*
 
     `sm` - Standard deviation of the particle mass
     
     `smd` - Standard deviation of the conditional mass distribution
     
-8.  *Either:*
+5.  *Either:*
     
     `mg` -  Mean particle mass
     
