@@ -501,7 +501,7 @@ This work can be cited in two ways.
 1. If the methods are used, but the code is not, please cite [Sipkens et al. (2020a)][1_JAS1].
 Note that if the Twomey-Markowski approach is used one should also cite [Buckley et al. (2017)][3_Buck], and if particle mass analyzer transfer function evaluation is discussed, one should cite [Sipkens et al. (2020b)][2_AST].
 
-2. If this code is used directly, cite: (*i*) this [code][5_code] (including the DOI, included at the top) and (*ii*) the associated paper describing the methods, [Sipkens et al. (2020a)][1_JAS1]. Also note that additional references
+2. If this code is used directly, cite the associated paper describing the methods, [Sipkens et al. (2020a)][1_JAS1]. Also note that additional references
 to [Buckley et al. (2017)][3_Buck] and [Sipkens et al. (2020b)][2_AST] should also be considered as per above.
 
 #### Contact information and acknowledgements
