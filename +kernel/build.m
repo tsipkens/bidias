@@ -1,11 +1,37 @@
 
 % BUILD  A general function to compute a 2D transfer function. 
 %  
-%  NOTE: This does not apply to PMA-DMA systems, where mobility diameter 
-%  has an impact on the PMA transfer function. 
+%  NOTE: This function generally requires that the type of particle size is
+%  specified in grid.type = {}. The default if not specified is to assign
+%  grid.type = {'dm', 'mp'}, corresponding to a mass-mobility scenario.
+%  Other cases require identifying the dimensions of the grid. 
 %  
-%  Input is name value pairs for classifier/transfer function type and
-%  a cell of inputs corresponding to the transfer function evaluation. 
+%  A = kernel.build_grid(grid_i, z_vec, ...) builds a kernel based
+%  on the grid for evaluation (GRID_I). Setpoints should be specified 
+%  for each classifer Charge states to evaluate at are provided in Z_VEC. 
+%  When Z_VEC is empty, the function defaults to Z_VEC = 1:3. Remaining 
+%  elements are required and consistitute name-cell pairs for each classifier. 
+%  
+%  [A,AC] = kernel.build_grid(...) adds an output AC that is not summed
+%  ovre the charge states, which is useful for advanced analysis. 
+%  
+%  A = kernel.build_grid(..., 'pma', {M_STAR, PROP_P, VARARGIN})
+%  Builds a PMA contribution to the kernel using the properties in PROP_P
+%  and a set of secondary information for the setpoints 
+%  (e.g., {M_STAR, PROP_P, 'Rm', Rm}). M_STAR is expected in fg. 
+%  
+%  A = kernel.build_grid(..., 'dma', {D_STAR, PROP_D, VARARGIN})
+%  Builds a DMA contribution to the kernel using the properties in PROP_D
+%  and a set of secondary information for the classifer evaluations in
+%  VARARGIN that is passed directly to tfer_dma. D_STAR is expected in nm.
+%  
+%  A = kernel.build_grid(..., 'charger', {VARARGIN})
+%  Builds a charger contribution to the transfer function. An empty cell
+%  will use the default call to charger(...). This addition is required for
+%  all classifiers that require charging for classification. 
+%  This does not require a mobility diameter setpoint. 
+%  
+%  Other classifiers follow this template. 
 %  
 %  ------------------------------------------------------------------------
 %  

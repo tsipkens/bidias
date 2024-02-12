@@ -1,11 +1,36 @@
 
-% BUILD_GRID  A general function to compute a 2D transfer function. 
+% BUILD_GRID  A general function to compute a 2D transfer function for gridded setpoints. 
 %  
-%  NOTE: This does not apply to PMA-DMA systems, where mobility diameter 
-%  has an impact on the PMA transfer function. 
+%  NOTE: This function generally requires that the type of particle size is
+%  specified in grid.type = {}. The default if not specified is to assign
+%  grid.type = {'dm', 'mp'}, corresponding to a mass-mobility scenario.
+%  Other cases require identifying the dimensions of the grid. 
 %  
-%  Input is name value pairs for classifier/transfer function type and
-%  a cell of inputs corresponding to the transfer function evaluation. 
+%  A = kernel.build_grid(grid_b, grid_i, z_vec, ...) builds a kernel based
+%  on the grid for evaluation (GRID_I) and for setpoints (GRID_B). Charge
+%  states to evaluate at are provided in Z_VEC. When Z_VEC is empty, the
+%  function defaults to Z_VEC = 1:3. Remaining elements are required and
+%  consistitute name-cell pairs for each classifier. 
+%  
+%  [A,AC] = kernel.build_grid(...) adds an output AC that is not summed
+%  ovre the charge states, which is useful for advanced analysis. 
+%  
+%  A = kernel.build_grid(..., 'pma', {PROP_P, VARARGIN})
+%  Builds a PMA contribution to the kernel using the properties in PROP_P
+%  and a set of secondary information for the setpoints 
+%  (e.g., {PROP_P, 'Rm', Rm}). 
+%  
+%  A = kernel.build_grid(..., 'dma', {PROP_D, VARARGIN})
+%  Builds a DMA contribution to the kernel using the properties in PROP_D
+%  and a set of secondary information for the classifer evaluations in
+%  VARARGIN that is passed directly to tfer_dma. 
+%  
+%  A = kernel.build_grid(..., 'charger', {VARARGIN})
+%  Builds a charger contribution to the transfer function. An empty cell
+%  will use the default call to charger(...). This addition is required for
+%  all classifiers that require charging for classification. 
+%  
+%  Other classifiers follow this template. 
 %  
 %  ------------------------------------------------------------------------
 %  
