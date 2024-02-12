@@ -357,17 +357,23 @@ methods
         [h, x] = plot2d@Grid(obj, x, f_tr, f_contf);
 
         % Default for order of indices. Plus transpose if flagged.
-        idx1 = 1;  idx2 = 2;
-        if f_tr; idx1 = 2; idx2 = 1; x = x'; end
+        ptl = [0,obj.cut(1)];
+        ptu = [0,obj.cut(3)];
+        slope = [obj.cut(2), obj.cut(4)];
+        if f_tr
+            ptl = [obj.cut(1),0];
+            ptu = [obj.cut(3),0];
+            slope = 1 ./ slope;
+        end
         
         % Add lines marking the edges of the partial grid.
         hold on;
-        tools.overlay_line(obj, [0,obj.cut(idx1)], obj.cut(idx2), ...
+        tools.overlay_line(obj, ptl, slope(1), ...
             'Color', [0.5,0.5,0.5]); % overlay partial grid limits, gray lines
 
          % If also a bottom cut.
         if length(obj.cut)>2
-            tools.overlay_line(obj, [0,obj.cut(idx1+2)], obj.cut(idx2+2), ...
+            tools.overlay_line(obj, ptu, slope(2), ...
                 'Color', [0.5,0.5,0.5]); % add a gray line
         end
         hold off;
