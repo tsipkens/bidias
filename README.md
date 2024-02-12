@@ -358,55 +358,19 @@ The current program also supports creating partially truncated grids, made up of
 
 ### 3.3 Phantom class
 
-Phantom is a class developed to contain the parameters and other information for the phantom distributions that are used in testing the different inversion methods. Currently, the phantom class is programmed to primarily produce bivariate lognormal distributions and secondarily distributions that are lognormal with mobility and conditionally normal for mass following [Buckley et al. (2017)][3_Buck]. Bivariate normal distributions can also be represented by the class but will suffer from a loss of support from some of the class's methods. For more information, see information in the [class definition](%40Phantom/Phantom.m) header. 
+Phantom is a class developed to contain the parameters and other information for the phantom distributions that are used in testing the different inversion methods. Currently, the phantom class is programmed to primarily produce bivariate lognormal distributions and secondarily distributions that are lognormal with mobility and conditionally normal for mass following [Buckley et al. (2017)][3_Buck]. Bivariate normal distributions can also be represented by the class but will suffer from a loss of support from some of the class's methods. 
 
 Instances of the Phantom class can be created in four ways. We explicitly note that *the first two options are unique in that they represent different parameterizations of the phantom*: 
 
-##### OPTION 1: The 'standard' parameterization
+1. The '**standard**' parameterization is explicitly for bivariate lognormal distributions (though it can equally be used for standard bivariate normal distributions). In this case, the user specifies a mean, `Phantom.mu`, and covariance, `Phantom.Sigma`, defined in [*a*, *b*]<sup>T</sup> space, where, as before, *a* and *b* are two aerosol size parameters. The bivariate lognormal form, such as when *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*, generally receives more support across this program.  
 
-The '**standard**' parameterization is explicitly for bivariate lognormal distributions (though it can equally be used for standard bivariate normal distributions). In this case, the user specifies a mean, `Phantom.mu`, and covariance, `Phantom.Sigma`, defined in [*a*, *b*]<sup>T</sup> space, where, as before, *a* and *b* are two aerosol size parameters. The bivariate lognormal form, such as when *a* = log<sub>10</sub>*m* and *b* = log<sub>10</sub>*d*, generally receives more support across this program.  
+2. The '**mass-mobility**' parameterization uses a `p` structured array, which is built specifically for mass-mobility distributions. 
 
-##### OPTION 2: The 'mass-mobility' parameterization
+3. Use a preset or sample distribution. For example, the four sample phantoms from [Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing the distribution numbers or names from that work (e.g., the demonstration phantom can be generated using `'1'` or `'demonstration'`). 
 
-The '**mass-mobility**' parameterization uses a `p` structured array, which is built specifically for mass-mobility distributions. The required fields for this structure are: 
+4. For experimental data, the Phantom class can also be used to derive morphological parameters from the reconstructions using fit functions (e.g., `Phantom.fit(...)`). 
 
-1.  `dg` -  Mean mobility diameter
-   
-2. `sg` -  Standard deviation of the mobility diameter 
-
-3. `Dm` -  Mass-mobility exponent
-   
-4. *Either:*
-
-    `sm` - Standard deviation of the particle mass
-    
-    `smd` - Standard deviation of the conditional mass distribution
-    
-5.  *Either:*
-    
-    `mg` -  Mean particle mass
-    
-    `rhog` - Effective density of at the mean mobility diameter
-
-For lognormal modes, means should be geometric means and standard deviations should be geometric standard deviations. 
-
-##### OPTION 3: Preset phantoms
-
-Use a preset or sample distribution, which are loaded using a string and the `presets` function, which is defined external to the main Phantom class definition for easier access. For example, the four sample phantoms from [Sipkens et al. (2020a)][1_JAS1] can be called using strings encompassing the distribution numbers or names from that work (e.g., the demonstration phantom can be generated using `'1'` or `'demonstration'`). The demonstration phantom is indicated in the image below.
-
-<img src="docs/distr1.png" width="420" height="315">
-
-Notably, Phantom no. 3, that is the phantom produced by
-
-```Matlab
-phantom = Phantom('3');
-```
-
-corresponds to the one used by [Buckley et al. (2017)][3_Buck] and demonstrates a scenario which uses a conditionally-normal mass distribution. 
-
-##### OPTION 4: Using the Phantom class's fit methods
-
-For experimental data, the Phantom class can also be used to derive morphological parameters from the reconstructions. Of particular note, the `Phantom.fit(...)` method, which is defined external to the main definition of the Phantom class, takes a reconstruction, `x` and the grid on which it is defined and creates a bivariate lognormal phantom that most resembles the data. This done using least squares analysis. The `p` structure of the Phantom class then contains many of the morphological parameters of interest to practitioners measuring mass-mobility distributions. The `Phantom.fit2(...)` method can be used in an attempt to derive multimodal phantoms for the data. This task is often challenging, such that the method may need tuning in order to get distributions that appropriately resemble the data. 
+For more information, see information in the [class definition](%40Phantom/Phantom.m) header. 
 
 ## 4. PACKAGES
 
