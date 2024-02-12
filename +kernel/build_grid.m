@@ -15,6 +15,9 @@ function [A, Ac] = build_grid(grid_b, grid_i, z_vec, varargin)
 
 if mod(length(varargin), 2) ~= 0; error('Wrong number of inputs.'); end
 
+if ~exist('z_vec', 'var'); z_vec = []; end
+if isempty(z_vec); z_vec = 1:3; end  % default charge states for evaluation
+
 tools.textheader('Computing kernel')
 
 nc = (length(varargin)/2);  % number of classifiers
@@ -24,7 +27,8 @@ dm_idx = find(strcmp(grid_i.type, 'dm'));
 mp_idx = find(strcmp(grid_i.type, 'mp'));
 da_idx = find(strcmp(grid_i.type, 'da'));
 
-if isempty(grid_i.type)  % set default indices, if type not specified (mass-mobility grid)
+% Set default indices, if type not specified (mass-mobility grid).
+if isempty(grid_i.type)
     dm_idx = 2;
     mp_idx = 1;
 end
