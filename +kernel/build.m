@@ -119,12 +119,18 @@ for ii=1:nc
 
             % Points for integration.
             m = grid_i.elements(:, mp_idx);  % masses at which to compute the transfer function (not setpoints)
-            if isempty(dm_idx)  % then likely PMA without DMA
+
+            % Handle mobility diameter.
+            if ~isempty(dm_idx)  % use corresponding dimension of grid
+                dm = grid_i.elements(:, dm_idx);
+            elseif length(varargin{jj+1}) > 2
+                if ~isempty(varargin{jj+1}{3})
+                    dm = varargin{jj+1}{3};  % then get from explicit input
+                end
+            else  % then likely PMA without DMA
                 dm = (m .* 1e-18 ./ prop_p.rho0) .^ ...
                     (1/prop_p.Dm) .* 1e9;  % use mass-mobility
                 disp('  Invoking mass-mobility relation for PMA.')
-            else
-                dm = grid_i.elements(:, dm_idx);
             end
 
             addpath 'tfer\tfer-pma';  % added to calculate sp
