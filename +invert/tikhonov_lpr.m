@@ -54,25 +54,6 @@ switch order
             Lpr0(end,:) = [];
         end
         
-    case {1.1, 1.248, 1.3}  % 1st order Tikhonov with rotated matrix
-        slope = (order - 1) * 10;
-        if isa(n_grid,'Grid'); Lpr0 = n_grid.l1(slope, bc); % use Grid method (for partial grid support)
-        else
-            I1 = 1/2 .* speye(n, n);
-            E1 = full(sparse(1:n-1, 2:n, 1, n, n));
-            D1 = E1-I1;
-    
-            m = x_length / n;
-            I2 = slope/2 .* speye(m, m);
-            E2 = sparse(1:m-1, 2:m, 1, m, m);
-            D2 = E2 - I2;
-    
-            Lpr0 = kron(I2, D1) + kron(D2, I1);
-    
-            Lpr0 = Lpr0 - spdiags(sum(Lpr0,2), 0, x_length, x_length);
-            Lpr0(end,:) = [];
-        end
-        
     case 2 % 2nd order Tikhonov
         if isa(n_grid,'Grid'); Lpr0 = n_grid.l2; % use Grid method (for partial grid support)
         else
@@ -91,9 +72,29 @@ switch order
         end
 
     otherwise
-        disp('The specified order of Tikhonov is not available.');
-        disp(' ');
-        return
+        if and(order > 1, order < 2)  % 1st order Tikhonov with rotated matrix
+            slope = (order - 1) * 10;
+            if isa(n_grid,'Grid'); Lpr0 = n_grid.l1(slope, bc); % use Grid method (for partial grid support)
+            else
+                I1 = 1/2 .* speye(n, n);
+                E1 = full(sparse(1:n-1, 2:n, 1, n, n));
+                D1 = E1-I1;
+        
+                m = x_length / n;
+                I2 = slope/2 .* speye(m, m);
+                E2 = sparse(1:m-1, 2:m, 1, m, m);
+                D2 = E2 - I2;
+        
+                Lpr0 = kron(I2, D1) + kron(D2, I1);
+        
+                Lpr0 = Lpr0 - spdiags(sum(Lpr0,2), 0, x_length, x_length);
+                Lpr0(end,:) = [];
+            end
+
+        else
+            disp('The specified order of Tikhonov is not available.');
+            disp(' ');
+        end
 end
 
 end
