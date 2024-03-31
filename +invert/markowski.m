@@ -1,20 +1,21 @@
 
 % MARKOWSKI Funtion to perform Markowski/Buckley-type smoothing.
-%   Used in the Twomey-Markowski algorithm.
-% Author: Timothy Sipkens, 2020-02-06
-% Note: n can be an integer or a Grid
-%=========================================================================%
+%  Function is used in the Twomey-Markowski algorithm.
+%  
+%  NOTE: n can be an integer or a Grid
+%  
+%  AUTHOR: Timothy Sipkens, 2020-02-06
 
-function [x,G_smooth,SIGMA] = markowski(A,b,Lb,x,n,iter,opt_smooth,Sf,SIGMA_end)
+function [x, G_smooth, SIGMA] = markowski(A, b, Lb, x, n, iter, opt_smooth, Sf, SIGMA_end)
 
 x_length = length(x);
 
-if strcmp('Buckley',opt_smooth) % smoothing according to Buckley
-    G_smooth = G_Buckley(n,x_length,Sf);
+if strcmp('Buckley',  opt_smooth) % smoothing according to Buckley
+    G_smooth = G_Buckley(n, x_length, Sf);
 elseif strcmp('Grid',opt_smooth) % smoothing based on adjacency matrix in Grid
-    G_smooth = G_grid(n,x_length,Sf);
+    G_smooth = G_grid(n, x_length, Sf);
 else % original Markowski-type smoothing matrix
-    G_smooth = G_Markowski(n,x_length);
+    G_smooth = G_Markowski(n, x_length);
 end
 
 %-- Perform smoothing over multiple iterations ---------------------------%
@@ -22,7 +23,7 @@ jj = 1;
 while jj<=iter
     x = G_smooth*x; % apply smoothing
     
-    SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % calculate mean square error
+    SIGMA = calc_mean_sq_error(Lb*A, x, Lb*b); % calculate mean square error
     if SIGMA>SIGMA_end % exit smoothing if mean square error exceeds end position
         return
     end
@@ -30,7 +31,8 @@ while jj<=iter
     jj = jj+1;
 end
 
-disp(['SMOOTHING algorithm did not necessarily converge after ',num2str(iter),' iteration(s).']);
+disp(['SMOOTHING algorithm did not necessarily converge after ', ...
+    num2str(iter), ' iteration(s).']);
 
 end
 

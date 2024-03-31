@@ -2,28 +2,24 @@
 % TWOMARK  Performs inversion using the iterative Twomey-Markowski approach.
 %  This add an intermediate smoothing step to the standard Twomey routine. 
 %  
-%  ------------------------------------------------------------------------
+%  X = invert.twomark(A, B, LB, N, XI, ITER) uses the model matrix, A;
+%  data, B; Cholesky factorization of inverse covariance matrix, LB; 
+%  length of first dimension of solution, used in smoothing, N;  
+%  initial guess, XI; and maximum number of iterations of the algorithm,
+%  ITER, udring inversion. 
 %  
-%  INPUTS:
-%   A           Model matrix
-%   b           Data
-%   Lb          Cholesky factorization of inverse covariance matrix
-%   n           Length of first dimension of solution, used in smoothing
-%   xi          Initial guess
-%   iter        Max. number of iterations of Twomey_Markowski algorithm
-%   opt_smooth  Type of smoothing to apply      (Optional, default is 'Buckley')
-%   Sf          Smoothing parameter             (Optional, default is 1/300)
-%   SIGMA_end   Mean square error for exit      (Optional, default is 1)
-%
-%  OUTPUTS:
-%   x           Estimate
+%  X = invert.twomark(A, B, LB, GRID, XI, ITER) replaces N with a Grid used
+%  to inform on smoothing. 
+%  
+%  X =invert.twomark(..., OPT_SMOOTH, SF) adds optional parameters:
+%  OPT_SMOOTH, the type of smoothing (default value: 'Buckley'), and 
+%  SF, a smoothing parameter (default value: 1/300).
 %  
 %  ------------------------------------------------------------------------
 % 
 %  AUTHOR:  Timothy Sipkens, 2018-12-20
 
-function x = twomark(A,b,Lb,n_grid,xi,iter,opt_smooth,Sf)
-
+function x = twomark(A, b, Lb, n_grid, xi, iter, opt_smooth, Sf)
 
 %-- Parse inputs ---------------------------------------------------------%
 if ~exist('Sf','var')
@@ -39,9 +35,9 @@ elseif isempty(opt_smooth)
 end
 
 if isa(n_grid,'Grid') % handling of grid input
-    if n_grid.ispartial==1
+    if isa(n_grid, 'PartialGrid')
         opt_smooth = 'Grid';
-    elseif ~strcmp(opt_smooth,'Grid')
+    elseif ~strcmp(opt_smooth, 'Grid')
         n_grid = n_grid.ne(1);
     end
 end
@@ -54,7 +50,7 @@ iter_mh = iter; % max number of iterations of Twomey_Markowski algorithm
 x = xi;
 x = invert.twomey(A,b,x,iter_two); % initial Towmey procedure
 SIGMA = calc_mean_sq_error(Lb*A,x,Lb*b); % average square error for cases where b~= 0
-R = roughness(x,n_grid); % roughness vector
+R = roughness(x, n_grid); % roughness vector
 
 iter_two = 150; % max number of iterations in Twomey pass
 for kk=1:iter_mh % iterate Twomey and smoothing procedure
@@ -91,7 +87,7 @@ function R = roughness(x,n_grid)
 if isa(n_grid,'Grid')
     x = n_grid.reshape(x);
 else
-    x = reshape(x,[n_grid,length(x)/n_grid]);
+    x = reshape(x,[n_grid, length(x)/n_grid]);
 end
 
 R = abs((x(3:end,:)+x(1:(end-2),:)-2.*x(2:(end-1),:)));
