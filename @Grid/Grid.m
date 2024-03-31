@@ -109,7 +109,7 @@ end
 
 methods
     %== GRID =========================================================%
-    function obj = Grid(span_edges,ne,discrete)
+    function obj = Grid(span_edges, ne, discrete)
     % GRID  Class constructor.
         
         %-- Parse inputs ---------------------------------------------%
@@ -121,20 +121,20 @@ methods
         if strcmp(discrete, 'logarithmic'); discrete = 'log'; end % allow for longhand
         %-------------------------------------------------------------%
         
-        if isa(span_edges,'cell') % consider case where edges are given
+        if isa(span_edges,'cell')  % consider case where edges are given
             obj.edges = span_edges;
             obj.ne = [length(span_edges{1}),...
                 length(span_edges{2})];
             obj.span = [min(span_edges{1}),max(span_edges{1});...
                 min(span_edges{2}),max(span_edges{2})];
 
-        else % otherwise, consider case where span is given
+        else  % otherwise, consider case where span is given
             obj.span = span_edges;
             obj.ne = ne;
         end
         obj.Ne = prod(obj.ne);
 
-        if exist('discrete','var') % if discretization scheme is specified
+        if exist('discrete', 'var') % if discretization scheme is specified
             if ~isempty(discrete)
                 obj.discrete = discrete;
             end
@@ -369,7 +369,7 @@ methods
     
     
     %== L1 ===========================================================%
-    function [l1] = l1(obj, w, bc)
+    function l1 = l1(obj, w, bc)
     % L1  Compute the first-order Tikhonov operator.
     %  W adds a weight used to reevaluate the adjacency matrix.
         
@@ -399,14 +399,13 @@ methods
     %=================================================================%
     
     
-    
+
     %== L2 ===========================================================%
-    function [l2] = l2(obj)
+    function l2 = l2(obj)
     % L2  Compute the second-order Tikhonov operator.
     %  Form is equiavalent to applying no slope at grid boundary.
-    
-        l2 = -diag(sum(obj.adj))+...
-            triu(obj.adj)+tril(obj.adj);
+        l2 = -diag(sum(obj.adj)) + ...
+            triu(obj.adj) + tril(obj.adj);
     end
     %=================================================================%
     
@@ -660,7 +659,7 @@ methods
             %-- Ray-sum matrix ---------%
             [~,jj,a] = find(chord');
             if ~isempty(a)
-                C(ii,:) = sparse(1, jj, a, 1, obj.Ne, ceil(0.6 * obj.Ne));
+                C(ii,:) = sparse(1, jj, a, 1, obj.Ne, ceil(obj.Ne));
             end
             if f_bar, tools.textbar(ii/m); end
             
@@ -1024,7 +1023,7 @@ methods
     % PARTIAL  Convert grid to a partial grid, removing elements above or 
     %  below a line. 
     % 
-    %  G = Grid.partial(R0,SLOPE0) removes elements above the line that goes
+    %  G = Grid.partial(~, R0, SLOPE0) removes elements above the line that goes
     %  through the point R0 and having a slope of SLOPE0. For logarithmic
     %  grids, lines correspond to exponential curves, R0 are given as 
     %  log10(...) quantities, and slopes correspond to the exponent. For 
@@ -1032,11 +1031,11 @@ methods
     %  exponential curve that passes through [1,100] and having an exponent
     %  of 3 (e.g., curves that increase volumetrically). 
     % 
-    %  G = Grid.partial(R0,SLOPE0,R1,SLOPE1) adds a second set of arguments
-    %  analogous to above but remove points below a given line (instead of 
-    %  above). 
+    %  G = Grid.partial(~, R0, SLOPE0, R1, SLOPE1) adds a second set of 
+    %  arguments analogous to above but remove points below a given line 
+    %  (instead of above). 
         
-        partialgrid = PartialGrid(obj.span, obj.ne, obj.discrete, varargin{:});
+        partialgrid = PartialGrid(obj.edges, [], obj.discrete, varargin{:});
         partialgrid.type = obj.type;
         
     end
