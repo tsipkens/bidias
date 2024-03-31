@@ -61,19 +61,19 @@ if ~exist('solver','var'); solver = []; end
 
 
 %-- Get Tikhonov smoothing matrix ----------------------------------------%
-if all(size(order_L)==[1,1]) % if order is specified, build Lpr0
+if or(all(size(order_L)==[1,1]), iscell(order_L)) % if order is specified, build Lpr0
     Lpr0 = invert.tikhonov_lpr(...
         order_L, n_grid, x_length, bc);
 else % is Lpr0 strucutre is provided directly
     Lpr0 = order_L;
 end
-Lpr = lambda.*Lpr0;
+Lpr = lambda .* Lpr0;
 
 
 %-- Choose and execute solver --------------------------------------------%
-pr_length = size(Lpr0,1);
+pr_length = size(Lpr0, 1);
 [x,D] = invert.lsq(...
-    [A;Lpr],[b;sparse(pr_length,1)],xi,solver);
+    [A;Lpr], [b;sparse(pr_length,1)], xi, solver);
 
 
 %-- Uncertainty quantification -------------------------------------------%
