@@ -356,13 +356,18 @@ methods
         % Use default method to start plot.
         [h, x] = plot2d@Grid(obj, x, f_tr, f_contf);
 
-        % Default for order of indices. Plus transpose if flagged.
+        % Default for order of indices. 
         ptl = [0,obj.cut(1)];
-        ptu = [0,obj.cut(3)];
-        slope = [obj.cut(2), obj.cut(4)];
+        slope = obj.cut(2);
+        if length(obj.cut)>2
+            ptu = [0,obj.cut(3)];
+            slope = [slope, obj.cut(4)];
+        end
+        
+        % Transpose if flagged.
         if f_tr
             ptl = [obj.cut(1),0];
-            ptu = [obj.cut(3),0];
+            if length(obj.cut)>2; ptu = [obj.cut(3),0]; end
             slope = 1 ./ slope;
         end
         
