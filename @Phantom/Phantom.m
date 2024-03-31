@@ -565,6 +565,10 @@ methods (Static)
             p(ll).m_100 = 1e-9*p(ll).rho_100*pi/6*100^3;
             p(ll).rhog = p(ll).rho_100*((p(ll).dg/100)^(p(ll).Dm-3));
             p(ll).k = p(ll).m_100/(100^p(ll).Dm);
+            
+            % Alternative variable names.
+            p(ll).zet = p(ll).Dm;
+            p(ll).m0 = p(ll).k;
         end
         
     end
