@@ -13,7 +13,7 @@
 %   x       Regularized estimate
 %=========================================================================%
 
-function [x] = em(A,b,xi,n)
+function [x] = em(A, b,xi, n)
 
 
 if ~exist('n','var'); n = []; end
