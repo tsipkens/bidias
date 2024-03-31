@@ -1,7 +1,7 @@
 
 % PARTIALGRID  A subclass of Grid handling partially truncated grids.
 %  
-%  G = PartialGrid(...,R0,SLOPE0) tkaes the same inputs as the Grid
+%  G = PartialGrid(...,R0,SLOPE0) takes the same inputs as the Grid
 %  class constructor, but adds extra inputs to form a partial grid. 
 %  This call removes elements above the line that goes through the 
 %  point R0 and having a slope of SLOPE0. For logarithmic
@@ -106,21 +106,21 @@ methods
 
         %-- Parse inputs ----------------------------%
         if ~exist('slope0','var'); slope0 = []; end
-        if isempty(slope0); slope0 = 1; end
-
+        if isempty(slope0); slope0 = 0; end
+        
         if ~exist('r0','var'); r0 = []; end
         if length(r0)==1; b0 = r0; end % if scalar, use as y-intercept
-        if length(r0)==2; b0 = r0(1)-slope0*r0(2); end % if coordinates, find y-intercept
-        if isempty(r0); b0 = 0; end % if not specified, use b = 0
-
+        if length(r0)==2; b0 = r0(1) - slope0 * r0(2); end % if coordinates, find y-intercept
+        if isempty(r0); b0 = inf; end % if not specified, use b = inf
+        
         %-- For bottom triangle --%
         if ~exist('slope1','var'); slope1 = []; end
         if isempty(slope1); slope1 = 0; end
 
         if ~exist('r1','var'); r1 = -inf; end
         if length(r1)==1; b1 = r1; end % if scalar, use as y-intercept
-        if length(r1)==2; b1 = r1(1)-slope1*r1(2); end % if coordinates, find y-intercept
-        if isempty(r1); b1 = 0; end % if not specified, use b = 0
+        if length(r1)==2; b1 = r1(1) - slope1 * r1(2); end % if coordinates, find y-intercept
+        if isempty(r1); b1 = -inf; end % if not specified, use b = -inf
         %--------------------------------------------%
 
         %-- Cut upper triangle ---------------------%
@@ -131,7 +131,7 @@ methods
         end
         tup = tup + abs(1e-3 .* mean(tup(2:end,:) - tup(1:(end-1),:))) .* [1,0];
             % avoids minimially overlapping elements
-
+        
         f_missing = tup(:,1) > (tup(:,2) .* slope0 + b0);
         t1 = 1:prod(obj.ne);
         obj.cut = [b0, slope0];
@@ -228,7 +228,7 @@ methods
         end
         
     end
-    %=================================================================%
+    %=================================================================%%
     
     
     
