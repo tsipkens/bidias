@@ -1,5 +1,5 @@
 
-# ODIAS
+# BIDIAS
 
 (**Bid**imensional **I**nversion of **A**erosol distributions)
 
