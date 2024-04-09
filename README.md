@@ -1,5 +1,9 @@
 
-# MATLAB tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
+# BIDIAS
+
+(**Bid**imensional **I**nversion of **A**erosol distributions)
+
+(Previously mat-2d-aerosol-inversion)
 
 [![DOI](https://img.shields.io/badge/DOI-10.17632/sg2zj5yrvr.3-blue.svg)](10.17632/sg2zj5yrvr.3)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
@@ -44,7 +48,7 @@ In addition to the necessary MATLAB toolboxes, this program has three dependenci
 As a result, the folders corresponding to these submodules will initially be empty. Their are multiple routes to downloading these submodules. If using git, one can initially clone the repository using 
 
 ```shell
-git clone git://github.com/tsipkens/mat-2d-aerosol-inversion --recurse-submodules
+git clone git://github.com/tsipkens/bidias --recurse-submodules
 ```
 
 which will automatically download the submodules when downloading overall program. Alternatively, the submodules can be downloaded manually from the above sources and placed in the `cmap/` and `tfer/` folders. In either case, to be used directly, these packages should then be added to the MATLAB path at the beginning of any script using
