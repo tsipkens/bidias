@@ -1,5 +1,9 @@
 
-# MATLAB tools for 2D inversion of aerosol characteristics (mat-2d-aerosol-inversion)
+# ODIAS
+
+(**Bidi**mensional **I**nversion of **A**erosol distributions)
+
+(Previously mat-2d-aerosol-inversion)
 
 [![DOI](https://img.shields.io/badge/DOI-10.17632/sg2zj5yrvr.3-blue.svg)](10.17632/sg2zj5yrvr.3)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
