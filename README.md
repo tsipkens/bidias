@@ -1,7 +1,7 @@
 
 # ODIAS
 
-(**Bidi**mensional **I**nversion of **A**erosol distributions)
+(**Bid**imensional **I**nversion of **A**erosol distributions)
 
 (Previously mat-2d-aerosol-inversion)
 
