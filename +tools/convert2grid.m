@@ -2,9 +2,8 @@
 % CONVERT2GRID  A utility to convert a list of setpoints to a grid.
 % 
 % Author: Timothy Sipkens, 2020-07-16
-%=========================================================================%
 
-function [grid, idx, sp] = convert2grid(sp_m, d_star, b)
+function [grid, idx, sp] = convert2grid(sp_m, d_star)
 
 % adjust mass setpoint
 if isstruct(sp_m); m_star = [sp_m.m_star] .* 1e18; % if setpoint structure
