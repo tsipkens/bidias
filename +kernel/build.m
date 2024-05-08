@@ -189,19 +189,36 @@ for ii=1:nc
             
             % Assign inputs.
             d_star2 = varargin{jj+1}{1};
-            d_star = unique(d_star2)';
+
+            % Copy over prop structure.
+            prop = varargin{jj+1}{2};
+            f = {'Qa', 'Qs', 'Qsh', 'Qexh'};
+            nf = length(f);
+            
+            % Get unique flow/da_star combinations.
+            % Build unique vector.
+            u = d_star2;
+            for ff=1:nf  % extend flows to allow for vector input
+                u = [u, prop.(f{ff}) .* ones(size(d_star2))];
+            end
+            [u, ~, kk] = unique(u, 'rows');  % get unique rows
+            d_star = u(:, 1)';
+            for ff=1:nf  % deconstruct flows
+                prop.(f{ff}) = u(:, 1 + ff)';
+            end
+            
             d = grid_i.edges{da_idx};  % points for integration
             
             % Evaluate transfer function.
-            Lambda{ii} = tfer_aac(d_star, d', varargin{jj+1}{2:end});
+            Lambda{ii} = tfer_aac(d_star, d', prop, varargin{jj+1}{3:end});
             Lambda{ii} = permute(Lambda{ii}, [2,1]);
 
             % Duplicate over other grid dimensions.
             d2 = grid_i.elements(:, da_idx);
-            [~,kk] = max(d == d2, [], 2);
-            Lambda{ii} = Lambda{ii}(:,kk,:);
+            [~,ll] = max(d == d2, [], 2);
+            Lambda{ii} = Lambda{ii}(:,ll,:);
             
-            [~,kk] = max(d_star == d_star2, [], 2);
+            % [~,kk] = max(d_star == d_star2, [], 2);
             Lambda{ii} = Lambda{ii}(kk,:,:);
             
             tools.textdone();
