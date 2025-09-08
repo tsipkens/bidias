@@ -8,4 +8,4 @@
 	branch = main
 [submodule "autils"]
 	path = autils
-	url = https://github.com/tsipkens/autils
+	url = https://github.com/tsipkens/mat-autils
