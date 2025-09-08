@@ -14,6 +14,7 @@
 %  
 %  [A,AC] = kernel.build_grid(...) adds an output AC that is not summed
 %  ovre the charge states, which is useful for advanced analysis. 
+%  Output has a third dimension containing the charge-stratified info.
 %  
 %  A = kernel.build_grid(..., 'pma', {M_STAR, PROP_P, VARARGIN})
 %  Builds a PMA contribution to the kernel using the properties in PROP_P
@@ -64,7 +65,7 @@ if any(strcmp(grid_i.type, 'rho'))
     rho_idx = find(strcmp(grid_i.type, 'rho'));
     if ~any(strcmp(grid_i.type, 'mp'))
         m = (pi/6) .* grid_i.elements(:, rho_idx) .* ...
-            grid_i.elements(:, dm_idx) .^ 3 * 1e-9;
+            grid_i.elements(:, dm_idx) .^ 3 .* 1e-9;
     end
 
 % Convert dynamic shape factor and mobility diameter to mass. 
@@ -147,7 +148,7 @@ for ii=1:nc
             d = grid_i.edges{dm_idx};  % points for integration
             
             % Evaluate transfer function.
-            Lambda{ii} = tfer_dma(d_star, d', z_vec, varargin{jj+1}{2:end});
+            Lambda{ii} = tfer_dma(d_star, d', abs(z_vec), varargin{jj+1}{2:end});
 
             % Duplicate over other grid dimensions.
             d2 = grid_i.elements(:, dm_idx);
@@ -167,15 +168,13 @@ for ii=1:nc
 
             % Unpack inputs.
             m_star = varargin{jj+1}{1};  % don't use unique(), as resolution may change
-            prop_p = varargin{jj+1}{2};  % DMA properties
+            prop_p = varargin{jj+1}{2};  % PMA properties
             
             % Handle mobility diameter.
             if ~isempty(dm_idx)  % use corresponding dimension of grid
                 dm = grid_i.elements(:, dm_idx);
             else  % then likely PMA without DMA
-                dm = (m .* 1e-18 ./ prop_p.rho0) .^ ...
-                    (1/prop_p.Dm) .* 1e9;  % use mass-mobility
-                disp('  Invoking mass-mobility relation for PMA.')
+                % Then, use mobility diameters from above.
             end
 
             addpath 'tfer\tfer-pma';  % added to calculate sp
@@ -184,11 +183,11 @@ for ii=1:nc
                 varargin{jj+1}{3:end});  % extra name-value pair to specify setpoint
             
             % Find unique setpoints. 
-            [spu, ~, kk] = unique([[sp.m_star]', [sp.Rm]'], 'rows');
-            spu = get_setpoint(prop_p, 'm_star', spu(:,1), 'Rm', spu(:,2));
+            [spu, ~, kk] = unique([[sp.m_star]', [sp.omega]'], 'rows');
+            spu = get_setpoint(prop_p, 'm_star', spu(:,1), 'omega', spu(:,2));
             
             Lambda{ii} = tfer_pma(...
-                spu, m, dm, z_vec, prop_p);
+                spu, m, dm, abs(z_vec), prop_p);
 
             % Duplicate over repeat entries.
             Lambda{ii} = Lambda{ii}(kk,:,:);

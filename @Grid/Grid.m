@@ -175,15 +175,15 @@ methods
 
         %-- Generate nodes -------------------------------------------%
         for ii=1:obj.dim
-            if strcmp(obj.discrete{ii},'log')
-                r_m = exp((log(obj.edges{ii}(2:end))+...
+            if strcmp(obj.discrete{ii}, 'log')
+                r_m = exp((log(obj.edges{ii}(2:end)) + ...
                     log(obj.edges{ii}(1:(end-1))))./2); % mean of edges
 
                 obj.nodes{ii} = [exp(2*log(obj.edges{ii}(1))-log(r_m(1))),...
                     r_m, exp(2*log(obj.edges{ii}(end))-log(r_m(end)))];
                 
-            elseif strcmp(obj.discrete{ii},'lin')
-                r_m = (obj.edges{ii}(2:end)+...
+            elseif strcmp(obj.discrete{ii}, 'lin')
+                r_m = (obj.edges{ii}(2:end) + ...
                     obj.edges{ii}(1:(end-1)))./2; % mean of edges
 
                 obj.nodes{ii} = [2*obj.edges{ii}(1)-r_m(1),...
@@ -193,13 +193,13 @@ methods
 
         %-- Generate vectorized lists of elements --------------------%
         %   One column per dimension
-        [vec1{1},vec1{2}] = ndgrid(obj.edges{1},obj.edges{2});
+        [vec1{1},vec1{2}] = ndgrid(obj.edges{1}, obj.edges{2});
         obj.elements(:,1) = vec1{1}(:); % vectorize output
         obj.elements(:,2) = vec1{2}(:);
         
-        [vec1{1},vec1{2}] = ndgrid(obj.nodes{1}(1:(end-1)),...
+        [vec1{1},vec1{2}] = ndgrid(obj.nodes{1}(1:(end-1)), ...
             obj.nodes{2}(1:(end-1)));
-        [vec2{1},vec2{2}] = ndgrid(obj.nodes{1}(2:end),...
+        [vec2{1},vec2{2}] = ndgrid(obj.nodes{1}(2:end), ...
             obj.nodes{2}(2:end));
         obj.nelements = [vec1{1}(:),vec2{1}(:),vec1{2}(:),vec2{2}(:)];
     end

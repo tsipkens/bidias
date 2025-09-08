@@ -10,7 +10,7 @@
 %   h       Line object
 %=========================================================================%
 
-function h = overlay_line(grid,logr0,slope,varargin)
+function h = overlay_line(grid, logr0, slope, varargin)
 
 if isempty(varargin); varargin = {'w'}; end
     % specify line properties (default, white, solid line)

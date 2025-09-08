@@ -30,7 +30,7 @@ x_length = size(A,2);
 %-- Parse inputs ---------------------------------------------%
 if ~exist('Gd','var'); Gd = []; end
 if isempty(Gd); Gd = speye(2); end % if not specified, use an identity matrix
-if Gd(1,2)/sqrt(Gd(1,1)*Gd(2,2))>=1 % check if correlation is unphysical
+if Gd(1,2) / sqrt(Gd(1,1) * Gd(2,2)) >= 1 % check if correlation is unphysical
     error('Correlation greater than 1.');
 end
 
@@ -38,15 +38,18 @@ if ~exist('xi','var'); xi = []; end % if no initial x is given
 if ~exist('solver','var'); solver = []; end % if computation method not specified
 %--------------------------------------------------------------%
 
-
-Lpr0 = invert.exp_dist_lpr(Gd,grid_vec2,vec1);
+disp(' Building Lpr ...')
+Lpr0 = invert.exp_dist_lpr(Gd, grid_vec2, vec1);
     % use external function to evaluate prior covariance
 Lpr = lambda.*Lpr0;
+tools.textdone();
 
 
 %-- Choose and execute solver --------------------------------------------%
+disp(' Performing inversion ...')
 [x,D] = invert.lsq(...
     [A;Lpr],[b;sparse(x_length,1)],xi,solver);
+tools.textdone();
 
 
 %-- Uncertainty quantification -------------------------------------------%

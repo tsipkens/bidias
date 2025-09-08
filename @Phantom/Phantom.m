@@ -638,15 +638,15 @@ methods (Static)
                 p(ll).mg = 10.^p(ll).mg;
             end
 
-            p(ll).sg = 10^sqrt(Sigma(2,2,ll));
-            p(ll).sm = 10^sqrt(Sigma(1,1,ll));
+            p(ll).sg = 10 ^ sqrt(Sigma(2,2,ll));
+            p(ll).sm = 10 ^ sqrt(Sigma(1,1,ll));
 
-            R12 = Sigma(1,2,ll)/...
-                sqrt(Sigma(1,1,ll)*Sigma(2,2,ll));
-            p(ll).smd = 10^sqrt(Sigma(1,1,ll)*(1-R12^2));
+            R12 = Sigma(1,2,ll) / ...
+                sqrt(Sigma(1,1,ll) * Sigma(2,2,ll));
+            p(ll).smd = 10 ^ sqrt(Sigma(1,1,ll) * (1-R12^2));
                 % conditional distribution width
 
-            p(ll).Dm = Sigma(1,2,ll)/Sigma(2,2,ll);
+            p(ll).Dm = Sigma(1,2,ll) / Sigma(2,2,ll);
                 % corresponds to slope of "locus of vertical"
                 % (Friendly, Monette, and Fox, 2013)
                 % can be calculated as Dm = corr*sy/sx
@@ -655,7 +655,7 @@ methods (Static)
             % p(ll).ma = (t0-Sigma(2,2,ll))./Sigma(1,2,ll);
                 % calculate the major axis slope
 
-            p(ll).rhog = p(ll).mg/(pi*p(ll).dg^3/6)*1e9;
+            p(ll).rhog = p(ll).mg / (pi * p(ll).dg^3 / 6) * 1e9;
         end
         
         p = Phantom.fill_p(p);
